@@ -23,11 +23,12 @@
       %h3
         = join_event_link(@event, current_user)
     .col-md-4
-      %p{style: "margin-top: 20px"}
+      %p.btn-group{style: "margin-top: 20px"}
+        - # TODO: Use a generic can I see the event link function?
         - if @event_schedule&.start_time
           = link_to google_calendar_link(@event_schedule), target: '_blank', class: 'btn btn-success btn-mini' do
             %i.fa.fa-calendar
-            Add to Google Calendar (beta)
+            Google Calendar
         - if can?(:update, @event) && @event.require_registration?
           = link_to 'Registrations', registrations_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-success'
         - if can?(:edit, @event)
@@ -72,6 +73,14 @@
         .col-md-12
           %p
             = markdown(@event.abstract)
+          - if current_user.registered_to_event?(@conference)
+            %hr
+            .panel.panel-info
+              .panel-heading
+                %h2 Zoom Call
+              .panel-body
+                %iframe{src: @event.url, style: 'width: 100%; height: 600px', border: 0}
+
         %dl#proposal-info
           .col-md-12
             %dt Date:
