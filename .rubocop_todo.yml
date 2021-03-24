@@ -96,7 +96,7 @@ Layout/ExtraSpacing:
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: IndentationWidth.
-Layout/IndentAssignment:
+Layout/AssignmentIndentation:
   Exclude:
     - 'app/helpers/format_helper.rb'
     - 'config/environments/development.rb'
@@ -105,14 +105,14 @@ Layout/IndentAssignment:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: consistent, consistent_relative_to_receiver, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
-Layout/IndentFirstArgument:
+Layout/FirstArgumentIndentation:
   Enabled: false
 
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: special_inside_parentheses, consistent, align_brackets
-Layout/IndentFirstArrayElement:
+Layout/FirstArrayElementIndentation:
   Exclude:
     - 'app/models/conference.rb'
 
@@ -120,7 +120,7 @@ Layout/IndentFirstArrayElement:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: special_inside_parentheses, consistent, align_braces
-Layout/IndentFirstHashElement:
+Layout/FirstHashElementIndentation:
   Exclude:
     - 'app/models/user.rb'
     - 'config/routes.rb'
@@ -340,7 +340,7 @@ Layout/SpaceInsideStringInterpolation:
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: IndentationWidth.
-Layout/Tab:
+Layout/IndentationStyle:
   Exclude:
     - 'app/controllers/admin/resources_controller.rb'
 
@@ -348,7 +348,7 @@ Layout/Tab:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: final_newline, final_blank_line
-Layout/TrailingBlankLines:
+Layout/TrailingEmptyLines:
   Exclude:
     - 'app/views/admin/registrations/index.xlsx.axlsx'
     - 'lib/tasks/event_attatchments.rake'
@@ -372,14 +372,14 @@ Lint/AssignmentInCondition:
     - 'bin/spring'
 
 # Offense count: 2
-Lint/DuplicatedKey:
+Lint/DuplicateHashKey:
   Exclude:
     - 'db/migrate/20140801164901_move_conference_media_to_commercial.rb'
     - 'db/migrate/20140801170430_move_event_media_to_commercial.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowComments.
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Exclude:
     - 'bin/rspec'
 
@@ -491,7 +491,7 @@ Naming/RescuedExceptionsVariableName:
 # Offense count: 2
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
 # AllowedNames: io, id, to, by, on, in, at, ip, db
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Exclude:
     - 'app/models/conference.rb'
 
@@ -837,11 +837,6 @@ Security/Open:
 Style/ClassCheck:
   Exclude:
     - 'app/models/email_settings.rb'
-
-# Offense count: 1
-Style/ClassVars:
-  Exclude:
-    - 'spec/support/kneet_connections.rb'
 
 # Offense count: 2
 # Cop supports --auto-correct.
@@ -1226,7 +1221,7 @@ Style/UnlessElse:
 
 # Offense count: 2
 # Cop supports --auto-correct.
-Style/UnneededCondition:
+Style/RedundantCondition:
   Exclude:
     - 'app/helpers/versions_helper.rb'
     - 'app/models/ticket.rb'

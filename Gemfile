@@ -276,6 +276,8 @@ group :development, :test, :linters do
   gem 'pronto', require: false
   gem 'pronto-flay', require: false
   gem 'pronto-haml', require: false
+  # See: https://github.com/prontolabs/pronto-rubocop#rubocop-versions
+  gem 'rubocop-ast', '< 0.7.0', require: false
   gem 'pronto-rubocop', require: false
   gem 'rubocop-rspec', require: false
 
