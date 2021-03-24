@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# TODO: Split this module into smaller modules
+# rubocop:disable Metrics/ModuleLength
 module EventsHelper
   ##
   # Includes functions related to events
@@ -56,6 +58,20 @@ module EventsHelper
 
   def rating_tooltip(event, max_rating)
     "#{event.average_rating}/#{max_rating}, #{pluralize(event.voters.length, 'vote')}"
+  end
+
+  def event_type_options(event_types)
+    event_types.map do |type|
+      [
+        "#{type.title} - #{show_time(type.length)}",
+        type.id,
+        data: {
+          min_words:    type.minimum_abstract_length,
+          max_words:    type.maximum_abstract_length,
+          instructions: type.submission_instructions
+        }
+      ]
+    end
   end
 
   def event_type_dropdown(event, event_types, conference_id)
@@ -173,7 +189,62 @@ module EventsHelper
     )
   end
 
+  def join_event_link(event, current_user)
+    # TODO: Should this take in an event_schedule?
+    return unless event.url.present? && current_user
+
+    conference = event.conference
+    is_now = event.happening_now?
+
+    if current_user.roles.where(id: conference.roles).any?
+      # Show Pre-Event links for any memeber of the conference team.
+      link_to("Join Live Event #{'(Admin link)' unless is_now}",
+              event.url, target: '_blank')
+    elsif current_user.registered_to_event?(conference)
+      if is_now
+        link_to('Join Live Event', event.url, target: '_blank')
+      else
+        link_to('(Live Event Link Available During Event)', '#')
+      end
+    end
+  end
+
+  def calendar_timestamp(timestamp, _timezone)
+    timestamp = timestamp.in_time_zone('GMT')
+    timestamp -= timestamp.utc_offset
+    timestamp.strftime('%Y%m%dT%H%M%S')
+  end
+
+  def google_calendar_link(event_schedule)
+    event = event_schedule.event
+    conference = event.conference
+    calendar_base = 'https://www.google.com/calendar/render'
+    start_timestamp = calendar_timestamp(event_schedule.start_time, conference.timezone)
+    end_timestamp = calendar_timestamp(event_schedule.end_time, conference.timezone)
+    event_details = {
+      action:   'TEMPLATE',
+      text:     "#{event.title} at #{conference.title}",
+      details:  calendar_event_text(event, event_schedule, conference),
+      location: "#{event.room.name} #{event.url}",
+      dates:    "#{start_timestamp}/#{end_timestamp}",
+      ctz:      event_schedule.timezone
+    }
+    "#{calendar_base}?#{event_details.to_param}"
+  end
+
   private
+
+  def calendar_event_text(event, event_schedule, conference)
+    <<~TEXT
+      #{conference.title} - #{event.title}
+      #{event_schedule.start_time.strftime('%Y %B %e - %H:%M')} #{event_schedule.timezone}
+
+      More Info: #{conference_program_proposal_url(conference, event)}
+      Join: #{event.url}
+
+      #{truncate(event.abstract, length: 200)}
+    TEXT
+  end
 
   def active_dropdown(selection, options)
     # Consistent rendering of dropdown lists that submit patched changes
@@ -201,3 +272,4 @@ module EventsHelper
     end
   end
 end
+# rubocop:enable Metrics/ModuleLength

@@ -22,12 +22,14 @@
             = render partial: 'devise/shared/sign_up_form_embedded'
 
             = render partial: 'registration_info', locals: { f: f }
+            = f.input :conference_id, as: :hidden, value: @conference.id
             .row
               .col-md-12
                 %p.pull-right
                   - if @conference.user_registered?(current_user)
                     = f.action :submit, button_html: { value: 'Update Registration', class: 'btn btn-primary' }
                   - else
-                    =f.action :submit, button_html: { value: 'Register', class: 'btn btn-primary', id: 'register' }
+                    = f.action :submit, button_html: { value: 'Register', class: 'btn btn-primary', id: 'register' }
+
         .tab-pane{role: 'tabpanel', id: 'signin'}
           = render partial: 'devise/shared/sign_in_form_embedded'

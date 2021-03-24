@@ -43,7 +43,8 @@ module Admin
       # Variable @show_attributes holds the attributes that are visible for the 'show' action
       # If you want to change the attributes that are shown in the 'show' action of users
       # add/remove the attributes in the following string array
-      @show_attributes = %w(name email username nickname affiliation biography registered attended roles created_at
+      @show_attributes = %w(name email username nickname affiliation biography
+                            profile_picture registered attended roles created_at
                             updated_at sign_in_count current_sign_in_at last_sign_in_at
                             current_sign_in_ip last_sign_in_ip)
     end
@@ -64,6 +65,16 @@ module Admin
     end
 
     def edit; end
+
+    def destroy
+      if @user.destroy
+        redirect_to admin_users_path,
+                    notice: "User #{@user.id} (#{@user.email}) deleted."
+      else
+        redirect_to admin_users_path,
+                    error: "User #{@user.id} (#{@user.emai}) could not be deleted. #{@user.full_messages.join(',')}"
+      end
+    end
 
     private
 

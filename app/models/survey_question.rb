@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: survey_questions
+#
+#  id               :bigint           not null, primary key
+#  kind             :integer          default("boolean")
+#  mandatory        :boolean          default(FALSE)
+#  max_choices      :integer
+#  min_choices      :integer
+#  possible_answers :text
+#  title            :string
+#  survey_id        :integer
+#
 class SurveyQuestion < ActiveRecord::Base
   belongs_to :survey
   has_many :survey_replies, dependent: :destroy
@@ -11,8 +24,8 @@ class SurveyQuestion < ActiveRecord::Base
 
   validates :title, presence: true
   validates :possible_answers, :max_choices, :min_choices, presence: true, if: :choice?
-  validates :min_choices, numericality: { greater_than_or_equal_to: 1 }, allow_blank: true
-  validates :max_choices, numericality: { greater_than_or_equal_to: 1 }, allow_blank: true
+  validates :min_choices, numericality: { greater_than_or_equal_to: 1 }, allow_blank: true, if: :choice?
+  validates :max_choices, numericality: { greater_than_or_equal_to: 1 }, allow_blank: true, if: :choice?
 
   validate :max_choices_greater_than_min
 

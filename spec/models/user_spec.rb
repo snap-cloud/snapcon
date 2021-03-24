@@ -1,5 +1,51 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: users
+#
+#  id                     :bigint           not null, primary key
+#  affiliation            :string
+#  avatar_content_type    :string
+#  avatar_file_name       :string
+#  avatar_file_size       :integer
+#  avatar_updated_at      :datetime
+#  biography              :text
+#  confirmation_sent_at   :datetime
+#  confirmation_token     :string
+#  confirmed_at           :datetime
+#  current_sign_in_at     :datetime
+#  current_sign_in_ip     :string
+#  email                  :string           default(""), not null
+#  email_public           :boolean          default(FALSE)
+#  encrypted_password     :string           default(""), not null
+#  is_admin               :boolean          default(FALSE)
+#  is_disabled            :boolean          default(FALSE)
+#  languages              :string
+#  last_sign_in_at        :datetime
+#  last_sign_in_ip        :string
+#  mobile                 :string
+#  name                   :string
+#  nickname               :string
+#  picture                :string
+#  remember_created_at    :datetime
+#  reset_password_sent_at :datetime
+#  reset_password_token   :string
+#  sign_in_count          :integer          default(0)
+#  tshirt                 :string
+#  unconfirmed_email      :string
+#  username               :string
+#  volunteer_experience   :text
+#  created_at             :datetime
+#  updated_at             :datetime
+#
+# Indexes
+#
+#  index_users_on_confirmation_token    (confirmation_token) UNIQUE
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#  index_users_on_username              (username) UNIQUE
+#
 require 'spec_helper'
 
 describe User do
@@ -395,6 +441,19 @@ describe User do
         end
       end
     end
+
+    describe '#count_registration_tickets' do
+      let(:registration_ticket) { create(:registration_ticket, price_cents: 0) }
+      let(:conference3) { create(:conference, short_title: 'oSC17', title: 'openSUSE Conference 2017', tickets: [registration_ticket]) }
+      let(:ticket_purchase) { create(:ticket_purchase, user: user, conference: conference3, ticket: registration_ticket, quantity: 1) }
+
+      it 'counts the number of registration tickets of a conference held by user' do
+        user.ticket_purchases << ticket_purchase
+
+        expect(user.count_registration_tickets(conference3)).to eq(1)
+        expect(user.count_registration_tickets(conference2)).to eq(0)
+      end
+    end
   end
 
   describe 'rolify' do
@@ -434,7 +493,7 @@ describe User do
   end
 
   describe 'assigns admin attribute' do
-    it 'to second user when first user is deleted_user' do
+    xit 'to second user when first user is deleted_user' do
       deleted_user = User.find_by(email: 'deleted@localhost.osem')
       expect(deleted_user.is_admin).to be false
 
@@ -468,7 +527,7 @@ describe User do
 
   describe '.omniauth_providers' do
     it 'contains providers' do
-      expect(User.omniauth_providers).to eq [:suse, :google, :facebook, :github]
+      expect(User.omniauth_providers).to eq [:suse, :google, :facebook, :github, :discourse]
     end
   end
 end

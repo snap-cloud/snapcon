@@ -4,6 +4,12 @@ Not release yet...
 
 ## Update from 1.0
 
+### Dropped travel information
+We have dropped input and storage of travel schedules for event registrants. If
+you would like to continue to collect travel schedules, please create a custom
+survey for this purpose.
+_Please be aware that existing travel data will be destroyed during migration._
+
 ### Multiple Schedules
 A conference can have multiple schedules now so it's easier for organizers to
 test schedules and collaborate on different versions.
@@ -37,8 +43,8 @@ bundle exec rake data:set_conference_in_versions RAILS_ENV=production
 
 ### Organization admins
 
-We have a new role `organization admins` which allow a user to manage his the
-organization and create and manage conference within the organization. This
+We have a new role `organization admins` which allow a user to manage their
+organization and create and manage a conference within the organization. This
 needs the role to exist in the database, otherwise the application crashes
 as it is assumed to exist. For that, run the following rake task:
 

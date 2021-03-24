@@ -1,5 +1,35 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: events
+#
+#  id                           :bigint           not null, primary key
+#  abstract                     :text
+#  comments_count               :integer          default(0), not null
+#  description                  :text
+#  guid                         :string           not null
+#  is_highlight                 :boolean          default(FALSE)
+#  language                     :string
+#  max_attendees                :integer
+#  progress                     :string           default("new"), not null
+#  proposal_additional_speakers :text
+#  public                       :boolean          default(TRUE)
+#  require_registration         :boolean
+#  start_time                   :datetime
+#  state                        :string           default("new"), not null
+#  submission_text              :text
+#  subtitle                     :string
+#  title                        :string           not null
+#  week                         :integer
+#  created_at                   :datetime
+#  updated_at                   :datetime
+#  difficulty_level_id          :integer
+#  event_type_id                :integer
+#  program_id                   :integer
+#  room_id                      :integer
+#  track_id                     :integer
+#
 class Event < ApplicationRecord
   include ActiveRecord::Transitions
   include RevisionCount
@@ -18,6 +48,9 @@ class Event < ApplicationRecord
   has_one :submitter_event_user, -> { where(event_role: 'submitter') }, class_name: 'EventUser'
   has_one  :submitter, through: :submitter_event_user, source: :user
 
+  has_many :volunteer_event_users, -> { where(event_role: 'volunteer') }, class_name: 'EventUser'
+  has_many :volunteers, through: :volunteer_event_users, source: :user
+
   has_many :votes, dependent: :destroy
   has_many :voters, through: :votes, source: :user
   has_many :commercials, as: :commercialable, dependent: :destroy
@@ -31,6 +64,8 @@ class Event < ApplicationRecord
   belongs_to :track
   belongs_to :difficulty_level
   belongs_to :program
+  belongs_to :room
+  delegate :url, to: :room, allow_nil: true
 
   has_and_belongs_to_many :favourite_users, class_name: 'User'
 
@@ -42,6 +77,7 @@ class Event < ApplicationRecord
   before_create :generate_guid
 
   validate :abstract_limit
+  validate :submission_limit
   validate :before_end_of_conference, on: :create
   validates :title, presence: true
   validates :abstract, presence: true
@@ -186,6 +222,10 @@ class Event < ApplicationRecord
     abstract.to_s.split.size
   end
 
+  def submission_word_count
+    submission_text.to_s.split.size
+  end
+
   def self.get_state_color(state)
     COLORS[state.to_sym] || '#00FFFF' # azure
   end
@@ -236,7 +276,7 @@ class Event < ApplicationRecord
       biographies:      speakers.all? { |speaker| !speaker.biography.blank? },
       subtitle:         !subtitle.blank?,
       track:            (!track.blank? unless program.tracks.empty?),
-      difficulty_level: !difficulty_level.blank?,
+      difficulty_level: (difficulty_level.present? unless program.difficulty_levels.empty?),
       title:            true,
       abstract:         true
     }.with_indifferent_access
@@ -273,6 +313,13 @@ class Event < ApplicationRecord
   end
 
   ##
+  # Returns the start time at which this event is scheduled
+  #
+  def happening_now?
+    event_schedules.find_by(schedule_id: selected_schedule_id).try(:happening_now?)
+  end
+
+  ##
   # Returns true or false, if the event is already over or not
   #
   # ====Returns
@@ -289,6 +336,10 @@ class Event < ApplicationRecord
     program.conference
   end
 
+  def <=>(other)
+    time <=> other.time
+  end
+
   private
 
   ##
@@ -299,16 +350,28 @@ class Event < ApplicationRecord
     errors.add(:max_attendees, "cannot be more than the room's capacity (#{room.size})") if max_attendees && (max_attendees > room.size)
   end
 
-  def abstract_limit
-    # If we don't have an event type, there is no need to count anything
-    return unless event_type && abstract
+  def word_limit(field)
+    # If we don't have an event type or the requested field, don't count
+    return unless event_type && respond_to?(field) && self[field]
 
-    len = abstract.split.size
+    len = self[field].split.size
+    # TODO: Use different limits for different text fields
+    # Uncomment the two lines below this when the separate word limits are implemented.
+    # max_words = event_type["maximum_#{field}_length"]
+    # min_words = event_type["minimum_#{field}_length"]
     max_words = event_type.maximum_abstract_length
     min_words = event_type.minimum_abstract_length
 
-    errors.add(:abstract, "cannot have less than #{min_words} words") if len < min_words
-    errors.add(:abstract, "cannot have more than #{max_words} words") if len > max_words
+    errors.add(field.to_sym, "cannot have less than #{min_words} words") if len < min_words
+    errors.add(field.to_sym, "cannot have more than #{max_words} words") if len > max_words
+  end
+
+  def abstract_limit
+    word_limit(:abstract)
+  end
+
+  def submission_limit
+    word_limit(:submission_text)
   end
 
   # TODO: create a module to be mixed into model to perform same operation

@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
-# cannot delete program if there are events submitted
+# == Schema Information
+#
+# Table name: cfps
+#
+#  id                   :bigint           not null, primary key
+#  cfp_type             :string
+#  description          :text
+#  enable_registrations :boolean          default(FALSE)
+#  end_date             :date             not null
+#  start_date           :date             not null
+#  created_at           :datetime
+#  updated_at           :datetime
+#  program_id           :integer
+#
 
 class Cfp < ApplicationRecord
   TYPES = %w(events booths tracks).freeze

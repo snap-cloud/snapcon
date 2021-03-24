@@ -1,5 +1,41 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: conferences
+#
+#  id                 :bigint           not null, primary key
+#  booth_limit        :integer          default(0)
+#  color              :string
+#  custom_css         :text
+#  custom_domain      :string
+#  description        :text
+#  end_date           :date             not null
+#  end_hour           :integer          default(20)
+#  events_per_week    :text
+#  guid               :string           not null
+#  logo_file_name     :string
+#  picture            :string
+#  registration_limit :integer          default(0)
+#  revision           :integer          default(0), not null
+#  short_title        :string           not null
+#  start_date         :date             not null
+#  start_hour         :integer          default(9)
+#  ticket_layout      :integer          default("portrait")
+#  timezone           :string           not null
+#  title              :string           not null
+#  use_vdays          :boolean          default(FALSE)
+#  use_volunteers     :boolean
+#  use_vpositions     :boolean          default(FALSE)
+#  created_at         :datetime
+#  updated_at         :datetime
+#  organization_id    :integer
+#
+# Indexes
+#
+#  index_conferences_on_organization_id  (organization_id)
+#
+# rubocop:disable Metrics/ClassLength
 class Conference < ApplicationRecord
   include RevisionCount
   require 'uri'
@@ -25,11 +61,15 @@ class Conference < ApplicationRecord
   has_one :email_settings, dependent: :destroy
   has_one :program, dependent: :destroy
   has_one :venue, dependent: :destroy
-  has_many :physical_tickets, through: :ticket_purchases
+  delegate :city, :country_name, to: :venue, allow_nil: true
+  delegate :name, :street, to: :venue, prefix: true, allow_nil: true
+
   has_many :ticket_purchases, dependent: :destroy
+  has_many :physical_tickets, through: :ticket_purchases
   has_many :payments, dependent: :destroy
   has_many :supporters, through: :ticket_purchases, source: :user
   has_many :tickets, dependent: :destroy
+  has_many :registration_tickets, -> { for_registration }, class_name: 'Ticket'
   has_many :resources, dependent: :destroy
   has_many :booths, dependent: :destroy
   has_many :confirmed_booths, -> { where(state: 'confirmed') }, class_name: 'Booth'
@@ -112,6 +152,13 @@ class Conference < ApplicationRecord
   end
 
   ##
+  # True when there is at least one ticket marked as "registration"
+  # A user must get a registration ticket before registering.
+  def registration_ticket_required?
+    registration_tickets.any?
+  end
+
+  ##
   # Delete all EventSchedules that are not in the hours range
   # After the conference has been successfully updated
   def delete_event_schedules
@@ -119,7 +166,7 @@ class Conference < ApplicationRecord
       event_schedules = program.event_schedules.select do |event_schedule|
         event_schedule.start_time.hour < start_hour ||
         event_schedule.end_time.hour > end_hour ||
-        (event_schedule.end_time.hour == end_hour && event_schedule.end_time.minute > 0)
+        (event_schedule.end_time.hour == end_hour && event_schedule.end_time.min > 0)
       end
       event_schedules.each(&:destroy)
     end
@@ -1191,3 +1238,4 @@ class Conference < ApplicationRecord
     ]
   end
 end
+# rubocop:enable Metrics/ClassLength

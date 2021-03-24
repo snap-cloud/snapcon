@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: rooms
+#
+#  id       :bigint           not null, primary key
+#  guid     :string           not null
+#  name     :string           not null
+#  order    :integer
+#  size     :integer
+#  url      :string
+#  venue_id :integer          not null
+#
 class Room < ApplicationRecord
   include RevisionCount
   belongs_to :venue
@@ -13,6 +25,9 @@ class Room < ApplicationRecord
   validates :name, :venue_id, presence: true
 
   validates :size, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :order, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+
+  default_scope { order(order: :asc) }
 
   def conference
     venue.conference

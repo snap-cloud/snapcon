@@ -31,7 +31,7 @@ class Ability
       event.state == 'confirmed'
     end
 
-    can [:show, :events, :app], Schedule do |schedule|
+    can [:show, :events, :happening_now, :app], Schedule do |schedule|
       schedule.program.schedule_public
     end
 
@@ -68,6 +68,8 @@ class Ability
   end
 
   # Abilities for signed in users
+  # TODO: Refactor into multiple functions
+  # rubocop:disable Metrics/AbcSize
   def signed_in(user)
     # Abilities from not_signed_in user are also inherited
     not_signed_in
@@ -87,7 +89,9 @@ class Ability
     end
 
     can :index, Organization
-    can :index, Ticket
+    can :index, Ticket do |ticket|
+      ticket.visible
+    end
     can :manage, TicketPurchase, user_id: user.id
     can [:new, :create], Payment, user_id: user.id
     can [:index, :show], PhysicalTicket, user: user
@@ -142,6 +146,7 @@ class Ability
       user == track.submitter && !(track.accepted? || track.confirmed?)
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   # Abilities for users with roles wandering around in non-admin views.
   def common_abilities_for_admins(user)

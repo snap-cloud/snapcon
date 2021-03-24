@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: commercials
+#
+#  id                  :bigint           not null, primary key
+#  commercial_type     :string
+#  commercialable_type :string
+#  url                 :string
+#  created_at          :datetime
+#  updated_at          :datetime
+#  commercial_id       :string
+#  commercialable_id   :integer
+#
 class Commercial < ApplicationRecord
   require 'oembed'
 
@@ -17,9 +30,15 @@ class Commercial < ApplicationRecord
     begin
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
-    rescue StandardError => exception
-      { error: exception.message }
+    rescue StandardError
+      { html: iframe_fallback(url) }
+      # { error: exception.message }
     end
+  end
+
+  def self.iframe_fallback(url)
+    # <br><a href='#{url}' target=_blank>Open in a new tab</a>
+    "<iframe src=\"#{url}\"></iframe>".html_safe
   end
 
   def self.read_file(file)
@@ -39,7 +58,7 @@ class Commercial < ApplicationRecord
 
       commercial = event.commercials.new(url: url)
       unless commercial.save
-        errors[:validation_errors] << "Could not create commercial for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')'
+        errors[:validation_errors] << "Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')'
       end
     end
     errors
@@ -67,6 +86,10 @@ class Commercial < ApplicationRecord
         OEmbed::Providers::Instagram,
         speakerdeck
     )
+    # OEmbed::Providers.register_fallback(
+    #   OEmbed::ProviderDiscovery,
+    #   OEmbed::Providers::Noembed
+    # )
   end
 
   def conference_id

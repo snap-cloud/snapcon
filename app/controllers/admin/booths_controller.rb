@@ -10,7 +10,7 @@ module Admin
       @booth_export_option = params[:booth_export_option]
       respond_to do |format|
         format.html
-        # Explicity call #to_json to avoid the use of EventSerializer
+        # Explicitly call #to_json to avoid the use of EventSerializer
         format.json { render json: Booth.where(state: :confirmed, program: @program).to_json }
         format.xlsx do
           response.headers['Content-Disposition'] = "attachment; filename=\"#{@file_name}.xlsx\""
@@ -92,7 +92,9 @@ module Admin
       @booth.reject!
 
       if @booth.save
-        Mailbot.conference_booths_rejection_mail(@booth).deliver_later
+        if @conference.email_settings.send_on_booths_rejection
+          Mailbot.conference_booths_rejection_mail(@booth).deliver_later
+        end
         redirect_to admin_conference_booths_path(conference_id: @conference.short_title),
                     notice: "#{(t'booth').capitalize} successfully rejected."
       else

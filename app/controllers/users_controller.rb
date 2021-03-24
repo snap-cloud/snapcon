@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
+  before_action :load_user
   load_and_authorize_resource
 
   # GET /users/1
@@ -24,8 +25,15 @@ class UsersController < ApplicationController
 
   private
 
-    # Only allow a trusted parameter "white list" through.
-    def user_params
-      params.require(:user).permit(:name, :biography, :nickname, :affiliation)
-    end
+  def user_params
+    params.require(:user).permit(:name, :biography, :nickname, :affiliation,
+                                 :picture, :picture_cache)
+  end
+
+  # Somewhat of a hack: users/current/edit
+  # rubocop:disable Naming/MemoizedInstanceVariableName
+  def load_user
+    @user ||= (params[:id] && params[:id] != 'current' && User.find(params[:id]) || current_user)
+  end
+  # rubocop:enable Naming/MemoizedInstanceVariableName
 end

@@ -434,7 +434,7 @@ Metrics/BlockNesting:
 # Offense count: 13
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 650
+  Max: 652
 
 # Offense count: 33
 Metrics/CyclomaticComplexity:
@@ -507,6 +507,7 @@ RSpec/AnyInstance:
   Exclude:
     - 'spec/controllers/admin/rooms_controller_spec.rb'
     - 'spec/controllers/admin/sponsorship_levels_controller_spec.rb'
+    - 'spec/controllers/admin/tickets_controller_spec.rb'
     - 'spec/controllers/admin/tracks_controller_spec.rb'
     - 'spec/controllers/admin/users_controller_spec.rb'
     - 'spec/controllers/conference_registration_controller_spec.rb'
@@ -1155,7 +1156,6 @@ Style/StringLiterals:
     - 'config/deploy.rb'
     - 'config/environments/production.rb'
     - 'config/puma.rb'
-    - 'db/schema.rb'
     - 'lib/tasks/dump_db.rake'
     - 'lib/tasks/events_registrations.rake'
     - 'lib/tasks/factory_bot.rake'

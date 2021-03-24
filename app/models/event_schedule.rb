@@ -1,5 +1,25 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: event_schedules
+#
+#  id          :bigint           not null, primary key
+#  enabled     :boolean          default(TRUE)
+#  start_time  :datetime
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  event_id    :integer
+#  room_id     :integer
+#  schedule_id :integer
+#
+# Indexes
+#
+#  index_event_schedules_on_event_id                  (event_id)
+#  index_event_schedules_on_event_id_and_schedule_id  (event_id,schedule_id) UNIQUE
+#  index_event_schedules_on_room_id                   (room_id)
+#  index_event_schedules_on_schedule_id               (schedule_id)
+#
 class EventSchedule < ApplicationRecord
   default_scope { where(enabled: true) }
   belongs_to :schedule
@@ -27,6 +47,26 @@ class EventSchedule < ApplicationRecord
 
   delegate :guid, to: :room, prefix: true
 
+  def timezone
+    event.conference.timezone
+  end
+
+  ##
+  # True within `threshold` before and after the event.
+  #
+  def happening_now?(threshold = 30.minutes)
+    in_tz_start = start_time.in_time_zone(timezone)
+    in_tz_end = end_time.in_time_zone(timezone)
+    in_tz_start -= in_tz_start.utc_offset
+    in_tz_end -= in_tz_end.utc_offset
+    begin_range = Time.now - threshold
+    end_range = Time.now + threshold
+    event_time_range = in_tz_start..in_tz_end
+    now_range = begin_range..end_range
+    # TODO: There's probably better logic.
+    event_time_range.overlaps?(now_range) && (in_tz_end > Time.now)
+  end
+
   def self.withdrawn_or_canceled_event_schedules(schedule_ids)
     EventSchedule
       .unscoped
@@ -39,6 +79,13 @@ class EventSchedule < ApplicationRecord
   #
   def end_time
     start_time + event.event_type.length.minutes
+  end
+
+  ##
+  # Returns a time + room number string for sorting.
+  #
+  def sortable_timestamp
+    "#{start_time.to_i}-#{room&.order}"
   end
 
   ##

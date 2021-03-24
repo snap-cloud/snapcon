@@ -1,8 +1,6 @@
 Osem::Application.routes.draw do
 
-  constraints DomainConstraint do
-    get '/', to: 'conferences#show'
-  end
+  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
   if ENV['OSEM_ICHAIN_ENABLED'] == 'true'
     devise_for :users, controllers: { registrations: :registrations }
@@ -115,7 +113,11 @@ Osem::Application.routes.draw do
       end
 
       resources :resources
-      resources :tickets
+      resources :tickets do
+        member do
+          post :give
+        end
+      end
       resources :sponsors, except: [:show]
       resources :lodgings, except: [:show]
       resources :emails, only: [:show, :update, :index]
@@ -199,6 +201,7 @@ Osem::Application.routes.draw do
       end
       member do
         get :events
+        get :happening_now
       end
     end
   end
@@ -220,9 +223,17 @@ Osem::Application.routes.draw do
 
   get '/admin' => redirect('/admin/conferences')
 
+  get '/calendar' => 'conferences#calendar'
+
   unless ENV['OSEM_ROOT_CONFERENCE'].blank?
     root to: redirect("/conferences/#{ENV['OSEM_ROOT_CONFERENCE']}")
   else
     root to: 'conferences#index', via: [:get, :options]
   end
+
+  constraints DomainConstraint do
+    root to: 'conferences#show'
+  end
+
+  get '/.well-known/apple-developer-merchantid-domain-association', to: 'application#apple_pay'
 end

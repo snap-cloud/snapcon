@@ -2,25 +2,23 @@
 
 source 'https://rubygems.org'
 
-ruby ENV['OSEM_RUBY_VERSION'] || '2.5.0'
+ruby ENV['TRAVIS_RUBY_VERSION'] || '2.6.6'
 
 # rails-assets requires >= 1.8.4
 if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
   abort "Bundler version >= 1.8.4 is required"
 end
 
-# as web framework
-gem 'rails', '~> 5.2.3'
+gem 'rails', '~> 5.2'
 
 # Use Puma as the app server
-gem 'puma', '~> 3.0'
+gem 'puma', '~> 5.2'
 
 # respond_to methods have been extracted to the responders gem
 # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#responders
 gem 'responders', '~> 2.0'
 
 # as supported databases
-gem 'mysql2'
 gem 'pg'
 
 # for tracking data changes
@@ -38,8 +36,8 @@ gem 'rails-i18n'
 gem 'devise'
 gem 'devise_ichain_authenticatable'
 
-# for openID authentication
 gem 'omniauth'
+gem 'omniauth-discourse'
 gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
@@ -82,7 +80,7 @@ gem 'formtastic-bootstrap'
 
 # as the JavaScript library
 gem 'jquery-rails'
-gem 'jquery-ui-rails', '~> 4.2.1'
+gem 'jquery-ui-rails', '~> 6.0.1'
 
 # for languages validation
 gem 'iso-639'
@@ -118,7 +116,7 @@ gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
 # data tables
 gem 'ajax-datatables-rails'
-gem 'jquery-datatables-rails'
+gem 'jquery-datatables'
 
 # for charts
 gem 'chartkick'
@@ -143,8 +141,9 @@ gem 'rqrcode'
 gem 'axlsx', git: 'https://github.com/randym/axlsx.git'
 gem 'axlsx_rails'
 
-# as error catcher
-gem 'airbrake'
+gem 'sentry-delayed_job'
+gem 'sentry-rails'
+gem 'sentry-ruby'
 
 # to make links faster
 gem 'turbolinks'
@@ -157,9 +156,6 @@ gem 'font-awesome-rails'
 
 # for markdown
 gem 'redcarpet'
-
-# as rdoc generator
-gem 'rdoc-generator-fivefish'
 
 # for visitor tracking
 gem 'piwik_analytics', '~> 1.0.1'
@@ -222,23 +218,23 @@ gem 'nokogiri', '>= 1.8.1'
 # memcached binary connector
 gem 'dalli'
 
+gem 'icalendar'
+
 # Use guard and spring for testing in development
 group :development do
   # to launch specs when files are modified
   gem 'guard-rspec'
-  gem 'haml_lint'
   gem 'spring-commands-rspec'
-  # for static code analisys
-  gem 'rubocop', require: false
-  gem 'rubocop-rspec'
   # to open mails
   gem 'letter_opener'
+  # view mail at /letter_opener/
+  gem 'letter_opener_web', '~> 1.0'
   # as deployment system
   gem 'mina'
   # as debugger on error pages
   gem 'web-console'
-  # as development database
-  gem 'sqlite3'
+  # prepend models with db schema
+  gem 'annotate'
 end
 
 group :test do
@@ -247,10 +243,9 @@ group :test do
   gem 'database_cleaner'
   gem 'geckodriver-helper'
   gem 'rspec-rails'
-  gem 'transactional_capybara'
   gem 'webdrivers'
   # for measuring test coverage
-  gem 'codecov', require: false
+  gem 'simplecov-cobertura'
   # for describing models
   gem 'shoulda-matchers', require: false
   # for stubing/mocking models
@@ -271,7 +266,23 @@ group :test do
   gem 'pdf-inspector', require: "pdf/inspector"
 end
 
-group :development, :test do
+group :development, :test, :linters do
   # as debugger
   gem 'byebug'
+  gem 'pry'
+  gem 'pry-byebug'
+
+  # Linters and static analysis.
+  gem 'pronto', require: false
+  gem 'pronto-flay', require: false
+  gem 'pronto-haml', require: false
+  gem 'pronto-rubocop', require: false
+  gem 'rubocop-rspec', require: false
+
+  gem 'haml-lint', require: false
+end
+
+group :development, :test do
+  # as development/test database
+  gem 'sqlite3'
 end

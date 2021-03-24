@@ -10,6 +10,7 @@
       %thead
         %th Title
         %th Description
+        %th Instructions
         %th Length
         %th Abstract Length
         %th Color
@@ -20,7 +21,9 @@
             %td
               = event_type.title
             %td
-              = event_type.description
+              = markdown(event_type.description)
+            %td
+              = markdown(event_type.submission_instructions)
             %td
               = event_type.length
               Minutes

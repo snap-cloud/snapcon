@@ -1,6 +1,27 @@
 # frozen_string_literal: true
 
-# cannot delete program if there are events submitted
+# == Schema Information
+#
+# Table name: programs
+#
+#  id                   :bigint           not null, primary key
+#  blind_voting         :boolean          default(FALSE)
+#  languages            :string
+#  rating               :integer          default(0)
+#  schedule_fluid       :boolean          default(FALSE)
+#  schedule_interval    :integer          default(15), not null
+#  schedule_public      :boolean          default(FALSE)
+#  voting_end_date      :datetime
+#  voting_start_date    :datetime
+#  created_at           :datetime
+#  updated_at           :datetime
+#  conference_id        :integer
+#  selected_schedule_id :integer
+#
+# Indexes
+#
+#  index_programs_on_selected_schedule_id  (selected_schedule_id)
+#
 
 class Program < ApplicationRecord
   has_paper_trail on: [:update], ignore: [:updated_at], meta: { conference_id: :conference_id }
@@ -20,7 +41,7 @@ class Program < ApplicationRecord
     end
 
     def with_registration_open
-      select { |e| e if e.registration_possible? }
+      select { |e| e if e.registration_possible? }.sort
     end
 
     # All confirmed events of the conference with attribute require_registration
@@ -85,7 +106,7 @@ class Program < ApplicationRecord
 
       event_schedules += track.selected_schedule.event_schedules
     end
-    event_schedules.sort_by(&:start_time)
+    event_schedules.sort_by(&:sortable_timestamp)
   end
 
   ##

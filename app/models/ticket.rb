@@ -1,5 +1,20 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: tickets
+#
+#  id                  :bigint           not null, primary key
+#  description         :text
+#  price_cents         :integer          default(0), not null
+#  price_currency      :string           default("USD"), not null
+#  registration_ticket :boolean          default(FALSE)
+#  title               :string           not null
+#  visible             :boolean          default(TRUE)
+#  created_at          :datetime
+#  updated_at          :datetime
+#  conference_id       :integer
+#
 class Ticket < ApplicationRecord
   belongs_to :conference
   has_many :ticket_purchases, dependent: :destroy
@@ -19,6 +34,8 @@ class Ticket < ApplicationRecord
   validates :price_cents, :price_currency, :title, presence: true
 
   validates :price_cents, numericality: { greater_than_or_equal_to: 0 }
+
+  scope :visible, -> { where(visible: true) }
 
   def bought?(user)
     buyers.include?(user)

@@ -9,9 +9,9 @@
           -if @conference.venue
             at
             %strong
-              = "#{@conference.venue.name},"
-            = "#{@conference.venue.street},"
-            = "#{@conference.venue.city} / #{@conference.venue.country_name}."
+              = "#{@conference.venue_name},"
+            = "#{@conference.venue_street},"
+            = "#{@conference.city} / #{@conference.country_name}."
           %small
             = date_string(@conference.start_date, @conference.end_date)
   - unless @conference.code_of_conduct.blank?
@@ -33,28 +33,6 @@
                 data: { toggle: 'modal', target: '#modal-code-of-conduct'}
           = render 'conferences/code_of_conduct',
             organization: @conference.organization
-  .row
-    .col-md-12
-      %h4
-        %span.fa-stack
-          %i.fa.fa-square-o.fa-stack-2x
-          %i.fa.fa-plane.fa-stack-1x
-        Travel Schedule
-      %ul
-        %li
-          - if @registration.arrival.present?
-            arrive at
-            %strong
-              = @registration.arrival.strftime('%A, %B %-d. %Y %H:%M')
-          - else
-            You haven't scheduled your arrival
-        %li
-          - if @registration.departure.present?
-            depart at
-            %strong
-              = @registration.departure.strftime('%A, %B %-d. %Y %H:%M')
-          - else
-            You haven't scheduled your departure
   - if @conference.surveys.for_registration.any?
     .row
       .col-md-12
@@ -94,7 +72,7 @@
               = link_to event.title, conference_program_proposal_path(@conference.short_title, event.id)
               = '(' + registered_text(event) + ')'
 
-  - if @conference.tickets.any?
+  - if @conference.tickets.visible.any?
     .row
       .col-md-12
         %h4
@@ -167,7 +145,7 @@
           Registered
           = word_pluralize(@conference.participants.count, 'Attendee')
         - @conference.participants.each do |participant|
-          = link_to image_tag(participant.gravatar_url(size: '25'), title: "#{participant.name}!", class: 'img-circle'), user_path(participant)
+          = link_to image_tag(participant.profile_picture(size: '25'), title: "#{participant.name}!", class: 'img-circle'), user_path(participant)
     .col-md-4.col-md-offset-2
       - if @conference.program.speakers.confirmed.any?
         %h4
@@ -178,4 +156,4 @@
           Confirmed
           = word_pluralize(@conference.program.speakers.confirmed.count, 'Speaker')
         - @conference.program.speakers.confirmed.each do |speaker|
-          = link_to image_tag(speaker.gravatar_url(size: '25'), title: "#{speaker.name}!", class: 'img-circle'), user_path(speaker)
+          = link_to image_tag(speaker.profile_picture(size: '25'), title: "#{speaker.name}!", class: 'img-circle'), user_path(speaker)

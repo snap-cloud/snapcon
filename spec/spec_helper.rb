@@ -3,9 +3,9 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'simplecov'
 
-if ENV['TRAVIS']
-  require 'codecov'
-  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+if ENV['GITHUB_ACTIONS'] || ENV['TRAVIS']
+  require 'simplecov-cobertura'
+  SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 SimpleCov.start 'rails'
 
@@ -19,9 +19,6 @@ require 'webdrivers'
 # To avoid confusion on missed migrations - use Rails 4 checker to ensure
 # all migrations applied
 ActiveRecord::Migration.maintain_test_schema!
-
-# Keep capybara and the database on the same page
-require 'transactional_capybara/rspec'
 
 # Adds rspec helper provided by paper_trail
 # makes it easier to control when PaperTrail is enabled during testing.
@@ -49,10 +46,8 @@ RSpec.configure do |config|
   # config.mock_with :flexmock
   # config.mock_with :rr
 
-  # If you're not using ActiveRecord, or you'd prefer not to run each of your
-  # examples within a transaction, remove the following line or assign false
-  # instead of true.
-  config.use_transactional_fixtures = false
+  # Test within database transactions
+  config.use_transactional_examples = true
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
@@ -78,12 +73,12 @@ RSpec.configure do |config|
   end
 
   Capybara.register_driver :chrome_headless do |app|
-    capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
-      chromeOptions: { args: %w(headless disable-gpu window-size=1920x1080 no-sandbox) }
-    )
-    Capybara::Selenium::Driver.new(
-      app, browser: :chrome, desired_capabilities: capabilities
-    )
+    options = ::Selenium::WebDriver::Chrome::Options.new
+    options.args << '--window-size=1920x1080'
+    options.args << '--headless'
+    options.args << '--no-sandbox'
+    options.args << '--disable-gpu'
+    Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
   end
 
   Capybara.default_max_wait_time = 10 # seconds
@@ -125,6 +120,9 @@ RSpec.configure do |config|
   # use the config to use
   # t('some.locale.key') instead of always having to type I18n.t
   config.include AbstractController::Translation
+
+  # enable debugging with --only-failures
+  config.example_status_persistence_file_path = 'tmp/spec_failures.txt'
 end
 
 OmniAuth.config.test_mode = true

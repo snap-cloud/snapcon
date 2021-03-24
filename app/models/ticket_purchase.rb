@@ -1,5 +1,20 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: ticket_purchases
+#
+#  id            :bigint           not null, primary key
+#  amount_paid   :float            default(0.0)
+#  paid          :boolean          default(FALSE)
+#  quantity      :integer          default(1)
+#  week          :integer
+#  created_at    :datetime
+#  conference_id :integer
+#  payment_id    :integer
+#  ticket_id     :integer
+#  user_id       :integer
+#
 class TicketPurchase < ApplicationRecord
   belongs_to :ticket
   belongs_to :user
@@ -32,7 +47,7 @@ class TicketPurchase < ApplicationRecord
       errors.push('You cannot buy more than one registration tickets.')
     else
       ActiveRecord::Base.transaction do
-        conference.tickets.each do |ticket|
+        conference.tickets.visible.each do |ticket|
           quantity = purchases[ticket.id.to_s].to_i
           # if the user bought the ticket and is still unpaid, just update the quantity
           purchase = if ticket.bought?(user) && ticket.unpaid?(user)
@@ -105,6 +120,9 @@ def set_week
 end
 
 def count_purchased_registration_tickets(conference, purchases)
+  # TODO: WHAT CAUSED THIS???
+  return 0 unless purchases
+
   conference.tickets.for_registration.inject(0) do |sum, registration_ticket|
     sum + purchases[registration_ticket.id.to_s].to_i
   end

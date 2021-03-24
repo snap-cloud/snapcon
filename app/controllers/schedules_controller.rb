@@ -22,6 +22,12 @@ class SchedulesController < ApplicationController
       format.xml do
         @events_xml = event_schedules.map(&:event).group_by{ |event| event.time.to_date } if event_schedules
       end
+      format.ics do
+        cal = Icalendar::Calendar.new
+        cal = icalendar_proposals(cal, event_schedules.map(&:event), @conference)
+        cal.publish
+        render inline: cal.to_ical
+      end
 
       format.html do
         @rooms = @conference.venue.rooms if @conference.venue
@@ -67,6 +73,14 @@ class SchedulesController < ApplicationController
 
     day = @conference.current_conference_day
     @tag = day.strftime('%Y-%m-%d') if day
+  end
+
+  def happening_now
+    @events_schedules = @program.selected_event_schedules(
+      includes: [:room, { event: %i[track event_type speakers submitter] }]
+    ).select(&:happening_now?)
+    @events_schedules = [] unless @events_schedules
+    @current_time = Time.now.in_time_zone(@conference.timezone)
   end
 
   def app

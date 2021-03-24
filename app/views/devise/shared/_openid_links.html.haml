@@ -1,7 +1,23 @@
 .text-center
   .btn-group.btn-group-lg#openid-btn-grp
     - omniauth_configured.each do |provider|
-      = link_to "user_#{provider}_omniauth_authorize".to_sym, class: "btn btn-success btn-lg",
-                                                        id: "omniauth-#{provider}",
-                                                        title: "Your #{provider} login" do
-        %i{class: "fa fa-#{provider}"}
+      - if provider != :discourse
+        = link_to "user_#{provider}_omniauth_authorize".to_sym, class: "btn btn-success btn-lg",
+                                                          id: "omniauth-#{provider}",
+                                                          title: "Your #{provider} login" do
+          -# %i{class: "fa fa-#{provider}"}
+          = provider.capitalize
+      - else
+        = link_to("user_#{provider}_omniauth_authorize".to_sym,
+                  class: "btn btn-success btn-lg",
+                  id: "omniauth-#{provider}",
+                  title: "Your #{provider} login") do
+          %span
+            Snap
+            %em> !
+%br
+.text-center
+  %em If you are not currently logged into Snap! or the Snap! Forums, you will need to log in to
+  Snap!Con twice when using your Snap! account. We're working on fixing this. Thanks!
+
+%br

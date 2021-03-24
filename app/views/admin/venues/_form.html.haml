@@ -7,14 +7,14 @@
     %li.active
       = link_to 'Details', '#details-content', 'data-toggle' => 'tab'
     %li
-      = link_to 'Commercials', '#commercials-content', 'data-toggle' => 'tab'
+      = link_to 'Materials', '#commercials-content', 'data-toggle' => 'tab'
 
   .tab-content
     #details-content.tab-pane.active
       .col-md-8
         = semantic_form_for(@venue, url: admin_conference_venue_path(@conference.short_title)) do |f|
           = f.inputs :name, :website
-          = f.input :description, input_html: { rows: 5, cols: 20, data: { provide: 'markdown-editable' } }, hint: markdown_hint
+          = f.input :description, input_html: { rows: 5, cols: 20, data: { provide: 'markdown' } }, hint: markdown_hint
           = f.label 'Venue Logo'
           %br
           - if @venue.picture?
@@ -56,4 +56,4 @@
             %hr
 
       - else
-        First Create Venue, then update commercial
+        First Create Venue, then update materials

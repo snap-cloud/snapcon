@@ -1,5 +1,51 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: users
+#
+#  id                     :bigint           not null, primary key
+#  affiliation            :string
+#  avatar_content_type    :string
+#  avatar_file_name       :string
+#  avatar_file_size       :integer
+#  avatar_updated_at      :datetime
+#  biography              :text
+#  confirmation_sent_at   :datetime
+#  confirmation_token     :string
+#  confirmed_at           :datetime
+#  current_sign_in_at     :datetime
+#  current_sign_in_ip     :string
+#  email                  :string           default(""), not null
+#  email_public           :boolean          default(FALSE)
+#  encrypted_password     :string           default(""), not null
+#  is_admin               :boolean          default(FALSE)
+#  is_disabled            :boolean          default(FALSE)
+#  languages              :string
+#  last_sign_in_at        :datetime
+#  last_sign_in_ip        :string
+#  mobile                 :string
+#  name                   :string
+#  nickname               :string
+#  picture                :string
+#  remember_created_at    :datetime
+#  reset_password_sent_at :datetime
+#  reset_password_token   :string
+#  sign_in_count          :integer          default(0)
+#  tshirt                 :string
+#  unconfirmed_email      :string
+#  username               :string
+#  volunteer_experience   :text
+#  created_at             :datetime
+#  updated_at             :datetime
+#
+# Indexes
+#
+#  index_users_on_confirmation_token    (confirmation_token) UNIQUE
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#  index_users_on_username              (username) UNIQUE
+#
 class IChainRecordNotFound < StandardError
 end
 
@@ -23,8 +69,12 @@ class User < ApplicationRecord
   has_paper_trail on: [:create, :update], ignore: [:sign_in_count, :remember_created_at, :current_sign_in_at, :last_sign_in_at, :current_sign_in_ip, :last_sign_in_ip, :unconfirmed_email,
                                                    :avatar_content_type, :avatar_file_size, :avatar_updated_at, :updated_at, :confirmation_sent_at, :confirmation_token, :reset_password_token]
 
+  # A user may have an uploaded avatar or use gravatar.
+  # The uploaded picture takes precedence.
   include Gravtastic
   gravtastic size: 32
+
+  mount_uploader :picture, PictureUploader, mount_on: :picture
 
   before_create :setup_role
 
@@ -50,7 +100,9 @@ class User < ApplicationRecord
                     else
                       [:database_authenticatable, :registerable,
                        :recoverable, :rememberable, :trackable, :validatable, :confirmable,
-                       :omniauthable, omniauth_providers: [:suse, :google, :facebook, :github]]
+                       :omniauthable,
+                       omniauth_providers: [:suse, :google, :facebook, :github, :discourse]]
+                      #  omniauth_providers: [:google, :discourse]
                     end
 
   devise(*devise_modules)
@@ -150,6 +202,22 @@ class User < ApplicationRecord
     ticket_purchases.find_by(conference_id: conference.id).present?
   end
 
+  ##
+  # Returns a user's profile picture URL.
+  # Partials should *not* directly call `gravatar_url`
+  def profile_picture(opts = {})
+    return gravatar_url(opts) unless picture.present?
+
+    size = (opts[:size] || 0).to_i
+    if size < 50
+      picture.tiny.url
+    elsif size <= 100
+      picture.thumb.url
+    else
+      picture.large.url
+    end
+  end
+
   def self.for_ichain_username(username, attributes)
     user = find_by(username: username)
 
@@ -236,6 +304,12 @@ class User < ApplicationRecord
     result
   end
 
+  # TODO: Use a real authorization in the right place....
+  def manages_volunteers?(conference)
+    organizer_roles = get_roles['organizer']
+    organizer_roles&.include?(conference.short_title) # TODO: or Volunteer Coorinator.
+  end
+
   def registered
     registrations = self.registrations
     if registrations.count == 0
@@ -268,6 +342,21 @@ class User < ApplicationRecord
 
   def proposal_count(conference)
     proposals(conference).count
+  end
+
+  def volunteer_duties(conference)
+    events.where(program_id: conference.program.id, 'event_users.event_role': 'volunteer')
+  end
+
+  def count_registration_tickets(conference)
+    count = 0
+    ticket_purchases.by_conference(conference).each do |ticket_purchase|
+      if ticket_purchase.ticket.registration_ticket
+        count += 1
+      end
+    end
+
+    count
   end
 
   def self.empty?

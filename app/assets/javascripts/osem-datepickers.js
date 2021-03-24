@@ -1,5 +1,3 @@
-// get current_date
-var today = new Date().toISOString().slice(0, 10);
 $(function () {
   $("input[id^='datetimepicker']").datetimepicker({
     useCurrent: false,
@@ -13,64 +11,28 @@ $(function () {
     format: 'YYYY-MM-DD HH:mm'
   });
 
-  $("#registration-arrival-datepicker").datetimepicker({
-      useCurrent: false,
-      stepping: 15,
-      sideBySide: true,
-      format: "YYYY-MM-DD HH:mm",
-      // current_date <= arrival_date <= end_date
-      maxDate : $("#registration-arrival-datepicker").attr('end_date'),
-      minDate : today
-  });
-
-  $("#registration-departure-datepicker").datetimepicker({
-      useCurrent: false,
-      stepping: 15,
-      sideBySide: true,
-      format: "YYYY-MM-DD HH:mm",
-      // departure_date > start_date
-      minDate : $("#registration-arrival-datepicker").attr('start_date')
-  });
-
-  $("#registration-arrival-datepicker").on("dp.change",function (e) {
-      // departure_date > start_date,arrival_date
-      if ((new Date(e.date).getTime()) > (new Date($("#registration-arrival-datepicker").attr('start_date')).getTime())){
-            $('#registration-departure-datepicker').data("DateTimePicker").minDate(e.date);
-      }
-      else{
-          $('#registration-departure-datepicker').data("DateTimePicker").minDate($("#registration-arrival-datepicker").attr('start_date'));
-      }
-  });
-
-  // departure_date >= arrival_date
-   $("#registration-departure-datepicker").on("dp.change",function (e) {
-       $('#registration-arrival-datepicker').data("DateTimePicker").maxDate(e.date);
-   });
-
    $("#conference-start-datepicker").datetimepicker({
        useCurrent: false,
+       ignoreReadonly: true,
        format: "YYYY-MM-DD",
-       // conference-start-day >= Current_date
-       minDate : today
    });
 
    $("#conference-end-datepicker").datetimepicker({
        useCurrent: false,
+       ignoreReadonly: true,
        format: "YYYY-MM-DD"
    });
 
-   // today <= start_registration <= end_registration <= end_conference
+   // start_registration <= end_registration <= end_conference
    var end_conference = $('form').data('end-conference');
 
    $('#registration-period-start-datepicker').datetimepicker({
        format: 'YYYY-MM-DD',
-       minDate : today,
        maxDate : end_conference
    });
 
    $('#registration-period-end-datepicker').datetimepicker({
        format: 'YYYY-MM-DD',
-       minDate : today,
        maxDate : end_conference
    });
 

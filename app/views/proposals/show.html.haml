@@ -4,51 +4,53 @@
   %meta{ property: "og:description", content: @event.abstract }
   %meta{ property: "og:site_name", content: (ENV['OSEM_NAME'] || 'OSEM') }
   - if @speakers_ordered.any?
-    %meta{ property: "og:image", content: @speakers_ordered.first.gravatar_url }
-    %meta{ property: "og:image:secure_url", content: @speakers_ordered.first.gravatar_url }
+    %meta{ property: "og:image", content: @speakers_ordered.first.profile_picture }
+    %meta{ property: "og:image:secure_url", content: @speakers_ordered.first.profile_picture }
+
+= content_for :splash_nav do
+  %li
+    = link_to('Schedule', events_conference_schedule_path(@conference))
 
 .container
-  .row
-    .col-md-12.page-header
+  .row.page-header
+    .col-md-8
       %h2
         = @event.title
         - if @event.subtitle
           %br
           %small
             = @event.subtitle
-        .btn-group.pull-right
-          - if can? :update, @event
-            = link_to 'Registrations', registrations_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-success'
-          - if can? :edit, @event
-            = link_to "Edit", edit_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-primary'
-          - if can? :schedule, @conference
-            = link_to "Schedule", conference_schedule_path(@conference.short_title), class: 'btn btn-success'
+      %h3
+        = join_event_link(@event, current_user)
+    .col-md-4
+      %p{style: "margin-top: 20px"}
+        - if @event_schedule&.start_time
+          = link_to google_calendar_link(@event_schedule), target: '_blank', class: 'btn btn-success btn-mini' do
+            %i.fa.fa-calendar
+            Add to Google Calendar (beta)
+        - if can?(:update, @event) && @event.require_registration?
+          = link_to 'Registrations', registrations_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-success'
+        - if can?(:edit, @event)
+          = link_to "Edit", edit_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-primary'
+        - if can? :schedule, @conference
+          = link_to "Schedule", conference_schedule_path(@conference.short_title), class: 'btn btn-success'
 
   .row
     .col-md-3
-      %h3
-      - if event.speakers.any?
-        Presented by:
+      - if @event.speakers.any?
+        %h3
+          Presented by:
         - @speakers_ordered.each do |speaker|
-          .speakerinfo
-            .row
-              .col-md-4
-                = image_tag speaker.gravatar_url(:size => 120), class: 'img-responsive img-rounded'
-              .col-md-8
-                %h4
-                  = link_to speaker.name, user_path(speaker.id)
-                  %br
-                  - if speaker.email_public?
-                    = mail_to "#{ speaker.email }" do
-                      %i.fa.fa-envelope-o.fa-2x
-                - if speaker.affiliation?
-                  .text-muted
-                    from
-                    = speaker.affiliation
-            -if speaker.biography?
-              .row.speakerbio
-                .col-md-12
-                  = markdown(speaker.biography)
+          = render 'speaker_info', speaker: speaker
+      / end speakers.
+      - if @event.volunteers.any?
+        %h3
+          Volunteer Hosts
+          %br
+          %small Thanks for helping with #{@conference.title}!
+        - @event.volunteers.each do |volunteer|
+          = render 'volunteer_info', speaker: volunteer, show_bio: false
+
     .col-md-9
       .row
         .col-md-12
@@ -58,7 +60,7 @@
 
           - if @event.commercials.empty?
             %h5.text-warning
-              No video of the event yet, sorry!
+              No materials for the event yet, sorry!
               - unless @conference.commercials.empty?
                 Meanwhile...
             - unless @conference.commercials.empty?
@@ -73,7 +75,12 @@
         %dl#proposal-info
           .col-md-12
             %dt Date:
-            %dd= @event_schedule.start_time.strftime("%Y %B %e - %H:%M") if @event_schedule
+            %dd
+              - if @event_schedule.present?
+                = inyourtz(@event_schedule.start_time, @conference.timezone) do
+                  = @event_schedule.start_time.strftime("%Y %B %e - %H:%M") if @event_schedule
+              - else
+                Unscheduled
           .col-md-12
             %dt Duration:
             %dd= show_time(@event.event_type.length)
@@ -85,19 +92,20 @@
           .col-md-12
             %dt Conference:
             %dd= link_to @event.program.conference.title, conference_path(@conference)
-          .col-md-12
-            %dt Language:
-            %dd= @event.language if @event.language
-          .col-md-12
-            %dt Track:
-            %dd
-              - if @event.track
+          - if @event.language
+            .col-md-12
+              %dt Language:
+              %dd= @event.language
+          - if @event.track
+            .col-md-12
+              %dt Track:
+              %dd
                 %span.label{style: "background-color: #{@event.track.color}; color: #{ contrast_color(@event.track.color) }"}
                   = @event.track.name
-          .col-md-12
-            %dt Difficulty:
-            %dd
-              - if @event.difficulty_level
+          - if @event.difficulty_level
+            .col-md-12
+              %dt Difficulty:
+              %dd
                 %span.label{style: "background-color: #{@event.difficulty_level.color}; color: #{ contrast_color(@event.difficulty_level.color) };"}
                   = @event.difficulty_level.title
 
@@ -118,7 +126,9 @@
                   %dl
                     %dt Start Time:
                     %dd
-                      = event.program.selected_event_schedules.find { |es| es.event == event }.start_time.strftime("%Y %B %e %H:%M")
+                      - event_schedule = event.program.selected_event_schedules.find { |es| es.event == event }
+                      = inyourtz(event_schedule.start_time, @conference.timezone) do
+                        = event_schedule.start_time.strftime("%Y %B %e %H:%M")
                     %br
                       %dt Room:
                       %dd

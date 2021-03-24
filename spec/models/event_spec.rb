@@ -1,5 +1,35 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: events
+#
+#  id                           :bigint           not null, primary key
+#  abstract                     :text
+#  comments_count               :integer          default(0), not null
+#  description                  :text
+#  guid                         :string           not null
+#  is_highlight                 :boolean          default(FALSE)
+#  language                     :string
+#  max_attendees                :integer
+#  progress                     :string           default("new"), not null
+#  proposal_additional_speakers :text
+#  public                       :boolean          default(TRUE)
+#  require_registration         :boolean
+#  start_time                   :datetime
+#  state                        :string           default("new"), not null
+#  submission_text              :text
+#  subtitle                     :string
+#  title                        :string           not null
+#  week                         :integer
+#  created_at                   :datetime
+#  updated_at                   :datetime
+#  difficulty_level_id          :integer
+#  event_type_id                :integer
+#  program_id                   :integer
+#  room_id                      :integer
+#  track_id                     :integer
+#
 require 'spec_helper'
 
 describe Event do
@@ -74,6 +104,21 @@ describe Event do
       context 'is valid' do
         it 'when abstract length is within limits' do
           event.abstract = 'Test abstract'
+          expect(event.valid?).to eq true
+          expect(event.errors.size).to eq 0
+        end
+      end
+    end
+
+    describe '#submission_limit' do
+      before :each do
+        event.event_type.maximum_abstract_length = 3
+        event.event_type.minimum_abstract_length = 2
+      end
+
+      context 'is valid' do
+        it 'when submission text is within limts' do
+          event.abstract = 'the magic three'
           expect(event.valid?).to eq true
           expect(event.errors.size).to eq 0
         end

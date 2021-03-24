@@ -6,6 +6,8 @@ class PictureUploader < CarrierWave::Uploader::Base
   include CarrierWave::Compatibility::Paperclip
   include CarrierWave::BombShelter
 
+  storage :file
+
   # use cloudinary if it's configured
   if Cloudinary.config.cloud_name
     # use https by default
@@ -60,6 +62,10 @@ class PictureUploader < CarrierWave::Uploader::Base
 
   version :thumb, from_version: :large do
     process resize_to_fit: [100, 100]
+  end
+
+  version :tiny do
+    process resize_to_fit: [32, 32]
   end
 
   version :first, if: :sponsor?

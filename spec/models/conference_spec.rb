@@ -1,7 +1,71 @@
-#!/bin/env ruby
 # encoding: utf-8
 # frozen_string_literal: true
+
+# == Schema Information
+#
+# Table name: conferences
+#
+#  id                 :bigint           not null, primary key
+#  booth_limit        :integer          default(0)
+#  color              :string
+#  custom_css         :text
+#  custom_domain      :string
+#  description        :text
+#  end_date           :date             not null
+#  end_hour           :integer          default(20)
+#  events_per_week    :text
+#  guid               :string           not null
+#  logo_file_name     :string
+#  picture            :string
+#  registration_limit :integer          default(0)
+#  revision           :integer          default(0), not null
+#  short_title        :string           not null
+#  start_date         :date             not null
+#  start_hour         :integer          default(9)
+#  ticket_layout      :integer          default("portrait")
+#  timezone           :string           not null
+#  title              :string           not null
+#  use_vdays          :boolean          default(FALSE)
+#  use_volunteers     :boolean
+#  use_vpositions     :boolean          default(FALSE)
+#  created_at         :datetime
+#  updated_at         :datetime
+#  organization_id    :integer
+#
+# Indexes
+#
+#  index_conferences_on_organization_id  (organization_id)
+#
+# !/bin/env ruby
 require 'spec_helper'
+
+context 'Delegation' do
+  subject do
+    FactoryBot.create(:conference, start_date: 1.month.from_now, end_date: 2.month.from_now)
+  end
+
+  context 'Venue' do
+    context 'when venue has not been set' do
+      it 'the accessors should be nil' do
+        expect(subject.city).to eq(nil)
+        expect(subject.country_name).to eq(nil)
+        expect(subject.venue_name).to eq(nil)
+        expect(subject.venue_street).to eq(nil)
+      end
+    end
+
+    context 'when venue has been set' do
+      it 'should delegate to venue' do
+        venue = FactoryBot.create(:venue)
+        subject.update(venue: venue)
+        expect(subject.city).to eq(venue.city)
+        expect(subject.country_name).to eq(venue.country_name)
+        expect(subject.venue_name).to eq(venue.name)
+        expect(subject.venue_street).to eq(venue.street)
+      end
+    end
+  end
+end
 
 describe Conference do
 
@@ -165,7 +229,7 @@ describe Conference do
   end
 
   describe '#get_submissions_data' do
-    it 'returns emtpy hash if there is no cfp or events' do
+    it 'returns empty hash if there is no cfp or events' do
       expect(subject.get_submissions_data).to eq []
     end
 
