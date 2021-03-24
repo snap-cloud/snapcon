@@ -258,6 +258,7 @@ ActiveRecord::Schema.define(version: 2021_03_06_185903) do
     t.integer "program_id"
     t.integer "max_attendees"
     t.integer "comments_count", default: 0, null: false
+    t.text "committee_review"
     t.text "submission_text"
   end
 
@@ -269,8 +270,10 @@ ActiveRecord::Schema.define(version: 2021_03_06_185903) do
   end
 
   create_table "events_users", id: false, force: :cascade do |t|
-    t.integer "event_id"
-    t.integer "user_id"
+    t.bigint "event_id"
+    t.bigint "user_id"
+    t.index ["event_id"], name: "index_events_users_on_event_id"
+    t.index ["user_id"], name: "index_events_users_on_user_id"
   end
 
   create_table "lodgings", force: :cascade do |t|
