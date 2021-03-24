@@ -90,6 +90,7 @@ class ProposalsController < ApplicationController
   end
 
   def toggle_favorite
+    # TODO: USE CURRENT USER
     user = User.find(params[:favourite_user_id])
     users = @event.favourite_users
     if users.include? user
