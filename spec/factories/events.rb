@@ -35,7 +35,7 @@
 FactoryBot.define do
   factory :event do
     title { Faker::Hipster.sentence }
-    abstract { Faker::Hipster.paragraph(2) }
+    abstract { Faker::Hipster.paragraph(sentence_count: 2) }
 
     program
 
