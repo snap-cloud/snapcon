@@ -115,8 +115,7 @@ class Program < ApplicationRecord
   # * +true+ -> If we can show voting details
   # * +false+ -> If we cannot show voting details
   def show_voting?
-    return true unless blind_voting
-
+    !blind_voting
     # TODO-SNAPCON: UPDATE TESTS
     # Time.current > voting_end_date
   end
