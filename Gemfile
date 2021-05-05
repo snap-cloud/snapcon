@@ -279,13 +279,13 @@ group :development, :test, :linters do
   gem 'pry-byebug'
 
   # Linters and static analysis.
+  gem 'haml-lint', require: false
   gem 'pronto', require: false
   gem 'pronto-flay', require: false
   gem 'pronto-haml', require: false
   gem 'pronto-rubocop', require: false
   gem 'rubocop-faker', require: false
   gem 'rubocop-rspec', require: false
-  gem 'haml-lint', require: false
 end
 
 group :development, :test do
