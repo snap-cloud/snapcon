@@ -220,6 +220,14 @@ class Program < ApplicationRecord
     Cfp::TYPES - cfps.pluck(:cfp_type)
   end
 
+  def event_schedule_for_fullcalendar
+    Rails.cache.fetch("#{cache_key_with_version}/fullcalendar") do
+      selected_event_schedules(
+        includes: [{ event: %i[event_type speakers submitter] }]
+      )
+    end
+  end
+
   private
 
   ##

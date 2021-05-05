@@ -16,7 +16,7 @@
 #  index_schedules_on_track_id    (track_id)
 #
 class Schedule < ApplicationRecord
-  belongs_to :program
+  belongs_to :program, touch: true
   belongs_to :track
   has_many :event_schedules, dependent: :destroy
   has_many :events, through: :event_schedules
