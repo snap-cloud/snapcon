@@ -368,11 +368,6 @@ class User < ApplicationRecord
     User.count == 1 && User.first.email == 'deleted@localhost.osem'
   end
 
-  # TODO: email_hash function for mailbluster
-  # def email_hash
-  #   Digest::MD5.hexdigest user.email
-  # end
-
   private
 
   def setup_role
