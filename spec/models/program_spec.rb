@@ -119,10 +119,9 @@ describe Program do
         expect(program.show_voting?).to eq true
       end
 
-      # TODO-SNAPCON: This should be updated / removed.
       it 'returns false if we are still in votig period' do
         program.voting_end_date = Date.today + 1
-        expect(program.show_voting?).to eq true
+        expect(program.show_voting?).to eq false
       end
     end
   end
