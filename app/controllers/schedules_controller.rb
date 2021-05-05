@@ -83,9 +83,7 @@ class SchedulesController < ApplicationController
     # the schedule takes you to today if it is a date of the schedule
     current_day = @conference.current_conference_day
     @day = current_day.present? ? current_day : dates.first
-    event_schedules = @program.selected_event_schedules(
-      includes: [{ event: %i[event_type speakers submitter] }]
-    )
+    event_schedules = @program.event_schedule_for_fullcalendar
 
     unless event_schedules
       redirect_to events_conference_schedule_path(@conference.short_title)

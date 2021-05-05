@@ -22,7 +22,7 @@
               - if conference.splashpage && conference.splashpage.public
                 = link_to "View Conference", conference_path(conference.short_title), class: 'btn btn-default'
             - if conference.program and conference.program.schedule_public
-              = link_to "Schedule", conference_schedule_path(conference.short_title), class: 'btn btn-default'
+              = link_to "Schedule", vertical_schedule_conference_schedule_path(conference.short_title), class: 'btn btn-default'
             - unless conference.code_of_conduct.blank?
               = link_to "Code of Conduct",
                 [:code_of_conduct, conference.organization],

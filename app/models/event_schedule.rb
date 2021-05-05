@@ -22,7 +22,7 @@
 #
 class EventSchedule < ApplicationRecord
   default_scope { where(enabled: true) }
-  belongs_to :schedule
+  belongs_to :schedule, touch: true
   belongs_to :event
   belongs_to :room
 
