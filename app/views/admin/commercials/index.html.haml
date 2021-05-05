@@ -4,7 +4,7 @@
       %h1 #{@conference.title} Materials
       %p.text-muted
         Conference materials will be displayed on the events in the
-        = link_to 'schedule,', vertical_conference_schedule_path(@conference.short_title)
+        = link_to 'schedule,', vertical_schedule_conference_schedule_path(@conference.short_title)
         if the event speaker didn't add any event materials.
 - if can? :create, @conference.commercials.new
   .row
