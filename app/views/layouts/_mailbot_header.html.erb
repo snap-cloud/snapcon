@@ -22,7 +22,8 @@
           <% if false && @conference.present? %>
             <%= image_tag(conference_logo_url(@conference), style: "display:block;height:70px;width:auto;", alt: "#{@conference.title} logo") %>
           <% else %>
-            <%= image_tag(Organization.first.picture_url, style: "display:block;height:70px;width:auto;", alt: "#{ENV['OSEM_NAME']} logo") %>
+            <%- image_url = Organization.first&.picture_url || 'assets/images/snapcon_logo.png' %>
+            <%= image_tag(image_url, style: "display:block;height:70px;width:auto;", alt: "#{ENV['OSEM_NAME']} logo") %>
           <% end %>
         </div>
       </div>
