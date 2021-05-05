@@ -283,8 +283,8 @@ group :development, :test, :linters do
   gem 'pronto-flay', require: false
   gem 'pronto-haml', require: false
   gem 'pronto-rubocop', require: false
+  gem 'rubocop-faker', require: false
   gem 'rubocop-rspec', require: false
-
   gem 'haml-lint', require: false
 end
 
