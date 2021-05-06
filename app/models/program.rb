@@ -110,14 +110,13 @@ class Program < ApplicationRecord
   end
 
   ##
-  # Checks if blind_voting is enabled and if voting period is over
+  # Checks if blind_voting is enabled or if voting period is over
   # ====Returns
   # * +true+ -> If we can show voting details
   # * +false+ -> If we cannot show voting details
   def show_voting?
-    return true unless blind_voting
-
-    Time.current > voting_end_date
+    # TODO-SNAPCON: Figure out if this is the best behavior?
+    !blind_voting || Time.current > voting_end_date
   end
 
   ##
@@ -195,6 +194,7 @@ class Program < ApplicationRecord
   # * +True+ -> If there is any event for the given date
   # * +False+ -> If there is not any event for the given date
   def any_event_for_this_date?(date)
+    return false if date.nil? || date == ''
     return false unless selected_schedule.present?
 
     parsed_date = DateTime.parse("#{date} 00:00").utc
@@ -218,6 +218,14 @@ class Program < ApplicationRecord
   # * +Array+ -> The types of cfps for which a cfp doesn't exist yet
   def remaining_cfp_types
     Cfp::TYPES - cfps.pluck(:cfp_type)
+  end
+
+  def event_schedule_for_fullcalendar
+    Rails.cache.fetch("#{cache_key_with_version}/fullcalendar") do
+      selected_event_schedules(
+        includes: [{ event: %i[event_type speakers submitter] }]
+      )
+    end
   end
 
   private

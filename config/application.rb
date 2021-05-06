@@ -66,6 +66,12 @@ module Osem
 
     config.active_job.queue_adapter = :delayed_job
 
+    config.conference = {
+      events_per_page:       (ENV['EVENTS_PER_PAGE'] || 3),
+      default_logo_filename: (ENV['DEFAULT_LOGO_FILENAME'] || 'snapcon_logo.png'),
+      default_color:         (ENV['DEFAULT_COLOR'] || '#0B3559')
+    }
+
     config.before_configuration do
       env_file = File.join(Rails.root, 'config', 'local_env.yml')
       if File.exist?(env_file)
@@ -74,5 +80,11 @@ module Osem
         end
       end
     end
+
+    config.assets.paths << Rails.root.join('node_modules')
+
+    config.fullcalendar = {
+      license_key: ENV['FULL_CALENDAR_LICENSE_KEY']
+    }
   end
 end

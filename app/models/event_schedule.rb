@@ -22,7 +22,7 @@
 #
 class EventSchedule < ApplicationRecord
   default_scope { where(enabled: true) }
-  belongs_to :schedule
+  belongs_to :schedule, touch: true
   belongs_to :event
   belongs_to :room
 
@@ -55,16 +55,27 @@ class EventSchedule < ApplicationRecord
   # True within `threshold` before and after the event.
   #
   def happening_now?(threshold = 30.minutes)
+    # TODO: Save start_time with local timezone info when making an event schedule
     in_tz_start = start_time.in_time_zone(timezone)
     in_tz_end = end_time.in_time_zone(timezone)
     in_tz_start -= in_tz_start.utc_offset
     in_tz_end -= in_tz_end.utc_offset
+
+    return false if in_tz_end < Time.now
+
     begin_range = Time.now - threshold
     end_range = Time.now + threshold
     event_time_range = in_tz_start..in_tz_end
     now_range = begin_range..end_range
-    # TODO: There's probably better logic.
-    event_time_range.overlaps?(now_range) && (in_tz_end > Time.now)
+    event_time_range.overlaps?(now_range)
+  end
+
+  def happening_later?
+    # TODO: Save start_time with local timezone info when making an event schedule
+    in_tz_start = start_time.in_time_zone(timezone)
+    in_tz_start -= in_tz_start.utc_offset
+
+    in_tz_start >= Time.now
   end
 
   def self.withdrawn_or_canceled_event_schedules(schedule_ids)
@@ -122,6 +133,14 @@ class EventSchedule < ApplicationRecord
       other.schedule_id == schedule_id
   end
 
+  def start_time_in_conference_timezone
+    time_in_conference_timezone(start_time)
+  end
+
+  def end_time_in_conference_timezone
+    time_in_conference_timezone(end_time)
+  end
+
   private
 
   def replaced_event_schedules
@@ -175,5 +194,11 @@ class EventSchedule < ApplicationRecord
     return unless event.try(:track).try(:self_organized?) && schedule
 
     errors.add(:schedule, "must be one of #{event.track.name} track's schedules") unless event.track.schedules.include?(schedule)
+  end
+
+  def time_in_conference_timezone(time)
+    time_in_tz = time.in_time_zone(timezone)
+    time_in_tz -= time_in_tz.utc_offset
+    time_in_tz
   end
 end

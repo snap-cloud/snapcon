@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class SchedulesController < ApplicationController
+  include ConferenceHelper
+
   load_and_authorize_resource
   before_action :respond_to_options
   before_action :favourites
@@ -76,11 +78,30 @@ class SchedulesController < ApplicationController
   end
 
   def happening_now
-    @events_schedules = @program.selected_event_schedules(
-      includes: [:room, { event: %i[track event_type speakers submitter] }]
-    ).select(&:happening_now?)
-    @events_schedules = [] unless @events_schedules
+    @events_schedules = get_happening_now_events_schedules(@conference)
     @current_time = Time.now.in_time_zone(@conference.timezone)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @events_schedules.to_json(root: false, include: :event) }
+    end
+  end
+
+  def vertical_schedule
+    dates = @conference.start_date..@conference.end_date
+    # the schedule takes you to today if it is a date of the schedule
+    current_day = @conference.current_conference_day
+    @day = current_day.present? ? current_day : dates.first
+    event_schedules = @program.event_schedule_for_fullcalendar
+
+    unless event_schedules
+      redirect_to events_conference_schedule_path(@conference.short_title)
+      return
+    end
+
+    @rooms = FullCalendarFormatter.rooms_to_resources(@conference.venue.rooms) if @conference.venue
+    @event_schedules = FullCalendarFormatter.event_schedules_to_resources(event_schedules)
+    @now = Time.now.in_time_zone(@conference.timezone).strftime('%FT%T%:z')
   end
 
   def app

@@ -1,5 +1,4 @@
 Osem::Application.routes.draw do
-
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
   if ENV['OSEM_ICHAIN_ENABLED'] == 'true'
@@ -167,6 +166,7 @@ Osem::Application.routes.draw do
       end
     end
     resource :program, only: [] do
+      get 'event/:id', to: 'proposals#show', as: :conference_program_event
       get 'proposal/:id', to: 'proposals#show' # For backward compatibility
       resources :proposals, except: :destroy do
         get 'commercials/render_commercial' => 'commercials#render_commercial'
@@ -202,6 +202,7 @@ Osem::Application.routes.draw do
       member do
         get :events
         get :happening_now
+        get :vertical_schedule
       end
     end
   end
@@ -221,9 +222,11 @@ Osem::Application.routes.draw do
     end
   end
 
-  get '/admin' => redirect('/admin/conferences')
-
-  get '/calendar' => 'conferences#calendar'
+  # Handle conferences on custom domains.
+  # This *must* come before any other root definition.
+  constraints DomainConstraint do
+    root to: 'conferences#show'
+  end
 
   unless ENV['OSEM_ROOT_CONFERENCE'].blank?
     root to: redirect("/conferences/#{ENV['OSEM_ROOT_CONFERENCE']}")
@@ -231,9 +234,10 @@ Osem::Application.routes.draw do
     root to: 'conferences#index', via: [:get, :options]
   end
 
-  constraints DomainConstraint do
-    root to: 'conferences#show'
-  end
-
+  get '/admin' => redirect('/admin/conferences')
+  get '/calendar' => 'conferences#calendar'
   get '/.well-known/apple-developer-merchantid-domain-association', to: 'application#apple_pay'
+
+  # A Short Fallback Route
+  get '/:id', to: 'conferences#show'
 end

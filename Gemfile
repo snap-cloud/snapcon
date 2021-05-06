@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby ENV['TRAVIS_RUBY_VERSION'] || '2.6.6'
+ruby ENV['TRAVIS_RUBY_VERSION'] || '~>2.6.6'
 
 # rails-assets requires >= 1.8.4
 if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
@@ -28,6 +28,8 @@ gem 'paper_trail'
 gem 'carrierwave'
 gem 'carrierwave-bombshelter'
 gem 'mini_magick'
+# for uploading images to the cloud
+gem 'cloudinary'
 
 # for internationalizing
 gem 'rails-i18n'
@@ -114,6 +116,9 @@ end
 # as date picker
 gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
+# for switch checkboxes
+gem 'bootstrap-switch-rails', '~> 3.0.0'
+
 # data tables
 gem 'ajax-datatables-rails'
 gem 'jquery-datatables'
@@ -138,9 +143,10 @@ gem 'prawn-rails'
 gem 'rqrcode'
 
 # to render XLS spreadsheets
-gem 'axlsx', git: 'https://github.com/randym/axlsx.git'
-gem 'axlsx_rails'
+gem 'caxlsx'
+gem 'caxlsx_rails'
 
+# Application Monitoring
 gem 'sentry-delayed_job'
 gem 'sentry-rails'
 gem 'sentry-ruby'
@@ -173,14 +179,8 @@ gem 'money-rails'
 # for lists
 gem 'acts_as_list'
 
-# for switch checkboxes
-gem 'bootstrap-switch-rails', '~> 3.0.0'
-
 # for parsing OEmbed data
 gem 'ruby-oembed'
-
-# for uploading images to the cloud
-gem 'cloudinary'
 
 # for setting app configuration in the environment
 gem 'dotenv-rails'
@@ -213,12 +213,18 @@ gem 'skylight'
 # Nokogiri < 1.8.1 is subject to:
 # CVE-2017-0663, CVE-2017-7375, CVE-2017-7376, CVE-2017-9047, CVE-2017-9048,
 # CVE-2017-9049, CVE-2017-9050
-gem 'nokogiri', '>= 1.8.1'
+gem 'nokogiri'
 
 # memcached binary connector
 gem 'dalli'
 
 gem 'icalendar'
+
+# for making external requests easier
+gem 'httparty'
+
+# pagination
+gem 'pagy', '<4.0'
 
 # Use guard and spring for testing in development
 group :development do
@@ -228,7 +234,7 @@ group :development do
   # to open mails
   gem 'letter_opener'
   # view mail at /letter_opener/
-  gem 'letter_opener_web', '~> 1.0'
+  gem 'letter_opener_web'
   # as deployment system
   gem 'mina'
   # as debugger on error pages
@@ -273,13 +279,13 @@ group :development, :test, :linters do
   gem 'pry-byebug'
 
   # Linters and static analysis.
+  gem 'haml-lint', require: false
   gem 'pronto', require: false
   gem 'pronto-flay', require: false
   gem 'pronto-haml', require: false
   gem 'pronto-rubocop', require: false
+  gem 'rubocop-faker', require: false
   gem 'rubocop-rspec', require: false
-
-  gem 'haml-lint', require: false
 end
 
 group :development, :test do

@@ -80,8 +80,11 @@ FactoryBot.define do
     last_sign_in_at { Date.today }
     is_disabled { false }
 
+    # Called by every user creation
+
     after(:create) do |user|
       user.is_admin = false
+
       # save with bang cause we want change in DB and not just in object instance
       user.save!
     end
