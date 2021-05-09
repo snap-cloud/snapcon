@@ -28,8 +28,7 @@ class Schedule < ApplicationRecord
   # favorited events
   # events speaking at
   # volunteer events.
-  def for_user(user)
-  end
+  def for_user(user); end
 
   private
 
