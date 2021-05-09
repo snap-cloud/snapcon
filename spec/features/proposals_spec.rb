@@ -268,7 +268,7 @@ feature Event do
       events_list.each do |event|
         visit conference_program_proposal_path(conference1.short_title, event.id)
         happening_now = page.find('#happening-now')
-        expect(happening_now).to have_content('There are no events scheduled yet.')
+        expect(happening_now).to have_content('There are no upcoming events.')
       end
     end
 
