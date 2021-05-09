@@ -10,17 +10,18 @@
       = canceled_replacement_event_label(event, event_schedule)
       = replacement_event_notice(event_schedule)
 
-    .row
+    .row{style: 'display: flex'}
       - if current_user
-        .col-2{style: 'display: inline-block; vertical-align: top; margin: 0 12px'}
-          = link_to('#', onClick: 'starClicked();') do
+        .col-2{style: 'flex: 1; padding: 8px'}
+          = link_to('#', onClick: 'starClicked();',
+                    'aria-label': "#{event.favourite_users.exists?(current_user.id) ? 'un' : ''}favorite event #{event.title}") do
             %i.fa.fa-2x{ style: "color: #{contrast_color(header_color)}", |
                 class: event.favourite_users.exists?(current_user.id) ? 'fa-star' : 'fa-star-o', |
                 "aria-hidden" => "true", |
                 "data-url" => toggle_favorite_conference_program_proposal_path(@conference.short_title, event.id), |
                 "data-user" => current_user.id }
 
-      %h3.col-10{ style: 'margin: 3px; display: inline-block' }
+      %h3.col-10{ style: 'margin: 3px; flex 1' }
         = event.title
         %br
         %small{ style: "color: #{contrast_color(header_color)}" }
