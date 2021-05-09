@@ -1,6 +1,6 @@
 .container#program
   -if @events_schedules.any?
-    = render partial: 'schedule_tabs',  locals: { active: 'program' }
+    = render partial: 'schedule_tabs', locals: { active: 'program' }
 
   %h1.text-center
     Program for
@@ -8,7 +8,7 @@
   - if current_user
     .row
       .col-md-12.text-center
-        = button_to (@favourites ? 'All events' : 'Only favourites events'),
+        = button_to (@favourites ? 'All events' : 'My Personal Schedule'),
                     events_conference_schedule_path(@conference.short_title),
                     params: { favourites: !@favourites },
                     method: :get, class: 'btn btn-success'

@@ -11,6 +11,7 @@ class SchedulesController < ApplicationController
   before_action :load_withdrawn_event_schedules, only: [:show, :events]
 
   def show
+    # TODO-SNAPCON: This route is currently not exposed, preferring to use `vertical_schedule`
     event_schedules = @program.selected_event_schedules(
       includes: [{ event: %i[event_type speakers submitter] }]
     )
@@ -58,13 +59,14 @@ class SchedulesController < ApplicationController
 
   def events
     @dates = @conference.start_date..@conference.end_date
+    # TODO: use the cachable method.
     @events_schedules = @program.selected_event_schedules(
       includes: [:room, { event: %i[track event_type speakers submitter] }]
     )
 
+    # TODO: Refactor this -- "events for current user"
     @events_schedules = @events_schedules.select{ |e| e.event.favourite_users.exists?(current_user.id) } if @events_schedules && current_user && @favourites
     @events_schedules = [] unless @events_schedules
-    @favourites = params[:favourites] == 'true'
 
     @unscheduled_events = if @program.selected_schedule
                             @program.events.confirmed - @events_schedules.map(&:event)
@@ -78,6 +80,7 @@ class SchedulesController < ApplicationController
   end
 
   def happening_now
+    # TODO: Adapt to include happening next.
     @events_schedules = get_happening_now_events_schedules(@conference)
     @current_time = Time.now.in_time_zone(@conference.timezone)
 
@@ -88,10 +91,12 @@ class SchedulesController < ApplicationController
   end
 
   def vertical_schedule
+    # TODO: Adapt to take in favorites param?
     dates = @conference.start_date..@conference.end_date
     # the schedule takes you to today if it is a date of the schedule
     current_day = @conference.current_conference_day
     @day = current_day.present? ? current_day : dates.first
+    # TODO: Update method name.
     event_schedules = @program.event_schedule_for_fullcalendar
 
     unless event_schedules
