@@ -6,28 +6,27 @@
       = canceled_replacement_event_label(event, event_schedule)
       = replacement_event_notice(event_schedule)
 
-    .container-fluid
-      .row
-        - if current_user
-          %spna.col-2{ style: 'padding: 8px;'}
-            = link_to('#', onClick: 'starClicked();',
-                      'aria-label': "#{event.favourite_users.exists?(current_user.id) ? 'un' : ''}favorite event #{event.title}") do
-              %i.fa.fa-2x{ style: "color: #{contrast_color(header_color)}", |
-                  class: event.favourite_users.exists?(current_user.id) ? 'fa-star' : 'fa-star-o', |
-                  "aria-hidden" => "true", |
-                  "data-url" => toggle_favorite_conference_program_proposal_path(@conference.short_title, event.id), |
-                  "data-user" => current_user.id }
+    %div{style: 'display: flex; flex-direction: row;'}
+      - if current_user
+        %spna{ style: 'padding: 8px;'}
+          = link_to('#', onClick: 'starClicked();',
+                    'aria-label': "#{event.favourite_users.exists?(current_user.id) ? 'un' : ''}favorite event #{event.title}") do
+            %i.fa.fa-2x{ style: "color: #{contrast_color(header_color)}", |
+                class: event.favourite_users.exists?(current_user.id) ? 'fa-star' : 'fa-star-o', |
+                "aria-hidden" => "true", |
+                "data-url" => toggle_favorite_conference_program_proposal_path(@conference.short_title, event.id), |
+                "data-user" => current_user.id }
 
-        %h3.col-8{ style: 'margin: 3px; display: inline' }
-          = event.title
-          %br
-          %small{ style: "color: #{contrast_color(header_color)}" }
-            = event.subtitle
+      %h3{ style: 'margin: 3px; flex: 1' }
+        = event.title
+        %br
+        %small{ style: "color: #{contrast_color(header_color)}" }
+          = event.subtitle
 
-        %span.col-2
-          - if !defined?(is_brief) || is_brief == false
-            - event.speakers_ordered.each do |speaker|
-              = image_tag speaker.profile_picture, class: 'img-circle pull-right',  alt: speaker.name, style: 'padding: 2px;'
+      %span{style: 'justify-content: flex-end'}
+        - if !defined?(is_brief) || is_brief == false
+          - event.speakers_ordered.each do |speaker|
+            = image_tag speaker.profile_picture, class: 'img-circle', alt: speaker.name, style: 'padding: 2px'
 
   .trapezoid{ style: "color: #{header_color}; border-top-color: #{header_color}; top: 12px;" }
 
