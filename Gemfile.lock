@@ -279,7 +279,7 @@ GEM
     jwt (2.2.2)
     launchy (2.4.3)
       addressable (~> 2.3)
-    leaflet-rails (1.5.1)
+    leaflet-rails (1.7.0)
       rails (>= 4.2.0)
     letter_opener (1.7.0)
       launchy (~> 2.2)
