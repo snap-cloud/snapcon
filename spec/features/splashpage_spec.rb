@@ -1,11 +1,11 @@
-””# frozen_string_literal: true
+# frozen_string_literal: true
 
 require 'spec_helper'
 
 feature Splashpage do
 
   # It is necessary to use bang version of let to build roles before user
-let!(:conference) { create(:conference) }
+  let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:participant) { create(:user, biography: '', is_admin: false) }
 
