@@ -6,6 +6,13 @@
 = semantic_form_for(@splashpage, url: admin_conference_splashpage_path(@conference.short_title)) do |f|
   .row
     .col-md-12
+      = f.label 'Banner Photo', for: 'banner_photo'
+      %br
+      - if @splashpage.banner_photo.present?
+        = image_tag @splashpage.banner_photo.thumb.url
+      = f.input :banner_photo, label: false
+      = f.hidden_field :banner_photo_cache
+
       = f.inputs name: 'Components' do
         %ul.fa-ul
           %li
