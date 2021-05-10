@@ -210,7 +210,7 @@ module ApplicationHelper
   end
 
   # TODO: Consider Renaming this?
-  def conference_logo_url(conference=nil)
+  def conference_logo_url(conference = nil)
     return DEFAULT_LOGO unless conference
 
     if conference.picture.present?
