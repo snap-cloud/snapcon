@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-DEFAULT_LOGO = Rails.configuration.conference[:default_logo_filename]
 DEFAULT_COLOR = Rails.configuration.conference[:default_color]
 
 module ConferenceHelper
@@ -29,18 +28,6 @@ module ConferenceHelper
     return unless ticket.description
 
     markdown(ticket.description.split("\n").first&.strip)
-  end
-
-  def conference_logo_url(conference)
-    return DEFAULT_LOGO unless conference
-
-    if conference.picture.present?
-      conference.picture.thumb.url
-    elsif conference.organization.picture.present?
-      conference.organization.picture.thumb.url
-    else
-      DEFAULT_LOGO
-    end
   end
 
   def conference_color(conference)
