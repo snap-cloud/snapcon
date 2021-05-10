@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+DEFAULT_LOGO = Rails.configuration.conference[:default_logo_filename]
+
 module ApplicationHelper
   include Pagy::Frontend
   # Returns a string build from the start and end date of the given conference.
@@ -194,7 +196,7 @@ module ApplicationHelper
   def nav_root_link_for(conference = nil)
     path = conference&.id.present? ? conference_path(conference) : root_path
     link_to(
-      image_tag('snapcon_logo.png', alt: nav_link_text(conference)),
+      image_tag(conference_logo_url, alt: nav_link_text(conference)),
       path,
       class: 'navbar-brand',
       title: nav_link_text(conference)
@@ -205,6 +207,19 @@ module ApplicationHelper
     conference.try(:organization).try(:name) ||
       ENV['OSEM_NAME'] ||
       'OSEM'
+  end
+
+  # TODO: Consider Renaming this?
+  def conference_logo_url(conference = nil)
+    return DEFAULT_LOGO unless conference
+
+    if conference.picture.present?
+      conference.picture.thumb.url
+    elsif conference.organization.picture.present?
+      conference.organization.picture.thumb.url
+    else
+      DEFAULT_LOGO
+    end
   end
 
   # returns the url to be used for logo on basis of sponsorship level position

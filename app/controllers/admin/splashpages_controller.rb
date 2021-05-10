@@ -46,6 +46,7 @@ module Admin
 
     def splashpage_params
       params.require(:splashpage).permit(:public,
+                                         :banner_photo, :banner_photo_cache,
                                          :include_tracks, :include_program, :include_cfp,
                                          :include_venue, :include_registrations,
                                          :include_tickets, :include_lodgings,

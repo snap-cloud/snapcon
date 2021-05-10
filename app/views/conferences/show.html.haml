@@ -42,7 +42,7 @@
     = render 'code_of_conduct', organization: @conference.organization
 
   -# header
-  = render 'header', conference: @conference, venue: @conference.venue
+  = render 'header', conference: @conference, venue: @conference.venue, splashpage: @splashpage
 
   -# description / happening now
   - if @conference.splashpage.include_happening_now? || @conference.description.present?
