@@ -215,7 +215,7 @@ module ApplicationHelper
 
     if conference.picture.present?
       conference.picture.thumb.url
-    elsif conference.organization.picture.present?
+    elsif conference.organization&.picture.present?
       conference.organization.picture.thumb.url
     else
       DEFAULT_LOGO
