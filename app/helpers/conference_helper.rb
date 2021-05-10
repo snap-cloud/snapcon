@@ -32,6 +32,8 @@ module ConferenceHelper
   end
 
   def conference_logo_url(conference)
+    return DEFAULT_LOGO unless conference
+
     if conference.picture.present?
       conference.picture.thumb.url
     elsif conference.organization.picture.present?
