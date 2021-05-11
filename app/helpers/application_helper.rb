@@ -2,6 +2,8 @@
 
 DEFAULT_LOGO = Rails.configuration.conference[:default_logo_filename]
 
+# TODO-SNAPCON: Refactor this module. Move chunks to a dates_help, some events_helper
+# rubocop:disable Metrics/ModuleLength
 module ApplicationHelper
   include Pagy::Frontend
   # Returns a string build from the start and end date of the given conference.
@@ -99,6 +101,7 @@ module ApplicationHelper
     end
   end
 
+  # TODO: Move to the event model.
   def concurrent_events(event)
     return nil unless event.scheduled? && event.program.selected_event_schedules
 
@@ -248,3 +251,4 @@ module ApplicationHelper
     end
   end
 end
+# rubocop:enable Metrics/ModuleLength
