@@ -182,9 +182,7 @@ class Event < ApplicationRecord
   def speakers_ordered
     speakers_list = speakers.to_a
 
-    if speakers_list.reject! { |speaker| speaker == submitter }
-      speakers_list.unshift(submitter)
-    end
+    speakers_list.unshift(submitter) if speakers_list.reject! { |speaker| speaker == submitter }
 
     speakers_list
   end
@@ -241,7 +239,7 @@ class Event < ApplicationRecord
     begin
       if mail
         send(transition,
-             send_mail: send_mail_param)
+             send_mail: send_mail_param,)
       else
         send(transition)
       end
@@ -279,9 +277,7 @@ class Event < ApplicationRecord
       biographies:      speakers.all? { |speaker| !speaker.biography.blank? },
       subtitle:         !subtitle.blank?,
       track:            (!track.blank? unless program.tracks.empty?),
-      difficulty_level: (unless program.difficulty_levels.empty?
-                           difficulty_level.present?
-                         end),
+      difficulty_level: (difficulty_level.present? unless program.difficulty_levels.empty?),
       title:            true,
       abstract:         true
     }.with_indifferent_access
@@ -373,12 +369,8 @@ class Event < ApplicationRecord
     max_words = event_type.maximum_abstract_length
     min_words = event_type.minimum_abstract_length
 
-    if len < min_words
-      errors.add(field.to_sym, "cannot have less than #{min_words} words")
-    end
-    if len > max_words
-      errors.add(field.to_sym, "cannot have more than #{max_words} words")
-    end
+    errors.add(field.to_sym, "cannot have less than #{min_words} words") if len < min_words
+    errors.add(field.to_sym, "cannot have more than #{max_words} words") if len > max_words
   end
 
   def abstract_limit
@@ -422,9 +414,7 @@ class Event < ApplicationRecord
   def valid_track
     return unless track&.program && program
 
-    unless track.confirmed? && track.program == program
-      errors.add(:track, 'is invalid')
-    end
+    errors.add(:track, 'is invalid') unless track.confirmed? && track.program == program
   end
 
   ##

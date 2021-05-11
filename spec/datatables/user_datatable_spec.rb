@@ -71,7 +71,7 @@ describe UserDatatable do
         'length'  => '10',
         'search'  => { 'value' => '', 'regex' => 'false' },
         '_'       => '1532637360488'
-      }.with_indifferent_access
+      }.with_indifferent_access,
     )
     allow(view).to receive(:admin_user_path) do |arg|
       "/admin/users/#{arg.to_param}"

@@ -67,7 +67,7 @@ Osem::Application.configure do
       credentials: {
         token:  'fb_mock_token',
         secret: 'fb_mock_secret'
-      }
+      },
     )
 
   OmniAuth.config.mock_auth[:google] =
@@ -82,7 +82,7 @@ Osem::Application.configure do
       credentials: {
         token:  'google_mock_token',
         secret: 'google_mock_secret'
-      }
+      },
     )
 
   OmniAuth.config.mock_auth[:suse] =
@@ -97,7 +97,7 @@ Osem::Application.configure do
       credentials: {
         token:  'suse_mock_token',
         secret: 'suse_mock_secret'
-      }
+      },
     )
 
   OmniAuth.config.mock_auth[:github] =
@@ -112,7 +112,7 @@ Osem::Application.configure do
       credentials: {
         token:  'github_mock_token',
         secret: 'github_mock_secret'
-      }
+      },
     )
 
   config.after_initialize do

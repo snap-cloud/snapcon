@@ -14,7 +14,7 @@ wb.add_worksheet(name: 'confirmed events') do |sheet|
          'Track',
          'Difficulty Level',
          'Room',
-         'State']
+         'State',]
   sheet.add_row row, style: bold_style
 
   @events.confirmed.each do |event|

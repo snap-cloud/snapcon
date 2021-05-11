@@ -79,22 +79,14 @@ class AdminAbility
 
   # Abilities for signed in users with roles
   def signed_in_with_roles(user)
-    if user.has_cached_role? :organization_admin, :any
-      signed_in_with_organization_admin_role(user)
-    end
-    if user.has_cached_role? :organizer, :any
-      signed_in_with_organizer_role(user)
-    end
+    signed_in_with_organization_admin_role(user) if user.has_cached_role? :organization_admin, :any
+    signed_in_with_organizer_role(user) if user.has_cached_role? :organizer, :any
     signed_in_with_cfp_role(user) if user.has_cached_role? :cfp, :any
-    if user.has_cached_role? :info_desk, :any
-      signed_in_with_info_desk_role(user)
-    end
+    signed_in_with_info_desk_role(user) if user.has_cached_role? :info_desk, :any
     if user.has_cached_role? :volunteers_coordinator, :any
       signed_in_with_volunteers_coordinator_role(user)
     end
-    if user.has_cached_role? :track_organizer, :any
-      signed_in_with_track_organizer_role(user)
-    end
+    signed_in_with_track_organizer_role(user) if user.has_cached_role? :track_organizer, :any
     common_abilities_for_roles(user)
   end
 

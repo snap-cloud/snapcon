@@ -17,9 +17,7 @@ module Admin
       event_schedules_count_was = @program.event_schedules.count
 
       if @program.update_attributes(program_params)
-        if send_mail_on_schedule_public
-          ConferenceScheduleUpdateMailJob.perform_later(@conference)
-        end
+        ConferenceScheduleUpdateMailJob.perform_later(@conference) if send_mail_on_schedule_public
         respond_to do |format|
           format.html do
             notice = 'The program was successfully updated.'

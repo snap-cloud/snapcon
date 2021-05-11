@@ -91,7 +91,7 @@ module Admin
 
     def organization_params
       params.require(:organization).permit(
-        :name, :description, :picture, :code_of_conduct
+        :name, :description, :picture, :code_of_conduct,
       )
     end
   end

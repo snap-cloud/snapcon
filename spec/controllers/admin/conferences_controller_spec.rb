@@ -24,7 +24,7 @@ describe Admin::ConferencesController do
         it 'changes conference attributes' do
           patch :update, params: { id: conference.short_title, conference:
               attributes_for(:conference, title:       'Example Con',
-                                          short_title: 'ExCon') }
+                                          short_title: 'ExCon',) }
           conference.reload
           expect(conference.title).to eq('Example Con')
           expect(conference.short_title).to eq('ExCon')
@@ -35,7 +35,7 @@ describe Admin::ConferencesController do
               attributes_for(:conference, title: 'Example Con') }
           conference.reload
           expect(response).to redirect_to edit_admin_conference_path(
-            conference.short_title
+            conference.short_title,
           )
         end
 
@@ -53,7 +53,7 @@ describe Admin::ConferencesController do
         it 'does not change conference attributes' do
           patch :update, params: { id: conference.short_title, conference:
               attributes_for(:conference, title:       'Example Con',
-                                          short_title: nil) }
+                                          short_title: nil,) }
 
           conference.reload
           expect(flash[:error])
@@ -65,12 +65,12 @@ describe Admin::ConferencesController do
         it 're-renders the #show template' do
           patch :update, params: { id: conference.short_title, conference:
               attributes_for(:conference, title:       'Example Con',
-                                          short_title: nil) }
+                                          short_title: nil,) }
 
           expect(flash[:error])
             .to eq("Updating conference failed. Short title can't be blank.")
           expect(response).to redirect_to edit_admin_conference_path(
-            conference.short_title
+            conference.short_title,
           )
         end
       end
@@ -215,7 +215,7 @@ describe Admin::ConferencesController do
                                               attributes_for(:conference, short_title: 'dps15', organization_id: organization.id) }
 
           expect(response).to redirect_to admin_conference_path(
-            assigns[:conference].short_title
+            assigns[:conference].short_title,
           )
         end
 
@@ -301,7 +301,7 @@ describe Admin::ConferencesController do
     describe 'POST #create' do
       it 'requires organizer privileges' do
         post :create, params: { conference: attributes_for(:conference,
-                                                           short_title: 'ExCon', organization_id: organization.id) }
+                                                           short_title: 'ExCon', organization_id: organization.id,) }
         expect(response).to redirect_to(send(path))
         expect(flash[:alert]).to match(/#{message}/) if message
       end
@@ -338,7 +338,7 @@ describe Admin::ConferencesController do
       it 'requires organizer privileges' do
         patch :update, params: { id:         conference.short_title,
                                  conference: attributes_for(:conference,
-                                                            short_title: 'ExCon') }
+                                                            short_title: 'ExCon',) }
         expect(response).to redirect_to(send(path))
         expect(flash[:alert]).to match(/#{message}/) if message
       end

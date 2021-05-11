@@ -187,9 +187,7 @@ class Program < ApplicationRecord
   end
 
   def notify_on_schedule_public?
-    unless conference.email_settings.send_on_program_schedule_public
-      return false
-    end
+    return false unless conference.email_settings.send_on_program_schedule_public
     # do not notify if the schedule is not public
     return false unless schedule_public
 
@@ -198,9 +196,7 @@ class Program < ApplicationRecord
   end
 
   def languages_list
-    if languages.present?
-      languages.split(',').map { |l| ISO_639.find(l).english_name }
-    end
+    languages.split(',').map { |l| ISO_639.find(l).english_name } if languages.present?
   end
 
   ##
@@ -241,7 +237,7 @@ class Program < ApplicationRecord
   def event_schedule_for_fullcalendar
     Rails.cache.fetch("#{cache_key_with_version}/fullcalendar") do
       selected_event_schedules(
-        includes: [{ event: %i[event_type speakers submitter] }]
+        includes: [{ event: %i[event_type speakers submitter] }],
       )
     end
   end
@@ -254,10 +250,10 @@ class Program < ApplicationRecord
   def create_event_types
     EventType.create(title: 'Talk', length: 30, color: '#FF0000', description: 'Presentation in lecture format',
                      minimum_abstract_length: 0,
-                     maximum_abstract_length: 500, program_id: id)
+                     maximum_abstract_length: 500, program_id: id,)
     EventType.create(title: 'Workshop', length: 60, color: '#0000FF', description: 'Interactive hands-on practice',
                      minimum_abstract_length: 0,
-                     maximum_abstract_length: 500, program_id: id)
+                     maximum_abstract_length: 500, program_id: id,)
   end
 
   ##
@@ -266,13 +262,13 @@ class Program < ApplicationRecord
   def create_difficulty_levels
     DifficultyLevel.create(title: 'Easy',
                            description: 'Events are understandable for everyone without knowledge of the topic.',
-                           color: '#32CB2A', program_id: id)
+                           color: '#32CB2A', program_id: id,)
     DifficultyLevel.create(title: 'Medium',
                            description: 'Events require a basic understanding of the topic.',
-                           color: '#E6B65B', program_id: id)
+                           color: '#E6B65B', program_id: id,)
     DifficultyLevel.create(title: 'Hard',
                            description: 'Events require expert knowledge of the topic.',
-                           color: '#EF6E69', program_id: id)
+                           color: '#EF6E69', program_id: id,)
   end
 
   ##
@@ -287,9 +283,7 @@ class Program < ApplicationRecord
     languages.match(/^$|(\A[a-z][a-z](,[a-z][a-z])*\z)/).present?
     languages_array = languages.split(',')
     # We check that languages are not repeated
-    unless languages_array.uniq!.nil?
-      errors.add(:languages, "can't be repeated") && return
-    end
+    errors.add(:languages, "can't be repeated") && return unless languages_array.uniq!.nil?
     # We check if every language is a valid ISO 639-1 language
     unless languages_array.select { |x| ISO_639.find(x).nil? }.empty?
       errors.add(:languages, 'must be ISO 639-1 valid codes')

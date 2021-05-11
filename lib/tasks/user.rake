@@ -12,9 +12,7 @@ namespace :user do
     # Check if a user is found based on the supplied email address
     raise "There is no user with email #{args.email}!" unless user
 
-    if user.update_columns(is_admin: true)
-      puts "User with email #{args.email} is now an admin!"
-    end
+    puts "User with email #{args.email} is now an admin!" if user.update_columns(is_admin: true)
   end
 
   desc 'Set email_public attrubute true for all users'

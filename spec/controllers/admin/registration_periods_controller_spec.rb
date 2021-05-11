@@ -36,7 +36,7 @@ describe Admin::RegistrationPeriodsController do
                          attributes_for(:registration_period) }
           conference.reload
           expect(response).to redirect_to admin_conference_registration_period_path(
-            conference.short_title
+            conference.short_title,
           )
         end
 
@@ -46,12 +46,12 @@ describe Admin::RegistrationPeriodsController do
           conference.email_settings = create(:email_settings)
           conference.registration_period = create(:registration_period,
                                                   start_date: Date.today,
-                                                  end_date:   Date.today + 2.days)
+                                                  end_date:   Date.today + 2.days,)
 
           patch :update, params: { conference_id: conference.short_title, registration_period:
                          attributes_for(:registration_period,
                                         start_date: Date.today + 2.days,
-                                        end_date:   Date.today + 4.days) }
+                                        end_date:   Date.today + 4.days,) }
           conference.reload
           allow(Mailbot).to receive(:conference_registration_date_update_mail).and_return(mailer)
         end
@@ -77,7 +77,7 @@ describe Admin::RegistrationPeriodsController do
           }
 
           expect(response).to redirect_to admin_conference_registration_period_path(
-            assigns[:conference].short_title
+            assigns[:conference].short_title,
           )
         end
       end
@@ -89,7 +89,7 @@ describe Admin::RegistrationPeriodsController do
               conference_id:       conference.short_title,
               registration_period: attributes_for(:registration_period,
                                                   start_date: nil,
-                                                  end_date:   nil)
+                                                  end_date:   nil,)
             }
           end
           expected.not_to change(Conference, :count)
@@ -100,7 +100,7 @@ describe Admin::RegistrationPeriodsController do
             conference_id:       conference.short_title,
             registration_period: attributes_for(:registration_period,
                                                 start_date: nil,
-                                                end_date:   nil)
+                                                end_date:   nil,)
           }
           expect(response).to be_success
         end

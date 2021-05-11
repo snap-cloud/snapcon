@@ -20,7 +20,7 @@ class MoveConferenceMediaToCommercial < ActiveRecord::Migration
       TempCommercial.create(commercial_id:       conference.media_id,
                             commercial_type:     conference.media_type,
                             commercialable_id:   conference.id,
-                            commercialable_type: 'Conference')
+                            commercialable_type: 'Conference',)
     end
 
     # Then remove all the columns

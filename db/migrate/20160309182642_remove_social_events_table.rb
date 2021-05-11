@@ -76,25 +76,25 @@ class RemoveSocialEventsTable < ActiveRecord::Migration
         # Find existing question or initialize it
         question = TempQuestion.find_or_initialize_by(title:            'Which of the following social events are you going to attend?',
                                                       conference_id:    conference.id,
-                                                      question_type_id: qtype.id)
+                                                      question_type_id: qtype.id,)
         question.save!
         # Enable the question for the conference
         TempConferencesQuestions.find_or_create_by!(conference_id: conference.id,
-                                                    question_id:   question.id)
+                                                    question_id:   question.id,)
       end
 
       TempSocialEvent.where(conference_id: conference.id).each do |social_event|
         answer = TempAnswer.find_or_create_by!(title: social_event.title)
         # Associate answer with the question
         qa = TempQanswer.find_or_initialize_by(question_id: question.id,
-                                               answer_id:   answer.id)
+                                               answer_id:   answer.id,)
         qa.save!
 
         # Associate appropriate answer with registration
         TempRegistrationsSocialEvent.where(social_event_id: social_event.id).each do |registration_social_event|
           registration = TempRegistration.find(registration_social_event.registration_id)
           TempQanswerRegistration.find_or_create_by!(registration_id: registration.id,
-                                                     qanswer_id:      qa.id)
+                                                     qanswer_id:      qa.id,)
         end
       end
     end
@@ -119,16 +119,16 @@ class RemoveSocialEventsTable < ActiveRecord::Migration
 
     TempConference.all.each do |conference|
       next unless qtype && (question = TempQuestion.find_by(title: 'Which of the following social events are you going to attend?',
-                                                   conference_id: conference.id, question_type_id: qtype.id))
+                                                   conference_id: conference.id, question_type_id: qtype.id,))
 
       TempQanswer.where(question_id: question.id).each do |qa|
         TempQanswerRegistration.where(qanswer_id: qa.id).each do |qa_registration|
           answer = TempAnswer.find(qa.answer_id)
           registration = TempRegistration.find(qa_registration.registration_id)
           social_event = TempSocialEvent.find_or_create_by!(title:         answer.title,
-                                                            conference_id: conference.id)
+                                                            conference_id: conference.id,)
           TempRegistrationsSocialEvent.find_or_create_by!(registration_id: registration.id,
-                                                          social_event_id: social_event.id)
+                                                          social_event_id: social_event.id,)
         end
       end
     end

@@ -22,7 +22,7 @@ class MailblusterManager
                 'overrideExisting' => true,
                 'subscribed'       => true,
                 'tags'             => [ENV['OSEM_NAME'] || 'snapcon']
-              })
+              },)
   end
 
   def self.edit_lead(user, add_tags: [], remove_tags: [], old_email: nil)
@@ -32,7 +32,7 @@ class MailblusterManager
                 'firstName'  => user.name,
                 'addTags'    => add_tags,
                 'removeTags' => remove_tags
-              })
+              },)
   end
 
   def self.delete_lead(email)

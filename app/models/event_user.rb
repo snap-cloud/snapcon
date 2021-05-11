@@ -14,7 +14,7 @@
 #
 class EventUser < ApplicationRecord
   ROLES = [%w[Speaker speaker], %w[Submitter submitter], %w[Moderator moderator],
-           %w[Volunteer volunteer]].freeze
+           %w[Volunteer volunteer],].freeze
 
   belongs_to :event, touch: true
   belongs_to :user

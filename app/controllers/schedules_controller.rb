@@ -13,7 +13,7 @@ class SchedulesController < ApplicationController
   def show
     # TODO-SNAPCON: This route is currently not exposed, preferring to use `vertical_schedule`
     event_schedules = @program.selected_event_schedules(
-      includes: [{ event: %i[event_type speakers submitter] }]
+      includes: [{ event: %i[event_type speakers submitter] }],
     )
 
     unless event_schedules
@@ -63,7 +63,7 @@ class SchedulesController < ApplicationController
     @dates = @conference.start_date..@conference.end_date
     # TODO: use the cachable method.
     @events_schedules = @program.selected_event_schedules(
-      includes: [:room, { event: %i[track event_type speakers submitter] }]
+      includes: [:room, { event: %i[track event_type speakers submitter] }],
     )
 
     # TODO: Refactor this -- "events for current user"
@@ -110,9 +110,7 @@ class SchedulesController < ApplicationController
       return
     end
 
-    if @conference.venue
-      @rooms = FullCalendarFormatter.rooms_to_resources(@conference.venue.rooms)
-    end
+    @rooms = FullCalendarFormatter.rooms_to_resources(@conference.venue.rooms) if @conference.venue
     @event_schedules = FullCalendarFormatter.event_schedules_to_resources(event_schedules)
     @now = Time.now.in_time_zone(@conference.timezone).strftime('%FT%T%:z')
   end

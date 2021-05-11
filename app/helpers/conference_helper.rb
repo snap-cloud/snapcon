@@ -20,7 +20,7 @@ module ConferenceHelper
       conference.contact.sponsor_email,
       '?subject=',
       url_encode(conference.short_title),
-      '%20Sponsorship'
+      '%20Sponsorship',
     ].join
   end
 
@@ -102,7 +102,7 @@ module ConferenceHelper
   # TODO: Move this to using the cached method on program/schedule
   def filter_events_schedules(conference, filter)
     conference.program.selected_event_schedules(
-      includes: [:room, { event: %i[track event_type speakers submitter] }]
+      includes: [:room, { event: %i[track event_type speakers submitter] }],
     ).select(&filter)
   end
 end

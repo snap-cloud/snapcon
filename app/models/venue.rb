@@ -52,15 +52,11 @@ class Venue < ApplicationRecord
   private
 
   def send_mail_notification
-    if notify_on_venue_changed?
-      ConferenceVenueUpdateMailJob.perform_later(conference)
-    end
+    ConferenceVenueUpdateMailJob.perform_later(conference) if notify_on_venue_changed?
   end
 
   def notify_on_venue_changed?
-    unless conference.try(:email_settings).try(:send_on_venue_updated)
-      return false
-    end
+    return false unless conference.try(:email_settings).try(:send_on_venue_updated)
     # do not notify unless the address changed
     unless saved_change_to_name? || saved_change_to_street? || saved_change_to_city? || saved_change_to_country?
       return false

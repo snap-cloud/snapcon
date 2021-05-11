@@ -55,9 +55,7 @@ class TicketPurchase < ApplicationRecord
                      else
                        purchase_ticket(conference, quantity, ticket, user)
                      end
-          if purchase && !purchase.save
-            errors.push(purchase.errors.full_messages)
-          end
+          errors.push(purchase.errors.full_messages) if purchase && !purchase.save
         end
       end
     end
@@ -70,7 +68,7 @@ class TicketPurchase < ApplicationRecord
                      conference_id: conference.id,
                      user_id:       user.id,
                      quantity:      quantity,
-                     amount_paid:   ticket.price)
+                     amount_paid:   ticket.price,)
       purchase.pay(nil) if ticket.price_cents.zero?
     end
     purchase
@@ -80,7 +78,7 @@ class TicketPurchase < ApplicationRecord
     purchase = TicketPurchase.where(ticket_id:     ticket.id,
                                     conference_id: conference.id,
                                     user_id:       user.id,
-                                    paid:          false).first
+                                    paid:          false,).first
 
     purchase.quantity = quantity if quantity > 0
     purchase

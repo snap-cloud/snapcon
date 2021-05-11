@@ -92,9 +92,7 @@ module Admin
       send_mail_on_conf_update = @conference.notify_on_dates_changed?
 
       if @conference.update_attributes(conference_params)
-        if send_mail_on_conf_update
-          ConferenceDateUpdateMailJob.perform_later(@conference)
-        end
+        ConferenceDateUpdateMailJob.perform_later(@conference) if send_mail_on_conf_update
         redirect_to edit_admin_conference_path(id: @conference.short_title),
                     notice: 'Conference was successfully updated.'
       else
@@ -183,7 +181,7 @@ module Admin
                                          :vpositions_attributes, :use_volunteers, :color,
                                          :sponsorship_levels_attributes, :sponsors_attributes,
                                          :registration_limit, :organization_id, :ticket_layout,
-                                         :booth_limit, :custom_css)
+                                         :booth_limit, :custom_css,)
     end
   end
 end

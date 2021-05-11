@@ -10,7 +10,7 @@ wb.add_worksheet(name: "all #{(t 'booth').pluralize}") do |sheet|
          'Submitter Name',
          'Submitter Relationship',
          'Website Url',
-         'State']
+         'State',]
   sheet.add_row row, style: bold_style
 
   @booths.confirmed.each do |booth|

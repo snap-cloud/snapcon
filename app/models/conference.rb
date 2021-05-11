@@ -390,7 +390,7 @@ class Conference < ApplicationRecord
 
     result.update(
       process:     calculate_setup_progress(result),
-      short_title: short_title
+      short_title: short_title,
     ).with_indifferent_access
   end
 
@@ -435,7 +435,7 @@ class Conference < ApplicationRecord
   # * +hash+ -> hash
   def event_distribution
     Conference.calculate_event_distribution_hash(
-      program.events.select(:state).group(:state).count
+      program.events.select(:state).group(:state).count,
     )
   end
 
@@ -652,7 +652,7 @@ class Conference < ApplicationRecord
     [
       { short_title: 'Submitted', color: 'blue' },
       { short_title: 'Confirmed', color: 'green' },
-      { short_title: 'Unconfirmed', color: 'orange' }
+      { short_title: 'Unconfirmed', color: 'orange' },
     ]
   end
 
@@ -700,9 +700,7 @@ class Conference < ApplicationRecord
   # * +True+ -> If registration dates is updated and all other parameters are set
   # * +False+ -> Either registration date is not updated or one or more parameter is not set
   def notify_on_registration_dates_changed?
-    unless email_settings.send_on_conference_registration_dates_updated
-      return false
-    end
+    return false unless email_settings.send_on_conference_registration_dates_updated
     # do not notify unless we allow a registration
     return false unless registration_period
     # do not notify unless one of the dates changed
@@ -798,7 +796,7 @@ class Conference < ApplicationRecord
   # Auxiliary function which is used in next_color and returns each component of
   # the color. We make use of big prime numbers to avoid repetition and to make
   # consecutive colors clearly different.
-  def next_color_component(component, num)
+  def next_color_component(component, _num)
     big_prime_numbers = { r: 113, g: 67, b: 151 }
     ((nun * big_prime_numbers[component]) % 239 + 16).to_s(16)
   end
@@ -846,9 +844,7 @@ class Conference < ApplicationRecord
   def valid_times_range?
     if start_hour && end_hour
       errors.add(:start_hour, 'is lower than 0') if start_hour < 0
-      if end_hour <= start_hour
-        errors.add(:end_hour, 'is lower or equal than start hour')
-      end
+      errors.add(:end_hour, 'is lower or equal than start hour') if end_hour <= start_hour
       errors.add(:end_hour, 'is greater than 24') if end_hour > 24
     end
   end
@@ -1212,9 +1208,7 @@ class Conference < ApplicationRecord
 
     items.each do |key, value|
       # Padding
-      if last_key < (key.to_i - 1)
-        result += Array.new(key.to_i - last_key - 1, sum)
-      end
+      result += Array.new(key.to_i - last_key - 1, sum) if last_key < (key.to_i - 1)
 
       sum += value
       result.push(sum)

@@ -11,7 +11,7 @@ wb.add_worksheet(name: 'all tracks') do |sheet|
          'End Date',
          'Submitter Name',
          'Included in Cfp',
-         'State']
+         'State',]
   sheet.add_row row, style: bold_style
 
   @tracks.each do |track|

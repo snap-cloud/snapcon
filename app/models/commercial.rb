@@ -82,7 +82,7 @@ class Commercial < ApplicationRecord
       OEmbed::Providers::Slideshare,
       OEmbed::Providers::Flickr,
       OEmbed::Providers::Instagram,
-      speakerdeck
+      speakerdeck,
     )
     # OEmbed::Providers.register_fallback(
     #   OEmbed::ProviderDiscovery,

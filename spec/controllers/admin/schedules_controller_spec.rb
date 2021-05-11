@@ -30,7 +30,7 @@ describe Admin::SchedulesController do
       it 'redirects to schedules#show' do
         create_action
         expect(response).to redirect_to admin_conference_schedule_path(
-          conference.short_title, assigns[:schedule]
+          conference.short_title, assigns[:schedule],
         )
       end
     end

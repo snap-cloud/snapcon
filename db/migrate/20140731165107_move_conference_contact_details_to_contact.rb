@@ -21,7 +21,7 @@ class MoveConferenceContactDetailsToContact < ActiveRecord::Migration
                          twitter:       conference.twitter_url,
                          instagram:     conference.instagram_url,
                          public:        conference.include_social_media_in_splash,
-                         conference_id: conference.id)
+                         conference_id: conference.id,)
     end
     # Then remove all the columns
     remove_column :conferences, :social_tag

@@ -108,7 +108,7 @@ class User < ApplicationRecord
                       [:database_authenticatable, :registerable,
                        :recoverable, :rememberable, :trackable, :validatable, :confirmable,
                        :omniauthable,
-                       omniauth_providers: %i[suse google facebook github discourse]]
+                       omniauth_providers: %i[suse google facebook github discourse],]
                       #  omniauth_providers: [:google, :discourse]
                     end
 
@@ -233,7 +233,7 @@ class User < ApplicationRecord
     if user
       user.update_attributes(email:              attributes[:email],
                              last_sign_in_at:    user.current_sign_in_at,
-                             current_sign_in_at: Time.current)
+                             current_sign_in_at: Time.current,)
     else
       begin
         user = create!(username: username, email: attributes[:email])
@@ -396,9 +396,7 @@ class User < ApplicationRecord
   #
   def biography_limit
     if biography.present?
-      if biography.split.length > 150
-        errors.add(:biography, 'is limited to 150 words.')
-      end
+      errors.add(:biography, 'is limited to 150 words.') if biography.split.length > 150
     end
   end
 

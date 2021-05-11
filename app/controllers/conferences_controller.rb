@@ -22,7 +22,7 @@ class ConferencesController < ApplicationController
       :program,
       :registration_period,
       :contact,
-      venue: :commercial
+      venue: :commercial,
     ).find_by!(conference_finder_conditions)
     authorize! :show, @conference # TODO: reduce the 10 queries performed here
 
@@ -52,23 +52,19 @@ class ConferencesController < ApplicationController
       @highlights = @conference.highlighted_events.eager_load(:speakers)
       if @splashpage.include_tracks?
         @tracks = @conference.confirmed_tracks.eager_load(
-          :room
+          :room,
         ).order('tracks.name')
       end
-      if @splashpage.include_booths?
-        @booths = @conference.confirmed_booths.order('title')
-      end
+      @booths = @conference.confirmed_booths.order('title') if @splashpage.include_booths?
       load_happening_now if @splashpage.include_happening_now?
     end
     if @splashpage.include_registrations? || @splashpage.include_tickets?
       @tickets = @conference.tickets.visible.order('price_cents')
     end
-    if @splashpage.include_lodgings?
-      @lodgings = @conference.lodgings.order('id')
-    end
+    @lodgings = @conference.lodgings.order('id') if @splashpage.include_lodgings?
     if @splashpage.include_sponsors?
       @sponsorship_levels = @conference.sponsorship_levels.eager_load(
-        :sponsors
+        :sponsors,
       ).order('sponsorship_levels.position ASC', 'sponsors.name')
       @sponsors = @conference.sponsors
     end
@@ -81,7 +77,7 @@ class ConferencesController < ApplicationController
         Conference.all.each do |conf|
           if params[:full]
             event_schedules = conf.program.selected_event_schedules(
-              includes: [{ event: %i[event_type speakers submitter] }]
+              includes: [{ event: %i[event_type speakers submitter] }],
             )
             calendar = icalendar_proposals(calendar, event_schedules.map(&:event), conf)
           else
@@ -102,9 +98,7 @@ class ConferencesController < ApplicationController
                 e.geo = v.latitude, v.longitude if v.latitude && v.longitude
                 location = ''
                 location += "#{v.street}, " if v.street
-                if v.postalcode && v.city
-                  location += "#{v.postalcode} #{v.city}, "
-                end
+                location += "#{v.postalcode} #{v.city}, " if v.postalcode && v.city
                 location += v.country_name if v.country_name
                 e.location = location if location
               end

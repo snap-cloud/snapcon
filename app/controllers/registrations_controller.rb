@@ -31,7 +31,7 @@ class RegistrationsController < Devise::RegistrationsController
       :password,
       :password_confirmation,
       :name,
-      :username
+      :username,
     )
   end
 
@@ -42,7 +42,7 @@ class RegistrationsController < Devise::RegistrationsController
       :password_confirmation,
       :current_password,
       :username,
-      :email_public
+      :email_public,
     )
   end
 

@@ -50,7 +50,7 @@ lowlevel_error_handler do |ex, env|
     ex,
     message:     ex.message,
     extra:       { puma: env },
-    transaction: 'Puma'
+    transaction: 'Puma',
   )
   # note the below is just a Rack response
   [500, {}, ["An error has occurred, and engineers have been informed. Please reload the page. If you continue to have problems, contact conference@snap.berkeley.edu\n"]]

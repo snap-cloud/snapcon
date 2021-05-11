@@ -16,7 +16,7 @@ wb.add_worksheet(name: 'events with comments') do |sheet|
          'Difficulty Level',
          'Room',
          'State',
-         'Comments']
+         'Comments',]
   sheet.add_row row, style: bold_style
 
   @events.each do |event|

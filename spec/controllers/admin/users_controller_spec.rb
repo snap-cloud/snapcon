@@ -51,7 +51,7 @@ describe Admin::UsersController do
 
       it 'changes @users attributes' do
         expect(build(
-          :user, email: 'email_new@osem.io', id: user.id
+          :user, email: 'email_new@osem.io', id: user.id,
         ).email)
           .to eq('email_new@osem.io')
       end

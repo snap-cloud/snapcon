@@ -15,7 +15,7 @@ namespace :data do
         EventSchedule.create(event:      event,
                              schedule:   schedule,
                              start_time: event.start_time,
-                             room_id:    event.room_id)
+                             room_id:    event.room_id,)
         event.start_time = nil
         event.room_id = nil
         event.save

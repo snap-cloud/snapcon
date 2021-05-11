@@ -23,13 +23,13 @@ def all_testunit_tests
     model_tests,
     controller_tests,
     helper_tests,
-    integration_tests
+    integration_tests,
   ]
 end
 
 def all_specs
   [
-    model_specs
+    model_specs,
   ]
 end
 

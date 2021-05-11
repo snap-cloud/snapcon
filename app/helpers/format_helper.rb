@@ -169,9 +169,7 @@ module FormatHelper
     item_class = 'item'
     item_class += ' first' if number == 0
     item_class += ' last' if number == (carousel_number - 1)
-    if (col && ((col / num_cols) == number)) || (!col && number == 0)
-      item_class += ' active'
-    end
+    item_class += ' active' if (col && ((col / num_cols) == number)) || (!col && number == 0)
     item_class
   end
 

@@ -8,12 +8,12 @@ module Admin
     def update
       if @conference.email_settings.update(email_params)
         redirect_to admin_conference_emails_path(
-          @conference.short_title
+          @conference.short_title,
         ),
                     notice: 'Email settings have been successfully updated.'
       else
         redirect_to admin_conference_emails_path(
-          @conference.short_title
+          @conference.short_title,
         ),
                     error: "Updating email settings failed. #{@conference.email_settings.errors.to_a.join('. ')}."
       end
@@ -39,7 +39,7 @@ module Admin
                                              :send_on_cfp_dates_updated, :cfp_dates_updated_subject, :cfp_dates_updated_body,
                                              :send_on_program_schedule_public, :program_schedule_public_subject, :program_schedule_public_body,
                                              :send_on_booths_acceptance, :booths_acceptance_subject, :booths_acceptance_body,
-                                             :send_on_booths_rejection, :booths_rejection_subject, :booths_rejection_body)
+                                             :send_on_booths_rejection, :booths_rejection_subject, :booths_rejection_body,)
     end
   end
 end

@@ -60,7 +60,7 @@ class AddAttendingSocialEventsToQuestions < ActiveRecord::Migration
     # Find existing question or initialize it
     q = TempQuestion.find_or_initialize_by(title:            'Will you attend the social event(s)?',
                                            question_type_id: qtype.id,
-                                           global:           true)
+                                           global:           true,)
     # Save question
     q.save!
 

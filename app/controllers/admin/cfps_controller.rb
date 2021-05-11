@@ -21,9 +21,7 @@ module Admin
       send_mail_on_cfp_dates_updates = @cfp.notify_on_cfp_date_update?
 
       if @cfp.save
-        if send_mail_on_cfp_dates_updates
-          ConferenceCfpUpdateMailJob.perform_later(@conference)
-        end
+        ConferenceCfpUpdateMailJob.perform_later(@conference) if send_mail_on_cfp_dates_updates
         redirect_to admin_conference_program_cfps_path,
                     notice: 'Call for papers successfully created.'
       else
@@ -38,9 +36,7 @@ module Admin
       send_mail_on_cfp_dates_updates = @cfp.notify_on_cfp_date_update?
 
       if @cfp.update_attributes(cfp_params)
-        if send_mail_on_cfp_dates_updates
-          ConferenceCfpUpdateMailJob.perform_later(@conference)
-        end
+        ConferenceCfpUpdateMailJob.perform_later(@conference) if send_mail_on_cfp_dates_updates
         redirect_to admin_conference_program_cfps_path(@conference.short_title),
                     notice: 'Call for papers successfully updated.'
       else
@@ -64,7 +60,7 @@ module Admin
       params.require(:cfp).permit(
         :start_date, :end_date,
         :description, :cfp_type,
-        :enable_registrations
+        :enable_registrations,
       )
     end
 

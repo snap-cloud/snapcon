@@ -249,7 +249,7 @@ describe ConferenceRegistrationsController, type: :controller do
           @ticket = create(:ticket, conference: conference)
           @purchased_ticket = create(:ticket_purchase, conference: conference,
                                                        user:       user,
-                                                       ticket:     @ticket)
+                                                       ticket:     @ticket,)
           get :show, params: { conference_id: conference.short_title }
         end
 
@@ -290,7 +290,7 @@ describe ConferenceRegistrationsController, type: :controller do
       before do
         @registration = create(:registration,
                                conference: conference,
-                               user:       user)
+                               user:       user,)
       end
 
       context 'updates successfully' do

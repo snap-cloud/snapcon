@@ -121,7 +121,7 @@ class ConferenceRegistrationsController < ApplicationController
             event_ids: [],
             user_attributes: %i[
               username email name password password_confirmation
-            ]
+            ],
           )
   end
 end

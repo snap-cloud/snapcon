@@ -12,9 +12,7 @@ module VersionsHelper
     return 'deleted organization' unless organization_id
 
     org = Organization.find_by(id: organization_id)
-    unless org
-      return current_or_last_object_state('Organization', organization_id).try(:name)
-    end
+    return current_or_last_object_state('Organization', organization_id).try(:name) unless org
 
     org.name.to_s
   end

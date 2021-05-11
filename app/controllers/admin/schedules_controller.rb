@@ -37,8 +37,8 @@ module Admin
           :difficulty_level,
           :track,
           :event_type,
-          event_users: :user
-        ]
+          event_users: :user,
+        ],
       )
 
       if @schedule.track
@@ -48,9 +48,7 @@ module Admin
         @rooms = [track.room]
       else
         @program.tracks.self_organized.confirmed.each do |t|
-          if t.selected_schedule
-            @event_schedules += t.selected_schedule.event_schedules
-          end
+          @event_schedules += t.selected_schedule.event_schedules if t.selected_schedule
         end
         self_organized_tracks_events = Event.eager_load(event_users: :user).confirmed.where(track: @program.tracks.self_organized.confirmed)
         @unscheduled_events = @program.events.confirmed - @schedule.events - self_organized_tracks_events

@@ -41,7 +41,7 @@ class MoveSplashpageAttributesFromConferenceToSplashpage < ActiveRecord::Migrati
                                      banner_photo_file_name:    conference.banner_photo_file_name,
                                      banner_photo_content_type: conference.banner_photo_content_type,
                                      banner_photo_file_size:    conference.banner_photo_file_size,
-                                     banner_photo_updated_at:   conference.banner_photo_updated_at)
+                                     banner_photo_updated_at:   conference.banner_photo_updated_at,)
 
       contact = TempContact.find_by(conference_id: conference.id)
       if contact

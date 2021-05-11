@@ -130,7 +130,7 @@ module ApplicationHelper
   def volunteer_links(event)
     safe_join(event.volunteers.map do |volunteer|
       link_to(volunteer.name, admin_user_path(volunteer))
-    end, ', ')
+    end, ', ',)
   end
 
   def volunteer_selector_input(form)
@@ -141,7 +141,7 @@ module ApplicationHelper
     user_selector_input(
       :responsibles,
       form,
-      "The people responsible for the #{t 'booth'}. You can only select existing users."
+      "The people responsible for the #{t 'booth'}. You can only select existing users.",
     )
   end
 
@@ -155,13 +155,13 @@ module ApplicationHelper
       hint:          hint,
       collection:    options_for_select(
         users.map { |user| ["#{user[1]} (#{user[2]}) #{user[3]}", user[0]] },
-        (form.object.send(field)&.map(&:id) || form.object.send(field)&.id)
+        (form.object.send(field)&.map(&:id) || form.object.send(field)&.id),
       ),
       input_html:    {
         class:       'select-help-toggle js-userSelector',
         multiple:    multiple,
         placeholder: (multiple ? 'Select users...' : 'Select a user...')
-      }
+      },
     )
   end
 
@@ -200,7 +200,7 @@ module ApplicationHelper
       image_tag(conference_logo_url(conference), alt: nav_link_text(conference)),
       path,
       class: 'navbar-brand',
-      title: nav_link_text(conference)
+      title: nav_link_text(conference),
     )
   end
 

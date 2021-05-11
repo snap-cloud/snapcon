@@ -6,9 +6,7 @@ class AddCommentsCountToEvents < ActiveRecord::Migration[4.2]
 
     Event.find_each do |event|
       comments_count = event.comment_threads.count
-      unless comments_count.zero?
-        event.update_attribute(:comments_count, comments_count)
-      end
+      event.update_attribute(:comments_count, comments_count) unless comments_count.zero?
     end
   end
 end

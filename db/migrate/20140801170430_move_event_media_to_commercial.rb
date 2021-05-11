@@ -12,15 +12,13 @@ class MoveEventMediaToCommercial < ActiveRecord::Migration
   def change
     # Move all the settings to the new object
     TempEvent.all.each do |event|
-      if TempCommercial.exists?(commercialable_id: event.id, commercialable_id: 'Conference')
-        next
-      end
+      next if TempCommercial.exists?(commercialable_id: event.id, commercialable_id: 'Conference')
       next if event.media_id.blank? || event.media_type.blank?
 
       TempCommercial.create(commercial_id:       event.media_id,
                             commercial_type:     event.media_type,
                             commercialable_id:   event.id,
-                            commercialable_type: 'Event')
+                            commercialable_type: 'Event',)
     end
 
     # Then remove all the columns

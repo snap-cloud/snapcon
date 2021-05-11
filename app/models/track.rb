@@ -246,9 +246,7 @@ class Track < ApplicationRecord
   def start_date_before_end_date
     return unless start_date && end_date
 
-    if start_date > end_date
-      errors.add(:start_date, 'can\'t be after the end date')
-    end
+    errors.add(:start_date, 'can\'t be after the end date') if start_date > end_date
   end
 
   ##

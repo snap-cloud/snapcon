@@ -26,7 +26,7 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :biography, :nickname, :affiliation,
-                                 :picture, :picture_cache)
+                                 :picture, :picture_cache,)
   end
 
   # Somewhat of a hack: users/current/edit

@@ -26,7 +26,7 @@ def stub_env_for_omniauth
     credentials: {
       token:  'google_mock_token',
       secret: 'google_mock_secret'
-    }
+    },
   )
   request.env['omniauth.auth'] = env
   allow(@controller).to receive(:env).and_return(env)
