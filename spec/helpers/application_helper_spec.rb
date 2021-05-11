@@ -75,7 +75,7 @@ describe ApplicationHelper, type: :helper do
 
       # TODO-SNAPCON: This is an indicator in a conference it should be the conference name.
       it 'should use the conference organization name' do
-        expect(nav_root_link_for(conference)).to include iamage_tag(confernece.picture.thumb.url, alt: conference.organization.name)
+        expect(nav_root_link_for(conference)).to include iamage_tag(conference.picture.thumb.url, alt: conference.organization.name)
       end
     end
 
