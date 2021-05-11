@@ -28,7 +28,9 @@ class AddShortNameToTracks < ActiveRecord::Migration[4.2]
           short_name += "_#{track_name_counter[short_name]}"
         else
           # Initialize the counter
-          track_name_counter[short_name] = 0 unless track_name_counter[short_name]
+          unless track_name_counter[short_name]
+            track_name_counter[short_name] = 0
+          end
         end
 
         track.short_name = short_name

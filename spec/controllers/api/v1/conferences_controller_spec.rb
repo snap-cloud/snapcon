@@ -7,7 +7,7 @@ describe Api::V1::ConferencesController do
   let!(:conf_two) { create(:conference, short_title: 'conf_two') }
 
   describe 'GET #index' do
-    before(:each) do
+    before do
       get :index, params: { format: :json }
       @json = JSON.parse(response.body)['conferences']
     end
@@ -26,7 +26,7 @@ describe Api::V1::ConferencesController do
   end
 
   describe 'GET #show' do
-    before(:each) do
+    before do
       get :show, params: { id: 'conf_two', format: :json }
       @json = JSON.parse(response.body)['conferences']
     end

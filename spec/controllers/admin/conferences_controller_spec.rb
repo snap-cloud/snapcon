@@ -3,10 +3,9 @@
 require 'spec_helper'
 
 describe Admin::ConferencesController do
-
   # It is necessary to use bang version of let to build roles before user
   let!(:organization) { create(:organization, name: 'organization') }
-  let!(:conference) { create(:conference, organization: organization, end_date: Date.new(2014, 05, 26) + 15) }
+  let!(:conference) { create(:conference, organization: organization, end_date: Date.new(2014, 0o5, 26) + 15) }
   let!(:organization_admin_role) { Role.find_by(name: 'organization_admin', resource: organization) }
   let(:organization_admin) { create(:user, role_ids: organization_admin_role.id) }
   let(:organizer_role) { Role.find_by(name: 'organizer', resource: conference) }
@@ -36,7 +35,8 @@ describe Admin::ConferencesController do
               attributes_for(:conference, title: 'Example Con') }
           conference.reload
           expect(response).to redirect_to edit_admin_conference_path(
-                                              conference.short_title)
+            conference.short_title
+          )
         end
 
         it 'sends email notification on conference date update' do
@@ -57,7 +57,7 @@ describe Admin::ConferencesController do
 
           conference.reload
           expect(flash[:error])
-              .to eq("Updating conference failed. Short title can't be blank.")
+            .to eq("Updating conference failed. Short title can't be blank.")
           expect(conference.title).to eq(conference.title)
           expect(conference.short_title).to eq(conference.short_title)
         end
@@ -68,9 +68,10 @@ describe Admin::ConferencesController do
                                           short_title: nil) }
 
           expect(flash[:error])
-              .to eq("Updating conference failed. Short title can't be blank.")
+            .to eq("Updating conference failed. Short title can't be blank.")
           expect(response).to redirect_to edit_admin_conference_path(
-                                              conference.short_title)
+            conference.short_title
+          )
         end
       end
     end
@@ -189,9 +190,7 @@ describe Admin::ConferencesController do
 
       context 'no conferences' do
         it 'redirect to new conference' do
-          Conference.all.each do |c|
-            c.destroy
-          end
+          Conference.all.each(&:destroy)
           sign_in create(:admin)
           get :index
           expect(response).to redirect_to new_admin_conference_path
@@ -208,7 +207,7 @@ describe Admin::ConferencesController do
             post :create, params: { conference:
                                                 attributes_for(:conference, short_title: 'dps15', organization_id: organization.id) }
           end
-          expected.to change { Conference.count }.by 1
+          expected.to change(Conference, :count).by 1
         end
 
         it 'redirects to conference#show' do
@@ -216,7 +215,8 @@ describe Admin::ConferencesController do
                                               attributes_for(:conference, short_title: 'dps15', organization_id: organization.id) }
 
           expect(response).to redirect_to admin_conference_path(
-                                              assigns[:conference].short_title)
+            assigns[:conference].short_title
+          )
         end
 
         it 'creates roles for the conference' do
@@ -239,7 +239,7 @@ describe Admin::ConferencesController do
             post :create, params: { conference:
                                                 attributes_for(:conference, short_title: nil, organization_id: organization.id) }
           end
-          expected.to_not change { Conference.count }
+          expected.not_to change(Conference, :count)
         end
 
         it 're-renders the new template' do
@@ -256,7 +256,7 @@ describe Admin::ConferencesController do
             post :create, params: { conference:
                                                 attributes_for(:conference, short_title: conference.short_title, organization_id: organization.id) }
           end
-          expected.to_not change { Conference.count }
+          expected.not_to change(Conference, :count)
         end
 
         it 're-renders the new template' do
@@ -294,9 +294,7 @@ describe Admin::ConferencesController do
       it 'requires organizer privileges' do
         get :new
         expect(response).to redirect_to(send(path))
-        if message
-          expect(flash[:alert]).to match(/#{message}/)
-        end
+        expect(flash[:alert]).to match(/#{message}/) if message
       end
     end
 
@@ -305,9 +303,7 @@ describe Admin::ConferencesController do
         post :create, params: { conference: attributes_for(:conference,
                                                            short_title: 'ExCon', organization_id: organization.id) }
         expect(response).to redirect_to(send(path))
-        if message
-          expect(flash[:alert]).to match(/#{message}/)
-        end
+        expect(flash[:alert]).to match(/#{message}/) if message
       end
     end
   end
@@ -326,9 +322,7 @@ describe Admin::ConferencesController do
       it 'requires organizer privileges' do
         get :show, params: { id: conference.short_title }
         expect(response).to redirect_to(send(path))
-        if message
-          expect(flash[:alert]).to match(/#{message}/)
-        end
+        expect(flash[:alert]).to match(/#{message}/) if message
       end
     end
 
@@ -336,9 +330,7 @@ describe Admin::ConferencesController do
       it 'requires organizer privileges' do
         get :index
         expect(response).to redirect_to(send(path))
-        if message
-          expect(flash[:alert]).to match(/#{message}/)
-        end
+        expect(flash[:alert]).to match(/#{message}/) if message
       end
     end
 
@@ -348,15 +340,13 @@ describe Admin::ConferencesController do
                                  conference: attributes_for(:conference,
                                                             short_title: 'ExCon') }
         expect(response).to redirect_to(send(path))
-        if message
-          expect(flash[:alert]).to match(/#{message}/)
-        end
+        expect(flash[:alert]).to match(/#{message}/) if message
       end
     end
   end
 
   describe 'participant access' do
-    before(:each) do
+    before do
       sign_in(participant)
     end
 
@@ -365,7 +355,6 @@ describe Admin::ConferencesController do
   end
 
   describe 'guest access' do
-
     it_behaves_like 'access as participant or guest', :new_user_session_path
     it_behaves_like 'access as organizer, participant or guest', :new_user_session_path
   end

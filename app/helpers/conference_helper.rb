@@ -10,7 +10,7 @@ module ConferenceHelper
   # Return true if exactly two of those calls are open: call_for_papers , call_for_tracks , call_for_booths
 
   def two_calls_open(*calls)
-    calls.count{ |call| call.try(:open?) } == 2
+    calls.count { |call| call.try(:open?) } == 2
   end
 
   # URL for sponsorship emails
@@ -76,9 +76,7 @@ module ConferenceHelper
   def get_happening_next_events_schedules(conference)
     events_schedules = filter_events_schedules(conference, :happening_later?)
 
-    if events_schedules.empty?
-      return []
-    end
+    return [] if events_schedules.empty?
 
     # events_schedules have been sorted by start_time in selected_event_schedules
     happening_next_time = events_schedules[0].start_time

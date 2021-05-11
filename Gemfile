@@ -6,7 +6,7 @@ ruby ENV['TRAVIS_RUBY_VERSION'] || '~>2.6.6'
 
 # rails-assets requires >= 1.8.4
 if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
-  abort "Bundler version >= 1.8.4 is required"
+  abort 'Bundler version >= 1.8.4 is required'
 end
 
 gem 'rails', '~> 5.2'
@@ -58,7 +58,7 @@ gem 'rolify'
 gem 'unobtrusive_flash', '>=3'
 
 # as state machine
-gem 'transitions', :require => %w( transitions active_record/transitions )
+gem 'transitions', require: %w[transitions active_record/transitions]
 
 # for comments
 gem 'acts_as_commentable_with_threading'
@@ -168,7 +168,7 @@ gem 'piwik_analytics', '~> 1.0.1'
 
 # for recurring jobs
 gem 'delayed_job_active_record'
-gem 'whenever', :require => false
+gem 'whenever', require: false
 
 # to run scripts
 gem 'daemons'
@@ -190,7 +190,7 @@ gem 'dotenv-rails'
 gem 'feature'
 
 # For countable.js
-gem "countable-rails"
+gem 'countable-rails'
 
 # Both are not in a group as we use it also for rake data:demo
 # for fake data
@@ -269,7 +269,7 @@ group :test do
   # For managing the environment
   gem 'climate_control'
   # For PDFs
-  gem 'pdf-inspector', require: "pdf/inspector"
+  gem 'pdf-inspector', require: 'pdf/inspector'
 end
 
 group :development, :test, :linters do

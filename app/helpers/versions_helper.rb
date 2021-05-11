@@ -12,7 +12,9 @@ module VersionsHelper
     return 'deleted organization' unless organization_id
 
     org = Organization.find_by(id: organization_id)
-    return current_or_last_object_state('Organization', organization_id).try(:name) unless org
+    unless org
+      return current_or_last_object_state('Organization', organization_id).try(:name)
+    end
 
     org.name.to_s
   end
@@ -37,8 +39,10 @@ module VersionsHelper
     if user
       link_to user.name, admin_user_path(id: user_id)
     else
-      name = current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset['name'].second if PaperTrail::Version.where(item_type: 'User', item_id: user_id).any?
-      "#{name ? name : 'Unknown user'} with ID #{user_id}"
+      if PaperTrail::Version.where(item_type: 'User', item_id: user_id).any?
+        name = current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset['name'].second
+      end
+      "#{name || 'Unknown user'} with ID #{user_id}"
     end
   end
 
@@ -64,7 +68,9 @@ module VersionsHelper
 
   def subscription_change_description(version)
     user_id = current_or_last_object_state(version.item_type, version.item_id).user_id
-    user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset[:name].second unless user_id.to_s == version.whodunnit
+    unless user_id.to_s == version.whodunnit
+      user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset[:name].second
+    end
     version.event == 'create' ? "subscribed #{user_name} to" : "unsubscribed #{user_name} from"
   end
 
@@ -123,10 +129,9 @@ module VersionsHelper
   end
 
   def event_change_description(version)
-    case
-    when version.event == 'create' then 'submitted new'
+    if version.event == 'create' then 'submitted new'
 
-    when version.changeset['state']
+    elsif version.changeset['state']
       case version.changeset['state'][1]
       when 'unconfirmed' then 'accepted'
       when 'withdrawn' then 'withdrew'

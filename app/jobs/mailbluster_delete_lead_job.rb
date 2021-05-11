@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MailblusterDeleteLeadJob < ApplicationJob
   queue_as :default
 

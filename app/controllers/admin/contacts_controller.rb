@@ -26,7 +26,8 @@ module Admin
     def contact_params
       params.require(:contact).permit(
         :social_tag, :email, :facebook, :googleplus, :twitter, :instagram,
-        :mastodon, :public, :sponsor_email, :youtube, :blog)
+        :mastodon, :public, :sponsor_email, :youtube, :blog
+      )
     end
   end
 end

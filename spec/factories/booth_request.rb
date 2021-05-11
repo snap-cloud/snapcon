@@ -5,6 +5,5 @@ FactoryBot.define do
     booth
     user
     role { 'responsible' }
-
   end
 end

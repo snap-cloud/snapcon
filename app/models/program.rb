@@ -65,7 +65,7 @@ class Program < ApplicationRecord
   has_many :event_schedules, through: :events
 
   has_many :event_users, through: :events
-  has_many :program_events_speakers, -> {where(event_role: 'speaker')}, through: :events, source: :event_users
+  has_many :program_events_speakers, -> { where(event_role: 'speaker') }, through: :events, source: :event_users
   has_many :speakers, -> { distinct }, through: :program_events_speakers, source: :user do
     def confirmed
       joins(:events).where(events: { state: :confirmed })
@@ -84,7 +84,7 @@ class Program < ApplicationRecord
   accepts_nested_attributes_for :tracks, reject_if: proc { |r| r['name'].blank? }, allow_destroy: true
   accepts_nested_attributes_for :difficulty_levels, allow_destroy: true
 
-#   validates :conference_id, presence: true, uniqueness: true
+  #   validates :conference_id, presence: true, uniqueness: true
   validates :rating, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10, only_integer: true }
   validates :schedule_interval, numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 60 }, presence: true
   validate :schedule_interval_divisor_60
@@ -100,7 +100,9 @@ class Program < ApplicationRecord
   # Returns all event_schedules for the selected schedule ordered by start_time
   def selected_event_schedules(includes: [:event])
     event_schedules = []
-    event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc) if selected_schedule
+    if selected_schedule
+      event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc)
+    end
     tracks.self_organized.confirmed.includes(selected_schedule: { event_schedules: includes }).order(start_date: :asc).each do |track|
       next unless track.selected_schedule
 
@@ -135,13 +137,21 @@ class Program < ApplicationRecord
   # ====Returns
   # Errors when the condition is not true
   def voting_dates_exist
-    errors.add(:voting_start_date, 'must be set, when blind voting is enabled') if blind_voting && !voting_start_date && !voting_end_date
+    if blind_voting && !voting_start_date && !voting_end_date
+      errors.add(:voting_start_date, 'must be set, when blind voting is enabled')
+    end
 
-    errors.add(:voting_end_date, 'must be set, when blind voting is enabled') if blind_voting && !voting_start_date && !voting_end_date
+    if blind_voting && !voting_start_date && !voting_end_date
+      errors.add(:voting_end_date, 'must be set, when blind voting is enabled')
+    end
 
-    errors.add(:voting_end_date, 'must be set, when voting_start_date is set') if voting_start_date && !voting_end_date
+    if voting_start_date && !voting_end_date
+      errors.add(:voting_end_date, 'must be set, when voting_start_date is set')
+    end
 
-    errors.add(:voting_start_date, 'must be set, when voting_end_date is set') if voting_end_date && !voting_start_date
+    if voting_end_date && !voting_start_date
+      errors.add(:voting_start_date, 'must be set, when voting_end_date is set')
+    end
   end
 
   ##
@@ -149,7 +159,9 @@ class Program < ApplicationRecord
   # ====Returns
   # Errors when the condition is not true
   def voting_start_date_before_end_date
-    errors.add(:voting_start_date, 'must be before voting end date') if voting_start_date && voting_end_date && voting_start_date > voting_end_date
+    if voting_start_date && voting_end_date && voting_start_date > voting_end_date
+      errors.add(:voting_start_date, 'must be before voting end date')
+    end
   end
 
   ##
@@ -175,7 +187,9 @@ class Program < ApplicationRecord
   end
 
   def notify_on_schedule_public?
-    return false unless conference.email_settings.send_on_program_schedule_public
+    unless conference.email_settings.send_on_program_schedule_public
+      return false
+    end
     # do not notify if the schedule is not public
     return false unless schedule_public
 
@@ -184,7 +198,9 @@ class Program < ApplicationRecord
   end
 
   def languages_list
-    languages.split(',').map {|l| ISO_639.find(l).english_name} if languages.present?
+    if languages.present?
+      languages.split(',').map { |l| ISO_639.find(l).english_name }
+    end
   end
 
   ##
@@ -271,16 +287,22 @@ class Program < ApplicationRecord
     languages.match(/^$|(\A[a-z][a-z](,[a-z][a-z])*\z)/).present?
     languages_array = languages.split(',')
     # We check that languages are not repeated
-    errors.add(:languages, "can't be repeated") && return unless languages_array.uniq!.nil?
+    unless languages_array.uniq!.nil?
+      errors.add(:languages, "can't be repeated") && return
+    end
     # We check if every language is a valid ISO 639-1 language
-    errors.add(:languages, 'must be ISO 639-1 valid codes') unless languages_array.select{ |x| ISO_639.find(x).nil? }.empty?
+    unless languages_array.select { |x| ISO_639.find(x).nil? }.empty?
+      errors.add(:languages, 'must be ISO 639-1 valid codes')
+    end
   end
 
   ##
   # Check if schedule_interval is a divisor of 60 minutes
   #
   def schedule_interval_divisor_60
-    errors.add(:schedule_interval, 'must be a divisor of 60') if schedule_interval > 0 && 60 % schedule_interval > 0
+    if schedule_interval > 0 && 60 % schedule_interval > 0
+      errors.add(:schedule_interval, 'must be a divisor of 60')
+    end
   end
 
   ##

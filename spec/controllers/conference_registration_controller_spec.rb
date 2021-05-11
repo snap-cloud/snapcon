@@ -10,7 +10,7 @@ describe ConferenceRegistrationsController, type: :controller do
   let!(:registration) { create(:registration, conference: conference, user: registered_user, created_at: 1.day.ago) }
 
   shared_examples 'access #new action' do |user, ichain, path, message|
-    before :each do
+    before do
       sign_in send(user) if user
       stub_const('ENV', ENV.to_hash.merge('OSEM_ICHAIN_ENABLED' => ichain))
       get :new, params: { conference_id: conference.short_title }
@@ -26,7 +26,7 @@ describe ConferenceRegistrationsController, type: :controller do
   end
 
   shared_examples 'can access #new action' do |user, ichain|
-    before :each do
+    before do
       sign_in send(user) if user
       stub_const('ENV', ENV.to_hash.merge('OSEM_ICHAIN_ENABLED' => ichain))
       get :new, params: { conference_id: conference.short_title }
@@ -42,7 +42,7 @@ describe ConferenceRegistrationsController, type: :controller do
   end
 
   context 'user is signed in' do
-    before :each do
+    before do
       sign_in user
     end
 
@@ -53,12 +53,12 @@ describe ConferenceRegistrationsController, type: :controller do
       let!(:confirmed_event) { create(:event, program: conference.program, speakers: [not_registered_confirmed_speaker, registered_confirmed_speaker], state: 'confirmed') }
 
       context 'registration period open' do
-        before :each do
+        before do
           create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.from_now)
         end
 
         context 'registration limit not exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 0
             conference.save!
           end
@@ -97,7 +97,7 @@ describe ConferenceRegistrationsController, type: :controller do
         end
 
         context 'registration limit exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 1
             conference.save!
           end
@@ -137,12 +137,12 @@ describe ConferenceRegistrationsController, type: :controller do
       end
 
       context 'registration period not open' do
-        before :each do
+        before do
           create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.ago)
         end
 
         context 'registration limit not exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 0
             conference.save!
           end
@@ -310,7 +310,7 @@ describe ConferenceRegistrationsController, type: :controller do
         end
 
         it 'updates the registration' do
-          expect{ @registration.reload }.to change(@registration, :updated_at)
+          expect { @registration.reload }.to change(@registration, :updated_at)
         end
       end
 
@@ -359,7 +359,7 @@ describe ConferenceRegistrationsController, type: :controller do
         it 'deletes the registration' do
           expect do
             delete :destroy, params: { conference_id: conference.short_title }
-          end.to change{ Registration.count }.from(2).to(1)
+          end.to change(Registration, :count).from(2).to(1)
         end
       end
 
@@ -387,12 +387,12 @@ describe ConferenceRegistrationsController, type: :controller do
   context 'user is not signed in' do
     describe 'GET #new' do
       context 'registration period open' do
-        before :each do
+        before do
           create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.from_now)
         end
 
         context 'registration limit not exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 0
             conference.save!
           end
@@ -407,7 +407,7 @@ describe ConferenceRegistrationsController, type: :controller do
         end
 
         context 'registration limit exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 1
             conference.save!
           end
@@ -423,12 +423,12 @@ describe ConferenceRegistrationsController, type: :controller do
       end
 
       context 'registration period not open' do
-        before :each do
+        before do
           create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.ago)
         end
 
         context 'registration limit not exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 0
             conference.save!
           end
@@ -443,7 +443,7 @@ describe ConferenceRegistrationsController, type: :controller do
         end
 
         context 'registration limit exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 1
             conference.save!
           end

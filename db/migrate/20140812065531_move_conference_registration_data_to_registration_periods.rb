@@ -12,12 +12,12 @@ class MoveConferenceRegistrationDataToRegistrationPeriods < ActiveRecord::Migrat
   def up
     # Move all the settings to the new object
     TempConference.all.each do |conference|
-      unless TempRegistrationPeriod.exists?(conference_id: conference.id)
-        TempRegistrationPeriod.create(conference_id: conference.id,
-                                      start_date:    conference.registration_start_date,
-                                      end_date:      conference.registration_end_date,
-                                      description:   conference.registration_description)
-      end
+      next if TempRegistrationPeriod.exists?(conference_id: conference.id)
+
+      TempRegistrationPeriod.create(conference_id: conference.id,
+                                    start_date:    conference.registration_start_date,
+                                    end_date:      conference.registration_end_date,
+                                    description:   conference.registration_description)
     end
 
     # Remove Columns

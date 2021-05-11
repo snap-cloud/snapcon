@@ -15,11 +15,11 @@ class ChangePersonIdToUserIdInVotes < ActiveRecord::Migration
     TempPerson.all.each do |t|
       votes = TempVote.where(person_id: t.id)
 
-      unless votes.empty?
-        votes.each do |v|
-          v.user_id = t.user_id
-          v.save!
-        end
+      next if votes.empty?
+
+      votes.each do |v|
+        v.user_id = t.user_id
+        v.save!
       end
     end
 

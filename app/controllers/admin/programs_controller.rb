@@ -17,11 +17,15 @@ module Admin
       event_schedules_count_was = @program.event_schedules.count
 
       if @program.update_attributes(program_params)
-        ConferenceScheduleUpdateMailJob.perform_later(@conference) if send_mail_on_schedule_public
+        if send_mail_on_schedule_public
+          ConferenceScheduleUpdateMailJob.perform_later(@conference)
+        end
         respond_to do |format|
           format.html do
             notice = 'The program was successfully updated.'
-            notice += ' You changed schedule interval and some events were unscheduled.' if @program.event_schedules.count != event_schedules_count_was
+            if @program.event_schedules.count != event_schedules_count_was
+              notice += ' You changed schedule interval and some events were unscheduled.'
+            end
             redirect_to admin_conference_program_path(@conference.short_title), notice: notice
           end
           format.js { render json: {} }

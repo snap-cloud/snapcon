@@ -30,12 +30,12 @@ class AdminAbility
       conference.registration_open? && !conference.registration_limit_exceeded? || conference.program.speakers.confirmed.include?(user)
     end
 
-    can [:index, :admins], Organization
+    can %i[index admins], Organization
     can :index, Ticket
     can :manage, TicketPurchase, user_id: user.id
-    can [:new, :create], Payment, user_id: user.id
+    can %i[new create], Payment, user_id: user.id
 
-    can [:create, :destroy], Subscription, user_id: user.id
+    can %i[create destroy], Subscription, user_id: user.id
 
     can [:new, :create], Event do |event|
       event.program.cfp_open? && event.new_record?
@@ -47,11 +47,11 @@ class AdminAbility
     can [:destroy], Openid
     can :access, Admin
     can :index, Commercial, commercialable_type: 'Conference'
-    cannot [:edit, :update, :destroy], Question, global: true
+    cannot %i[edit update destroy], Question, global: true
     # for admins
     can :manage, :all if user.is_admin
     # even admin cannot create new users with ICHAIN enabled
-    cannot [:new, :create], User if ENV['OSEM_ICHAIN_ENABLED'] == 'true'
+    cannot %i[new create], User if ENV['OSEM_ICHAIN_ENABLED'] == 'true'
     cannot :revert_object, PaperTrail::Version do |version|
       (version.event == 'create' && %w[Conference User Event].include?(version.item_type))
     end
@@ -69,9 +69,7 @@ class AdminAbility
     end
 
     # Prevent requests for tracks from being destroyed
-    cannot :destroy, Track do |track|
-      track.self_organized?
-    end
+    cannot :destroy, Track, &:self_organized?
     # Can't accept a booth when booth_limit is reached
     cannot :accept, Booth do |booth|
       conference = booth.conference
@@ -81,12 +79,22 @@ class AdminAbility
 
   # Abilities for signed in users with roles
   def signed_in_with_roles(user)
-    signed_in_with_organization_admin_role(user) if user.has_cached_role? :organization_admin, :any
-    signed_in_with_organizer_role(user) if user.has_cached_role? :organizer, :any
+    if user.has_cached_role? :organization_admin, :any
+      signed_in_with_organization_admin_role(user)
+    end
+    if user.has_cached_role? :organizer, :any
+      signed_in_with_organizer_role(user)
+    end
     signed_in_with_cfp_role(user) if user.has_cached_role? :cfp, :any
-    signed_in_with_info_desk_role(user) if user.has_cached_role? :info_desk, :any
-    signed_in_with_volunteers_coordinator_role(user) if user.has_cached_role? :volunteers_coordinator, :any
-    signed_in_with_track_organizer_role(user) if user.has_cached_role? :track_organizer, :any
+    if user.has_cached_role? :info_desk, :any
+      signed_in_with_info_desk_role(user)
+    end
+    if user.has_cached_role? :volunteers_coordinator, :any
+      signed_in_with_volunteers_coordinator_role(user)
+    end
+    if user.has_cached_role? :track_organizer, :any
+      signed_in_with_track_organizer_role(user)
+    end
     common_abilities_for_roles(user)
   end
 
@@ -94,12 +102,12 @@ class AdminAbility
     org_ids_for_organization_admin = Organization.with_role(:organization_admin, user).pluck(:id)
     conf_ids_for_organization_admin = Conference.where(organization_id: org_ids_for_organization_admin).pluck(:id)
 
-    can [:read, :update, :destroy, :assign_org_admins, :unassign_org_admins, :admins], Organization, id: org_ids_for_organization_admin
+    can %i[read update destroy assign_org_admins unassign_org_admins admins], Organization, id: org_ids_for_organization_admin
     can :new, Conference
     can :manage, Conference, organization_id: org_ids_for_organization_admin
-    can [:index, :show], Role
+    can %i[index show], Role
 
-    can [:index, :revert_object, :revert_attribute], PaperTrail::Version, organization_id: org_ids_for_organization_admin
+    can %i[index revert_object revert_attribute], PaperTrail::Version, organization_id: org_ids_for_organization_admin
 
     signed_in_with_organizer_role(user, conf_ids_for_organization_admin)
   end
@@ -112,7 +120,7 @@ class AdminAbility
     track_ids = Track.joins(:program).where('programs.conference_id IN (?)', conf_ids).pluck(:id)
 
     can :manage, Resource, conference_id: conf_ids
-    can [:read, :update, :destroy], Conference, id: conf_ids
+    can %i[read update destroy], Conference, id: conf_ids
     can :manage, Splashpage, conference_id: conf_ids
     can :manage, Contact, conference_id: conf_ids
     can :manage, EmailSettings, conference_id: conf_ids
@@ -162,8 +170,8 @@ class AdminAbility
         role.resource_type == 'Track' && (track_ids.include? role.resource_id)
     end
 
-    can [:index, :revert_object, :revert_attribute], PaperTrail::Version, item_type: 'User'
-    can [:index, :revert_object, :revert_attribute], PaperTrail::Version, conference_id: conf_ids
+    can %i[index revert_object revert_attribute], PaperTrail::Version, item_type: 'User'
+    can %i[index revert_object revert_attribute], PaperTrail::Version, conference_id: conf_ids
   end
 
   def signed_in_with_cfp_role(user)
@@ -173,7 +181,7 @@ class AdminAbility
     can :show, Conference do |conf|
       conf_ids_for_cfp.include?(conf.id)
     end
-    can [:index, :show, :update], Resource, conference_id: conf_ids_for_cfp
+    can %i[index show update], Resource, conference_id: conf_ids_for_cfp
     can :manage, Booth, conference_id: conf_ids_for_cfp
     can :manage, Event, program: { conference_id: conf_ids_for_cfp }
     can :manage, EventType, program: { conference_id: conf_ids_for_cfp }
@@ -202,7 +210,7 @@ class AdminAbility
         (Conference.with_role(:cfp, user).pluck(:id).include? role.resource_id)
     end
 
-    can [:index, :revert_object, :revert_attribute], PaperTrail::Version,
+    can %i[index revert_object revert_attribute], PaperTrail::Version,
         item_type: %w[Event EventType Track DifficultyLevel EmailSettings Room Cfp Program Comment], conference_id: conf_ids_for_cfp
     can [:index, :revert_object, :revert_attribute], PaperTrail::Version,
         ["item_type = 'Commercial' AND conference_id IN (?) AND (object LIKE '%Event%' OR object_changes LIKE '%Event%')", conf_ids_for_cfp] do |version|
@@ -218,7 +226,7 @@ class AdminAbility
     can :show, Conference do |conf|
       conf_ids_for_info_desk.include?(conf.id)
     end
-    can [:index, :show, :update], Resource, conference_id: conf_ids_for_info_desk
+    can %i[index show update], Resource, conference_id: conf_ids_for_info_desk
     can :manage, Registration, conference_id: conf_ids_for_info_desk
     can :manage, Question, conference_id: conf_ids_for_info_desk
     can :manage, Question do |question|
@@ -239,7 +247,7 @@ class AdminAbility
       role.resource_type == 'Conference' && role.name == 'info_desk' &&
         (Conference.with_role(:info_desk, user).pluck(:id).include? role.resource_id)
     end
-    can [:index, :revert_object, :revert_attribute], PaperTrail::Version, item_type: 'Registration', conference_id: conf_ids_for_info_desk
+    can %i[index revert_object revert_attribute], PaperTrail::Version, item_type: 'Registration', conference_id: conf_ids_for_info_desk
   end
 
   def signed_in_with_volunteers_coordinator_role(user)
@@ -249,7 +257,7 @@ class AdminAbility
     can :show, Conference do |conf|
       conf_ids_for_volunteers_coordinator.include?(conf.id)
     end
-    can [:index, :show, :update], Resource, conference_id: conf_ids_for_volunteers_coordinator
+    can %i[index show update], Resource, conference_id: conf_ids_for_volunteers_coordinator
     can :manage, Vposition, conference_id: conf_ids_for_volunteers_coordinator
     can :manage, Vday, conference_id: conf_ids_for_volunteers_coordinator
 
@@ -285,9 +293,7 @@ class AdminAbility
 
     can :manage, Track, id: track_ids_for_track_organizer
 
-    cannot [:edit, :update], Track do |track|
-      track.self_organized_and_accepted_or_confirmed?
-    end
+    cannot %i[edit update], Track, &:self_organized_and_accepted_or_confirmed?
 
     # Show Roles in the admin sidebar and allow authorization of the index action
     can [:index, :show], Role do |role|

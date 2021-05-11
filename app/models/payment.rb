@@ -53,9 +53,8 @@ class Payment < ApplicationRecord
     self.authorization_code = gateway_response[:id]
     self.status = 'success'
     true
-
-  rescue Stripe::StripeError => error
-    errors.add(:base, error.message)
+  rescue Stripe::StripeError => e
+    errors.add(:base, e.message)
     self.status = 'failure'
     false
   end

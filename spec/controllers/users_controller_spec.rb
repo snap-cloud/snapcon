@@ -7,7 +7,7 @@ describe UsersController do
   let!(:user) { create(:user, name: 'My Name') }
 
   describe 'GET #show' do
-    before :each do
+    before do
       get :show, params: { id: user.id }
     end
 
@@ -42,7 +42,7 @@ describe UsersController do
 
   describe 'PATCH #update' do
     context 'with valid attributes' do
-      before :each do
+      before do
         sign_in user
         patch :update, params: { id: user.id, user: attributes_for(:user, name: 'My Test Name') }
         user.reload

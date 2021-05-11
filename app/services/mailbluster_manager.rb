@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MailblusterManager
   include HTTParty
   base_uri 'https://api.mailbluster.com/api/leads/'

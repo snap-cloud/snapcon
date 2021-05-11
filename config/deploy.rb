@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'mina/rails'
 require 'mina/git'
 
@@ -22,7 +24,7 @@ set :branch, OSEM_DEPLOY_BRANCH
 set :shared_dirs, fetch(:shared_dirs, []).push('public/system')
 set :shared_files, fetch(:shared_files, []).push('.env.production')
 
-desc "Deploys the current version to the server."
+desc 'Deploys the current version to the server.'
 task :deploy do
   deploy do
     # Put things that will set up an empty directory into a fully set-up
@@ -36,9 +38,9 @@ task :deploy do
 
     on :launch do
       in_path(fetch(:current_path)) do
-        command %{mkdir -p tmp/}
-        command %{touch tmp/restart.txt}
-        command %{sudo systemctl restart osem-dj}
+        command %(mkdir -p tmp/)
+        command %(touch tmp/restart.txt)
+        command %(sudo systemctl restart osem-dj)
       end
     end
   end

@@ -6,6 +6,6 @@ class CreateAhoyVisitsAndEvents < ActiveRecord::Migration[5.0]
     add_column :visits, :visitor_token, :string
 
     add_index :visits, [:visit_token], unique: true
-    add_index :ahoy_events, [:name, :time]
+    add_index :ahoy_events, %i[name time]
   end
 end

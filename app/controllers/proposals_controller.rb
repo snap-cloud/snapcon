@@ -4,12 +4,12 @@ EVENTS_PER_PAGE = Rails.configuration.conference[:events_per_page]
 
 class ProposalsController < ApplicationController
   include ConferenceHelper
-  before_action :authenticate_user!, except: [:show, :new, :create]
+  before_action :authenticate_user!, except: %i[show new create]
   load_resource :conference, find_by: :short_title
   load_resource :program, through: :conference, singleton: true
   load_and_authorize_resource :event, parent: false, through: :program
   # We authorize manually in these actions
-  skip_authorize_resource :event, only: [:confirm, :restart, :withdraw]
+  skip_authorize_resource :event, only: %i[confirm restart withdraw]
 
   def index
     @event = @program.events.new
@@ -66,7 +66,9 @@ class ProposalsController < ApplicationController
     end
 
     if @event.save
-      Mailbot.submitted_proposal_mail(@event).deliver_later if @conference.email_settings.send_on_submitted_proposal
+      if @conference.email_settings.send_on_submitted_proposal
+        Mailbot.submitted_proposal_mail(@event).deliver_later
+      end
       redirect_to conference_program_proposals_path(@conference.short_title), notice: 'Proposal was successfully submitted.'
     else
       flash.now[:error] = "Could not submit proposal: #{@event.errors.full_messages.join(', ')}"
@@ -112,7 +114,9 @@ class ProposalsController < ApplicationController
     begin
       @event.withdraw
       selected_schedule = @event.program.selected_schedule
-      event_schedule = @event.event_schedules.find_by(schedule: selected_schedule) if selected_schedule
+      if selected_schedule
+        event_schedule = @event.event_schedules.find_by(schedule: selected_schedule)
+      end
       Rails.logger.debug "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}"
       if selected_schedule && event_schedule
         event_schedule.enabled = false

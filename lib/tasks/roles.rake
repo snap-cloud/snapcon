@@ -3,7 +3,6 @@
 namespace :roles do
   desc 'Adds back deleted roles to all conferences'
   task add: :environment do
-
     Organization.all.each do |org|
       Role.where(name: 'organization_admin', resource: org).first_or_create(description: 'For the administrators of an organization and its conferences')
     end
@@ -18,4 +17,3 @@ namespace :roles do
     puts 'All done!'
   end
 end
-

@@ -14,11 +14,11 @@ class MigrateDataPersonToUser < ActiveRecord::Migration
       user = TempUser.find_by(id: p.user_id)
       next unless user
 
-      if p.public_name.empty?
-        user.name = p.email
-      else
-        user.name = p.public_name
-      end
+      user.name = if p.public_name.empty?
+                    p.email
+                  else
+                    p.public_name
+                  end
       user.biography = p.biography
       user.nickname = p.irc_nickname
       user.affiliation = p.company

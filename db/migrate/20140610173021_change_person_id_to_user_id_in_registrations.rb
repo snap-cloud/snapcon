@@ -15,11 +15,11 @@ class ChangePersonIdToUserIdInRegistrations < ActiveRecord::Migration
     TempPerson.all.each do |t|
       registrations = TempRegistration.where(person_id: t.id)
 
-      unless registrations.empty?
-        registrations.each do |r|
-          r.user_id = t.user_id
-          r.save!
-        end
+      next if registrations.empty?
+
+      registrations.each do |r|
+        r.user_id = t.user_id
+        r.save!
       end
     end
 

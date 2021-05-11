@@ -28,5 +28,4 @@ FactoryBot.define do
     color { '#ffffff' }
     program
   end
-
 end

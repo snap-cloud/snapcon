@@ -9,7 +9,7 @@ module Admin
     # For some reason this doesn't work, so a workaround is used
     # load_and_authorize_resource :track, through: :program, only: [:index, :show, :edit]
 
-    before_action :assign_tracks, only: [:index, :show, :edit]
+    before_action :assign_tracks, only: %i[index show edit]
 
     def index
       @difficulty_levels = @program.difficulty_levels
@@ -20,7 +20,7 @@ module Admin
       @scheduled_event_distribution = @conference.scheduled_event_distribution
       @file_name = "events_for_#{@conference.short_title}"
       @event_export_option = params[:event_export_option]
-      @export_formats = [:pdf, :csv, :xlsx]
+      @export_formats = %i[pdf csv xlsx]
 
       respond_to do |format|
         format.html
@@ -118,7 +118,9 @@ module Admin
     def cancel
       update_state(:cancel, 'Event canceled!')
       selected_schedule = @event.program.selected_schedule
-      event_schedule = EventSchedule.unscoped.where(event: @event).find_by(schedule: selected_schedule) if selected_schedule
+      if selected_schedule
+        event_schedule = EventSchedule.unscoped.where(event: @event).find_by(schedule: selected_schedule)
+      end
       Rails.logger.debug "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}"
       if selected_schedule && event_schedule
         event_schedule.enabled = false
@@ -174,13 +176,14 @@ module Admin
 
     def event_params
       params.require(:event).permit(
-                                    # Set also in proposals controller
-                                    :title, :subtitle, :event_type_id, :abstract, :submission_text, :description, :require_registration, :difficulty_level_id,
-                                    # Set only in admin/events controller
-                                    :track_id, :state, :language, :is_highlight, :max_attendees,
-                                    # Not used anymore?
-                                    :proposal_additional_speakers, :user, :users_attributes,
-                                    speaker_ids: [], volunteer_ids: [])
+        # Set also in proposals controller
+        :title, :subtitle, :event_type_id, :abstract, :submission_text, :description, :require_registration, :difficulty_level_id,
+        # Set only in admin/events controller
+        :track_id, :state, :language, :is_highlight, :max_attendees,
+        # Not used anymore?
+        :proposal_additional_speakers, :user, :users_attributes,
+        speaker_ids: [], volunteer_ids: []
+      )
     end
 
     def comment_params

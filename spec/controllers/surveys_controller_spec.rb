@@ -13,7 +13,7 @@ describe SurveysController do
 
   describe 'GET #index' do
     context 'guest' do
-      before :each do
+      before do
         get :index, params: { conference_id: conference.short_title }
       end
 
@@ -23,7 +23,7 @@ describe SurveysController do
     end
 
     context 'signed in user' do
-      before :each do
+      before do
         sign_in user
         get :index, params: { conference_id: conference.short_title }
       end

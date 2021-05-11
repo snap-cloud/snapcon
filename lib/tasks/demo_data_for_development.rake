@@ -27,7 +27,7 @@ namespace :data do
   end
 
   task test: :environment do
-    def generate_program conference
+    def generate_program(conference)
       program = conference.program
       user1 = create(:user)
       user2 = create(:user)

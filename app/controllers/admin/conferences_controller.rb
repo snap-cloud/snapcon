@@ -24,11 +24,11 @@ module Admin
 
       @total_withdrawn = Event.where(state: :withdrawn).count
       @new_withdrawn = Event
-          .where('state = ? and created_at > ?', 'withdrawn', current_user.last_sign_in_at).count
+                       .where('state = ? and created_at > ?', 'withdrawn', current_user.last_sign_in_at).count
 
       @active_conferences = Conference.get_active_conferences_for_dashboard # pending or the last two
       @deactive_conferences = Conference
-          .get_conferences_without_active_for_dashboard(@active_conferences) # conferences without active
+                              .get_conferences_without_active_for_dashboard(@active_conferences) # conferences without active
       @conferences = @active_conferences + @deactive_conferences
 
       @recent_users = User.limit(5).order(created_at: :desc)
@@ -92,7 +92,9 @@ module Admin
       send_mail_on_conf_update = @conference.notify_on_dates_changed?
 
       if @conference.update_attributes(conference_params)
-        ConferenceDateUpdateMailJob.perform_later(@conference) if send_mail_on_conf_update
+        if send_mail_on_conf_update
+          ConferenceDateUpdateMailJob.perform_later(@conference)
+        end
         redirect_to edit_admin_conference_path(id: @conference.short_title),
                     notice: 'Conference was successfully updated.'
       else

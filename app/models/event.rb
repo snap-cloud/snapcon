@@ -36,7 +36,7 @@ class Event < ApplicationRecord
   include RevisionCount
   include FormatHelper
 
-  has_paper_trail on: [:create, :update], ignore: [:updated_at, :guid, :week], meta: { conference_id: :conference_id }
+  has_paper_trail on: %i[create update], ignore: %i[updated_at guid week], meta: { conference_id: :conference_id }
 
   acts_as_commentable
 
@@ -105,10 +105,10 @@ class Event < ApplicationRecord
     state :rejected
 
     event :restart do
-      transitions to: :new, from: [:rejected, :withdrawn, :canceled]
+      transitions to: :new, from: %i[rejected withdrawn canceled]
     end
     event :withdraw do
-      transitions to: :withdrawn, from: [:new, :unconfirmed, :confirmed]
+      transitions to: :withdrawn, from: %i[new unconfirmed confirmed]
     end
     event :accept do
       transitions to: :unconfirmed, from: [:new], on_transition: :process_acceptance
@@ -117,7 +117,7 @@ class Event < ApplicationRecord
       transitions to: :confirmed, from: :unconfirmed, on_transition: :process_confirmation
     end
     event :cancel do
-      transitions to: :canceled, from: [:unconfirmed, :confirmed]
+      transitions to: :canceled, from: %i[unconfirmed confirmed]
     end
     event :reject do
       transitions to: :rejected, from: [:new], on_transition: :process_rejection
@@ -162,7 +162,7 @@ class Event < ApplicationRecord
   # ====Returns
   # * +true+ -> If the event has votes (optionally, by the user)
   # * +false+ -> If the event does not have any votes (optionally, by the user)
-  def voted?(user=nil)
+  def voted?(user = nil)
     return votes.where(user: user).any? if user
 
     votes.any?
@@ -195,8 +195,8 @@ class Event < ApplicationRecord
 
   def process_confirmation
     if program.conference.email_settings.send_on_confirmed_without_registration? &&
-        program.conference.email_settings.confirmed_without_registration_body &&
-        program.conference.email_settings.confirmed_without_registration_subject
+       program.conference.email_settings.confirmed_without_registration_body &&
+       program.conference.email_settings.confirmed_without_registration_subject
       if program.conference.registrations.where(user_id: submitter.id).first.nil?
         Mailbot.confirm_reminder_mail(self).deliver_later
       end
@@ -205,18 +205,18 @@ class Event < ApplicationRecord
 
   def process_acceptance(options)
     if program.conference.email_settings.send_on_accepted &&
-        program.conference.email_settings.accepted_body &&
-        program.conference.email_settings.accepted_subject &&
-        !options[:send_mail].blank?
+       program.conference.email_settings.accepted_body &&
+       program.conference.email_settings.accepted_subject &&
+       !options[:send_mail].blank?
       Mailbot.acceptance_mail(self).deliver_later
     end
   end
 
   def process_rejection(options)
     if program.conference.email_settings.send_on_rejected &&
-        program.conference.email_settings.rejected_body &&
-        program.conference.email_settings.rejected_subject &&
-        !options[:send_mail].blank?
+       program.conference.email_settings.rejected_body &&
+       program.conference.email_settings.rejected_subject &&
+       !options[:send_mail].blank?
       Mailbot.rejection_mail(self).deliver_later
     end
   end
@@ -238,25 +238,25 @@ class Event < ApplicationRecord
     if mail && send_mail_param && subject && send_mail
       alert = 'Update Email Subject before Sending Mails'
     end
-      begin
-        if mail
-          send(transition,
-               send_mail: send_mail_param)
-        else
-          send(transition)
-        end
-        save
-        # If the event was previously scheduled, and then withdrawn or cancelled
-        # its event_schedule will have enabled set to false
-        # If the event is now confirmed again, we want it to be available for scheduling
-        Rails.logger.debug "transition is #{transition}"
-        if transition == :confirm
-          Rails.logger.debug "schedules #{EventSchedule.unscoped.where(event: self, enabled: false)}"
-          EventSchedule.unscoped.where(event: self, enabled: false).destroy_all
-        end
-      rescue Transitions::InvalidTransition => e
-        alert = "Update state failed. #{e.message}"
+    begin
+      if mail
+        send(transition,
+             send_mail: send_mail_param)
+      else
+        send(transition)
       end
+      save
+      # If the event was previously scheduled, and then withdrawn or cancelled
+      # its event_schedule will have enabled set to false
+      # If the event is now confirmed again, we want it to be available for scheduling
+      Rails.logger.debug "transition is #{transition}"
+      if transition == :confirm
+        Rails.logger.debug "schedules #{EventSchedule.unscoped.where(event: self, enabled: false)}"
+        EventSchedule.unscoped.where(event: self, enabled: false).destroy_all
+      end
+    rescue Transitions::InvalidTransition => e
+      alert = "Update state failed. #{e.message}"
+    end
     alert
   end
 
@@ -279,7 +279,9 @@ class Event < ApplicationRecord
       biographies:      speakers.all? { |speaker| !speaker.biography.blank? },
       subtitle:         !subtitle.blank?,
       track:            (!track.blank? unless program.tracks.empty?),
-      difficulty_level: (difficulty_level.present? unless program.difficulty_levels.empty?),
+      difficulty_level: (unless program.difficulty_levels.empty?
+                           difficulty_level.present?
+                         end),
       title:            true,
       abstract:         true
     }.with_indifferent_access
@@ -354,7 +356,9 @@ class Event < ApplicationRecord
   def max_attendees_no_more_than_room_size
     return unless room && max_attendees_changed?
 
-    errors.add(:max_attendees, "cannot be more than the room's capacity (#{room.size})") if max_attendees && (max_attendees > room.size)
+    if max_attendees && (max_attendees > room.size)
+      errors.add(:max_attendees, "cannot be more than the room's capacity (#{room.size})")
+    end
   end
 
   def word_limit(field)
@@ -369,8 +373,12 @@ class Event < ApplicationRecord
     max_words = event_type.maximum_abstract_length
     min_words = event_type.minimum_abstract_length
 
-    errors.add(field.to_sym, "cannot have less than #{min_words} words") if len < min_words
-    errors.add(field.to_sym, "cannot have more than #{max_words} words") if len > max_words
+    if len < min_words
+      errors.add(field.to_sym, "cannot have less than #{min_words} words")
+    end
+    if len > max_words
+      errors.add(field.to_sym, "cannot have more than #{max_words} words")
+    end
   end
 
   def abstract_limit
@@ -397,9 +405,11 @@ class Event < ApplicationRecord
   end
 
   def before_end_of_conference
-    errors
-        .add(:created_at, "can't be after the conference end date!") if program.conference&.end_date &&
-        (Date.today > program.conference.end_date)
+    if program.conference&.end_date &&
+       (Date.today > program.conference.end_date)
+      errors
+        .add(:created_at, "can't be after the conference end date!")
+    end
   end
 
   def conference_id
@@ -412,7 +422,9 @@ class Event < ApplicationRecord
   def valid_track
     return unless track&.program && program
 
-    errors.add(:track, 'is invalid') unless track.confirmed? && track.program == program
+    unless track.confirmed? && track.program == program
+      errors.add(:track, 'is invalid')
+    end
   end
 
   ##

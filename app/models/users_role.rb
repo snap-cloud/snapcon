@@ -18,6 +18,6 @@ class UsersRole < ApplicationRecord
 
   delegate :conference_id, :organization_id, to: :role
 
-  has_paper_trail on:   [:create, :destroy],
+  has_paper_trail on:   %i[create destroy],
                   meta: { conference_id: :conference_id, organization_id: :organization_id }
 end

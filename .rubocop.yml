@@ -1,6 +1,7 @@
+inherit_from: .rubocop_todo.yml
+
 require: rubocop-rspec
 
-inherit_from: .rubocop_todo.yml
 
 inherit_mode:
   merge:
@@ -12,6 +13,7 @@ AllCops:
   MaxFilesInCache: 4000
   Exclude:
     - db/schema.rb
+    - bin/
 
 #################### Style ###########################
 

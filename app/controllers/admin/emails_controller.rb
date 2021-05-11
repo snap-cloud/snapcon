@@ -8,11 +8,13 @@ module Admin
     def update
       if @conference.email_settings.update(email_params)
         redirect_to admin_conference_emails_path(
-                    @conference.short_title),
+          @conference.short_title
+        ),
                     notice: 'Email settings have been successfully updated.'
       else
         redirect_to admin_conference_emails_path(
-                    @conference.short_title),
+          @conference.short_title
+        ),
                     error: "Updating email settings failed. #{@conference.email_settings.errors.to_a.join('. ')}."
       end
     end

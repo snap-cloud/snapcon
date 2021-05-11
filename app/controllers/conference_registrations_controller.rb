@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class ConferenceRegistrationsController < ApplicationController
-  before_action :authenticate_user!, except: [:new, :create]
+  before_action :authenticate_user!, except: %i[new create]
   load_resource :conference, find_by: :short_title
-  authorize_resource :conference_registrations, class: Registration, except: [:new, :create]
-  before_action :set_registration, only: [:edit, :update, :destroy, :show]
+  authorize_resource :conference_registrations, class: Registration, except: %i[new create]
+  before_action :set_registration, only: %i[edit update destroy show]
 
   def new
     @registration = Registration.new(conference_id: @conference.id)
@@ -53,9 +53,7 @@ class ConferenceRegistrationsController < ApplicationController
 
     if @registration.save
       # Sign in the new user
-      unless current_user
-        sign_in(@registration.user)
-      end
+      sign_in(@registration.user) unless current_user
 
       MailblusterEditLeadJob.perform_later(@user, add_tags: ["snapcon-#{@conference.short_title}"])
 
@@ -115,14 +113,15 @@ class ConferenceRegistrationsController < ApplicationController
 
   def registration_params
     params.require(:registration)
-        .permit(
-          :conference_id,
-          :volunteer, :accepted_code_of_conduct,
-          vchoice_ids: [], qanswer_ids: [],
-          qanswers_attributes: [],
-          event_ids: [],
-          user_attributes: [
-            :username, :email, :name, :password, :password_confirmation]
-    )
+          .permit(
+            :conference_id,
+            :volunteer, :accepted_code_of_conduct,
+            vchoice_ids: [], qanswer_ids: [],
+            qanswers_attributes: [],
+            event_ids: [],
+            user_attributes: %i[
+              username email name password password_confirmation
+            ]
+          )
   end
 end

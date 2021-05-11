@@ -3,7 +3,7 @@
 module Admin
   class OrganizationsController < Admin::BaseController
     load_and_authorize_resource :organization
-    before_action :verify_user, only: [:assign_org_admins, :unassign_org_admins]
+    before_action :verify_user, only: %i[assign_org_admins unassign_org_admins]
 
     def index
       @organizations = Organization.all

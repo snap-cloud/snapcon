@@ -29,8 +29,8 @@ namespace :db do
         "-p#{connection_config[:password]} " \
         "#{connection_config[:database]} < #{dump_path}")
     else
-      raise NotImplementedError.new("An importer hasn't been implemented for: " \
-        "#{connection_config[:adapter]}")
+      raise NotImplementedError, "An importer hasn't been implemented for: " \
+        "#{connection_config[:adapter]}"
     end
   end
 end

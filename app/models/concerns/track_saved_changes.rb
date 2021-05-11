@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # https://github.com/ccmcbeck/after-commit
 module TrackSavedChanges
   extend ActiveSupport::Concern

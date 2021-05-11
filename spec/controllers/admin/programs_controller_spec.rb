@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Admin::ProgramsController, type: :controller do
-
   # It is necessary to use bang version of let to build roles before user
   let(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
@@ -18,7 +17,7 @@ describe Admin::ProgramsController, type: :controller do
   end
 
   context 'logged in as admin, organizer or cfp' do
-    before :each do
+    before do
       sign_in(organizer)
     end
 

@@ -10,7 +10,9 @@ module EventsHelper
   # ====Returns
   # * +String+ -> number of registrations / max allowed registrations
   def registered_text(event)
-    return "Registered: #{event.registrations.count}/#{event.max_attendees}" if event.max_attendees
+    if event.max_attendees
+      return "Registered: #{event.registrations.count}/#{event.max_attendees}"
+    end
 
     "Registered: #{event.registrations.count}"
   end
@@ -42,9 +44,9 @@ module EventsHelper
 
   def canceled_replacement_event_label(event, event_schedule, *label_classes)
     if event.state == 'canceled' || event.state == 'withdrawn'
-      content_tag :span, 'CANCELED', class: (['label', 'label-danger'] + label_classes)
+      content_tag :span, 'CANCELED', class: (%w[label label-danger] + label_classes)
     elsif event_schedule.present? && event_schedule.replacement?(@withdrawn_event_schedules)
-      content_tag :span, 'REPLACEMENT', class: (['label', 'label-info'] + label_classes)
+      content_tag :span, 'REPLACEMENT', class: (%w[label label-info] + label_classes)
     end
   end
 

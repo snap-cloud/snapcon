@@ -5,8 +5,7 @@ module Admin
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :lodging, through: :conference
 
-    def index
-    end
+    def index; end
 
     def new
       @lodging = @conference.lodgings.new

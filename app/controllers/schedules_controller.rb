@@ -8,7 +8,7 @@ class SchedulesController < ApplicationController
   before_action :favourites
   load_resource :conference, find_by: :short_title
   load_resource :program, through: :conference, singleton: true, except: :index
-  before_action :load_withdrawn_event_schedules, only: [:show, :events]
+  before_action :load_withdrawn_event_schedules, only: %i[show events]
 
   def show
     # TODO-SNAPCON: This route is currently not exposed, preferring to use `vertical_schedule`
@@ -23,7 +23,9 @@ class SchedulesController < ApplicationController
 
     respond_to do |format|
       format.xml do
-        @events_xml = event_schedules.map(&:event).group_by{ |event| event.time.to_date } if event_schedules
+        if event_schedules
+          @events_xml = event_schedules.map(&:event).group_by { |event| event.time.to_date }
+        end
       end
       format.ics do
         cal = Icalendar::Calendar.new
@@ -65,15 +67,19 @@ class SchedulesController < ApplicationController
     )
 
     # TODO: Refactor this -- "events for current user"
-    @events_schedules = @events_schedules.select{ |e| e.event.favourite_users.exists?(current_user.id) } if @events_schedules && current_user && @favourites
-    @events_schedules = [] unless @events_schedules
+    if @events_schedules && current_user && @favourites
+      @events_schedules = @events_schedules.select { |e| e.event.favourite_users.exists?(current_user.id) }
+    end
+    @events_schedules ||= []
 
     @unscheduled_events = if @program.selected_schedule
                             @program.events.confirmed - @events_schedules.map(&:event)
                           else
                             @program.events.confirmed
                           end
-    @unscheduled_events = @unscheduled_events.select{ |e| e.favourite_users.exists?(current_user.id) } if current_user && @favourites
+    if current_user && @favourites
+      @unscheduled_events = @unscheduled_events.select { |e| e.favourite_users.exists?(current_user.id) }
+    end
 
     day = @conference.current_conference_day
     @tag = day.strftime('%Y-%m-%d') if day
@@ -104,7 +110,9 @@ class SchedulesController < ApplicationController
       return
     end
 
-    @rooms = FullCalendarFormatter.rooms_to_resources(@conference.venue.rooms) if @conference.venue
+    if @conference.venue
+      @rooms = FullCalendarFormatter.rooms_to_resources(@conference.venue.rooms)
+    end
     @event_schedules = FullCalendarFormatter.event_schedules_to_resources(event_schedules)
     @now = Time.now.in_time_zone(@conference.timezone).strftime('%FT%T%:z')
   end
@@ -120,9 +128,11 @@ class SchedulesController < ApplicationController
   end
 
   def respond_to_options
-    respond_to do |format|
-      format.html { head :ok }
-    end if request.options?
+    if request.options?
+      respond_to do |format|
+        format.html { head :ok }
+      end
+    end
   end
 
   def load_withdrawn_event_schedules

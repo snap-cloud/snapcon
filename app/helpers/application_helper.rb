@@ -80,16 +80,14 @@ module ApplicationHelper
   # Output will be 'title, description and conference'
   def updated_attributes(version)
     version.changeset
-      .reject{ |_, values| values[0].blank? && values[1].blank? }
-      .keys.map{ |key| key.gsub('_id', '').tr('_', ' ')}.join(', ')
-      .reverse.sub(',', ' dna ').reverse
+           .reject { |_, values| values[0].blank? && values[1].blank? }
+           .keys.map { |key| key.gsub('_id', '').tr('_', ' ') }.join(', ')
+           .reverse.sub(',', ' dna ').reverse
   end
 
   def normalize_array_length(hashmap, length)
     hashmap.each_value do |value|
-      if value.length < length
-        value.fill(value[-1], value.length...length)
-      end
+      value.fill(value[-1], value.length...length) if value.length < length
     end
   end
 
@@ -122,7 +120,7 @@ module ApplicationHelper
   end
 
   def speaker_links(event)
-    safe_join(event.speakers.map{ |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
+    safe_join(event.speakers.map { |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
   end
 
   def speaker_selector_input(form)

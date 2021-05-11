@@ -12,15 +12,16 @@ describe Admin::TicketScanningsController do
   let(:physical_ticket) { create(:physical_ticket, ticket_purchase: paid_ticket_purchase) }
 
   context 'logged in as user with no role' do
-    before :each do
+    before do
       sign_in user
     end
+
     describe 'POST #create' do
       it 'does not create new ticket scanning' do
         expected = expect do
           post :create, params: { physical_ticket_id: physical_ticket.token }
         end
-        expected.to_not change(TicketScanning, :count)
+        expected.not_to change(TicketScanning, :count)
       end
 
       it 'redirects to root' do
@@ -32,16 +33,17 @@ describe Admin::TicketScanningsController do
   end
 
   context 'logged in as admin' do
-    before :each do
+    before do
       sign_in admin
     end
+
     describe 'POST #create' do
       context 'with valid physical_ticket' do
         it 'creates new ticket scanning' do
           expected = expect do
             post :create, params: { physical_ticket_id: physical_ticket.token }
           end
-          expected.to change { TicketScanning.count }.by(1)
+          expected.to change(TicketScanning, :count).by(1)
         end
 
         it 'redirects to index' do

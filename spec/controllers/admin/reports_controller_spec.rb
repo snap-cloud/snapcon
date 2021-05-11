@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Admin::ReportsController do
-
   let(:conference) { create(:conference, start_date: Date.current - 1.day) }
   let!(:admin) { create(:admin) }
   let!(:user1) { create(:user) }
@@ -18,7 +17,7 @@ describe Admin::ReportsController do
   let!(:event2) { create(:event, id: 2, program: conference.program, track: track, speakers: [user2], state: 'confirmed') }
 
   context 'track organizer is signed in' do
-    before :each do
+    before do
       sign_in(track_submitter)
       self_organized_track.assign_role_to_submitter
     end

@@ -6,7 +6,7 @@ module Admin
     # the schedule of a conference, which should not be accessed in the first place
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :program, through: :conference, singleton: true
-    load_and_authorize_resource :schedule, through: :program, except: [:new, :create]
+    load_and_authorize_resource :schedule, through: :program, except: %i[new create]
     load_resource :event_schedules, through: :schedule
     load_resource :selected_schedule, through: :program, singleton: true
     load_resource :venue, through: :conference, singleton: true
@@ -48,7 +48,9 @@ module Admin
         @rooms = [track.room]
       else
         @program.tracks.self_organized.confirmed.each do |t|
-          @event_schedules += t.selected_schedule.event_schedules if t.selected_schedule
+          if t.selected_schedule
+            @event_schedules += t.selected_schedule.event_schedules
+          end
         end
         self_organized_tracks_events = Event.eager_load(event_users: :user).confirmed.where(track: @program.tracks.self_organized.confirmed)
         @unscheduled_events = @program.events.confirmed - @schedule.events - self_organized_tracks_events

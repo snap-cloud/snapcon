@@ -27,7 +27,7 @@ describe OrganizationsController do
   let!(:user) { create(:user) }
 
   describe 'GET #index' do
-    before :each do
+    before do
       sign_in user
       get :index
     end
@@ -36,7 +36,7 @@ describe OrganizationsController do
   end
 
   describe 'GET #conferences' do
-    before :each do
+    before do
       get :conferences, params: { id: organization.id }
     end
 

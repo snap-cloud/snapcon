@@ -12,9 +12,7 @@ class ConferencesController < ApplicationController
   def index
     @current    = Conference.upcoming.reorder(start_date: :asc)
     @antiquated = Conference.past
-    if @antiquated.empty? && @current.empty? && User.empty?
-      render :new_install
-    end
+    render :new_install if @antiquated.empty? && @current.empty? && User.empty?
   end
 
   def show
@@ -60,9 +58,7 @@ class ConferencesController < ApplicationController
       if @splashpage.include_booths?
         @booths = @conference.confirmed_booths.order('title')
       end
-      if @splashpage.include_happening_now?
-        load_happening_now
-      end
+      load_happening_now if @splashpage.include_happening_now?
     end
     if @splashpage.include_registrations? || @splashpage.include_tickets?
       @tickets = @conference.tickets.visible.order('price_cents')
@@ -106,7 +102,9 @@ class ConferencesController < ApplicationController
                 e.geo = v.latitude, v.longitude if v.latitude && v.longitude
                 location = ''
                 location += "#{v.street}, " if v.street
-                location += "#{v.postalcode} #{v.city}, " if v.postalcode && v.city
+                if v.postalcode && v.city
+                  location += "#{v.postalcode} #{v.city}, "
+                end
                 location += v.country_name if v.country_name
                 e.location = location if location
               end
@@ -130,9 +128,11 @@ class ConferencesController < ApplicationController
   end
 
   def respond_to_options
-    respond_to do |format|
-      format.html { head :ok }
-    end if request.options?
+    if request.options?
+      respond_to do |format|
+        format.html { head :ok }
+      end
+    end
   end
 
   def current_user_tickets
