@@ -66,7 +66,7 @@ describe Admin::SponsorshipLevelsController do
           expect do
             post :create, params: { sponsorship_level: attributes_for(:sponsorship_level),
                                     conference_id:     conference.short_title }
-          end.to change{ conference.sponsorship_levels.count }.from(0).to(1)
+          end.to change { conference.sponsorship_levels.count }.from(0).to(1)
         end
       end
 
@@ -154,7 +154,7 @@ describe Admin::SponsorshipLevelsController do
           sponsorship_level
           expect do
             delete :destroy, params: { conference_id: conference.short_title, id: sponsorship_level.id }
-          end.to change{ conference.sponsorship_levels.count }.from(1).to(0)
+          end.to change { conference.sponsorship_levels.count }.from(1).to(0)
         end
       end
 

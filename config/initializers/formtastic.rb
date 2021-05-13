@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 # Set the default text field size when input is a string. Default is nil.
 # Formtastic::FormBuilder.default_text_field_size = 50
@@ -22,7 +22,7 @@ Formtastic::FormBuilder.include_blank_for_select_by_default = false
 # '<abbr title="required">*</abbr>'. In other words, if you configure formtastic.required
 # in your locale, it will replace the abbr title properly. But if you don't want to use
 # abbr tag, you can simply give a string as below
-Formtastic::FormBuilder.required_string = proc { Formtastic::Util.html_safe(%{&nbsp;<span class="text-warning"><abbr title="This field is required">*</abbr></span>}) }
+Formtastic::FormBuilder.required_string = proc { Formtastic::Util.html_safe(%(&nbsp;<span class="text-warning"><abbr title="This field is required">*</abbr></span>)) }
 
 # Set the string that will be appended to the labels/fieldsets which are optional
 # Defaults to an empty string ("") and also accepts procs (see required_string above)
@@ -88,7 +88,6 @@ Formtastic::FormBuilder.required_string = proc { Formtastic::Util.html_safe(%{&n
 # this to true. Doing so will add a `novalidate` attribute to the `<form>` tag.
 # See http://diveintohtml5.org/forms.html#validation for more info.
 Formtastic::FormBuilder.perform_browser_validations = true
-#
 Formtastic::Helpers::FormHelper.builder = FormtasticBootstrap::FormBuilder
 FormtasticBootstrap::FormBuilder.default_inline_hint_class = FormtasticBootstrap::FormBuilder.default_block_hint_class
 

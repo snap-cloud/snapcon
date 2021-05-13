@@ -10,8 +10,12 @@ FactoryBot.define do
       unless (venue = program.conference.venue)
         venue = create(:venue, conference: program.conference)
       end
-      (event_schedule.room = create(:room, venue: venue)) unless event_schedule.room.present?
-      (event_schedule.start_time = program.conference.start_date + program.conference.start_hour.hours) unless event_schedule.start_time.present?
+      unless event_schedule.room.present?
+        (event_schedule.room = create(:room, venue: venue))
+      end
+      unless event_schedule.start_time.present?
+        (event_schedule.start_time = program.conference.start_date + program.conference.start_hour.hours)
+      end
       unless event_schedule.schedule.present?
         unless program.selected_schedule.present?
           schedule = create(:schedule, program: program)

@@ -7,7 +7,7 @@ describe SchedulesController do
 
   describe 'GET #show' do
     context 'XML' do
-      before :each do
+      before do
         conference.program.schedule_public = true
         conference.program.save!
         create(:event_scheduled, program: conference.program)
@@ -19,7 +19,7 @@ describe SchedulesController do
       it 'assigns variables' do
         expect(assigns(:conference)).to eq conference
         expect(assigns(:events_xml)).to eq conference.program.selected_event_schedules.map(&:event)
-                                           .group_by{ |event| event.time.to_date }
+                                                     .group_by { |event| event.time.to_date }
       end
 
       it 'has 200 status code' do
@@ -44,7 +44,7 @@ describe SchedulesController do
     let!(:event_schedule2) { create(:event_schedule, event: scheduled_event2, schedule: selected_schedule, start_time: (Time.now.in_time_zone(conference2.timezone) + 1.hour).strftime('%a, %d %b %Y %H:%M:%S')) }
 
     context 'html' do
-      before :each do
+      before do
         get :happening_now, params: { conference_id: conference2.short_title }
       end
 
@@ -54,7 +54,7 @@ describe SchedulesController do
     end
 
     context 'json' do
-      before :each do
+      before do
         get :happening_now, format: :json, params: { conference_id: conference2.short_title }
       end
 
@@ -78,7 +78,7 @@ describe SchedulesController do
 
     context 'as a conference participant' do
       context 'who visits the schedule page' do
-        before(:each) do
+        before do
           get :vertical_schedule, params: { conference_id: conference.short_title }
         end
 

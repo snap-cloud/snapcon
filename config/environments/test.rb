@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Osem::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -22,7 +24,7 @@ Osem::Application.configure do
   config.action_dispatch.show_exceptions = false
 
   # Disable request forgery protection in test environment
-  config.action_controller.allow_forgery_protection    = false
+  config.action_controller.allow_forgery_protection = false
 
   # Tell Action Mailer not to deliver emails to the real world.
   # The :test delivery method accumulates sent emails in the
@@ -47,7 +49,7 @@ Osem::Application.configure do
   config.after_initialize do
     ActiveRecord::Base.logger = nil
     # Set Time.now to May 1, 2014 00:01:00 AM (at this instant), but allow it to move forward
-    t = Time.local(2014, 05, 01, 00, 01, 00)
+    t = Time.local(2014, 0o5, 0o1, 0o0, 0o1, 0o0)
     Timecop.travel(t)
     ActiveSupport::Deprecation.silenced = true
   end

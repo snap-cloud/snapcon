@@ -4,7 +4,7 @@ class BoothsController < ApplicationController
   before_action :authenticate_user!
   load_resource :conference, find_by: :short_title
   load_and_authorize_resource through: :conference
-  skip_authorize_resource only: [:withdraw, :confirm, :restart]
+  skip_authorize_resource only: %i[withdraw confirm restart]
 
   def index
     @booths = current_user.booths.where(conference_id: @conference.id).uniq
@@ -95,6 +95,6 @@ class BoothsController < ApplicationController
 
   def booth_params
     params.require(:booth).permit(:title, :description, :reasoning, :state, :picture, :conference_id,
-                                  :created_at, :updated_at, :submitter_relationship, :website_url, responsible_ids: [])
+                                  :created_at, :updated_at, :submitter_relationship, :website_url, responsible_ids: [],)
   end
 end

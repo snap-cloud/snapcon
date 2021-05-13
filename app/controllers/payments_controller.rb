@@ -48,7 +48,7 @@ class PaymentsController < ApplicationController
     params.permit(:stripe_customer_email, :stripe_customer_token)
           .merge(stripe_customer_email: params[:stripeEmail],
                  stripe_customer_token: params[:stripeToken],
-                 user: current_user, conference: @conference)
+                 user: current_user, conference: @conference,)
   end
 
   def update_purchased_ticket_purchases

@@ -15,7 +15,7 @@ describe SubscriptionsController do
     end
 
     context 'when user is signed in' do
-      before(:each) do
+      before do
         sign_in(user)
       end
 
@@ -37,7 +37,7 @@ describe SubscriptionsController do
   end
 
   describe 'DELETE #destroy' do
-    before(:each) do
+    before do
       sign_in(user)
       post :create, params: { conference_id: conference.short_title }
     end

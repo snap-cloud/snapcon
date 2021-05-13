@@ -60,7 +60,7 @@ module Admin
       params.require(:cfp).permit(
         :start_date, :end_date,
         :description, :cfp_type,
-        :enable_registrations
+        :enable_registrations,
       )
     end
 

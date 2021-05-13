@@ -12,9 +12,7 @@ class ConferencesController < ApplicationController
   def index
     @current    = Conference.upcoming.reorder(start_date: :asc)
     @antiquated = Conference.past
-    if @antiquated.empty? && @current.empty? && User.empty?
-      render :new_install
-    end
+    render :new_install if @antiquated.empty? && @current.empty? && User.empty?
   end
 
   def show
@@ -24,7 +22,7 @@ class ConferencesController < ApplicationController
       :program,
       :registration_period,
       :contact,
-      venue: :commercial
+      venue: :commercial,
     ).find_by!(conference_finder_conditions)
     authorize! :show, @conference # TODO: reduce the 10 queries performed here
 
@@ -54,25 +52,19 @@ class ConferencesController < ApplicationController
       @highlights = @conference.highlighted_events.eager_load(:speakers)
       if @splashpage.include_tracks?
         @tracks = @conference.confirmed_tracks.eager_load(
-          :room
+          :room,
         ).order('tracks.name')
       end
-      if @splashpage.include_booths?
-        @booths = @conference.confirmed_booths.order('title')
-      end
-      if @splashpage.include_happening_now?
-        load_happening_now
-      end
+      @booths = @conference.confirmed_booths.order('title') if @splashpage.include_booths?
+      load_happening_now if @splashpage.include_happening_now?
     end
     if @splashpage.include_registrations? || @splashpage.include_tickets?
       @tickets = @conference.tickets.visible.order('price_cents')
     end
-    if @splashpage.include_lodgings?
-      @lodgings = @conference.lodgings.order('id')
-    end
+    @lodgings = @conference.lodgings.order('id') if @splashpage.include_lodgings?
     if @splashpage.include_sponsors?
       @sponsorship_levels = @conference.sponsorship_levels.eager_load(
-        :sponsors
+        :sponsors,
       ).order('sponsorship_levels.position ASC', 'sponsors.name')
       @sponsors = @conference.sponsors
     end
@@ -85,7 +77,7 @@ class ConferencesController < ApplicationController
         Conference.all.each do |conf|
           if params[:full]
             event_schedules = conf.program.selected_event_schedules(
-              includes: [{ event: %i[event_type speakers submitter] }]
+              includes: [{ event: %i[event_type speakers submitter] }],
             )
             calendar = icalendar_proposals(calendar, event_schedules.map(&:event), conf)
           else
@@ -130,9 +122,11 @@ class ConferencesController < ApplicationController
   end
 
   def respond_to_options
-    respond_to do |format|
-      format.html { head :ok }
-    end if request.options?
+    if request.options?
+      respond_to do |format|
+        format.html { head :ok }
+      end
+    end
   end
 
   def current_user_tickets

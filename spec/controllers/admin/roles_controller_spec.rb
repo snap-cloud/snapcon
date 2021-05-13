@@ -12,7 +12,7 @@ describe Admin::RolesController do
   let!(:user2) { create(:user, email: 'user2@osem.io') }
 
   describe 'GET #index' do
-    before :each do
+    before do
       sign_in(admin)
       get :index, params: { conference_id: conference.short_title }
     end
@@ -27,7 +27,7 @@ describe Admin::RolesController do
   end
 
   describe 'GET #show' do
-    before :each do
+    before do
       sign_in(admin)
       get :show, params: { conference_id: conference.short_title,
                            id:            'organizer' }
@@ -43,7 +43,7 @@ describe Admin::RolesController do
   end
 
   describe 'PATCH #update' do
-    before :each do
+    before do
       sign_in admin
       patch :update, params: { conference_id: conference.short_title,
                                id:            'cfp',
@@ -56,7 +56,7 @@ describe Admin::RolesController do
   end
 
   describe 'POST #toggle' do
-    before :each do
+    before do
       sign_in admin
       post :toggle_user, params: { conference_id: conference.short_title,
                                    user:          { email: 'user1@osem.io' },

@@ -44,13 +44,13 @@ module Admin
       if ticket_purchase.save
         redirect_to(
           admin_conference_ticket_path(@conference.short_title, @ticket),
-          notice: "#{recipient.name} was given a #{@ticket.title} ticket."
+          notice: "#{recipient.name} was given a #{@ticket.title} ticket.",
         )
       else
         redirect_back(
           fallback_location: admin_conference_ticket_path(@conference.short_title, @ticket),
           error:             "Unable to give #{recipient.name} a #{@ticket.title} ticket: " +
-                             ticket_purchase.errors.full_messages.to_sentence
+                             ticket_purchase.errors.full_messages.to_sentence,
         )
       end
     end
@@ -73,13 +73,13 @@ module Admin
         :conference, :conference_id,
         :title, :url, :description,
         :price_cents, :price_currency, :price,
-        :registration_ticket, :visible
+        :registration_ticket, :visible,
       )
     end
 
     def gift_ticket_params
       response = params.require(:ticket_purchase).permit(
-        :user_id
+        :user_id,
       )
       response.merge(paid: true, amount_paid: 0, conference: @conference)
     end

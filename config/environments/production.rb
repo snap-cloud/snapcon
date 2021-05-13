@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Osem::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
@@ -49,7 +51,7 @@ Osem::Application.configure do
   # Apache or NGINX already handles this.
   config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
-  if ENV["RAILS_LOG_TO_STDOUT"].present?
+  if ENV['RAILS_LOG_TO_STDOUT'].present?
     logger           = ActiveSupport::Logger.new(STDOUT)
     logger.formatter = config.log_formatter
     config.logger = ActiveSupport::TaggedLogging.new(logger)
@@ -57,10 +59,10 @@ Osem::Application.configure do
 
   # Use a different cache store in production
   # config.cache_store = :mem_cache_store
-  if ENV["OSEM_MEMCACHED_SERVERS"]
-    config.cache_store = :mem_cache_store, ENV["OSEM_MEMCACHED_SERVERS"].split(','), {
-      username: ENV["OSEM_MEMCACHED_USERNAME"],
-      password: ENV["OSEM_MEMCACHED_PASSWORD"]
+  if ENV['OSEM_MEMCACHED_SERVERS']
+    config.cache_store = :mem_cache_store, ENV['OSEM_MEMCACHED_SERVERS'].split(','), {
+      username: ENV['OSEM_MEMCACHED_USERNAME'],
+      password: ENV['OSEM_MEMCACHED_PASSWORD']
     }
   end
 
@@ -100,7 +102,7 @@ Osem::Application.configure do
   }.compact
 
   # Set the secret_key_base from the env, if not set by any other means
-  config.secret_key_base ||= ENV["SECRET_KEY_BASE"]
+  config.secret_key_base ||= ENV['SECRET_KEY_BASE']
 
   # Mailbot settings
   config.mailbot = {

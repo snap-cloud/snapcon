@@ -10,8 +10,7 @@ class UsersController < ApplicationController
   end
 
   # GET /users/1/edit
-  def edit
-  end
+  def edit; end
 
   # PATCH/PUT /users/1
   def update
@@ -27,7 +26,7 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :biography, :nickname, :affiliation,
-                                 :picture, :picture_cache)
+                                 :picture, :picture_cache,)
   end
 
   # Somewhat of a hack: users/current/edit

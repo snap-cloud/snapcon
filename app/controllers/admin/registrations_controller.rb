@@ -84,7 +84,7 @@ module Admin
       params.require(:registration).permit(
         :user_id, :conference_id, :attended,
         :volunteer, :other_special_needs, :accepted_code_of_conduct,
-        vchoice_ids: [], qanswer_ids: [], qanswers_attributes: [], event_ids: []
+        vchoice_ids: [], qanswer_ids: [], qanswers_attributes: [], event_ids: [],
       )
     end
   end

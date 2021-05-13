@@ -24,11 +24,11 @@ module Admin
 
       @total_withdrawn = Event.where(state: :withdrawn).count
       @new_withdrawn = Event
-          .where('state = ? and created_at > ?', 'withdrawn', current_user.last_sign_in_at).count
+                       .where('state = ? and created_at > ?', 'withdrawn', current_user.last_sign_in_at).count
 
       @active_conferences = Conference.get_active_conferences_for_dashboard # pending or the last two
       @deactive_conferences = Conference
-          .get_conferences_without_active_for_dashboard(@active_conferences) # conferences without active
+                              .get_conferences_without_active_for_dashboard(@active_conferences) # conferences without active
       @conferences = @active_conferences + @deactive_conferences
 
       @recent_users = User.limit(5).order(created_at: :desc)
@@ -181,7 +181,7 @@ module Admin
                                          :vpositions_attributes, :use_volunteers, :color,
                                          :sponsorship_levels_attributes, :sponsors_attributes,
                                          :registration_limit, :organization_id, :ticket_layout,
-                                         :booth_limit, :custom_css)
+                                         :booth_limit, :custom_css,)
     end
   end
 end

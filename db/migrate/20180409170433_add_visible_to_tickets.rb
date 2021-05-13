@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddVisibleToTickets < ActiveRecord::Migration[5.0]
   def up
     add_column :tickets, :visible, :boolean, default: true

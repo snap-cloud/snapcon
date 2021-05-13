@@ -10,7 +10,7 @@ module ConferenceHelper
   # Return true if exactly two of those calls are open: call_for_papers , call_for_tracks , call_for_booths
 
   def two_calls_open(*calls)
-    calls.count{ |call| call.try(:open?) } == 2
+    calls.count { |call| call.try(:open?) } == 2
   end
 
   # URL for sponsorship emails
@@ -20,7 +20,7 @@ module ConferenceHelper
       conference.contact.sponsor_email,
       '?subject=',
       url_encode(conference.short_title),
-      '%20Sponsorship'
+      '%20Sponsorship',
     ].join
   end
 
@@ -76,9 +76,7 @@ module ConferenceHelper
   def get_happening_next_events_schedules(conference)
     events_schedules = filter_events_schedules(conference, :happening_later?)
 
-    if events_schedules.empty?
-      return []
-    end
+    return [] if events_schedules.empty?
 
     # events_schedules have been sorted by start_time in selected_event_schedules
     happening_next_time = events_schedules[0].start_time
@@ -104,7 +102,7 @@ module ConferenceHelper
   # TODO: Move this to using the cached method on program/schedule
   def filter_events_schedules(conference, filter)
     conference.program.selected_event_schedules(
-      includes: [:room, { event: %i[track event_type speakers submitter] }]
+      includes: [:room, { event: %i[track event_type speakers submitter] }],
     ).select(&filter)
   end
 end

@@ -80,16 +80,14 @@ module ApplicationHelper
   # Output will be 'title, description and conference'
   def updated_attributes(version)
     version.changeset
-      .reject{ |_, values| values[0].blank? && values[1].blank? }
-      .keys.map{ |key| key.gsub('_id', '').tr('_', ' ')}.join(', ')
-      .reverse.sub(',', ' dna ').reverse
+           .reject { |_, values| values[0].blank? && values[1].blank? }
+           .keys.map { |key| key.gsub('_id', '').tr('_', ' ') }.join(', ')
+           .reverse.sub(',', ' dna ').reverse
   end
 
   def normalize_array_length(hashmap, length)
     hashmap.each_value do |value|
-      if value.length < length
-        value.fill(value[-1], value.length...length)
-      end
+      value.fill(value[-1], value.length...length) if value.length < length
     end
   end
 
@@ -122,7 +120,7 @@ module ApplicationHelper
   end
 
   def speaker_links(event)
-    safe_join(event.speakers.map{ |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
+    safe_join(event.speakers.map { |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
   end
 
   def speaker_selector_input(form)
@@ -132,7 +130,7 @@ module ApplicationHelper
   def volunteer_links(event)
     safe_join(event.volunteers.map do |volunteer|
       link_to(volunteer.name, admin_user_path(volunteer))
-    end, ', ')
+    end, ', ',)
   end
 
   def volunteer_selector_input(form)
@@ -143,7 +141,7 @@ module ApplicationHelper
     user_selector_input(
       :responsibles,
       form,
-      "The people responsible for the #{t 'booth'}. You can only select existing users."
+      "The people responsible for the #{t 'booth'}. You can only select existing users.",
     )
   end
 
@@ -157,13 +155,13 @@ module ApplicationHelper
       hint:          hint,
       collection:    options_for_select(
         users.map { |user| ["#{user[1]} (#{user[2]}) #{user[3]}", user[0]] },
-        (form.object.send(field)&.map(&:id) || form.object.send(field)&.id)
+        (form.object.send(field)&.map(&:id) || form.object.send(field)&.id),
       ),
       input_html:    {
         class:       'select-help-toggle js-userSelector',
         multiple:    multiple,
         placeholder: (multiple ? 'Select users...' : 'Select a user...')
-      }
+      },
     )
   end
 
@@ -202,7 +200,7 @@ module ApplicationHelper
       image_tag(conference_logo_url(conference), alt: nav_link_text(conference)),
       path,
       class: 'navbar-brand',
-      title: nav_link_text(conference)
+      title: nav_link_text(conference),
     )
   end
 

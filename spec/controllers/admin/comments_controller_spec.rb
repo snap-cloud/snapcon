@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Admin::CommentsController, type: :controller do
-
   # It is necessary to use bang version of let to build roles before user
   let(:conference) { create(:conference) }
   let(:organizer) { create(:organizer, resource: conference, last_sign_in_at: Time.now - 1.day) }
@@ -22,10 +21,11 @@ describe Admin::CommentsController, type: :controller do
   end
 
   context 'logged in as admin, organizer or cfp' do
-    before :each do
+    before do
       sign_in(organizer)
       comment
     end
+
     describe 'GET #index' do
       it 'populates a hash with comments' do
         get :index
@@ -34,10 +34,12 @@ describe Admin::CommentsController, type: :controller do
         # Calling again 'first' returns the key, meaning the Conference object.
         expect(assigns(:comments).first.first.title).to eq(comment.commentable.program.conference.title)
       end
+
       it 'has status 200: OK' do
         get :index
         expect(response).to have_http_status(:ok)
       end
+
       it 'renders the :index template' do
         get :index
         expect(response).to render_template(:index)

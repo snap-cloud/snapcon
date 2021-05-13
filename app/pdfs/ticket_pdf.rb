@@ -58,7 +58,7 @@ class TicketPdf < Prawn::Document
                            open([
                              Rails.root,
                              '/public',
-                             @conference.picture.ticket.url
+                             @conference.picture.ticket.url,
                            ].join)
                          end
     end

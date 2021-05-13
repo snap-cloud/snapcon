@@ -7,7 +7,7 @@ module Admin
     load_and_authorize_resource through: :program
 
     def index
-#       authorize! :index, DifficultyLevel.new(program_id: @program.id)
+      #       authorize! :index, DifficultyLevel.new(program_id: @program.id)
     end
 
     def edit; end

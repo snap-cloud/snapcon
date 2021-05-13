@@ -9,7 +9,7 @@ describe PhysicalTicketsController do
   let(:physical_ticket) { create(:physical_ticket, ticket_purchase: paid_ticket_purchase) }
 
   describe 'GET #show' do
-    before :each do
+    before do
       sign_in user
       get :show, params: { id: physical_ticket.token, conference_id: conference.short_title }
     end

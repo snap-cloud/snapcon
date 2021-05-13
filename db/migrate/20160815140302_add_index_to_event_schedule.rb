@@ -2,6 +2,6 @@
 
 class AddIndexToEventSchedule < ActiveRecord::Migration
   def change
-    add_index :event_schedules, [:event_id, :schedule_id], unique: true
+    add_index :event_schedules, %i[event_id schedule_id], unique: true
   end
 end

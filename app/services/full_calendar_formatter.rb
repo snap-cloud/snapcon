@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class FullCalendarFormatter
   def self.rooms_to_resources(rooms)
     rooms.map { |room| room_to_resource(room) }.to_json

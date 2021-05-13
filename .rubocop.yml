@@ -1,6 +1,6 @@
-require: rubocop-rspec
-
 inherit_from: .rubocop_todo.yml
+
+require: rubocop-rspec
 
 inherit_mode:
   merge:
@@ -12,6 +12,7 @@ AllCops:
   MaxFilesInCache: 4000
   Exclude:
     - db/schema.rb
+    - bin/
 
 #################### Style ###########################
 
@@ -43,3 +44,29 @@ RSpec/DescribeClass:
 Layout/AlignHash:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
+
+# Style
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/factories/*'
+
+Metrics/LineLength:
+  Enabled: True
+  Max: 100
+  Exclude:
+    - 'spec/factories/*'
+
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/SymbolArray:
+  Enabled: false
+
+# TODO: Enable after upgrading rubocop
+# Style/StringConcatenation:
+#   Enabled: True

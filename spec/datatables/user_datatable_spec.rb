@@ -8,7 +8,7 @@ describe UserDatatable do
   end
 
   let(:data_cols) do
-    [:id, :confirmed_at, :email, :name, :username, :attended, :roles, :view_url, :edit_url, :DT_RowId, :confirmed]
+    %i[id confirmed_at email name username attended roles view_url edit_url DT_RowId confirmed]
   end
   let(:view) do
     view = double(
@@ -71,7 +71,7 @@ describe UserDatatable do
         'length'  => '10',
         'search'  => { 'value' => '', 'regex' => 'false' },
         '_'       => '1532637360488'
-      }.with_indifferent_access
+      }.with_indifferent_access,
     )
     allow(view).to receive(:admin_user_path) do |arg|
       "/admin/users/#{arg.to_param}"

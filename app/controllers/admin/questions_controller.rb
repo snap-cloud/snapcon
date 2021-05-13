@@ -3,7 +3,7 @@
 module Admin
   class QuestionsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
-    load_and_authorize_resource through: :conference, except: [:new, :create]
+    load_and_authorize_resource through: :conference, except: %i[new create]
 
     def index
       authorize! :index, Question.new(conference_id: @conference.id)
@@ -75,12 +75,9 @@ module Admin
           # Delete question and its answers
           begin
             Question.transaction do
-
               @question.destroy
-              @question.answers.each do |a|
-                a.destroy
-              end
-              flash[:notice] = "Deleted question: #{@question.title} and its answers: #{@question.answers.map {|a| a.title}.join ','}"
+              @question.answers.each(&:destroy)
+              flash[:notice] = "Deleted question: #{@question.title} and its answers: #{@question.answers.map(&:title).join ','}"
             end
           rescue ActiveRecord::RecordInvalid
             flash[:error] = 'Could not delete question.'
@@ -97,7 +94,7 @@ module Admin
     private
 
     def question_params
-      params.require(:question).permit(:title, :global, :answer_ids, :question_type_id, :conference_id, answers_attributes: [:id, :title])
+      params.require(:question).permit(:title, :global, :answer_ids, :question_type_id, :conference_id, answers_attributes: %i[id title])
     end
 
     def conference_params

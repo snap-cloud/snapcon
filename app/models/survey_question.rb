@@ -18,7 +18,7 @@ class SurveyQuestion < ActiveRecord::Base
   has_many :survey_replies, dependent: :destroy
 
   # Order of this list should not be changed without proper action!
-  enum kind: [:boolean, :choice, :string, :text, :datetime, :numeric]
+  enum kind: %i[boolean choice string text datetime numeric]
 
   ICONS = { boolean: 'dot-circle-o', choice: 'check-square-o', string: 'edit', text: 'align-left', datetime: 'clock-o', numeric: 'slack' }.freeze
 
@@ -52,6 +52,8 @@ class SurveyQuestion < ActiveRecord::Base
   private
 
   def max_choices_greater_than_min
-    errors.add(:max_choices, 'Max choices should not be less than min choices') if choice? && max_choices.to_i < min_choices.to_i
+    if choice? && max_choices.to_i < min_choices.to_i
+      errors.add(:max_choices, 'Max choices should not be less than min choices')
+    end
   end
 end

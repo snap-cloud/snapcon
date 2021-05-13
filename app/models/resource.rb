@@ -20,6 +20,8 @@ class Resource < ApplicationRecord
   private
 
   def used_no_more_than_quantity
-    errors.add(:used, 'cannot be higher than total quantity') if used.present? && quantity.present? && used > quantity
+    if used.present? && quantity.present? && used > quantity
+      errors.add(:used, 'cannot be higher than total quantity')
+    end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MailblusterManager
   include HTTParty
   base_uri 'https://api.mailbluster.com/api/leads/'
@@ -20,7 +22,7 @@ class MailblusterManager
                 'overrideExisting' => true,
                 'subscribed'       => true,
                 'tags'             => [ENV['OSEM_NAME'] || 'snapcon']
-              })
+              },)
   end
 
   def self.edit_lead(user, add_tags: [], remove_tags: [], old_email: nil)
@@ -30,7 +32,7 @@ class MailblusterManager
                 'firstName'  => user.name,
                 'addTags'    => add_tags,
                 'removeTags' => remove_tags
-              })
+              },)
   end
 
   def self.delete_lead(email)

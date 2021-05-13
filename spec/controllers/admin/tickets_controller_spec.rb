@@ -58,7 +58,7 @@ describe Admin::TicketsController do
 
         it 'redirects to index path', run: true do
           expect(response).to redirect_to(
-            admin_conference_tickets_path(conference_id: conference)
+            admin_conference_tickets_path(conference_id: conference),
           )
         end
 
@@ -72,7 +72,7 @@ describe Admin::TicketsController do
               ticket:        attributes_for(:ticket),
               conference_id: conference
             }
-          end.to change{ conference.tickets.count }.from(ticket_count).to(ticket_count + 1)
+          end.to change { conference.tickets.count }.from(ticket_count).to(ticket_count + 1)
         end
       end
 
@@ -109,7 +109,7 @@ describe Admin::TicketsController do
 
         it 'redirects to index path' do
           expect(response).to redirect_to(
-            admin_conference_tickets_path(conference_id: conference)
+            admin_conference_tickets_path(conference_id: conference),
           )
         end
 
@@ -157,7 +157,7 @@ describe Admin::TicketsController do
 
         it 'redirects to index path', run: true do
           expect(response).to redirect_to(
-            admin_conference_tickets_path(conference_id: conference)
+            admin_conference_tickets_path(conference_id: conference),
           )
         end
 
@@ -168,7 +168,7 @@ describe Admin::TicketsController do
         it 'deletes the ticket' do
           expect do
             delete :destroy, params: { conference_id: conference, id: ticket }
-          end.to change{ conference.tickets.count }.from(ticket_count).to(ticket_count - 1)
+          end.to change { conference.tickets.count }.from(ticket_count).to(ticket_count - 1)
         end
       end
 
@@ -182,7 +182,7 @@ describe Admin::TicketsController do
 
         it 'redirects to index path' do
           expect(response).to redirect_to(
-            admin_conference_tickets_path(conference_id: conference)
+            admin_conference_tickets_path(conference_id: conference),
           )
         end
 
@@ -209,13 +209,13 @@ describe Admin::TicketsController do
 
         it 'redirects to ticket' do
           expect(response).to redirect_to(
-            admin_conference_ticket_path(conference_id: conference, id: ticket)
+            admin_conference_ticket_path(conference_id: conference, id: ticket),
           )
         end
 
         it 'shows success message in flash notice' do
           expect(flash[:notice]).to match(
-            "#{admin.name} was given a #{ticket.title} ticket."
+            "#{admin.name} was given a #{ticket.title} ticket.",
           )
         end
 
@@ -238,14 +238,14 @@ describe Admin::TicketsController do
 
         it 'redirects to ticket' do
           expect(response).to redirect_to(
-            admin_conference_ticket_path(conference_id: conference, id: ticket)
+            admin_conference_ticket_path(conference_id: conference, id: ticket),
           )
         end
 
         it 'shows error in flash message' do
           expect(flash[:error]).to match(
-             "Unable to give #{admin.name} a #{ticket.title} ticket: "
-           )
+            "Unable to give #{admin.name} a #{ticket.title} ticket: ",
+          )
         end
 
         it 'does not create a ticket purchase' do

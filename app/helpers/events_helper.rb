@@ -21,7 +21,7 @@ module EventsHelper
         'label',
         '',
         class: "rating#{' bright' if rating.to_f > counter}",
-        **options
+        **options,
       )
     end.join.html_safe
   end
@@ -42,9 +42,9 @@ module EventsHelper
 
   def canceled_replacement_event_label(event, event_schedule, *label_classes)
     if event.state == 'canceled' || event.state == 'withdrawn'
-      content_tag :span, 'CANCELED', class: (['label', 'label-danger'] + label_classes)
+      content_tag :span, 'CANCELED', class: (%w[label label-danger] + label_classes)
     elsif event_schedule.present? && event_schedule.replacement?(@withdrawn_event_schedules)
-      content_tag :span, 'REPLACEMENT', class: (['label', 'label-info'] + label_classes)
+      content_tag :span, 'REPLACEMENT', class: (%w[label label-info] + label_classes)
     end
   end
 
@@ -69,7 +69,7 @@ module EventsHelper
           min_words:    type.minimum_abstract_length,
           max_words:    type.maximum_abstract_length,
           instructions: type.submission_instructions
-        }
+        },
       ]
     end
   end
@@ -82,8 +82,8 @@ module EventsHelper
         admin_conference_program_event_path(
           conference_id,
           event,
-          event: { event_type_id: event_type.id }
-        )
+          event: { event_type_id: event_type.id },
+        ),
       ]
     end
     active_dropdown(selection, options)
@@ -97,8 +97,8 @@ module EventsHelper
         admin_conference_program_event_path(
           conference_id,
           event,
-          event: { track_id: track.id }
-        )
+          event: { track_id: track.id },
+        ),
       ]
     end
     active_dropdown(selection, options)
@@ -112,8 +112,8 @@ module EventsHelper
         admin_conference_program_event_path(
           conference_id,
           event,
-          event: { difficulty_level_id: difficulty.id }
-        )
+          event: { difficulty_level_id: difficulty.id },
+        ),
       ]
     end
     active_dropdown(selection, options)
@@ -125,7 +125,7 @@ module EventsHelper
     if event.transition_possible? :accept
       options << [
         'Accept',
-        accept_admin_conference_program_event_path(conference_id, event)
+        accept_admin_conference_program_event_path(conference_id, event),
       ]
       if email_settings.send_on_accepted?
         options << [
@@ -133,15 +133,15 @@ module EventsHelper
           accept_admin_conference_program_event_path(
             conference_id,
             event,
-            send_mail: false
-          )
+            send_mail: false,
+          ),
         ]
       end
     end
     if event.transition_possible? :reject
       options << [
         'Reject',
-        reject_admin_conference_program_event_path(conference_id, event)
+        reject_admin_conference_program_event_path(conference_id, event),
       ]
       if email_settings.send_on_rejected?
         options << [
@@ -149,27 +149,27 @@ module EventsHelper
           reject_admin_conference_program_event_path(
             conference_id,
             event,
-            send_mail: false
-          )
+            send_mail: false,
+          ),
         ]
       end
     end
     if event.transition_possible? :restart
       options << [
         'Start review',
-        restart_admin_conference_program_event_path(conference_id, event)
+        restart_admin_conference_program_event_path(conference_id, event),
       ]
     end
     if event.transition_possible? :confirm
       options << [
         'Confirm',
-        confirm_admin_conference_program_event_path(conference_id, event)
+        confirm_admin_conference_program_event_path(conference_id, event),
       ]
     end
     if event.transition_possible? :cancel
       options << [
         'Cancel',
-        cancel_admin_conference_program_event_path(conference_id, event)
+        cancel_admin_conference_program_event_path(conference_id, event),
       ]
     end
     active_dropdown(selection, options)
@@ -183,9 +183,9 @@ module EventsHelper
       url:   admin_conference_program_event_path(
         conference_id,
         event,
-        event: { attribute => nil }
+        event: { attribute => nil },
       ),
-      class: 'switch-checkbox'
+      class: 'switch-checkbox',
     )
   end
 
@@ -199,7 +199,7 @@ module EventsHelper
     if current_user.roles.where(id: conference.roles).any?
       # Show Pre-Event links for any memeber of the conference team.
       link_to("Join Live Event #{'(Admin link)' unless is_now}",
-              event.url, target: '_blank')
+              event.url, target: '_blank',)
     elsif current_user.registered_to_event?(conference)
       if is_now
         link_to('Join Live Event', event.url, target: '_blank')
@@ -259,7 +259,7 @@ module EventsHelper
         'a',
         class: 'dropdown-toggle',
         href:  '#',
-        data:  { toggle: 'dropdown' }
+        data:  { toggle: 'dropdown' },
       ) do
         content_tag('span', selection) +
           content_tag('span', '', class: 'caret')

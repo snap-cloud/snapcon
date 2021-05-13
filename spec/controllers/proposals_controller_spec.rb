@@ -89,7 +89,7 @@ describe ProposalsController do
               post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                       conference_id: conference.short_title,
                                       user:          attributes_for(:user) }
-            end.to change{ Event.count }.by 1
+            end.to change(Event, :count).by 1
           end
         end
 
@@ -115,7 +115,7 @@ describe ProposalsController do
               post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                       conference_id: conference.short_title,
                                       user:          attributes_for(:user) }
-            end.not_to change{ Event.count }
+            end.not_to change(Event, :count)
           end
         end
       end
@@ -128,7 +128,7 @@ describe ProposalsController do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title,
                                     user:          attributes_for(:user) }
-          end.not_to change { User.count }
+          end.not_to change(User, :count)
         end
 
         it 'does not create new event' do
@@ -136,7 +136,7 @@ describe ProposalsController do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title,
                                     user:          attributes_for(:user) }
-          end.not_to change { Event.count }
+          end.not_to change(Event, :count)
         end
 
         describe 'response' do
@@ -264,7 +264,7 @@ describe ProposalsController do
           expect do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title }
-          end.to change{ Event.count }.by 1
+          end.to change(Event, :count).by 1
         end
       end
 
@@ -288,13 +288,12 @@ describe ProposalsController do
           expect do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title }
-          end.not_to change{ Event.count }
+          end.not_to change(Event, :count)
         end
       end
     end
 
     describe 'PATCH #update' do
-
       it 'assigns url variable' do
         patch :update, params: { event:         attributes_for(:event, title: 'some title', event_type_id: event_type.id),
                                  conference_id: conference.short_title,
@@ -347,7 +346,6 @@ describe ProposalsController do
     end
 
     describe 'PATCH #withdraw' do
-
       it 'assigns url variable' do
         patch :withdraw, params: { conference_id: conference.short_title, id: event.id }
         expect(assigns(:url)).to eq "/conferences/lama101/program/proposals/#{event.id}"
@@ -419,7 +417,7 @@ describe ProposalsController do
 
       context 'confirmed successfully' do
         describe 'when require_registration is set' do
-          before :each do
+          before do
             event.require_registration = true
             event.max_attendees = nil
             event.save!

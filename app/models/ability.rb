@@ -17,7 +17,7 @@ class Ability
 
   # Abilities for not signed in users (guests)
   def not_signed_in
-    can [:index, :conferences, :code_of_conduct], Organization
+    can %i[index conferences code_of_conduct], Organization
     can [:index], Conference
     can [:show], Conference do |conference|
       conference.splashpage&.public == true
@@ -37,9 +37,9 @@ class Ability
 
     # can view Commercials of confirmed Events
     can :show, Commercial, commercialable: Event.where(state: 'confirmed')
-    can [:show, :create], User
+    can %i[show create], User
 
-    can [:index, :show], Survey, surveyable_type: 'Conference'
+    can %i[index show], Survey, surveyable_type: 'Conference'
 
     # Things that are possible without ichain enabled that are **not*+ possible with ichain mode enabled.
     if ENV['OSEM_ICHAIN_ENABLED'] != 'true'
@@ -48,18 +48,14 @@ class Ability
 
       # FIXME: The following abilities need to be checked. Are they about the type of  workflow mentioned above? Or are
       # they just here because they worked in development mode (without ichain). We are suspicious that it's the latter!
-      can :show, Registration do |registration|
-        registration.new_record?
-      end
+      can :show, Registration, &:new_record?
 
       can [:new, :create], Registration do |registration|
         conference = registration.conference
         conference.registration_open? && registration.new_record? && !conference.registration_limit_exceeded?
       end
 
-      can :show, Event do |event|
-        event.new_record?
-      end
+      can :show, Event, &:new_record?
 
       can [:new, :create], Event do |event|
         event.program.cfp_open? && event.new_record?
@@ -89,12 +85,10 @@ class Ability
     end
 
     can :index, Organization
-    can :index, Ticket do |ticket|
-      ticket.visible
-    end
+    can :index, Ticket, &:visible
     can :manage, TicketPurchase, user_id: user.id
-    can [:new, :create], Payment, user_id: user.id
-    can [:index, :show], PhysicalTicket, user: user
+    can %i[new create], Payment, user_id: user.id
+    can %i[index show], PhysicalTicket, user: user
 
     can [:new, :create], Booth do |booth|
       booth.new_record? && booth.conference.program.cfps.for_booths.try(:open?)
@@ -104,7 +98,7 @@ class Ability
       booth.users.include?(user)
     end
 
-    can [:create, :destroy], Subscription, user_id: user.id
+    can %i[create destroy], Subscription, user_id: user.id
 
     can [:new, :create], Event do |event|
       event.program.cfp_open? && event.new_record?
@@ -114,16 +108,14 @@ class Ability
       event.users.include?(user)
     end
 
-    can :toggle_favorite, Event do |event|
-      event.scheduled?
-    end
+    can :toggle_favorite, Event, &:scheduled?
 
     # can manage the commercials of their own events
     can :manage, Commercial, commercialable_type: 'Event', commercialable_id: user.events.pluck(:id)
 
     # can view and reply to a survey
-    can [:index, :show, :reply], Survey, surveyable_type: 'Conference'
-    can [:index, :show, :reply], Survey, surveyable_type: 'Registration', surveyable_id: user.registrations.pluck(:conference_id)
+    can %i[index show reply], Survey, surveyable_type: 'Conference'
+    can %i[index show reply], Survey, surveyable_type: 'Registration', surveyable_id: user.registrations.pluck(:conference_id)
 
     # TODO: this needs to check for more, eg.
     # if survey target is after_conference, check whether or not the conference is over
@@ -140,7 +132,7 @@ class Ability
       track.new_record? && track.program.cfps.for_tracks.try(:open?)
     end
 
-    can [:index, :show, :restart, :confirm, :withdraw], Track, submitter_id: user.id
+    can %i[index show restart confirm withdraw], Track, submitter_id: user.id
 
     can [:edit, :update], Track do |track|
       user == track.submitter && !(track.accepted? || track.confirmed?)

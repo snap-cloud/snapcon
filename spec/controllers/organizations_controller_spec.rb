@@ -9,7 +9,7 @@ describe OrganizationsController do
       :conference,
       splashpage:   create(:splashpage, public: true),
       venue:        create(:venue),
-      organization: organization
+      organization: organization,
     )
   end
   let!(:antiquated_conference) do
@@ -19,7 +19,7 @@ describe OrganizationsController do
       venue:        create(:venue),
       organization: organization,
       start_date:   2.weeks.ago,
-      end_date:     1.week.ago
+      end_date:     1.week.ago,
     )
   end
 
@@ -27,7 +27,7 @@ describe OrganizationsController do
   let!(:user) { create(:user) }
 
   describe 'GET #index' do
-    before :each do
+    before do
       sign_in user
       get :index
     end
@@ -36,7 +36,7 @@ describe OrganizationsController do
   end
 
   describe 'GET #conferences' do
-    before :each do
+    before do
       get :conferences, params: { id: organization.id }
     end
 

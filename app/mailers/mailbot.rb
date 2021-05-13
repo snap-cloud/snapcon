@@ -38,7 +38,7 @@ class Mailbot < ActionMailer::Base
     end
 
     mail(subject:       "#{@conference.title} | Ticket Confirmation and PDF!",
-         template_name: template_name)
+         template_name: template_name,)
   end
 
   def acceptance_mail(event)
@@ -103,7 +103,7 @@ class Mailbot < ActionMailer::Base
     @email_body = @conference.email_settings.generate_email_on_conf_updates(@conference, @user, @conference.email_settings.program_schedule_public_body)
 
     mail(bcc:     nil,
-         subject: @conference.email_settings.program_schedule_public_subject)
+         subject: @conference.email_settings.program_schedule_public_subject,)
   end
 
   def conference_cfp_update_mail(conference, user)
@@ -112,7 +112,7 @@ class Mailbot < ActionMailer::Base
     @email_body = @conference.email_settings.generate_email_on_conf_updates(@conference, @user, @conference.email_settings.cfp_dates_updated_body)
 
     mail(bcc:     nil,
-         subject: @conference.email_settings.cfp_dates_updated_subject)
+         subject: @conference.email_settings.cfp_dates_updated_subject,)
   end
 
   def conference_booths_acceptance_mail(booth)
@@ -121,7 +121,7 @@ class Mailbot < ActionMailer::Base
     @email_body = @conference.email_settings.generate_booth_mail(booth, @conference.email_settings.booths_acceptance_body)
 
     mail(bcc:     nil,
-         subject: @conference.email_settings.booths_acceptance_subject)
+         subject: @conference.email_settings.booths_acceptance_subject,)
   end
 
   def conference_booths_rejection_mail(booth)
@@ -130,7 +130,7 @@ class Mailbot < ActionMailer::Base
     @email_body = @conference.email_settings.generate_booth_mail(booth, @conference.email_settings.booths_rejection_body)
 
     mail(bcc:     nil,
-         subject: @conference.email_settings.booths_rejection_subject)
+         subject: @conference.email_settings.booths_rejection_subject,)
   end
 
   def event_comment_mail(comment, user)
@@ -141,6 +141,6 @@ class Mailbot < ActionMailer::Base
 
     mail(bcc:           nil,
          template_name: 'comment_template',
-         subject:       "New comment has been posted for #{@event.title}")
+         subject:       "New comment has been posted for #{@event.title}",)
   end
 end
