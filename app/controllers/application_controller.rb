@@ -77,4 +77,5 @@ class ApplicationController < ActionController::Base
   def set_sentry_user
     return unless current_user
     Sentry.set_user(email: current_user.email, id: current_user.id, username: current_user.username)
+  end
 end
