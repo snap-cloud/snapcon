@@ -206,6 +206,7 @@ module ApplicationHelper
     )
   end
 
+  # TODO-SNAPCON: This should be the conference title.
   def nav_link_text(conference = nil)
     conference.try(:organization).try(:name) ||
       ENV['OSEM_NAME'] ||
@@ -213,6 +214,7 @@ module ApplicationHelper
   end
 
   # TODO: Consider Renaming this?
+  # TODO: Allow passing in an organization
   def conference_logo_url(conference = nil)
     return DEFAULT_LOGO unless conference
 
