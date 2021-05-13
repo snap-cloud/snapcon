@@ -157,5 +157,4 @@ describe ApplicationHelper, type: :helper do
       expect(conference_logo_url(conference2)).to include('2.png')
     end
   end
-
 end
