@@ -78,12 +78,15 @@
             %b Requires Registration
           %th
             %b Highlight
-          %th
-            %b Type
-          %th
-            %b Track
-          %th
-            %b Difficulty
+          - if @program.event_types.any?
+            %th
+              %b Type
+          - if @program.tracks.any?
+            %th
+              %b Track
+          - if @program.difficulty_levels.any?
+            %th
+              %b Difficulty
           %th
             %b State
           %th
