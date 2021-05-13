@@ -137,7 +137,7 @@ describe ApplicationHelper, type: :helper do
     end
   end
 
-  describe '#conference_logo_url' do
+  describe '#conference_logo_url', :focus do
     let(:organization) { create(:organization) }
     let(:conference2) { create(:conference, organization: organization) }
 
@@ -148,7 +148,7 @@ describe ApplicationHelper, type: :helper do
         organization.picture = file
       end
 
-      expect(conference_logo_url(conference2)).to include('1.png')
+      expect(conference_logo_url(conference2)).to include(organization.picture.thumb.url)
 
       File.open('spec/support/logos/2.png') do |file|
         conference2.picture = file
