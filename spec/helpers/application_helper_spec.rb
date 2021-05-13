@@ -137,7 +137,7 @@ describe ApplicationHelper, type: :helper do
     end
   end
 
-  describe '#conference_logo_url', :focus do
+  describe '#conference_logo_url' do
     let(:organization) { create(:organization) }
     let(:conference2) { create(:conference, organization: organization) }
 
