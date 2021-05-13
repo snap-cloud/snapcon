@@ -6,6 +6,7 @@ SNAPCON_BCC_ADDRESS = Rails.configuration.mailbot[:bcc_address]
 YTLF_TICKET_ID = Rails.configuration.mailbot[:ytlf_ticket_id]
 
 class Mailbot < ActionMailer::Base
+  helper ApplicationHelper
   helper ConferenceHelper
 
   default bcc:           SNAPCON_BCC_ADDRESS,
