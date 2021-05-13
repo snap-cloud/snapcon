@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   add_flash_types :error
   protect_from_forgery with: :exception, prepend: true
   before_action :store_location
+  before_action :set_sentry_user
   # Ensure every controller authorizes resource or skips authorization (skip_authorization_check)
   check_authorization unless: :devise_controller?
   skip_authorization_check if:
@@ -72,4 +73,8 @@ class ApplicationController < ActionController::Base
   def apple_pay
     render plain: ENV['OSEM_APPLE_PAY_ID']
   end
+
+  def set_sentry_user
+    return unless current_user
+    Sentry.set_user(email: current_user.email, id: current_user.id, username: current_user.username)
 end
