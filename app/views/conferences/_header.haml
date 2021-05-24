@@ -1,7 +1,7 @@
-- cache [conference, venue, '#splash#header'] do
+- cache [conference, venue, current_user, '#splash#header'] do
   #banner{ style: ("background-image: url(#{splashpage.banner_photo_url})" if splashpage.banner_photo_url) }
     .container
-      - if user_signed_in?
+      - if user_signed_in? && @conference.tickets.any?
         - if current_user.ticket_purchases.by_conference(@conference).empty?
           .alert.bg-info{ role: "alert", style: "margin-bottom: 100px" }
             You have not purchased any tickets for this conference yet.
