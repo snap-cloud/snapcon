@@ -258,8 +258,8 @@ ActiveRecord::Schema.define(version: 2021_04_01_050437) do
     t.integer "program_id"
     t.integer "max_attendees"
     t.integer "comments_count", default: 0, null: false
-    t.text "committee_review"
     t.text "submission_text"
+    t.text "committee_review"
   end
 
   create_table "events_registrations", force: :cascade do |t|
