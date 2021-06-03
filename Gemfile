@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-ruby ENV['TRAVIS_RUBY_VERSION'] || '~>2.6.6'
+ruby ENV['TRAVIS_RUBY_VERSION'] || '~>2.6'
 
 # rails-assets requires >= 1.8.4
 if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
@@ -21,7 +21,7 @@ gem 'responders', '~> 2.0'
 # as supported databases
 gem 'pg'
 gem 'pghero'
-gem 'pg_query', '>= 0.9.0'
+# gem 'pg_query', '>= 0.9.0'
 
 # for tracking data changes
 gem 'paper_trail'
