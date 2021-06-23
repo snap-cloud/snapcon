@@ -57,7 +57,7 @@ class ConferenceRegistrationsController < ApplicationController
         sign_in(@registration.user)
       end
 
-      MailblusterEditLeadJob.perform_later(@user, add_tags: ["snapcon-#{@conference.short_title}"])
+      MailblusterEditLeadJob.perform_later(@user.id, add_tags: ["snapcon-#{@conference.short_title}"])
 
       if @conference.tickets.visible.any? && !current_user.supports?(@conference)
         redirect_to conference_tickets_path(@conference.short_title),
@@ -89,7 +89,7 @@ class ConferenceRegistrationsController < ApplicationController
 
   def destroy
     if @registration.destroy
-      MailblusterEditLeadJob.perform_later(@user, remove_tags: ["snapcon-#{@conference.short_title}"])
+      MailblusterEditLeadJob.perform_later(@user.id, remove_tags: ["snapcon-#{@conference.short_title}"])
       redirect_to root_path,
                   notice: "You are not registered for #{@conference.title} anymore!"
     else

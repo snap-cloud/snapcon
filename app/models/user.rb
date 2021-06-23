@@ -377,7 +377,7 @@ class User < ApplicationRecord
   end
 
   def mailbluster_create_lead
-    MailblusterCreateLeadJob.perform_later self
+    MailblusterCreateLeadJob.perform_later self.id
     ts_reset_saved_changes
   end
 
@@ -387,7 +387,7 @@ class User < ApplicationRecord
   end
 
   def mailbluster_update_lead
-    MailblusterEditLeadJob.perform_later(self, old_email: ts_saved_changes.fetch('email', [nil])[0])
+    MailblusterEditLeadJob.perform_later(self.id, old_email: ts_saved_changes.fetch('email', [nil])[0])
     ts_reset_saved_changes
   end
 
