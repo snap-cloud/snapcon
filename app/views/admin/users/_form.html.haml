@@ -20,7 +20,7 @@
     = f.input :email
     = f.input :password if @user.new_record?
     .control-label
-      Gravatar
+      Current Avatar
       = image_tag(@user.profile_picture(size: '48'), alt: '')
     %p
       Or upload a picture.

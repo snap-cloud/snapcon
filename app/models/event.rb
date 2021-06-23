@@ -149,6 +149,16 @@ class Event < ApplicationRecord
   end
 
   ##
+  # Used to determine a user's personal schedule.
+  # Has the user favourited the event, or are the assigned to present (speaking or volunteering)?
+  # "submitter" is excluded as a check, primarily due to admin users.
+  # =====Returns
+  # * +boolean+ -> if the user should attend the event
+  def planned_for_user?(user)
+    speakers.include?(user) || volunteers.include?(user) || favourite_users.include?(user)
+  end
+
+  ##
   # Finds the rating of the user for the event
   # ====Returns
   # * +integer+ -> the rating of the user for the event

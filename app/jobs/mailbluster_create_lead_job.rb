@@ -3,7 +3,7 @@
 class MailblusterCreateLeadJob < ApplicationJob
   queue_as :default
 
-  def perform(user)
-    MailblusterManager.create_lead(user)
+  def perform(user_id)
+    MailblusterManager.create_lead(User.find(user_id))
   end
 end

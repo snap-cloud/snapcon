@@ -9,9 +9,9 @@
         = f.input :name, as: :string, hint: 'This is your real name.'
         = f.input :nickname, as: :string, hint: 'This is how the other users see you, not your real name'
         .control-label
-          = "Avatar"
-        = image_tag(@user.profile_picture(size: '48'), title: "Yo #{@user.name}!", alt: '')
-        = link_to 'Change your avatar here', 'https://gravatar.com'
+          = "Current Avatar"
+        = image_tag(@user.profile_picture(size: '48'), alt: "#{@user.name} profile")
+        = link_to 'Change your avatar on Gravatar', 'https://gravatar.com'
         %p
           Or upload a picture.
         = f.input :picture, hint: 'If you upload a picture, it will be used in place of Gravatar.'

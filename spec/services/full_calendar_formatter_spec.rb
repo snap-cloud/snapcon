@@ -29,11 +29,13 @@ describe FullCalendarFormatter do
       expected_json = [
         {
           id:    room1.guid,
-          title: room1.name
+          title: room1.name,
+          order: nil
         },
         {
           id:    room2.guid,
-          title: room2.name
+          title: room2.name,
+          order: nil
         }
       ].to_json
       expect(resources).to eq(expected_json)

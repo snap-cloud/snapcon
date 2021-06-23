@@ -13,28 +13,32 @@
 
 .container
   .row.page-header
-    .col-md-8
-      %h2
-        = @event.title
-        - if @event.subtitle
-          %br
-          %small
-            = @event.subtitle
-      %h3
-        = join_event_link(@event, current_user)
-    .col-md-4
-      %p{style: "margin-top: 20px"}
-        - if @event_schedule&.start_time
-          - if user_signed_in?
-            = link_to google_calendar_link(@event_schedule), target: '_blank', class: 'btn btn-success btn-mini' do
-              %i.fa.fa-calendar
-              Add to Google Calendar (beta)
-        - if can?(:update, @event) && @event.require_registration?
-          = link_to 'Registrations', registrations_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-success'
-        - if can?(:edit, @event)
-          = link_to "Edit", edit_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-primary'
-        - if can? :schedule, @conference
-          = link_to "Schedule", conference_schedule_path(@conference.short_title), class: 'btn btn-success'
+    .col-md-8{ style: 'display: flex; flex-direction: row;' }
+      = render 'proposals/toggle_favorite_event',
+               event: @event, header_color: '#FFFFFF', conference: @conference
+
+      .div{ style: 'margin: 3px; flex: 1' }
+
+        %h2{ style: 'margin: 0' }
+          = @event.title
+          - if @event.subtitle.present?
+            %br
+            %small
+              = @event.subtitle
+        %h3{ style: 'margin: 4px 0' }
+          = join_event_link(@event, current_user)
+
+    .btn-group
+      - if @event_schedule&.start_time && user_signed_in?
+        = link_to google_calendar_link(@event_schedule), target: '_blank', class: 'btn btn-success' do
+          %i.fa.fa-calendar
+          Google Calendar
+      - if can?(:update, @event) && @event.require_registration?
+        = link_to 'Registrations', registrations_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-success'
+      - if can? :schedule, @conference
+        = link_to "Schedule", conference_schedule_path(@conference.short_title), class: 'btn btn-success'
+      - if can?(:edit, @event)
+        = link_to "Edit", edit_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-primary'
 
   .row
     .col-md-3
