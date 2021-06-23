@@ -59,21 +59,18 @@ class SchedulesController < ApplicationController
 
   def events
     @dates = @conference.start_date..@conference.end_date
-    # TODO: use the cachable method.
-    @events_schedules = @program.selected_event_schedules(
-      includes: [:room, { event: %i[track event_type speakers submitter] }]
-    )
+    @events_schedules = @program.event_schedule_for_fullcalendar || []
 
-    # TODO: Refactor this -- "events for current user"
-    @events_schedules = @events_schedules.select{ |e| e.event.favourite_users.exists?(current_user.id) } if @events_schedules && current_user && @favourites
-    @events_schedules = [] unless @events_schedules
+    if current_user && @favourites
+      @events_schedules = @events_schedules.select{ |e| e.event.planned_for_user?(current_user) }
+    end
 
     @unscheduled_events = if @program.selected_schedule
                             @program.events.confirmed - @events_schedules.map(&:event)
                           else
                             @program.events.confirmed
                           end
-    @unscheduled_events = @unscheduled_events.select{ |e| e.favourite_users.exists?(current_user.id) } if current_user && @favourites
+    @unscheduled_events = @unscheduled_events.select{ |e| e.planned_for_user?(current_user) } if current_user && @favourites
 
     day = @conference.current_conference_day
     @tag = day.strftime('%Y-%m-%d') if day

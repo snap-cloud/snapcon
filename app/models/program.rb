@@ -220,12 +220,11 @@ class Program < ApplicationRecord
     Cfp::TYPES - cfps.pluck(:cfp_type)
   end
 
-  # TODO: This should include rooms.
   # TODO: Rename this "display events schedule" or similar
   def event_schedule_for_fullcalendar
     Rails.cache.fetch("#{cache_key_with_version}/fullcalendar") do
       selected_event_schedules(
-        includes: [{ event: %i[event_type speakers submitter] }]
+        includes: [:room, { event: %i[event_type speakers submitter, volunteers, favourite_users] }]
       )
     end
   end
