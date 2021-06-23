@@ -3,7 +3,10 @@
     = render partial: 'schedule_tabs', locals: { active: 'program' }
 
   %h1.text-center
-    Program for
+    - if @favourites
+      Your Personal Program for
+    - else
+      Program for
     = @conference.title
   - if current_user
     .row
