@@ -148,7 +148,6 @@ class Event < ApplicationRecord
     registrations.count < max_attendees
   end
 
-
   ##
   # Used to determine a user's personal schedule.
   # Has the user favourited the event, or are the assigned to present (speaking or volunteering)?

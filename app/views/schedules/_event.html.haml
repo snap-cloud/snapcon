@@ -7,7 +7,8 @@
       = replacement_event_notice(event_schedule)
 
     %div{ style: 'display: flex; flex-direction: row;' }
-      = render 'proposals/toggle_favorite_event', event: event, header_color: header_color
+      = render 'proposals/toggle_favorite_event',
+               event: event, header_color: header_color, conference: @conference
 
       %h3{ style: 'margin: 3px; flex: 1' }
         = event.title

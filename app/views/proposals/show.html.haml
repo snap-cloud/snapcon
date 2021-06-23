@@ -14,8 +14,11 @@
 .container
   .row.page-header
     .col-md-8{ style: 'display: flex; flex-direction: row;' }
-      = render 'proposals/toggle_favorite_event', event: @event, header_color: '#FFFFFF'
+      = render 'proposals/toggle_favorite_event',
+               event: @event, header_color: '#FFFFFF', conference: @conference
+
       .div{ style: 'margin: 3px; flex: 1' }
+
         %h2{ style: 'margin: 0' }
           = @event.title
           - if @event.subtitle.present?

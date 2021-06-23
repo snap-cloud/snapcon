@@ -85,7 +85,7 @@ class User < ApplicationRecord
   # See https://github.com/CactusPuppy/snapcon/pull/43#discussion_r609458034
   after_commit :mailbluster_create_lead, on: :create
   after_commit :mailbluster_delete_lead, on: :destroy
-  after_commit :mailbluster_update_lead, on: :update, if: -> (user) { ['name', 'email'].any? { |key| user.ts_saved_changes.key? key } }
+  after_commit :mailbluster_update_lead, on: :update, if: ->(user) { ['name', 'email'].any? { |key| user.ts_saved_changes.key? key } }
 
   # add scope
   scope :comment_notifiable, ->(conference) {joins(:roles).where('roles.name IN (?)', [:organizer, :cfp]).where('roles.resource_type = ? AND roles.resource_id = ?', 'Conference', conference.id)}
@@ -377,17 +377,17 @@ class User < ApplicationRecord
   end
 
   def mailbluster_create_lead
-    MailblusterCreateLeadJob.perform_later self.id
+    MailblusterCreateLeadJob.perform_later(id)
     ts_reset_saved_changes
   end
 
   def mailbluster_delete_lead
-    MailblusterDeleteLeadJob.perform_later email
+    MailblusterDeleteLeadJob.perform_later(email)
     ts_reset_saved_changes
   end
 
   def mailbluster_update_lead
-    MailblusterEditLeadJob.perform_later(self.id, old_email: ts_saved_changes.fetch('email', [nil])[0])
+    MailblusterEditLeadJob.perform_later(id, old_email: ts_saved_changes.fetch('email', [nil])[0])
     ts_reset_saved_changes
   end
 
