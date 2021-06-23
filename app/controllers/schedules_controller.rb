@@ -104,7 +104,7 @@ class SchedulesController < ApplicationController
       return
     end
 
-    @rooms = FullCalendarFormatter.rooms_to_resources(@conference.venue.rooms) if @conference.venue
+    @rooms = FullCalendarFormatter.rooms_to_resources(@conference.rooms) if @conference.rooms
     @event_schedules = FullCalendarFormatter.event_schedules_to_resources(event_schedules)
     @now = Time.now.in_time_zone(@conference.timezone).strftime('%FT%T%:z')
   end

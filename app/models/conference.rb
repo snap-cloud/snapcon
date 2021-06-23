@@ -61,7 +61,8 @@ class Conference < ApplicationRecord
   has_one :email_settings, dependent: :destroy
   has_one :program, dependent: :destroy
   has_one :venue, dependent: :destroy
-  delegate :city, :country_name, to: :venue, allow_nil: true
+
+  delegate :city, :country_name, :rooms, to: :venue, allow_nil: true
   delegate :name, :street, to: :venue, prefix: true, allow_nil: true
 
   has_many :ticket_purchases, dependent: :destroy

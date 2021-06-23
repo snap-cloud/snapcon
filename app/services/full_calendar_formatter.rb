@@ -18,7 +18,8 @@ class FullCalendarFormatter
     def room_to_resource(room)
       {
         id:    room.guid,
-        title: room.name
+        title: room.name,
+        order: room.order
       }
     end
 
