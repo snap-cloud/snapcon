@@ -16,8 +16,8 @@ Osem::Application.routes.draw do
   end
 
   namespace :admin do
-    authenticate :user, -> (user) { user.is_admin? } do
-      mount PgHero::Engine, at: "pghero"
+    authenticate :user, ->(user) { user.is_admin? } do
+      mount PgHero::Engine, at: 'pghero'
     end
 
     resources :organizations do
