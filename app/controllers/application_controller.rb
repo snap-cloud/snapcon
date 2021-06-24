@@ -16,12 +16,7 @@ class ApplicationController < ActionController::Base
                                  # store last url - this is needed for post-login redirect to whatever the user last visited.
                                  return unless request.get? || request.xhr?
 
-                                 if (request.path != '/accounts/sign_in' &&
-                                     request.path != '/accounts/sign_up' &&
-                                     request.path != '/accounts/password/new' &&
-                                     request.path != '/accounts/password/edit' &&
-                                     request.path != '/accounts/confirmation' &&
-                                     request.path != '/accounts/sign_out' &&
+                                 if (!request.path.starts_with?('/accounts') &&
                                      request.path != '/users/ichain_registration/ichain_sign_up' &&
                                      !request.path.starts_with?(Devise.ichain_base_url))
                                    session[:return_to] = request.fullpath
