@@ -1,24 +1,28 @@
-.panel.panel-default.event-panel{ onClick: 'eventClicked(event, this);', 'data-url': "#{url_for(conference_program_proposal_path(@conference.short_title, event.id))}", tabindex: 0, role: 'link' }
-  - header_color = event.event_type&.color || '#f5f5f5'
+- header_color = event.event_type&.color || '#f5f5f5'
+- color_style = "color: #{contrast_color(header_color)}"
+- condensed_view = defined?(is_brief) && is_brief
+
+.panel.panel-default.event-panel{ onClick: 'eventClicked(event, this);', 'data-url': conference_program_proposal_url(@conference.short_title, event.id), tabindex: -1 }
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
-  .panel-heading{ style: "background-color: #{header_color}; color: #{ contrast_color(header_color) }; border-radius: 4px" }
+  .panel-heading{ style: "background-color: #{header_color}; #{color_style}; border-radius: 4px" }
     %p
       = canceled_replacement_event_label(event, event_schedule)
       = replacement_event_notice(event_schedule)
 
     %div{ style: 'display: flex; flex-direction: row;' }
       = render 'proposals/toggle_favorite_event',
-               event: event, header_color: header_color, conference: @conference
+              event: event, header_color: header_color, conference: @conference
 
       %h3{ style: 'margin: 3px; flex: 1' }
-        = event.title
-        %br
-        -# Need to override bootstrap's coloring of h* > small items.
-        %small{ style: "color: #{contrast_color(header_color)}" }
-          = event.subtitle
+        = link_to conference_program_proposal_path(@conference.short_title, event.id),
+                  style: color_style do
+          = event.title
+          %br
+          %small{ style: color_style }
+            = event.subtitle
 
-      %span
-        - if !defined?(is_brief) || is_brief == false
+      - if !condensed_view
+        %span
           - event.speakers_ordered.each do |speaker|
             = image_tag speaker.profile_picture, class: 'img-circle', alt: speaker.name
 
@@ -34,7 +38,8 @@
       = markdown(truncate(event.abstract, length: 400))
       -# TODO: More informative text or aria-label.
       = link_to 'more', conference_program_proposal_path(@conference.short_title, event.id) if event.abstract.length > 400
-    - if !defined?(is_brief) || is_brief == false
+
+    - if !condensed_view
       - if event_schedule.present?
         = inyourtz(event_schedule.start_time) do
           %span.track
