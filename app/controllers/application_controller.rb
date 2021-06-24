@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
 
                                def store_location
                                  # store last url - this is needed for post-login redirect to whatever the user last visited.
-                                 return unless request.get?
+                                 return unless request.get? || request.xhr?
 
                                  if (request.path != '/accounts/sign_in' &&
                                      request.path != '/accounts/sign_up' &&
@@ -23,21 +23,13 @@ class ApplicationController < ActionController::Base
                                      request.path != '/accounts/confirmation' &&
                                      request.path != '/accounts/sign_out' &&
                                      request.path != '/users/ichain_registration/ichain_sign_up' &&
-                                     !request.path.starts_with?(Devise.ichain_base_url) &&
-                                     !request.xhr?) # don't store ajax calls
+                                     !request.path.starts_with?(Devise.ichain_base_url))
                                    session[:return_to] = request.fullpath
                                  end
                                end
 
   def after_sign_in_path_for(_resource)
-    if (can? :view, Conference) &&
-      (!session[:return_to] ||
-      session[:return_to] &&
-      session[:return_to] == root_path)
-      admin_conferences_path
-    else
-      session[:return_to] || root_path
-    end
+    session[:return_to] || root_path
   end
 
   def current_ability

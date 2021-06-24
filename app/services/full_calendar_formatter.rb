@@ -25,18 +25,21 @@ class FullCalendarFormatter
 
     def event_schedule_to_resource(conference, event_schedule)
       event_type_color = event_schedule.event.event_type.color
+      event = event_schedule.event
       url = Rails.application.routes.url_helpers.conference_program_proposal_path(conference.short_title, event_schedule.event.id)
 
       {
-        id:              event_schedule.event.guid,
-        title:           event_schedule.event.title,
-        start:           event_schedule.start_time_in_conference_timezone,
-        end:             event_schedule.end_time_in_conference_timezone,
-        resourceId:      event_schedule.room.guid,
-        url:             url,
-        borderColor:     event_type_color,
-        backgroundColor: event_type_color,
-        textColor:       contrast_color(event_type_color)
+        id:                event.guid,
+        title:             event.title,
+        start:             event_schedule.start_time_in_conference_timezone,
+        end:               event_schedule.end_time_in_conference_timezone,
+        resourceId:        event_schedule.room.guid,
+        url:               url,
+        borderColor:       event_type_color,
+        backgroundColor:   event_type_color,
+        textColor:         contrast_color(event_type_color),
+        displayEventStart: event.track&.short_name != 'lightning',
+        className:         "fc-event-track=-#{event.track&.short_name || 'none'}"
       }
     end
   end
