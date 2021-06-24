@@ -11,7 +11,7 @@
             = "Sign up for #{conference.title}!"
       .row.text-center
         %h3
-          = link_to('Looking for the SAP Young Thinkers Learning Festival?', conferences_path('ylf2021'))
+          = link_to('Looking for the SAP Young Thinkers Learning Festival?', conference_path('ylf2021')) if @conference.short_title == '2021'
       .row.row-centered
         - tickets.each do |ticket|
           .col-lg-4.col-md-3.col-sm-3.col-centered.col-top
