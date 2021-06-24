@@ -32,6 +32,25 @@ $( document ).ready(function() {
       events: $fullCalendar.data('events'),
       displayEventEnd: false,
       displayEventTime: false,
+      titleFormat: { // will produce something like "Tuesday, September 18, 2018"
+        month: 'long',
+        day: 'numeric',
+        weekday: 'short'
+      },
+      headerToolbar: {
+        left: 'prev,next',
+        center: 'title',
+        right: 'resourceTimeGridDay,resourceTimeGridFourDay'
+      },
+      // TODO: Make this conference Specific?
+      views: {
+        resourceTimeGridFourDay: {
+          type: 'resourceTimeGrid',
+          duration: { days: 4 },
+          buttonText: 'overview',
+          datesAboveResources: true
+        }
+      }
     });
 
     calendar.render();
