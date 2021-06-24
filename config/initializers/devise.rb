@@ -12,7 +12,7 @@ Devise.setup do |config|
                   (ENV['OSEM_GOOGLE_KEY'] || Rails.application.secrets.google_key),
                   (ENV['OSEM_GOOGLE_SECRET'] || Rails.application.secrets.google_secret),
                   name:  'google',
-                  scope: 'email'
+                  scope: ['email', 'profile']
 
   # TODO-SNAPCON: This ought to be configurable. Use OSEM_DISCOURSE_KEY?
   config.omniauth :discourse,
