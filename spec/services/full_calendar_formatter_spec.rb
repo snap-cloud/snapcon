@@ -54,7 +54,7 @@ describe FullCalendarFormatter do
           borderColor:     event1.event_type.color,
           backgroundColor: event1.event_type.color,
           textColor:       'black',
-          className:       'fc-event-track-none',
+          className:       'fc-event-track-none'
         },
         {
           id:              event_schedule2.event.guid,
@@ -66,7 +66,7 @@ describe FullCalendarFormatter do
           borderColor:     event2.event_type.color,
           backgroundColor: event2.event_type.color,
           textColor:       'white',
-          className:       'fc-event-track-none',
+          className:       'fc-event-track-none'
         }
       ].to_json
 
