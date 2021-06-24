@@ -53,7 +53,8 @@ describe FullCalendarFormatter do
           url:             Rails.application.routes.url_helpers.conference_program_proposal_path(conference.short_title, event1.id),
           borderColor:     event1.event_type.color,
           backgroundColor: event1.event_type.color,
-          textColor:       'black'
+          textColor:       'black',
+          className:       'fc-event-track-none',
         },
         {
           id:              event_schedule2.event.guid,
@@ -64,7 +65,8 @@ describe FullCalendarFormatter do
           url:             Rails.application.routes.url_helpers.conference_program_proposal_path(conference.short_title, event2.id),
           borderColor:     event2.event_type.color,
           backgroundColor: event2.event_type.color,
-          textColor:       'white'
+          textColor:       'white',
+          className:       'fc-event-track-none',
         }
       ].to_json
 
