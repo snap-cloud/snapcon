@@ -13,13 +13,14 @@
       = render 'proposals/toggle_favorite_event',
               event: event, header_color: header_color, conference: @conference
 
-      %h3{ style: 'margin: 3px; flex: 1' }
+      %h3{ style: 'margin: auto 3px; flex: 1' }
         = link_to conference_program_proposal_path(@conference.short_title, event.id),
                   style: color_style do
           = event.title
-          %br
-          %small{ style: color_style }
-            = event.subtitle
+          - if event.subtitle.present?
+            %br
+            %small{ style: color_style }
+              = event.subtitle
 
       - if !condensed_view
         %span
