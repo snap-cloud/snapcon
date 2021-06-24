@@ -8,12 +8,12 @@
 
 = content_for :about do
   #about
-    .row
-      = markdown(conference.description, false)
+    = markdown(conference.description, false)
 
 %section#about-and-happening-now
   .container
     .row
+      = yield :additional_messages
       -# happening now events are displayed second in md or lg view
       - if conference.splashpage.include_happening_now? && conference.splashpage.include_program?
         - if conference.description.present?
