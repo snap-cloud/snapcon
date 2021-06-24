@@ -38,7 +38,6 @@ class FullCalendarFormatter
         borderColor:       event_type_color,
         backgroundColor:   event_type_color,
         textColor:         contrast_color(event_type_color),
-        displayEventStart: event.track&.short_name != 'lightning',
         className:         "fc-event-track=-#{event.track&.short_name || 'none'}"
       }
     end
