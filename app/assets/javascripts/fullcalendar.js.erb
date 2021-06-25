@@ -32,7 +32,7 @@ $( document ).ready(function() {
       events: $fullCalendar.data('events'),
       displayEventEnd: false, // TODO change in list view.
       displayEventTime: false,
-      titleFormat: { // will produce something like "Tuesday, September 18, 2018"
+      titleFormat: { // will produce something like "Tues, September 18"
         month: 'long',
         day: 'numeric',
         weekday: 'short'
@@ -49,6 +49,11 @@ $( document ).ready(function() {
           duration: { days: 4 },
           buttonText: 'overview',
           datesAboveResources: true
+        },
+        listDay: {
+          type: 'listDay',
+          displayEventEnd: true,
+          displayEventTime: true
         }
       }
     });

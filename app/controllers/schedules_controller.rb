@@ -92,7 +92,6 @@ class SchedulesController < ApplicationController
     # the schedule takes you to today if it is a date of the schedule
     current_day = @conference.current_conference_day
     @day = current_day.present? ? current_day : dates.first
-    # TODO: Update method name.
     event_schedules = @program.event_schedule_for_fullcalendar
 
     unless event_schedules

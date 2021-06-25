@@ -6,3 +6,9 @@
       = link_to('Happening Now', happening_now_conference_schedule_path(@conference.short_title))
     %li.schedule{ class: ('active' if active == 'vertical_schedule'), role: 'presentation' }
       = link_to('Schedule', vertical_schedule_conference_schedule_path(@conference.short_title, favourites: @favourites))
+    %li.pull-right
+      - if current_user
+        = button_to (@favourites ? 'All events' : 'My Personal Schedule'),
+                    request.path,
+                    params: { favourites: !@favourites },
+                    method: :get, class: 'btn btn-success'

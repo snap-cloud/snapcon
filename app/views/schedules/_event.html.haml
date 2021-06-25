@@ -1,6 +1,8 @@
-- header_color = event.event_type&.color || '#f5f5f5'
-- color_style = "color: #{contrast_color(header_color)}"
-- condensed_view = defined?(is_brief) && is_brief
+:ruby
+  header_color = event.event_type&.color || '#f5f5f5'
+  color_style = "color: #{contrast_color(header_color)}"
+  condensed_view = defined?(is_brief) && is_brief
+  abstract_length = condensed_view ? 300 : 400
 
 .panel.panel-default.event-panel{ onClick: 'eventClicked(event, this);', 'data-url': conference_program_proposal_url(@conference.short_title, event.id), tabindex: -1 }
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
@@ -31,14 +33,15 @@
 
   .panel-body
     %h4
-      - if(event.speakers.any?)
+      - if (event.speakers.any?)
         = event.speaker_names
     %span.h5
       = join_event_link(event, current_user)
     %p
-      = markdown(truncate(event.abstract, length: 400))
+      = truncate(markdown(event.abstract), length: abstract_length, escape: false) do
+        %br
+        = link_to 'more', conference_program_proposal_path(@conference.short_title, event.id)
       -# TODO: More informative text or aria-label.
-      = link_to 'more', conference_program_proposal_path(@conference.short_title, event.id) if event.abstract.length > 400
 
     - if !condensed_view
       - if event_schedule.present?

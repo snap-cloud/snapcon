@@ -2,8 +2,10 @@
   = render 'schedule_tabs', active: 'vertical_schedule'
 
   %h1.text-center
-    Schedule for
-    = @conference.title
+    - if @favourites
+      #{current_user.name}'s Schedule for #{@conference.title}
+    - else
+      Schedule for #{@conference.title}
 
   #vert-schedule-full-calendar
   - cache @program.selected_schedule do
