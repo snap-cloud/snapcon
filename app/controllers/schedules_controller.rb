@@ -88,17 +88,19 @@ class SchedulesController < ApplicationController
   end
 
   def vertical_schedule
-    # TODO: Adapt to take in favorites param?
     dates = @conference.start_date..@conference.end_date
     # the schedule takes you to today if it is a date of the schedule
     current_day = @conference.current_conference_day
     @day = current_day.present? ? current_day : dates.first
-    # TODO: Update method name.
     event_schedules = @program.event_schedule_for_fullcalendar
 
     unless event_schedules
       redirect_to events_conference_schedule_path(@conference.short_title)
       return
+    end
+
+    if current_user && @favourites
+      event_schedules = event_schedules.select{ |e| e.event.planned_for_user?(current_user) }
     end
 
     @rooms = FullCalendarFormatter.rooms_to_resources(@conference.rooms) if @conference.rooms

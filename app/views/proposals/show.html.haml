@@ -119,12 +119,14 @@
               %dt Requires Registration:
               %dd
                 = link_to "Yes (#{registered_text(@event)})", new_conference_conference_registration_path(@conference.short_title), class: 'btn btn-xs btn-danger', disabled: !@event.registration_possible?
-          - if concurrent_events(@event).present?
+
+          - concurrent = concurrent_events(@event)
+          - if concurrent.present?
             .col-md-12
               %hr
               %h4 Happening at the same time:
               %ol
-                - concurrent_events(@event).each do |event|
+                - concurrent.each do |event|
                   %li
                     = link_to conference_program_proposal_path(@conference.short_title, event.id) do
                       = event.title
@@ -143,13 +145,16 @@
           - if @surveys_after_event.any? && @event.ended?
             .page-header
             = render partial: 'surveys/list', locals: { surveys: @surveys_after_event, conference: @conference }
-    .col-md-3
-      #happening-now
-        = render 'conferences/happening_now', conference: @conference,
-          events_schedules: @events_schedules, pagy: @pagy,
-          events_schedules_length: @events_schedules_length,
-          events_schedules_limit: @events_schedules_limit,
-          is_happening_next: @is_happening_next
+
+    / TODO-SNAPCON: Should this just use the happening now splash flag?
+    - if !@conference.pending? && !@conference.ended?
+      .col-md-3
+        #happening-now
+          = render 'conferences/happening_now', conference: @conference,
+            events_schedules: @events_schedules, pagy: @pagy,
+            events_schedules_length: @events_schedules_length,
+            events_schedules_limit: @events_schedules_limit,
+            is_happening_next: @is_happening_next
 
   - if @event.committee_review.present? || @event.submission_text.present? && can?(:edit, @event)
     %hr

@@ -30,8 +30,32 @@ $( document ).ready(function() {
       resources: $fullCalendar.data('rooms'),
       resourceOrder: 'order, title',
       events: $fullCalendar.data('events'),
-      displayEventEnd: false,
+      displayEventEnd: false, // TODO change in list view.
       displayEventTime: false,
+      titleFormat: { // will produce something like "Tues, September 18"
+        month: 'long',
+        day: 'numeric',
+        weekday: 'short'
+      },
+      headerToolbar: {
+        left: 'prev,next',
+        center: 'title',
+        right: 'resourceTimeGridDay,resourceTimeGridFourDay,listDay'
+      },
+      // TODO: Make this conference Specific?
+      views: {
+        resourceTimeGridFourDay: {
+          type: 'resourceTimeGrid',
+          duration: { days: 4 },
+          buttonText: 'overview',
+          datesAboveResources: true
+        },
+        listDay: {
+          type: 'listDay',
+          displayEventEnd: true,
+          displayEventTime: true
+        }
+      }
     });
 
     calendar.render();

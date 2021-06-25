@@ -141,15 +141,16 @@ function starClicked(e){
   });
 }
 
-function eventClicked(e, element){
+function eventClicked(e, element) {
   if (e.target.href) {
     return;
   }
   var url = $(element).data('url');
-  if(e.ctrlKey)
-    window.open(url,'_blank');
-  else
+  if (e.ctrlKey || e.metaKey) {
+    window.open(url, '_blank');
+  } else {
     window.location = url;
+  }
 }
 
 /* Links inside event-panel (to make ctrl + click work for these links):
