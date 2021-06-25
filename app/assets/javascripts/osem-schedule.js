@@ -156,7 +156,7 @@ function eventClicked(e, element) {
 /* Links inside event-panel (to make ctrl + click work for these links):
  = link_to text, '#', onClick: 'insideLinkClicked();', 'data-url' => url
 */
-function insideLinkClicked(event){
+function insideLinkClicked(event) {
   // stops the click from propagating
   if (!event) // for IE
     var event = window.event;
@@ -164,7 +164,7 @@ function insideLinkClicked(event){
   if (event.stopPropagation) event.stopPropagation();
 
   var url = $(event.target).data('url');
-  if(event.ctrlKey)
+  if(event.ctrlKey || e.metaKey)
     window.open(url,'_blank');
   else
     window.location = url;

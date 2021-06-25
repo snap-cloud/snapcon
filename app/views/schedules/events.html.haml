@@ -1,3 +1,6 @@
+- content_for :title do
+  = "#{@conference.title} Program"
+
 .container#program
   -if @events_schedules.any?
     = render partial: 'schedule_tabs', locals: { active: 'program' }
@@ -7,6 +10,9 @@
       #{current_user.name}'s Program for #{@conference.title}
     - else
       Program for #{@conference.title}
+
+  %p.text-center
+    All Events are currently scheduled in #{@conference.timezone}.
 
   .dropdown.program-dropdown
     %button{ type: "button", class: "btn btn-default dropdown-toggle", 'data-toggle' => "dropdown" }

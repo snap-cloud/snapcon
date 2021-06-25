@@ -12,8 +12,8 @@
   - else
     %meta{ property: "twitter:card", content: "summary" }
 
-= content_for :title do
-  = @conference.title
+- content_for :title do
+  = "#{@event.title} #{@conference.title}"
 
 = content_for :additional_messages do
   - if user_signed_in? && @conference.tickets.any? && current_user.ticket_purchases.by_conference(@conference).empty?
