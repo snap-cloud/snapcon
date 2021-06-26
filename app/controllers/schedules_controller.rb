@@ -11,10 +11,7 @@ class SchedulesController < ApplicationController
   before_action :load_withdrawn_event_schedules, only: [:show, :events]
 
   def show
-    # TODO-SNAPCON: This route is currently not exposed, preferring to use `vertical_schedule`
-    event_schedules = @program.selected_event_schedules(
-      includes: [{ event: %i[event_type speakers submitter] }]
-    )
+    event_schedules = @program.event_schedule_for_fullcalendar
 
     unless event_schedules
       redirect_to events_conference_schedule_path(@conference.short_title)
@@ -33,26 +30,18 @@ class SchedulesController < ApplicationController
       end
 
       format.html do
-        @rooms = @conference.venue.rooms if @conference.venue
-        @dates = @conference.start_date..@conference.end_date
-        @step_minutes = @program.schedule_interval.minutes
-        @conf_start = @conference.start_hour
-        @conf_period = @conference.end_hour - @conf_start
-
+        dates = @conference.start_date..@conference.end_date
         # the schedule takes you to today if it is a date of the schedule
-        @current_day = @conference.current_conference_day
-        @day = @current_day.present? ? @current_day : @dates.first
-        if @current_day
-          # the schedule takes you to the current time if it is beetween the start and the end time.
-          @hour_column = @conference.hours_from_start_time(@conf_start, @conference.end_hour)
+        current_day = @conference.current_conference_day
+        @day = current_day.present? ? current_day : dates.first
+
+        if current_user && @favourites
+          event_schedules = event_schedules.select{ |e| e.event.planned_for_user?(current_user) }
         end
-        # Ids of the @event_schedules of confrmed self_organized tracks along with the selected_schedule_id
-        @selected_schedules_ids = [@conference.program.selected_schedule_id]
-        @conference.program.tracks.self_organized.confirmed.each do |track|
-          @selected_schedules_ids << track.selected_schedule_id
-        end
-        @selected_schedules_ids.compact!
-        @event_schedules_by_room_id = event_schedules.select { |s| @selected_schedules_ids.include?(s.schedule_id) }.group_by(&:room_id)
+
+        @rooms = FullCalendarFormatter.rooms_to_resources(@conference.rooms) if @conference.rooms
+        @event_schedules = FullCalendarFormatter.event_schedules_to_resources(event_schedules)
+        @now = Time.now.in_time_zone(@conference.timezone).strftime('%FT%T%:z')
       end
     end
   end
@@ -88,24 +77,7 @@ class SchedulesController < ApplicationController
   end
 
   def vertical_schedule
-    dates = @conference.start_date..@conference.end_date
-    # the schedule takes you to today if it is a date of the schedule
-    current_day = @conference.current_conference_day
-    @day = current_day.present? ? current_day : dates.first
-    event_schedules = @program.event_schedule_for_fullcalendar
-
-    unless event_schedules
-      redirect_to events_conference_schedule_path(@conference.short_title)
-      return
-    end
-
-    if current_user && @favourites
-      event_schedules = event_schedules.select{ |e| e.event.planned_for_user?(current_user) }
-    end
-
-    @rooms = FullCalendarFormatter.rooms_to_resources(@conference.rooms) if @conference.rooms
-    @event_schedules = FullCalendarFormatter.event_schedules_to_resources(event_schedules)
-    @now = Time.now.in_time_zone(@conference.timezone).strftime('%FT%T%:z')
+    redirect_to conference_schedule_path(@conference)
   end
 
   def app
