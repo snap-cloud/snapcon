@@ -66,7 +66,7 @@ class Event < ApplicationRecord
 
   belongs_to :track
   belongs_to :difficulty_level
-  belongs_to :program
+  belongs_to :program, touch: true
   belongs_to :room
   delegate :url, to: :room, allow_nil: true
 

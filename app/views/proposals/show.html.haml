@@ -7,6 +7,8 @@
     %meta{ property: "og:image", content: @speakers_ordered.first.profile_picture }
     %meta{ property: "og:image:secure_url", content: @speakers_ordered.first.profile_picture }
 
+- provide :title, "#{@event.title} #{@conference.title}"
+
 = content_for :splash_nav do
   %li
     = link_to('Schedule', events_conference_schedule_path(@conference))

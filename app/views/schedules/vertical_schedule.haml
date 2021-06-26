@@ -1,3 +1,5 @@
+- provide :title, "#{@conference.title} Schedule"
+
 .container#program
   = render 'schedule_tabs', active: 'vertical_schedule'
 
@@ -6,6 +8,9 @@
       #{current_user.name}'s Schedule for #{@conference.title}
     - else
       Schedule for #{@conference.title}
+
+  %p.text-center
+    All Events are currently scheduled in #{@conference.timezone}.
 
   #vert-schedule-full-calendar
   #fullcalendar{ data: { rooms: @rooms, events: @event_schedules, day: @day,
