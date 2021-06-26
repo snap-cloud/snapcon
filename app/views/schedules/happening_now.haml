@@ -1,3 +1,8 @@
+- provide :title, "#{@conference.title} Happening Now"
+= content_for :splash_nav do
+  %li
+    = link_to('Schedule', events_conference_schedule_path(@conference))
+
 .container#program
   = render 'schedule_tabs', active: 'now'
 
