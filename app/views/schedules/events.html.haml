@@ -1,4 +1,8 @@
 - provide :title, "#{@conference.title} Program"
+= content_for :splash_nav do
+  %li
+    = link_to('Schedule', events_conference_schedule_path(@conference))
+
 
 .container#program
   -if @events_schedules.any?
