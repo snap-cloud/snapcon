@@ -8,7 +8,7 @@
     %meta{ property: "og:image:secure_url", content: @speakers_ordered.first.profile_picture }
 
 - content_for :title do
-  = "#{@event.title} #{@conference.title}"
+  = @event.title @conference.title
 
 = content_for :splash_nav do
   %li
