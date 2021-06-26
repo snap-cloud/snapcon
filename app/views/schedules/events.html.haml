@@ -1,5 +1,4 @@
-- content_for :title do
-  = "#{@conference.title} Program"
+- provide :title, "#{@conference.title} Program"
 
 .container#program
   -if @events_schedules.any?
