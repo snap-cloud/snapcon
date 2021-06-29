@@ -30,7 +30,7 @@ describe SchedulesController do
     context 'as a conference participant' do
       context 'who visits the schedule page' do
         before(:each) do
-          get :schedule, params: { conference_id: conference.short_title }
+          get :show, params: { conference_id: conference.short_title }
         end
 
         it 'returns a successful response' do
