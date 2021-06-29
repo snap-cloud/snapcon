@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+1# frozen_string_literal: true
 
 require 'spec_helper'
 
@@ -24,6 +24,18 @@ describe SchedulesController do
 
       it 'has 200 status code' do
         expect(response).to be_success
+      end
+    end
+
+    context 'as a conference participant' do
+      context 'who visits the schedule page' do
+        before(:each) do
+          get :schedule, params: { conference_id: conference.short_title }
+        end
+
+        it 'returns a successful response' do
+          expect(response.status).to eq(200)
+        end
       end
     end
   end
@@ -76,15 +88,13 @@ describe SchedulesController do
   describe 'GET #vertical_schedule' do
     let!(:program) { conference.program }
 
-    context 'as a conference participant' do
-      context 'who visits the schedule page' do
-        before(:each) do
-          get :vertical_schedule, params: { conference_id: conference.short_title }
-        end
+    context 'redirects to the regular schedule' do
+      before(:each) do
+        get :vertical_schedule, params: { conference_id: conference.short_title }
+      end
 
-        it 'returns a successful response' do
-          expect(response.status).to eq(200)
-        end
+      it 'returns a redirect response' do
+        expect(response.status).to eq(302)
       end
     end
   end

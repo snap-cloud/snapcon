@@ -110,7 +110,7 @@ class EventSchedule < ApplicationRecord
   end
 
   # event_schedule_source is a cached enumerable object that helps
-  # avoid repetitive EXISTS queries when rendering the schedule carousel partial
+  # avoid repetitive EXISTS queries when rendering the schedule partial
   def replacement?(event_schedule_source = nil)
     return false unless event.state == 'confirmed'
     return replaced_event_schedules.exists? unless event_schedule_source
