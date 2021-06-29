@@ -101,7 +101,7 @@ class Program < ApplicationRecord
   def selected_event_schedules(includes: [:event])
     event_schedules = []
     event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc) if selected_schedule
-      tracks.self_organized.confirmed.includes(selected_schedule: { event_schedules: includes }).order(start_date: :asc).each do |track|
+    tracks.self_organized.confirmed.includes(selected_schedule: { event_schedules: includes }).order(start_date: :asc).each do |track|
       next unless track.selected_schedule
 
       event_schedules += track.selected_schedule.event_schedules
@@ -222,7 +222,7 @@ class Program < ApplicationRecord
 
   # TODO: Rename this "display events schedule" or similar
   def event_schedule_for_fullcalendar
-    Rails.cache.fetch("#{cache_key_with_version}/#{selected_schedule.cache_key_with_version}/fullcalendar") do
+    Rails.cache.fetch("#{cache_key_with_version}/#{selected_schedule&.cache_key_with_version}/fullcalendar") do
       selected_event_schedules(
         includes: [:room, { event: %i[event_type speakers submitter volunteers favourite_users] }]
       )
