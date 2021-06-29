@@ -15,6 +15,7 @@ module EventsHelper
     "Registered: #{event.registrations.count}"
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def rating_stars(rating, max, options = {})
     Array.new(max) do |counter|
       content_tag(
@@ -26,6 +27,7 @@ module EventsHelper
     end.join.html_safe
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def rating_fraction(rating, max, options = {})
     content_tag('span', "#{rating}/#{max}", **options)
   end
@@ -56,6 +58,7 @@ module EventsHelper
     end
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def rating_tooltip(event, max_rating)
     "#{event.average_rating}/#{max_rating}, #{pluralize(event.voters.length, 'vote')}"
   end
@@ -74,6 +77,7 @@ module EventsHelper
     end
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def event_type_dropdown(event, event_types, conference_id)
     selection = event.event_type.try(:title) || 'Event Type'
     options = event_types.collect do |event_type|
@@ -89,6 +93,7 @@ module EventsHelper
     active_dropdown(selection, options)
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def track_dropdown(event, tracks, conference_id)
     selection = event.track.try(:name) || 'Track'
     options = tracks.collect do |track|
@@ -104,6 +109,7 @@ module EventsHelper
     active_dropdown(selection, options)
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def difficulty_dropdown(event, difficulties, conference_id)
     selection = event.difficulty_level.try(:title) || 'Difficulty'
     options = difficulties.collect do |difficulty|
@@ -119,6 +125,7 @@ module EventsHelper
     active_dropdown(selection, options)
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def state_dropdown(event, conference_id, email_settings)
     selection = event.state.humanize
     options = []
@@ -175,6 +182,7 @@ module EventsHelper
     active_dropdown(selection, options)
   end
 
+  # TODO-SNAPCON: Move to admin helper
   def event_switch_checkbox(event, attribute, conference_id)
     check_box_tag(
       conference_id,
@@ -187,6 +195,12 @@ module EventsHelper
       ),
       class: 'switch-checkbox'
     )
+  end
+
+  def event_favourited?(event, current_user)
+    return false unless current_user
+
+    event.favourite_users.exists?(current_user.id)
   end
 
   def join_event_link(event, current_user)
