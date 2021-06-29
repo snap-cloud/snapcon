@@ -3,7 +3,8 @@
   color_style = "color: #{contrast_color(header_color)}"
   condensed_view = defined?(is_brief) && is_brief
   abstract_length = condensed_view ? 300 : 400
-  cache_key = [event, event_schedule, condensed_view, current_user, '#eventPanel']
+  is_favorite = event_favourited?(event, current_user)
+  cache_key = [event, event_schedule, condensed_view, current_user, is_favorite, '#eventPanel']
 
 - cache cache_key do
   .panel.panel-default

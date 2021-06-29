@@ -94,14 +94,14 @@ class ProposalsController < ApplicationController
   end
 
   def toggle_favorite
-    # TODO: USE CURRENT USER
-    user = User.find(params[:favourite_user_id])
     users = @event.favourite_users
-    if users.include? user
-      @event.favourite_users.delete(user)
+    if users.include?(current_user)
+      @event.favourite_users.delete(current_user)
     else
-      @event.favourite_users << user
+      @event.favourite_users << current_user
     end
+    @event.touch
+    @program.touch
     render json: {}
   end
 
