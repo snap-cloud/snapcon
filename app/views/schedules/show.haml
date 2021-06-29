@@ -7,7 +7,7 @@
   = render 'schedule_tabs', active: 'vertical_schedule'
 
   %h1.text-center
-    - if @favourites
+    - if @favourites && current_user
       #{current_user.name}'s Schedule for #{@conference.title}
     - else
       Schedule for #{@conference.title}

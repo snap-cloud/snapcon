@@ -1,9 +1,10 @@
 - if current_user
+  - is_favourite = event_favourited?(event, current_user)
   %spna{ style: 'padding: 8px;' }
     = link_to('#', onClick: 'starClicked();',
-              'aria-label': "#{event.favourite_users.exists?(current_user.id) ? 'un' : ''}favorite event #{event.title}") do
+              'aria-label': "#{is_favourite ? 'un' : ''}favorite event #{event.title}") do
       %i.fa.fa-2x{ style: "color: #{contrast_color(header_color)}",
-          class: event.favourite_users.exists?(current_user.id) ? 'fa-star' : 'fa-star-o',
+          class: is_favourite ? 'fa-star' : 'fa-star-o',
           'aria-hidden': 'true',
           'data-url': toggle_favorite_conference_program_proposal_path(conference.short_title, event.id),
           'data-user': current_user.id }

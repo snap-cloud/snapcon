@@ -9,7 +9,7 @@
     = render partial: 'schedule_tabs', locals: { active: 'program' }
 
   %h1.text-center
-    - if @favourites
+    - if @favourites && current_user
       #{current_user.name}'s Program for #{@conference.title}
     - else
       Program for #{@conference.title}

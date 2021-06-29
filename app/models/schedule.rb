@@ -23,12 +23,14 @@ class Schedule < ApplicationRecord
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
-  # TODO: Flesh this method out.
+  # TODO: User this or remove.
   # A user's schedule includes:
   # favorited events
   # events speaking at
   # volunteer events.
-  def for_user(user); end
+  def for_user(user)
+    events.select { |event| event.planned_for_user?(user) }
+  end
 
   private
 
