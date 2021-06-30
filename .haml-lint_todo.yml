@@ -171,7 +171,6 @@ linters:
       - "app/views/conferences/_code_of_conduct.haml"
       - "app/views/conferences/_conference_details.html.haml"
       - "app/views/conferences/_footer.haml"
-      - "app/views/conferences/_gallery.html.haml"
       - "app/views/conferences/_header.haml"
       - "app/views/conferences/_highlights.haml"
       - "app/views/conferences/_lodging.haml"
@@ -223,7 +222,6 @@ linters:
       - "app/views/proposals/new.html.haml"
       - "app/views/proposals/registrations.html.haml"
       - "app/views/proposals/show.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
       - "app/views/schedules/_event.html.haml"
       - "app/views/schedules/_schedule.html.haml"
       - "app/views/schedules/_schedule_item.html.haml"
@@ -262,7 +260,6 @@ linters:
       - "app/views/admin/schedules/_event.html.haml"
       - "app/views/admin/versions/_object_desc_and_link.html.haml"
       - "app/views/booths/index.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
 
   # Offense count: 230
   InstanceVariables:
@@ -308,7 +305,6 @@ linters:
       - "app/views/proposals/_encouragement_text.html.haml"
       - "app/views/proposals/_form.html.haml"
       - "app/views/proposals/_proposal_form.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
       - "app/views/schedules/_event.html.haml"
       - "app/views/schedules/_schedule.html.haml"
       - "app/views/schedules/_schedule_item.html.haml"
@@ -424,7 +420,6 @@ linters:
       - "app/views/conference_registrations/_volunteer.html.haml"
       - "app/views/conference_registrations/show.html.haml"
       - "app/views/conferences/_conference_details.html.haml"
-      - "app/views/conferences/_gallery.html.haml"
       - "app/views/conferences/index.html.haml"
       - "app/views/devise/confirmations/new.html.haml"
       - "app/views/devise/ichain_sessions/new.html.haml"
@@ -455,7 +450,6 @@ linters:
       - "app/views/proposals/new.html.haml"
       - "app/views/proposals/registrations.html.haml"
       - "app/views/proposals/show.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
       - "app/views/schedules/_event.html.haml"
       - "app/views/schedules/_schedule.html.haml"
       - "app/views/schedules/_schedule_item.html.haml"
@@ -555,7 +549,6 @@ linters:
       - "app/views/proposals/index.html.haml"
       - "app/views/proposals/new.html.haml"
       - "app/views/proposals/show.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
       - "app/views/schedules/_schedule_item.html.haml"
       - "app/views/shared/_changelog_actions.haml"
       - "app/views/shared/_dynamic_association.html.haml"
@@ -616,16 +609,14 @@ linters:
     exclude:
       - "app/views/admin/schedules/_day_tab.html.haml"
       - "app/views/admin/schedules/_event.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
       - "app/views/schedules/_event.html.haml"
       - "app/views/schedules/_schedule_item.html.haml"
 
-  # Offense count: 9
+  # Offense count: 4
   ClassAttributeWithStaticValue:
     exclude:
       - "app/views/admin/survey_questions/_form.html.haml"
       - "app/views/admin/surveys/_survey_question.html.haml"
-      - "app/views/conferences/_gallery.html.haml"
       - "app/views/layouts/_navigation.html.haml"
       - "app/views/schedules/events.html.haml"
 
