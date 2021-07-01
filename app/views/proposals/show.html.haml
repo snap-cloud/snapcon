@@ -43,13 +43,16 @@
         = link_to "Edit", edit_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-primary'
 
   .row
+    / TODO: Cache Event Sidebar
     .col-md-3
       - if @event.speakers.any?
         %h3
           Presented by:
+        / TODO: Add a cache key for this?
         - @speakers_ordered.each do |speaker|
           = render 'speaker_info', speaker: speaker
-      / end speakers.
+
+      / TODO: reuse the speaker_info partial
       - if @event.volunteers.any?
         %h3
           Volunteer Hosts
@@ -58,7 +61,13 @@
         - @event.volunteers.each do |volunteer|
           = render 'volunteer_info', speaker: volunteer, show_bio: false
 
+
+
+
+
+    / TODO: Set width to 9 unless happening_now is present
     .col-md-6
+      / TODO: Cache this inner panel. include @surveys_after_event
       .row
         .col-md-12
           .lead
@@ -77,8 +86,7 @@
             = render partial: 'shared/media_items', locals: { commercials: @event.commercials }
       .row
         .col-md-12
-          %p
-            = markdown(@event.abstract)
+          = markdown(@event.abstract)
         %dl#proposal-info
           .col-md-12
             %dt Date:
@@ -93,9 +101,7 @@
             %dd= show_time(@event.event_type.length)
           .col-md-12
             %dt Room:
-            %dd
-              - if @event.room
-                = @event.room.name
+            %dd= @event.room&.name
           .col-md-12
             %dt Conference:
             %dd= link_to @event.program.conference.title, conference_path(@conference)
@@ -140,13 +146,14 @@
                         = event_schedule.start_time.strftime("%Y %B %e %H:%M")
                     %br
                       %dt Room:
-                      %dd
-                        = event.room.name
+                      %dd= event.room&.name
       .row
         .col-md-12
           - if @surveys_after_event.any? && @event.ended?
             .page-header
             = render partial: 'surveys/list', locals: { surveys: @surveys_after_event, conference: @conference }
+
+
 
     / TODO-SNAPCON: Should this just use the happening now splash flag?
     - if !@conference.pending? && !@conference.ended?
@@ -158,6 +165,7 @@
             events_schedules_limit: @events_schedules_limit,
             is_happening_next: @is_happening_next
 
+  / TODO: Cache this with current_user or at least can edit
   - if @event.committee_review.present? || @event.submission_text.present? && can?(:edit, @event)
     %hr
     %p Information for event authors only:
