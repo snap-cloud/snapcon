@@ -14,6 +14,7 @@
 #  conference_id      :integer          not null
 #  user_id            :integer          not null
 #
+
 class Payment < ApplicationRecord
   has_many :ticket_purchases
   belongs_to :user
@@ -29,7 +30,8 @@ class Payment < ApplicationRecord
   enum status: {
     unpaid:  0,
     success: 1,
-    failure: 2
+    failure: 2,
+    pending: 3
   }
 
   def amount_to_pay
@@ -37,7 +39,6 @@ class Payment < ApplicationRecord
   end
 
   def stripe_description
-    # "ticket purchases(#{user.username})"
     "Tickets for #{conference.title} #{user.name} #{user.email}"
   end
 

@@ -79,7 +79,7 @@ class Ticket < ApplicationRecord
 
   def self.total_price_user(conference, user, paid: false)
     tickets = TicketPurchase.where(conference: conference, user: user, paid: paid)
-    tickets.inject(0){ |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
+    tickets.inject(0) { |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
   end
 
   def tickets_turnover_total(id)
@@ -97,6 +97,7 @@ class Ticket < ApplicationRecord
   private
 
   def tickets_of_conference_have_same_currency
+    return true
     tickets = Ticket.where(conference_id: conference_id)
     return if tickets.count.zero? || (tickets.count == 1 && self == tickets.first)
 

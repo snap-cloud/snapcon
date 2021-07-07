@@ -91,6 +91,20 @@ class TicketPurchase < ApplicationRecord
     sum('amount_paid * quantity')
   end
 
+  def stripe_line_item
+    {
+      price_data: {
+        currency:     ticket.price_currency,
+        product_data: {
+          name: "#{conference.title} Ticket: #{ticket.title}",
+        },
+        unit_amount:   ticket.price_cents,
+      },
+      quantity:        quantity,
+    }
+  end
+
+  # TODO: rename paid
   def pay(payment)
     update_attributes(paid: true, payment: payment)
     PhysicalTicket.transaction do
