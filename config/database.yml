@@ -14,7 +14,7 @@ default: &default
   username: <%= ENV['OSEM_DB_USER'] || 'postgres' %>
   password: <%= ENV['OSEM_DB_PASSWORD'] || 'mysecretpassword' %>
   database: <%= ENV['OSEM_DB_NAME'] || 'postgres' %>
-  pool: 10
+  pool: 30
   timeout: 70000
 
 development:
