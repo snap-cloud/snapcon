@@ -228,6 +228,9 @@ module EventsHelper
       else
         link_to('(Live Event Link Available During Event)', '#')
       end
+    elsif is_now
+      link_to('Register for the conference to join this event.',
+         conference_conference_registration_path(conference))
     end
   end
 
