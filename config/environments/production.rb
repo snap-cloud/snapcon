@@ -110,4 +110,9 @@ Osem::Application.configure do
     ytlf_ticket_id: (ENV['YTLF_TICKET_ID'] || 50),
     bcc_address:    ENV['OSEM_MESSAGE_BCC_ADDRESS']
   }
+
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.sentry = turned
+  end
 end

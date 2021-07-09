@@ -203,6 +203,14 @@ module EventsHelper
     event.favourite_users.exists?(current_user.id)
   end
 
+  def timezone_offset(conference)
+    Time.now.in_time_zone(conference.timezone).utc_offset / 1.hour
+  end
+
+  def timezone_text(object)
+    Time.now.in_time_zone(object.timezone).strftime('%Z')
+  end
+
   def join_event_link(event, current_user)
     # TODO: Should this take in an event_schedule?
     return unless event.url.present? && current_user
@@ -220,6 +228,9 @@ module EventsHelper
       else
         link_to('(Live Event Link Available During Event)', '#')
       end
+    elsif is_now
+      link_to('Register for the conference to join this event.',
+         conference_conference_registration_path(conference))
     end
   end
 

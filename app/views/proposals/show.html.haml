@@ -48,81 +48,83 @@
         %h3
           Presented by:
         - @speakers_ordered.each do |speaker|
-          = render 'speaker_info', speaker: speaker
-      / end speakers.
+          = render 'speaker_info', speaker: speaker, show_bio: true, cache: true
+
       - if @event.volunteers.any?
         %h3
           Volunteer Hosts
           %br
           %small Thanks for helping with #{@conference.title}!
         - @event.volunteers.each do |volunteer|
-          = render 'volunteer_info', speaker: volunteer, show_bio: false
+          = render 'speaker_info', speaker: volunteer, show_bio: false
 
-    .col-md-6
-      .row
-        .col-md-12
-          .lead
-            = canceled_replacement_event_label(@event, @event_schedule)
-            = replacement_event_notice(@event_schedule)
+    - happening_now = !@conference.pending? && !@conference.ended?
+    %section{class: happening_now ? 'col-md-6' : 'col-md-9'}
+      - cache [@conference, @event, @event_schedule, '#events#main-panel'] do
+        .row
+          .col-md-12
+            .lead
+              = canceled_replacement_event_label(@event, @event_schedule)
+              = replacement_event_notice(@event_schedule)
 
-          - if @event.commercials.empty?
-            %h5.text-warning
-              No materials for the event yet, sorry!
+            - if @event.commercials.empty?
+              %h5.text-warning
+                No materials for the event yet, sorry!
+                - unless @conference.commercials.empty?
+                  Meanwhile...
               - unless @conference.commercials.empty?
-                Meanwhile...
-            - unless @conference.commercials.empty?
-              = render partial: 'shared/media_items', locals: { commercials: @conference.commercials }
-          - else
-            %p
-            = render partial: 'shared/media_items', locals: { commercials: @event.commercials }
-      .row
-        .col-md-12
-          %p
+                = render partial: 'shared/media_items', locals: { commercials: @conference.commercials }
+            - else
+              %p
+              = render partial: 'shared/media_items', locals: { commercials: @event.commercials }
+        .row
+          .col-md-12
             = markdown(@event.abstract)
-        %dl#proposal-info
-          .col-md-12
-            %dt Date:
-            %dd
-              - if @event_schedule.present?
-                = inyourtz(@event_schedule.start_time, @conference.timezone) do
-                  = @event_schedule.start_time.strftime("%Y %B %e - %H:%M") if @event_schedule
-              - else
-                Unscheduled
-          .col-md-12
-            %dt Duration:
-            %dd= show_time(@event.event_type.length)
-          .col-md-12
-            %dt Room:
-            %dd
-              - if @event.room
-                = @event.room.name
-          .col-md-12
-            %dt Conference:
-            %dd= link_to @event.program.conference.title, conference_path(@conference)
-          - if @event.language
+          %dl#proposal-info
             .col-md-12
-              %dt Language:
-              %dd= @event.language
-          - if @event.track
-            .col-md-12
-              %dt Track:
+              %dt Date:
               %dd
-                %span.label{style: "background-color: #{@event.track.color}; color: #{ contrast_color(@event.track.color) }"}
-                  = @event.track.name
-          - if @event.difficulty_level
+                - if @event_schedule.present?
+                  = inyourtz(@event_schedule.start_time, @conference.timezone) do
+                    = @event_schedule.start_time.strftime('%Y %B %e - %H:%M') + ' ' + timezone_text(@event)
+                - else
+                  Unscheduled
             .col-md-12
-              %dt Difficulty:
+              %dt Duration:
+              %dd= show_time(@event.event_type.length)
+            .col-md-12
+              %dt Room:
               %dd
-                %span.label{style: "background-color: #{@event.difficulty_level.color}; color: #{ contrast_color(@event.difficulty_level.color) };"}
-                  = @event.difficulty_level.title
+                = @event.room&.name
+                = join_event_link(@event, current_user)
+            .col-md-12
+              %dt Conference:
+              %dd= link_to @event.program.conference.title, conference_path(@conference)
+            - if @event.language
+              .col-md-12
+                %dt Language:
+                %dd= @event.language
+            - if @event.track
+              .col-md-12
+                %dt Track:
+                %dd
+                  %span.label{style: "background-color: #{@event.track.color}; color: #{ contrast_color(@event.track.color) }"}
+                    = @event.track.name
+            - if @event.difficulty_level
+              .col-md-12
+                %dt Difficulty:
+                %dd
+                  %span.label{style: "background-color: #{@event.difficulty_level.color}; color: #{ contrast_color(@event.difficulty_level.color) };"}
+                    = @event.difficulty_level.title
 
-          - if @event.require_registration
-            .col-md-12
-              %dt Requires Registration:
-              %dd
-                = link_to "Yes (#{registered_text(@event)})", new_conference_conference_registration_path(@conference.short_title), class: 'btn btn-xs btn-danger', disabled: !@event.registration_possible?
+            - if @event.require_registration
+              .col-md-12
+                %dt Requires Registration:
+                %dd
+                  = link_to "Yes (#{registered_text(@event)})", new_conference_conference_registration_path(@conference.short_title), class: 'btn btn-xs btn-danger', disabled: !@event.registration_possible?
 
-          - concurrent = concurrent_events(@event)
+          -# TODO-SNAPCON: This is current disabled due to performance.
+          - concurrent = [] # concurrent_events(@event)
           - if concurrent.present?
             .col-md-12
               %hr
@@ -140,16 +142,18 @@
                         = event_schedule.start_time.strftime("%Y %B %e %H:%M")
                     %br
                       %dt Room:
-                      %dd
-                        = event.room.name
+                      %dd= event.room&.name
+
       .row
         .col-md-12
           - if @surveys_after_event.any? && @event.ended?
             .page-header
             = render partial: 'surveys/list', locals: { surveys: @surveys_after_event, conference: @conference }
 
+
+
     / TODO-SNAPCON: Should this just use the happening now splash flag?
-    - if !@conference.pending? && !@conference.ended?
+    - if happening_now
       .col-md-3
         #happening-now
           = render 'conferences/happening_now', conference: @conference,
@@ -158,6 +162,7 @@
             events_schedules_limit: @events_schedules_limit,
             is_happening_next: @is_happening_next
 
+  / TODO: Cache this with current_user or at least can edit
   - if @event.committee_review.present? || @event.submission_text.present? && can?(:edit, @event)
     %hr
     %p Information for event authors only:

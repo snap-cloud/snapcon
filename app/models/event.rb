@@ -69,6 +69,8 @@ class Event < ApplicationRecord
   belongs_to :program, touch: true
   belongs_to :room
   delegate :url, to: :room, allow_nil: true
+  has_one :conference, through: :program
+  delegate :timezone, to: :conference
 
   has_and_belongs_to_many :favourite_users, class_name: 'User'
 
@@ -410,10 +412,6 @@ class Event < ApplicationRecord
     errors
         .add(:created_at, "can't be after the conference end date!") if program.conference&.end_date &&
         (Date.today > program.conference.end_date)
-  end
-
-  def conference_id
-    program.conference_id
   end
 
   ##

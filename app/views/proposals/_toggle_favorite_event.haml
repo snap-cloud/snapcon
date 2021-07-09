@@ -1,6 +1,6 @@
 - if current_user
   - is_favourite = event_favourited?(event, current_user)
-  %spna{ style: 'padding: 8px;' }
+  %span{ style: 'padding: 8px;' }
     = link_to('#', onClick: 'starClicked();',
               'aria-label': "#{is_favourite ? 'un' : ''}favorite event #{event.title}") do
       %i.fa.fa-2x{ style: "color: #{contrast_color(header_color)}",
