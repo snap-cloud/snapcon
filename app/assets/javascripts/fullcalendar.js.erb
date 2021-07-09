@@ -5,8 +5,13 @@ $( document ).ready(function() {
 
     let license_key = "<%= Rails.configuration.fullcalendar[:license_key] %>";
 
+    let offset = $fullCalendar.data('tzOffset');
+    let interval = $fullCalendar.data('minInterval')
+    let startTime = $fullCalendar.data('startHour') - offset - (new Date()).getTimezoneOffset()/60;
+    let endTime = $fullCalendar.data('endHour') - offset - (new Date()).getTimezoneOffset()/60;
+
     // Program Hours * Minutes / Interval * Min Row Height for an event.
-    let contentHeight = 6 * 60 / 5 * 18; // TODO: Dynamically set this!
+    let contentHeight = (endTime - startTime) * 60 / interval * 16;
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
       schedulerLicenseKey: license_key,
@@ -15,20 +20,28 @@ $( document ).ready(function() {
       contentHeight: contentHeight,
       expandRows: true,
       allDaySlot: false,
-      slotMinTime: $fullCalendar.data('startHour') + ':00:00',
-      slotMaxTime: $fullCalendar.data('endHour') + ':00:00',
+      slotMinTime: startTime + ':00:00',
+      slotMaxTime: endTime + ':00:00',
       // TODO: Set these dynamically.
       slotDuration: '00:15:00',
       slotLabelInterval: '00:15:00',
+      slotLabelFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        omitZeroMinute: true,
+        meridiem: 'short',
+        timeZoneName: 'short'
+      },
       validRange: {
         start: $fullCalendar.data('startDate'),
         end: $fullCalendar.data('endDate')
       },
-      timeZone: $fullCalendar.data('timezone'),
+      timeZone: 'local',
       initialDate: $fullCalendar.data('day'),
       initialView: 'resourceTimeGridDay',
       resources: $fullCalendar.data('rooms'),
       resourceOrder: 'order, title',
+      // TODO: Move this to a XHR.
       events: $fullCalendar.data('events'),
       displayEventEnd: false, // TODO change in list view.
       displayEventTime: false,

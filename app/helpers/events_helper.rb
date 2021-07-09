@@ -203,6 +203,10 @@ module EventsHelper
     event.favourite_users.exists?(current_user.id)
   end
 
+  def timezone_offset(conference)
+    Time.now.in_time_zone(conference.timezone).utc_offset / 1.hour
+  end
+
   def timezone_text(object)
     Time.now.in_time_zone(object.timezone).strftime('%Z')
   end
