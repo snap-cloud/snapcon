@@ -177,7 +177,7 @@ feature 'Version' do
     expect(page).to have_text("Someone (probably via the console) deleted venue Example University with ID #{venue_id} in conference #{conference.short_title}")
   end
 
-  scenario 'display changes in event', feature: true, versioning: true, js: true do
+  xscenario 'display changes in event', feature: true, versioning: true, js: true do
     visit new_conference_program_proposal_path(conference_id: conference.short_title)
     fill_in 'event_title', with: 'ABC'
     fill_in 'event_abstract', with: 'Lorem ipsum abstract'
