@@ -203,6 +203,10 @@ module EventsHelper
     event.favourite_users.exists?(current_user.id)
   end
 
+  def timezone_text(objet)
+    Time.now.in_time_zone(object.timezone).strftime('%Z')
+  end
+
   def join_event_link(event, current_user)
     # TODO: Should this take in an event_schedule?
     return unless event.url.present? && current_user

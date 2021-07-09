@@ -13,7 +13,7 @@
         .text-muted
           from
           = speaker.affiliation
-  - if speaker.biography?
+  - if (defined?(show_bio) && show_bio) && speaker.biography?
     .row.speakerbio
       .col-md-12
         = markdown(speaker.biography)
