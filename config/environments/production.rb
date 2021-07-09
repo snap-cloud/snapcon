@@ -113,6 +113,6 @@ Osem::Application.configure do
 
   config.after_initialize do
     Bullet.enable = true
-    Bullet.sentry = turned
+    Bullet.sentry = true
   end
 end
