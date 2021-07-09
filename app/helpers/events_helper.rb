@@ -203,7 +203,7 @@ module EventsHelper
     event.favourite_users.exists?(current_user.id)
   end
 
-  def timezone_text(objet)
+  def timezone_text(object)
     Time.now.in_time_zone(object.timezone).strftime('%Z')
   end
 

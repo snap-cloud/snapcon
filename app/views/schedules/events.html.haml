@@ -46,8 +46,9 @@
       - unless event_schedule.start_time.strftime('%H:%M').eql?(time)
         .col-xs-12.col-md-1
           .start-time
+            - time = event_schedule.start_time.strftime('%H:%M')
             = inyourtz(event_schedule.start_time, @conference.timezone) do
-              = time = event_schedule.start_time.strftime('%H:%M')
+              = time + ' ' + timezone_text(@conference)
         .col-xs-12.col-md-11
           .new-time-event
             = render partial: 'event', locals: { event: event_schedule.event, event_schedule: event_schedule }

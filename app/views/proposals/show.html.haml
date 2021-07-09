@@ -86,7 +86,7 @@
               %dd
                 - if @event_schedule.present?
                   = inyourtz(@event_schedule.start_time, @conference.timezone) do
-                    = "#{@event_schedule.start_time.strftime('%Y %B %e - %H:%M')} #{timezone_text(@event)}"
+                    = @event_schedule.start_time.strftime('%Y %B %e - %H:%M') + ' ' + timezone_text(@event)
                 - else
                   Unscheduled
             .col-md-12
