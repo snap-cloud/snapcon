@@ -17,7 +17,7 @@
                        event.title,
                        event.abstract,
                        (event.time.present? ? "#{event.time.strftime("%Y-%m-%d")} #{event.time.strftime("%I:%M%p")} " : ''),
-                       event.submitter.name,
+                       (event.submiter.present? ? event.submiter.name : ''),,
                        event.speaker_names,
                        event.speaker_emails,
                        event.event_type.title,
