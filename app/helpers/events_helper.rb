@@ -230,7 +230,7 @@ module EventsHelper
       end
     elsif is_now
       link_to('Register for the conference to join this event.',
-         conference_conference_registration_path(conference))
+              conference_conference_registration_path(conference))
     end
   end
 
