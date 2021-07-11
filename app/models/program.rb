@@ -62,7 +62,7 @@ class Program < ApplicationRecord
       where(state: :confirmed, is_highlight: true)
     end
   end
-  # has_many :event_schedules, through: :events
+  has_many :event_schedules, through: :events
 
   has_many :event_users, through: :events
   has_many :program_events_speakers, -> {where(event_role: 'speaker')}, through: :events, source: :event_users
