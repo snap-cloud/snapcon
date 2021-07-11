@@ -93,8 +93,6 @@ class Event < ApplicationRecord
   validate :max_attendees_no_more_than_room_size
   validate :valid_track
 
-  default_scope { includes(:speaker_event_users, :speakers) }
-
   scope :confirmed, -> { where(state: 'confirmed') }
   scope :canceled, -> { where(state: 'canceled') }
   scope :withdrawn, -> { where(state: 'withdrawn') }

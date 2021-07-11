@@ -147,8 +147,8 @@ module Admin
       # @tracks_distribution_withdrawn = @conference.tracks_distribution(:withdrawn)
 
       # Recent actions information
-      @recent_events = @conference.program.events.limit(5).order(created_at: :desc)
-      @recent_registrations = @conference.registrations.limit(5).order(created_at: :desc)
+      @recent_events = @conference.program.events.includes([:submitter_event_user, :submitter, :program]).limit(5).order(created_at: :desc)
+      @recent_registrations = @conference.registrations.includes([:user]).limit(5).order(created_at: :desc)
 
       @top_submitter = @conference.get_top_submitter
 

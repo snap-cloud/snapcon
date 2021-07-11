@@ -224,7 +224,7 @@ class Program < ApplicationRecord
   def event_schedule_for_fullcalendar
     Rails.cache.fetch("#{cache_key_with_version}/#{selected_schedule&.cache_key_with_version}/fullcalendar") do
       selected_event_schedules(
-        includes: [:room, { event: %i[event_type speakers submitter volunteers favourite_users] }]
+        includes: [:event]
       )
     end
   end
