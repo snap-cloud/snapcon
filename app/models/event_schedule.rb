@@ -21,7 +21,7 @@
 #  index_event_schedules_on_schedule_id               (schedule_id)
 #
 class EventSchedule < ApplicationRecord
-  default_scope { where(enabled: true).includes(:event) }
+  default_scope { where(enabled: true) }
 
   belongs_to :schedule, touch: true
   belongs_to :event

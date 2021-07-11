@@ -62,7 +62,7 @@ class Program < ApplicationRecord
       where(state: :confirmed, is_highlight: true)
     end
   end
-  has_many :event_schedules, through: :events
+  # has_many :event_schedules, through: :events
 
   has_many :event_users, through: :events
   has_many :program_events_speakers, -> {where(event_role: 'speaker')}, through: :events, source: :event_users
@@ -100,7 +100,9 @@ class Program < ApplicationRecord
   # Returns all event_schedules for the selected schedule ordered by start_time
   def selected_event_schedules(includes: [:event])
     event_schedules = []
-    event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc) if selected_schedule
+    puts "LOADING SELECTED SCHEDULES"
+    puts includes
+    event_schedules = selected_schedule.includes(events: [:event_type]).event_schedules.order(start_time: :asc) if selected_schedule
     tracks.self_organized.confirmed.includes(selected_schedule: { event_schedules: includes }).order(start_date: :asc).each do |track|
       next unless track.selected_schedule
 
@@ -224,7 +226,7 @@ class Program < ApplicationRecord
   def event_schedule_for_fullcalendar
     Rails.cache.fetch("#{cache_key_with_version}/#{selected_schedule&.cache_key_with_version}/fullcalendar") do
       selected_event_schedules(
-        includes: [:event]
+        { events: :event_type }
       )
     end
   end

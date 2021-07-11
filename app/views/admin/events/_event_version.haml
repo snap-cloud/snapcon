@@ -1,0 +1,32 @@
+%tr
+  %td= version.id
+  %td
+    = link_to_user(version.whodunnit)
+
+    - if version.item_type == 'Event'
+      = event_change_description(version)
+      = "event #{@event.title}"
+
+    - elsif version.item_type == 'Vote'
+      = vote_change_description(version)
+      = "event #{@event.title}"
+
+    - elsif version.item_type == 'EventUser'
+      = general_change_description(version)
+      = 'event speaker or volunteer'
+
+    - else
+      = general_change_description(version)
+      =  link_to 'materials',
+                edit_admin_conference_program_event_path(conference_id: @conference.short_title,
+                        id: @event.id, anchor: 'commercials-content')
+
+    %small.text-muted
+      = distance_of_time_in_words(Time.now, version.created_at) + ' ago'
+      %br
+      = "(#{version.created_at.strftime('%B %-d, %Y %H:%M')})"
+
+    %br
+    = render 'shared/object_changes', version: version
+  %td
+    = render 'shared/changelog_actions', version: version
