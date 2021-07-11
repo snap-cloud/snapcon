@@ -48,7 +48,8 @@ module Admin
                   PaperTrail::Version.where(item_type: 'Commercial').where('object LIKE ?', "%commercialable_id: #{@event.id}\ncommercialable_type: Event%") |
                   PaperTrail::Version.where(item_type: 'Commercial').where('object_changes LIKE ?', "%commercialable_id:\n- \n- #{@event.id}\ncommercialable_type:\n- \n- Event%") |
                   PaperTrail::Version.where(item_type: 'Vote').where('object_changes LIKE ?', "%\nevent_id:\n- \n- #{@event.id}\n%") |
-                  PaperTrail::Version.where(item_type: 'Vote').where('object LIKE ?', "%\nevent_id: #{@event.id}\n%")
+                  PaperTrail::Version.where(item_type: 'Vote').where('object LIKE ?', "%\nevent_id: #{@event.id}\n%") |
+                  PaperTrail::Version.where(item_type: 'EventUser').where('object_changes LIKE ?', "%\nevent_id:\n-\n- #{@event.id}\n%")
     end
 
     def edit

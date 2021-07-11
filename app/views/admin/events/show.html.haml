@@ -40,6 +40,10 @@
                       = vote_change_description(version)
                       = "event #{@event.title}"
 
+                    - elsif version.item_type == 'EventUser'
+                      = general_change_description(version)
+                      = 'event speaker or volunteer'
+
                     - else
                       = general_change_description(version)
                       =  link_to 'materials',
