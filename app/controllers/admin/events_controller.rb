@@ -2,6 +2,7 @@
 
 module Admin
   class EventsController < Admin::BaseController
+    before_action :load_events_with_data, only: :index
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :program, through: :conference, singleton: true
     load_and_authorize_resource :event, through: :program
@@ -202,6 +203,14 @@ module Admin
 
     def assign_tracks
       @tracks = Track.accessible_by(current_ability).where(program: @program).confirmed
+    end
+
+    def load_events_with_data
+      @events = Event.where(program: Program.find_by(conference: Conference.find_by(short_title: params[:conference_id]))).includes(
+        :submitter, :submitter_event_user, :speakers, :speaker_event_users, :volunteers,
+        :volunteer_event_users, :program, :event_type, :track, :voters,
+        votes: [:user]
+      )
     end
   end
 end
