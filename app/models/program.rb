@@ -84,7 +84,7 @@ class Program < ApplicationRecord
   accepts_nested_attributes_for :tracks, reject_if: proc { |r| r['name'].blank? }, allow_destroy: true
   accepts_nested_attributes_for :difficulty_levels, allow_destroy: true
 
-  validates :conference_id, presence: true, uniqueness: true
+  # validates :conference_id, presence: true, uniqueness: true
   validates :rating, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10, only_integer: true }
   validates :schedule_interval, numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 60 }, presence: true
   validate :schedule_interval_divisor_60
