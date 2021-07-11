@@ -48,7 +48,7 @@ class SchedulesController < ApplicationController
 
   def events
     @dates = @conference.start_date..@conference.end_date
-    @events_schedules = @program.event_schedule_for_fullcalendar || []
+    @events_schedules = @program.event_schedule_program_view || []
 
     @unscheduled_events = if @program.selected_schedule
                             @program.events.confirmed - @events_schedules.map(&:event)

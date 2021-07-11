@@ -84,7 +84,7 @@ class Program < ApplicationRecord
   accepts_nested_attributes_for :tracks, reject_if: proc { |r| r['name'].blank? }, allow_destroy: true
   accepts_nested_attributes_for :difficulty_levels, allow_destroy: true
 
-#   validates :conference_id, presence: true, uniqueness: true
+  validates :conference_id, presence: true, uniqueness: true
   validates :rating, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10, only_integer: true }
   validates :schedule_interval, numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 60 }, presence: true
   validate :schedule_interval_divisor_60
@@ -100,9 +100,10 @@ class Program < ApplicationRecord
   # Returns all event_schedules for the selected schedule ordered by start_time
   def selected_event_schedules(includes: [:event])
     event_schedules = []
-    puts "LOADING SELECTED SCHEDULES"
-    puts includes
-    event_schedules = selected_schedule.includes(events: [:event_type]).event_schedules.order(start_time: :asc) if selected_schedule
+    if selected_schedule
+      event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc)
+    end
+
     tracks.self_organized.confirmed.includes(selected_schedule: { event_schedules: includes }).order(start_date: :asc).each do |track|
       next unless track.selected_schedule
 
@@ -222,16 +223,27 @@ class Program < ApplicationRecord
     Cfp::TYPES - cfps.pluck(:cfp_type)
   end
 
-  # TODO: Rename this "display events schedule" or similar
   def event_schedule_for_fullcalendar
-    Rails.cache.fetch("#{cache_key_with_version}/#{selected_schedule&.cache_key_with_version}/fullcalendar") do
-      selected_event_schedules(
-        { events: :event_type }
-      )
+    Rails.cache.fetch("#{cache_key_for_schedule}}/fullcalendar") do
+      selected_event_schedules(includes: [:event, :room,
+                                          { event: [:event_type, :track, :program] }])
+    end
+  end
+
+  def event_schedule_program_view
+    Rails.cache.fetch("#{cache_key_for_schedule}}/program") do
+      selected_event_schedules(includes: [:event, :room,
+                                          { event: [:event_type, :speakers, :speaker_event_users,
+                                                    :submitter, :submitter_event_user,
+                                                    { track: [:submitter] }, :program] }])
     end
   end
 
   private
+
+  def cache_key_for_schedule
+    "#{cache_key_with_version}#{selected_schedule&.cache_key_with_version}"
+  end
 
   ##
   # Creates default EventTypes for this Conference. Used as before_create.
