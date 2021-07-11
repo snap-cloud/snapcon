@@ -23,7 +23,6 @@ class Schedule < ApplicationRecord
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
-
   def with_all_associated_data
     includes(event_schedule: { event: [:event_type] })
   end

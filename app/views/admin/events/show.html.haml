@@ -25,7 +25,7 @@
             %th Actions
           %tbody
             - @versions.each do |version|
-              = render 'event_version', version: version
+              = render 'event_version', version: version, event: @event, conference: @conference
     #proposal-tasks.tab-pane
       - progress_percentage = @event.calculate_progress
       .col-md-12

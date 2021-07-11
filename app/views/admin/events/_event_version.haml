@@ -5,11 +5,11 @@
 
     - if version.item_type == 'Event'
       = event_change_description(version)
-      = "event #{@event.title}"
+      = "event #{event.title}"
 
     - elsif version.item_type == 'Vote'
       = vote_change_description(version)
-      = "event #{@event.title}"
+      = "event #{event.title}"
 
     - elsif version.item_type == 'EventUser'
       = general_change_description(version)
@@ -18,8 +18,8 @@
     - else
       = general_change_description(version)
       =  link_to 'materials',
-                edit_admin_conference_program_event_path(conference_id: @conference.short_title,
-                        id: @event.id, anchor: 'commercials-content')
+                edit_admin_conference_program_event_path(conference_id: conference.short_title,
+                        id: event.id, anchor: 'commercials-content')
 
     %small.text-muted
       = distance_of_time_in_words(Time.now, version.created_at) + ' ago'
