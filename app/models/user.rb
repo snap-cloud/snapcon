@@ -55,8 +55,6 @@ end
 class User < ApplicationRecord
   include TrackSavedChanges
   rolify
-  # prevent N+1 queries with has_cached_role? by preloading roles *always*
-  default_scope { preload(:roles) }
 
   has_many :ticket_purchases, dependent: :destroy
   has_many :physical_tickets, through: :ticket_purchases do

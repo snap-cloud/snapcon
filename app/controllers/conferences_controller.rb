@@ -51,7 +51,7 @@ class ConferencesController < ApplicationController
       @call_for_booths = cfps.find { |call| call.cfp_type == 'booths' }
     end
     if @splashpage.include_program?
-      @highlights = @conference.highlighted_events.eager_load(:speakers)
+      @highlights = @conference.highlighted_events.includes(:speakers, :speaker_event_users)
       if @splashpage.include_tracks?
         @tracks = @conference.confirmed_tracks.eager_load(
           :room

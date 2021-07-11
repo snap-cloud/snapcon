@@ -25,42 +25,11 @@
             %th Actions
           %tbody
             - @versions.each do |version|
-              %tr
-                %td
-                  = version.id
-                %td
-                  %p
-                    = link_to_user(version.whodunnit)
-
-                    - if version.item_type == 'Event'
-                      = event_change_description(version)
-                      = "event #{@event.title}"
-
-                    - elsif version.item_type == 'Vote'
-                      = vote_change_description(version)
-                      = "event #{@event.title}"
-
-                    - else
-                      = general_change_description(version)
-                      =  link_to 'materials',
-                                edit_admin_conference_program_event_path(conference_id: @conference.short_title,
-                                        id: @event.id, anchor: 'commercials-content')
-
-                    %small.text-muted
-                      = distance_of_time_in_words(Time.now, version.created_at) + ' ago'
-                      %br
-                      = "(#{version.created_at.strftime('%B %-d, %Y %H:%M')})"
-
-                  %br
-                  = render partial: 'shared/object_changes', locals: { version: version }
-                %td
-                  = render partial: 'shared/changelog_actions', locals: { version: version }
-
+              = render 'event_version', version: version, event: @event, conference: @conference
     #proposal-tasks.tab-pane
       - progress_percentage = @event.calculate_progress
       .col-md-12
-        %h3
-          = @event.title
+        %h3= @event.title
         %br
         %table.table.table-hover
           %tr
@@ -94,5 +63,6 @@
             %td= link_to 'Add a difficulty level', edit_admin_conference_program_event_path(@event.program.conference.short_title, @event)
             %td{ 'class' => class_for_todo(progress_status['difficulty_level']) }
               %span{ 'class' => [icon_for_todo(progress_status['difficulty_level']), 'fa-lg'] }
+
     #proposal-commercials.tab-pane
       = render partial: 'shared/media_items', locals: { commercials: @event.commercials }

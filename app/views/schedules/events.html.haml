@@ -51,10 +51,10 @@
               = time + ' ' + timezone_text(@conference)
         .col-xs-12.col-md-11
           .new-time-event
-            = render partial: 'event', locals: { event: event_schedule.event, event_schedule: event_schedule }
+            = render 'event', event: event_schedule.event, event_schedule: event_schedule
       - else
         .col-xs-12.col-md-11.col-md-offset-1
-          = render partial: 'event', locals: { event: event_schedule.event, event_schedule: event_schedule }
+          = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
     / confirmed events that are not scheduled
     - if @unscheduled_events.any?

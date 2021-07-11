@@ -112,11 +112,11 @@
           Recent Submissions
     .tab-content
       .tab-pane.active#recent_reg
-        = render partial: 'recent_registrations', locals: {recent_registrations: @recent_registrations}
+        = render 'recent_registrations', recent_registrations: @recent_registrations
       .tab-pane#recent_submissions
-        = render partial: 'recent_submissions', locals: {recent_events: @recent_events}
+        = render 'recent_submissions', recent_events: @recent_events
   .col-md-4
-    = render partial: 'top_submitter', locals: {top_submitter: @top_submitter}
+    = render 'top_submitter', top_submitter: @top_submitter
 
 :javascript
   $('#recentTable a').click(function (e) {
