@@ -26,6 +26,7 @@ class Schedule < ApplicationRecord
   def with_all_associated_data
     includes(event_schedule: { event: [:event_type] })
   end
+
   # TODO: User this or remove.
   # A user's schedule includes:
   # favorited events
