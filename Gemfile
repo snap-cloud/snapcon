@@ -83,6 +83,7 @@ gem 'formtastic', '~> 3.1.5'
 gem 'formtastic-bootstrap'
 
 # as the JavaScript library
+# TODO: Consolidate with the rails-assets below or move to webpack...
 gem 'jquery-rails'
 gem 'jquery-ui-rails', '~> 6.0.1'
 
@@ -170,6 +171,7 @@ gem 'piwik_analytics', '~> 1.0.1'
 
 # for recurring jobs
 gem 'delayed_job_active_record'
+gem 'delayed_job_web'
 gem 'whenever', :require => false
 
 # to run scripts
