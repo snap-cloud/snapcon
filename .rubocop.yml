@@ -51,6 +51,7 @@ Layout/HashAlignment:
 
 Layout/BeginEndAlignment: # (new in 0.91)
   Enabled: true
+
 Layout/EmptyLinesAroundAttributeAccessor: # (new in 0.83)
   Enabled: true
 Layout/SpaceAroundMethodCallOperator: # (new in 0.82)
@@ -150,4 +151,9 @@ Style/SlicingWithRange: # (new in 0.83)
 Style/SoleNestedConditional: # (new in 0.89)
   Enabled: true
 Style/StringConcatenation: # (new in 0.89)
+  Enabled: true
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+RSpec/StubbedMock: # (new in 1.44)
   Enabled: true
