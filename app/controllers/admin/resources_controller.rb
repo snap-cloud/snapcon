@@ -41,7 +41,7 @@ module Admin
       else
         redirect_to admin_conference_resources_path(conference_id: @conference.short_title),
                     error: 'Resource was successfully destroyed.' \
-  	                "#{@resource.errors.full_messages.join('. ')}."
+                    "#{@resource.errors.full_messages.join('. ')}."
       end
     end
 

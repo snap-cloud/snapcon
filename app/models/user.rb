@@ -153,7 +153,7 @@ class User < ApplicationRecord
 
   validates :username,
             uniqueness: {
-                case_sensitive: false
+              case_sensitive: false
             },
             presence:   true
 

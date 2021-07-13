@@ -353,7 +353,7 @@ describe Program do
 
     it 'returns all the possible cfp types when there is no cfp' do
       expect(program.remaining_cfp_types).to eq(Cfp::TYPES)
-      expect(program.remaining_cfp_types). to eq(%w[events booths tracks])
+      expect(program.remaining_cfp_types).to eq(%w[events booths tracks])
     end
   end
 end

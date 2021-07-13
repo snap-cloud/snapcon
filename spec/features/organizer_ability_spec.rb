@@ -137,7 +137,7 @@ feature 'Has correct abilities' do
       expect(current_path).to eq(new_admin_conference_program_cfp_path(conference.short_title))
 
       visit edit_admin_conference_program_cfp_path(conference.short_title, cfb)
-      expect(current_path). to eq(edit_admin_conference_program_cfp_path(conference.short_title, cfb))
+      expect(current_path).to eq(edit_admin_conference_program_cfp_path(conference.short_title, cfb))
 
       # No cfp exists
       cfb.destroy
