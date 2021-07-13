@@ -61,6 +61,7 @@ docker-compose.override.yml
 .buildconfig
 osem_development
 osem_test
+
 config/local_env.yml
 
 # From GitHub, for Ruby
@@ -77,8 +78,6 @@ config/local_env.yml
 /test/version_tmp/
 /tmp/
 
-# Used by dotenv library to load environment variables.
-# .env
 
 # Ignore Byebug command history file.
 .byebug_history
@@ -131,4 +130,4 @@ build-iPhoneSimulator/
 !.elasticbeanstalk/*.global.yml
 
 # common db things from heroku
-latest.dump
+latest.dump*

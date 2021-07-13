@@ -789,17 +789,19 @@ class Conference < ApplicationRecord
 
   # Returns a different html colour for every i and consecutive colors are
   # clearly different.
+  # rubocop:disable: Style/MethodParameterName
   def next_color(i)
     '#' + next_color_component(:r, i) + next_color_component(:g, i) + next_color_component(:b, i)
   end
 
-  # Auxiliar function which is used in next_color and returns each component of
+  # Auxiliary function which is used in next_color and returns each component of
   # the color. We make use of big prime numbers to avoid repetition and to make
   # consecutive colors clearly different.
   def next_color_component(component, i)
     big_prime_numbers = {r: 113, g: 67, b: 151}
     ((i * big_prime_numbers[component]) % 239 + 16).to_s(16)
   end
+  # rubocop:enable: Style/MethodParameterName
 
   after_create do
     create_contact
@@ -1192,12 +1194,12 @@ class Conference < ApplicationRecord
 
   def get_color
     %w(
-        #000000 #0000FF #00FF00 #FF0000 #FFFF00 #9900CC
-        #CC0066 #00FFFF #FF00FF #C0C0C0 #00008B #FFD700
-        #FFA500 #FF1493 #FF00FF #F0FFFF #EE82EE #D2691E
-        #C0C0C0 #A52A2A #9ACD32 #9400D3 #8B008B #8B0000
-        #87CEEB #808080 #800080 #008B8B #006400
-      ).sample
+      #000000 #0000FF #00FF00 #FF0000 #FFFF00 #9900CC
+      #CC0066 #00FFFF #FF00FF #C0C0C0 #00008B #FFD700
+      #FFA500 #FF1493 #FF00FF #F0FFFF #EE82EE #D2691E
+      #C0C0C0 #A52A2A #9ACD32 #9400D3 #8B008B #8B0000
+      #87CEEB #808080 #800080 #008B8B #006400
+    ).sample
   end
 
   # Calculates items per week from a hash.

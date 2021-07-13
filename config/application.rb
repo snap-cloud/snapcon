@@ -81,6 +81,7 @@ module Osem
       end
     end
 
+    # Before Moving to Webpack, you can add assets to package.json
     config.assets.paths << Rails.root.join('node_modules')
 
     config.fullcalendar = {

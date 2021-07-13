@@ -1,4 +1,7 @@
-FROM opensuse/infrastructure/osem/containers/osem/base
+FROM registry.opensuse.org/opensuse/infrastructure/osem/containers/osem/base
+
+# Install bundler & foreman
+RUN gem install bundler:1.17.3 foreman
 
 # Add our files
 COPY --chown=1000:1000 . /osem/
@@ -10,7 +13,7 @@ WORKDIR /osem/
 RUN export NOKOGIRI_USE_SYSTEM_LIBRARIES=1; bundle install --jobs=3 --retry=3 --without test development
 
 # Generate assets
-RUN export RAILS_ENV=production; bundle exec rake assets:clobber assets:precompile
+RUN export RAILS_ENV=production; bundle exec rake assets:precompile
 
 ENV RAILS_ENV=production
 

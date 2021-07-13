@@ -18,4 +18,3 @@ namespace :roles do
     puts 'All done!'
   end
 end
-
