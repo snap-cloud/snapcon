@@ -57,7 +57,7 @@ class SchedulesController < ApplicationController
                           end
 
     event_ids = @events_schedules.map { |es| es.event.id } + @unscheduled_events.map(&:id)
-    set_favourites_map(event_ids)
+    favourite_events_list(event_ids)
 
     if current_user && @favourites
       @events_schedules.keep_if{ |es| es.event.planned_for_user?(current_user) }
@@ -74,7 +74,7 @@ class SchedulesController < ApplicationController
     @current_time = Time.now.in_time_zone(@conference.timezone)
 
     event_ids = @events_schedules.map { |es| es.event.id }
-    set_favourites_map(event_ids)
+    favourite_events_list(event_ids)
 
     respond_to do |format|
       fortmat.html
@@ -96,14 +96,12 @@ class SchedulesController < ApplicationController
     @favourites = params[:favourites] == 'true'
   end
 
-  def set_favourites_map(event_ids = [])
-    if current_user
-      @favourited_events = FavouriteEvents.where(
+  def favourite_events_list(event_ids = [])
+    return @favourited_events = [] unless current_user
+
+    @favourited_events ||= FavouriteEvents.where(
         user_id: current_user.id, event_id: event_ids
       ).pluck(:event_id)
-    else
-      @favourited_events = []
-    end
   end
 
   def respond_to_options

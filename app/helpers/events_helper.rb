@@ -257,6 +257,10 @@ module EventsHelper
     "#{calendar_base}?#{event_details.to_param}"
   end
 
+  def css_background_color(color)
+    "background-color: #{color}; color: #{contrast_color(color)};"
+  end
+
   private
 
   def calendar_event_text(event, event_schedule, conference)

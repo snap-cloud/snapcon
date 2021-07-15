@@ -2,6 +2,6 @@
   - event_types.each_with_index do |type, index|
     - if index % 5 == 0 then
       %br
-    .label.label-default{style: "background-color: #{type.color}; color: #{contrast_color(type.color)}; display: inline-block;"}
+    .label{ style: "#{css_background_color(type.color)} display: inline-block;" }
       = "#{type.title} (#{type.length} minutes)"
 %br

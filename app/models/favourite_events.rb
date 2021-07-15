@@ -1,4 +1,3 @@
-
 # Tracks status of favouriting an event.
 #
 class FavouriteEvents < ApplicationRecord
