@@ -1,10 +1,9 @@
-- if current_user
-  - is_favourite = event_favourited?(event, current_user)
-  %span{ style: 'padding: 8px;' }
-    = link_to('#', onClick: 'starClicked();',
-              'aria-label': "#{is_favourite ? 'un' : ''}favorite event #{event.title}") do
-      %i.fa.fa-2x{ style: "color: #{contrast_color(header_color)}",
-          class: is_favourite ? 'fa-star' : 'fa-star-o',
-          'aria-hidden': 'true',
-          'data-url': toggle_favorite_conference_program_proposal_path(conference.short_title, event.id),
-          'data-user': current_user.id }
+- is_favourite = defined?(is_favourite) && is_favourite || event_favourited?(event, current_user)
+%span.js-toggleEvent{ style: 'padding: 8px;' }
+  = link_to('#', onClick: 'starClicked();',
+            'aria-label': "#{is_favourite ? 'un' : ''}favorite event #{event.title}") do
+    %i.fa.fa-2x{ style: "color: #{color}",
+        id: "eventFavourite-#{event.id}",
+        class: is_favourite ? 'fa-star' : 'fa-star-o',
+        'aria-hidden': 'true',
+        'data-url': toggle_favorite_conference_program_proposal_path(conference.short_title, event.id) }

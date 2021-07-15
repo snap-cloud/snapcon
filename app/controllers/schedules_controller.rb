@@ -56,6 +56,9 @@ class SchedulesController < ApplicationController
                             @program.events.confirmed
                           end
 
+    event_ids = @events_schedules.map { |es| es.event.id } + @unscheduled_events.map(&:id)
+    favourited_events(event_ids)
+
     if current_user && @favourites
       @events_schedules.keep_if{ |es| es.event.planned_for_user?(current_user) }
       @unscheduled_events.keep_if{ |e| e.planned_for_user?(current_user) }
@@ -69,6 +72,9 @@ class SchedulesController < ApplicationController
     # TODO: Adapt to include happening next.
     @events_schedules = get_happening_now_events_schedules(@conference)
     @current_time = Time.now.in_time_zone(@conference.timezone)
+
+    event_ids = @events_schedules.map { |es| es.event.id }
+    favourited_events(event_ids)
 
     respond_to do |format|
       format.html
@@ -88,6 +94,14 @@ class SchedulesController < ApplicationController
 
   def favourites
     @favourites = params[:favourites] == 'true'
+  end
+
+  def favourited_events(event_ids = [])
+    return @favourited_events = [] unless current_user
+
+    @favourited_events ||= FavouriteEvents.where(
+        user_id: current_user.id, event_id: event_ids
+      ).pluck(:event_id)
   end
 
   def respond_to_options

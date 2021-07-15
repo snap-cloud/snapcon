@@ -72,6 +72,7 @@ class Event < ApplicationRecord
   has_one :conference, through: :program
   delegate :timezone, to: :conference
 
+  # Stored on the events_users table, notably not event_users
   has_and_belongs_to_many :favourite_users, class_name: 'User'
 
   accepts_nested_attributes_for :event_users, allow_destroy: true
