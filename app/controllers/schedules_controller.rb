@@ -77,7 +77,7 @@ class SchedulesController < ApplicationController
     favourited_events(event_ids)
 
     respond_to do |format|
-      fortmat.html
+      format.html
       format.json { render json: @events_schedules.to_json(root: false, include: :event) }
     end
   end
