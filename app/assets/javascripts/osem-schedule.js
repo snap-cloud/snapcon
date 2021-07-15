@@ -119,7 +119,7 @@ $(document).ready( function() {
 
 // PUBLIC SCHEDULE
 
-function starClicked(e){
+function starClicked(e) {
   // stops the click from propagating
   if (!e) var e = window.event;
   e.preventDefault();
@@ -151,6 +151,16 @@ function eventClicked(e, element) {
   } else {
     window.location = url;
   }
+}
+
+function updateFavouriteStatus(options) {
+  if (options.loggedIn === false) {
+    $('.js-toggleEvent').hide();
+  }
+
+  options.events.forEach(function (id) {
+    $(`#eventFavourite-${id}`).removeClass('fa-star-o').addClass('fa-star');
+  });
 }
 
 /* Links inside event-panel (to make ctrl + click work for these links):
