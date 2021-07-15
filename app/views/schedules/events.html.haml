@@ -17,6 +17,8 @@
   %p.text-center
     All Events are currently scheduled in #{@conference.timezone}.
 
+  = render 'event_types_key', event_types: @program.event_types
+
   .dropdown.program-dropdown
     %button{ type: "button", class: "btn btn-default dropdown-toggle", 'data-toggle' => "dropdown" }
       Dates
@@ -63,8 +65,8 @@
           .date-content
             %span.date-title#unscheduled
               Unscheduled events
-            %a{ title: "Go up", class: "pull-right", href: "#program" }
-              %i{ class: "fa fa-angle-double-up fa-lg", 'aria-hidden' => true }
+            %a.pull-right{ title: "Go up", href: "#program" }
+              %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
         - @unscheduled_events.each do |event|
           .col-xs-12.col-md-12
             .unscheduled-event

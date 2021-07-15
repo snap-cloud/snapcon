@@ -73,6 +73,9 @@ class SchedulesController < ApplicationController
     @events_schedules = get_happening_now_events_schedules(@conference)
     @current_time = Time.now.in_time_zone(@conference.timezone)
 
+    event_ids = @events_schedules.map { |es| es.event.id }
+    set_favourites_map(event_ids)
+
     respond_to do |format|
       fortmat.html
       format.json { render json: @events_schedules.to_json(root: false, include: :event) }

@@ -10,6 +10,11 @@
     Happening Now at
     = @conference.title
 
+  %p.text-center
+    All Events are currently scheduled in #{@conference.timezone}.
+
+  = render 'event_types_key', event_types: @program.event_types
+
   .row
     .col-md-12
       %h2
@@ -53,3 +58,5 @@
       window.location = window.location;
     }, 5 * 60 * 1000);
   });
+
+  updateFavouriteStatus({ events: #{@favourited_events}, loggedIn: #{current_user.present?} });
