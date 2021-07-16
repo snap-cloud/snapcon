@@ -24,7 +24,7 @@ class ProposalsController < ApplicationController
     @surveys_after_event = @event.surveys.after_event.select(&:active?)
     # TODO: include when conference is in session.
     @happening_now = !@conference.pending? && !@conference.ended? &&
-                     @conference.splashpage.include_happening_now?
+                     @conference.splashpage.include_happening_now
     load_happening_now if @happening_now
   end
 
