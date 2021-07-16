@@ -73,10 +73,10 @@
                 - unless @conference.commercials.empty?
                   Meanwhile...
               - unless @conference.commercials.empty?
-                = render partial: 'shared/media_items', locals: { commercials: @conference.commercials }
+                = render 'shared/media_items', commercials: @conference.commercials, cache: true
             - else
               %p
-              = render partial: 'shared/media_items', locals: { commercials: @event.commercials }
+              = render 'shared/media_items', commercials: @event.commercials
         .row
           .col-md-12
             = markdown(@event.abstract)
