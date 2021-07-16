@@ -105,7 +105,7 @@ module ConferenceHelper
   def filter_events_schedules(conference, filter)
     conference.program.selected_event_schedules(
       includes: [:event, :room, { event:
-                  [:event_type, :speakers, :speaker_event_users, :track, :program] }]
+                                         [:event_type, :speakers, :speaker_event_users, :track, :program] }]
     ).select(&filter)
   end
 end
