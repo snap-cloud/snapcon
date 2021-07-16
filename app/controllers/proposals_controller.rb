@@ -22,7 +22,10 @@ class ProposalsController < ApplicationController
     @event_schedule = @event.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
     @speakers_ordered = @event.speakers_ordered
     @surveys_after_event = @event.surveys.after_event.select(&:active?)
-    load_happening_now
+    # TODO: include when conference is in session.
+    @happening_now = !@conference.pending? && !@conference.ended? &&
+      @conference.splashpage.include_happening_now?
+    load_happening_now if @happening_now
   end
 
   def new

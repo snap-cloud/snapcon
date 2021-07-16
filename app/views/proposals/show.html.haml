@@ -58,8 +58,7 @@
         - @event.volunteers.each do |volunteer|
           = render 'speaker_info', speaker: volunteer, show_bio: false
 
-    - happening_now = !@conference.pending? && !@conference.ended?
-    %section{class: happening_now ? 'col-md-6' : 'col-md-9'}
+    %section{class: @happening_now ? 'col-md-6' : 'col-md-9'}
       - cache [@conference, @event, @event_schedule, '#events#main-panel'] do
         .row
           .col-md-12
@@ -150,10 +149,7 @@
             .page-header
             = render partial: 'surveys/list', locals: { surveys: @surveys_after_event, conference: @conference }
 
-
-
-    / TODO-SNAPCON: Should this just use the happening now splash flag?
-    - if happening_now
+    - if @happening_now
       .col-md-3
         #happening-now
           = render 'conferences/happening_now', conference: @conference,
