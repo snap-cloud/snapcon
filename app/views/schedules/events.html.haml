@@ -54,10 +54,12 @@
                 = time + ' ' + timezone_text(@conference)
           .col-xs-12.col-md-11
             .new-time-event
-              = render 'event', event: event_schedule.event, event_schedule: event_schedule, cache: true
+              - cache [event, '#scheduled#full#panel'] do
+                = render 'event', event: event_schedule.event, event_schedule: event_schedule
         - else
           .col-xs-12.col-md-11.col-md-offset-1
-            = render 'event', event: event_schedule.event, event_schedule: event_schedule, cache: true
+            - cache [event, '#scheduled#full#panel'] do
+              = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
       / confirmed events that are not scheduled
       - if @unscheduled_events.any?
@@ -70,7 +72,8 @@
         - @unscheduled_events.each do |event|
           .col-xs-12.col-md-12
             .unscheduled-event
-              = render 'event', event: event, event_schedule: nil, cache: true
+              - cache [event, '#unscheduled#full#panel'] do
+                = render 'event', event: event, event_schedule: nil
 
 :javascript
   $('.program-selector').on('click', function(e) {
