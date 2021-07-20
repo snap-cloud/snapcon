@@ -5,14 +5,19 @@ $( document ).ready(function() {
 
     let license_key = "<%= Rails.configuration.fullcalendar[:license_key] %>";
 
-    let offset = $fullCalendar.data('tzOffset');
-    let interval = $fullCalendar.data('minInterval')
-    let startTime = $fullCalendar.data('startHour') - offset - (new Date()).getTimezoneOffset()/60;
-    let endTime = $fullCalendar.data('endHour') - offset - (new Date()).getTimezoneOffset()/60;
+    let conferenceOffset = $fullCalendar.data('tzOffset');
+    let localOffset = (new Date()).getTimezoneOffset() / 60;
+    console.log(conferenceOffset, localOffset,(- conferenceOffset - localOffset))
+    let interval = $fullCalendar.data('minInterval');
+    let startTime = $fullCalendar.data('startHour') // - conferenceOffset - localOffset;
+    let endTime = $fullCalendar.data('endHour') // - conferenceOffset - localOffset;
 
     // Program Hours * Minutes / Interval * Min Row Height for an event.
     let contentHeight = Math.max(400, (endTime - startTime) * 60 / interval * 16);
 
+    var timeZoneSelectorEl = document.getElementById('time-zone-selector');
+
+    console.log($fullCalendar.data('events'))
     var calendar = new FullCalendar.Calendar(calendarEl, {
       schedulerLicenseKey: license_key,
       nowIndicator: true,
@@ -36,14 +41,14 @@ $( document ).ready(function() {
         start: $fullCalendar.data('startDate'),
         end: $fullCalendar.data('endDate')
       },
-      timeZone: 'local',
+      timeZone: $fullCalendar.data('timezone'),
       initialDate: $fullCalendar.data('day'),
       initialView: 'resourceTimeGridDay',
       resources: $fullCalendar.data('rooms'),
       resourceOrder: 'order, title',
       // TODO: Move this to a XHR.
       events: $fullCalendar.data('events'),
-      displayEventEnd: false, // TODO change in list view.
+      displayEventEnd: false,
       displayEventTime: false,
       titleFormat: { // will produce something like "Tues, September 18"
         month: 'long',
@@ -72,4 +77,31 @@ $( document ).ready(function() {
     });
 
     calendar.render();
+
+  // load the list of available timezones, build the <select> options
+  // it's highly encouraged to use your own AJAX lib instead of using FullCalendar's internal util
+  // FullCalendar.requestJson('GET', 'https://fullcalendar.io/demo-timezones.json', {}, function(timeZones) {
+  //   timeZones.forEach(function(timeZone) {
+  //     var optionEl;
+
+  //     if (timeZone !== 'UTC') { // UTC is already in the list
+  //       optionEl = document.createElement('option');
+  //       optionEl.value = timeZone;
+  //       optionEl.innerText = timeZone;
+  //       timeZoneSelectorEl.appendChild(optionEl);
+  //     }
+  //   });
+  // }, function() {
+  //   // failure
+  // });
+
+  // when the timezone selector changes, dynamically change the calendar option
+  // timeZoneSelectorEl.addEventListener('change', function() {
+  //   let startTime = $fullCalendar.data('startHour') - conferenceOffset // - localOffset;
+  //   let endTime = $fullCalendar.data('endHour') - conferenceOffset // - localOffset;
+  //   calendar.setOption('startTime', startTime);
+  //   calendar.setOption('endTime', endTime);
+  //   calendar.setOption('timeZone', this.value);
+  // });
+
 });

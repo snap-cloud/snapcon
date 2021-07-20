@@ -33,8 +33,8 @@ class FullCalendarFormatter
       {
         id:              event.guid,
         title:           event.title,
-        start:           event_schedule.start_time_in_conference_timezone,
-        end:             event_schedule.end_time_in_conference_timezone,
+        start:        event_schedule.start_time_in_conference_timezone.iso8601,
+        end:          event_schedule.end_time_in_conference_timezone.iso8601,
         resourceIds:     rooms,
         url:             url,
         borderColor:     event_type_color,

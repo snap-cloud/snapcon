@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 feature Event do
-  let!(:conference) { create(:conference) }
+  let!(:conference) { create(:conference, :with_splashpage) }
   let!(:registration_period) { create(:registration_period, conference: conference, start_date: Date.current) }
   let!(:cfp) { create(:cfp, program_id: conference.program.id) }
   let!(:organizer) { create(:organizer, resource: conference) }
