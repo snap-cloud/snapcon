@@ -57,10 +57,6 @@ FactoryBot.define do
       Role.where(name: 'volunteers_coordinator', resource: conference).first_or_create(description: 'For the people in charge of volunteers')
     end
 
-    trait :with_splashpage do
-      association :splashpage, factory: :full_splashpage
-    end
-
     factory :full_conference do
       association :splashpage, factory: :full_splashpage
       registration_period
