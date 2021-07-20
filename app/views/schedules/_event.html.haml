@@ -46,7 +46,7 @@
 
     - if !condensed_view
       - if event_schedule.present?
-        = inyourtz(event_schedule.start_time) do
+        = inyourtz(event_schedule.start_time, event.timezone) do
           %span.fa.fa-clock-o
             .label{ style: 'background-color: grey' }
               = event_schedule.start_time.strftime('%l:%M %P')

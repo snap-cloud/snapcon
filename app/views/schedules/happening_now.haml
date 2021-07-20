@@ -22,7 +22,7 @@
         %br
         %small
           This page was loaded at
-          = inyourtz(Time.now) do
+          = inyourtz(Time.now, 'GMT') do
             = Time.now.strftime('%a %b %d at %I:%M %P (%z)')
           \.
 
