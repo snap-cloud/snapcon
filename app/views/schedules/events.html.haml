@@ -41,11 +41,11 @@
         - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
           .col-xs-12.col-md-12
             .date-content
-              %span{ class: 'date-title', id: "#{ event_schedule.start_time.strftime('%Y-%m-%d') }" }
+              %span.date-title{id: event_schedule.start_time.strftime('%Y-%m-%d') }
                 = inyourtz(event_schedule.start_time, @conference.timezone) do
                   = date = event_schedule.start_time.strftime('%Y-%m-%d')
-              %a{ title: "Go up", class: "pull-right", href: "#program" }
-                %i{ class: "fa fa-angle-double-up fa-lg", 'aria-hidden' => true }
+              %a.pull-right{ title: "Go up", href: "#program" }
+                %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
         - unless event_schedule.start_time.strftime('%H:%M').eql?(time)
           .col-xs-12.col-md-1
             .start-time
@@ -54,11 +54,11 @@
                 = time + ' ' + timezone_text(@conference)
           .col-xs-12.col-md-11
             .new-time-event
-              - cache [event, '#scheduled#full#panel'] do
+              - cache [event_schedule.event, '#scheduled#full#panel'] do
                 = render 'event', event: event_schedule.event, event_schedule: event_schedule
         - else
           .col-xs-12.col-md-11.col-md-offset-1
-            - cache [event, '#scheduled#full#panel'] do
+            - cache [event_schedule.event, '#scheduled#full#panel'] do
               = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
       / confirmed events that are not scheduled
