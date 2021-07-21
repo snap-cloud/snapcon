@@ -28,6 +28,12 @@ class PaymentsController < ApplicationController
 
       has_registration_ticket = params[:has_registration_ticket]
       if has_registration_ticket == 'true'
+        registration = register_user(current_user)
+        if registration
+          redirect_to conference_physical_tickets_path,
+          notice: "Thanks! Your ticket is booked successfully and you have been registered for #{@coference.title}."
+          return
+        end
         redirect_to new_conference_conference_registration_path(@conference.short_title),
                     notice: 'Thanks! Your ticket is booked successfully. Please register for the conference.'
       else
@@ -43,6 +49,18 @@ class PaymentsController < ApplicationController
   end
 
   private
+
+  def register_user(user)
+    registration = @conference.registrations.new()
+    registration.user = user
+    if registration.save
+      MailblusterEditLeadJob.perform_later(user.id,
+        add_tags: ["#{ENV['OSEM_NAME']}-#{@conference.short_title}"]
+      )
+      return registration
+    end
+    false
+  end
 
   def payment_params
     params.permit(:stripe_customer_email, :stripe_customer_token)
