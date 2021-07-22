@@ -178,6 +178,7 @@ class Conference < ApplicationRecord
     end
     false
   end
+
   ##
   # Delete all EventSchedules that are not in the hours range
   # After the conference has been successfully updated
