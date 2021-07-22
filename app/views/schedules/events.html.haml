@@ -41,7 +41,7 @@
         - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
           .col-xs-12.col-md-12
             .date-content
-              %span.date-title{id: event_schedule.start_time.strftime('%Y-%m-%d') }
+              %span.date-title{ id: event_schedule.start_time.strftime('%Y-%m-%d') }
                 = inyourtz(event_schedule.start_time, @conference.timezone) do
                   = date = event_schedule.start_time.strftime('%Y-%m-%d')
               %a.pull-right{ title: "Go up", href: "#program" }

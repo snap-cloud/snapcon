@@ -39,10 +39,10 @@ class TicketPurchasesController < ApplicationController
 
     # Automatically register the user after purchasing a registration ticket.
     if count_registration_tickets_before.zero? && count_registration_tickets_after == 1
-      registration = register_user(current_user)
+      registration = @conference.register_user(current_user)
       if registration
         redirect_to conference_physical_tickets_path,
-        notice: "Thanks! Your ticket is booked successfully & you have been registered for #{@conference.title}"
+                    notice: "Thanks! Your ticket is booked successfully & you have been registered for #{@conference.title}"
       else
         redirect_to new_conference_conference_registration_path(@conference.short_title),
                     notice: 'Thanks! Your ticket is booked successfully. Please register for the conference.'
@@ -61,17 +61,5 @@ class TicketPurchasesController < ApplicationController
 
   def ticket_purchase_params
     params.require(:ticket_purchase).permit(:ticket_id, :user_id, :conference_id, :quantity)
-  end
-
-  def register_user(user)
-    registration = @conference.registrations.new()
-    registration.user = user
-    if registration.save
-      MailblusterEditLeadJob.perform_later(user.id,
-        add_tags: ["#{ENV['OSEM_NAME']}-#{@conference.short_title}"]
-      )
-      return registration
-    end
-    false
   end
 end

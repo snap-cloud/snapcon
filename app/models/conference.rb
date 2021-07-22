@@ -160,6 +160,25 @@ class Conference < ApplicationRecord
   end
 
   ##
+  # Creates a registration to the conference for the user
+  #
+  # ====Args
+  # * +user+ -> The user we check for
+  # ====Returns
+  # * +false+ -> If the user is registered
+  # * +true+ - If the user isn't registered
+  def register_user(user)
+    registration = self.registrations.new
+    registration.user = user
+    if registration.save
+      MailblusterEditLeadJob.perform_later(user.id,
+        add_tags: ["#{ENV['OSEM_NAME']}-#{@conference.short_title}"]
+      )
+      return registration
+    end
+    false
+  end
+  ##
   # Delete all EventSchedules that are not in the hours range
   # After the conference has been successfully updated
   def delete_event_schedules

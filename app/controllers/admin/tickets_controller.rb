@@ -42,7 +42,7 @@ module Admin
       ticket_purchase = @ticket.ticket_purchases.new(gift_ticket_params)
       recipient = ticket_purchase.user
       if ticket_purchase.save
-        registration = register_user(recipient) if @ticket.registration_ticket?
+        registration = @conference.register_user(recipient) if @ticket.registration_ticket?
         redirect_to(
           admin_conference_ticket_path(@conference.short_title, @ticket),
           notice: "#{recipient.name} was given a #{@ticket.title} ticket #{'and registered' if registration}."
@@ -81,18 +81,6 @@ module Admin
     def gift_ticket_params
       response = params.require(:ticket_purchase).permit(:user_id)
       response.merge(paid: true, amount_paid: 0, conference: @conference)
-    end
-
-    def register_user(user)
-      registration = @conference.registrations.new()
-      registration.user = user
-      if registration.save
-        MailblusterEditLeadJob.perform_later(user.id,
-          add_tags: ["#{ENV['OSEM_NAME']}-#{@conference.short_title}"]
-        )
-        return registration
-      end
-      false
     end
   end
 end
