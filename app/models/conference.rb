@@ -171,7 +171,8 @@ class Conference < ApplicationRecord
     registration = self.registrations.new
     registration.user = user
     if registration.save
-      MailblusterEditLeadJob.perform_later(user.id,
+      MailblusterEditLeadJob.perform_later(
+        user.id,
         add_tags: ["#{ENV['OSEM_NAME']}-#{@conference.short_title}"]
       )
       return registration
