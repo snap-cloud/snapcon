@@ -168,12 +168,11 @@ class Conference < ApplicationRecord
   # * +false+ -> If the user is registered
   # * +true+ - If the user isn't registered
   def register_user(user)
-    registration = self.registrations.new
+    registration = registrations.new
     registration.user = user
     if registration.save
       MailblusterEditLeadJob.perform_later(
-        user.id,
-        add_tags: ["#{ENV['OSEM_NAME']}-#{@conference.short_title}"]
+        user.id, add_tags: ["#{organization.name}-#{short_title}"]
       )
       return registration
     end
