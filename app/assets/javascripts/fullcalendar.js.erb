@@ -6,12 +6,17 @@ $( document ).ready(function() {
     let license_key = "<%= Rails.configuration.fullcalendar[:license_key] %>";
 
     let offset = $fullCalendar.data('tzOffset');
-    let interval = $fullCalendar.data('minInterval')
-    let startTime = $fullCalendar.data('startHour') - offset - (new Date()).getTimezoneOffset()/60;
-    let endTime = $fullCalendar.data('endHour') - offset - (new Date()).getTimezoneOffset()/60;
-
+    let interval = $fullCalendar.data('minInterval');
+    let localOffset = (new Date()).getTimezoneOffset()/60;
+    let startTime = $fullCalendar.data('startHour') - offset - localOffset;
+    let endTime = $fullCalendar.data('endHour') - offset - localOffset;
+    let localName = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // Program Hours * Minutes / Interval * Min Row Height for an event.
-    let contentHeight = (endTime - startTime) * 60 / interval * 16;
+    let contentHeight = Math.max(400, (endTime - startTime) * 60 / interval * 16);
+
+    // UTC JS offsets are "-1 *" of how they're displayed.
+    let operator = localOffset < 0 ? '+' : '-';
+    $('.js-localTimezone').text(`(${localName} UTC ${operator}${Math.abs(localOffset)})`);
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
       schedulerLicenseKey: license_key,
@@ -29,8 +34,7 @@ $( document ).ready(function() {
         hour: 'numeric',
         minute: '2-digit',
         omitZeroMinute: true,
-        meridiem: 'short',
-        timeZoneName: 'short'
+        meridiem: 'short'
       },
       validRange: {
         start: $fullCalendar.data('startDate'),

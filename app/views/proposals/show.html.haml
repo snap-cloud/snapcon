@@ -17,7 +17,7 @@
   .row.page-header
     .col-md-8{ style: 'display: flex; flex-direction: row;' }
       = render 'proposals/toggle_favorite_event',
-               event: @event, header_color: '#FFFFFF', conference: @conference
+               event: @event, color: '#000000', conference: @conference
 
       .div{ style: 'margin: 3px; flex: 1' }
 
@@ -58,8 +58,7 @@
         - @event.volunteers.each do |volunteer|
           = render 'speaker_info', speaker: volunteer, show_bio: false
 
-    - happening_now = !@conference.pending? && !@conference.ended?
-    %section{class: happening_now ? 'col-md-6' : 'col-md-9'}
+    %section{class: @happening_now ? 'col-md-6' : 'col-md-9'}
       - cache [@conference, @event, @event_schedule, '#events#main-panel'] do
         .row
           .col-md-12
@@ -73,10 +72,10 @@
                 - unless @conference.commercials.empty?
                   Meanwhile...
               - unless @conference.commercials.empty?
-                = render partial: 'shared/media_items', locals: { commercials: @conference.commercials }
+                = render 'shared/media_items', commercials: @conference.commercials, cache: true
             - else
               %p
-              = render partial: 'shared/media_items', locals: { commercials: @event.commercials }
+              = render 'shared/media_items', commercials: @event.commercials
         .row
           .col-md-12
             = markdown(@event.abstract)
@@ -150,10 +149,7 @@
             .page-header
             = render partial: 'surveys/list', locals: { surveys: @surveys_after_event, conference: @conference }
 
-
-
-    / TODO-SNAPCON: Should this just use the happening now splash flag?
-    - if happening_now
+    - if @happening_now
       .col-md-3
         #happening-now
           = render 'conferences/happening_now', conference: @conference,

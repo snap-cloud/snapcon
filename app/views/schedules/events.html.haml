@@ -17,8 +17,10 @@
   %p.text-center
     All Events are currently scheduled in #{@conference.timezone}.
 
+  = render 'event_types_key', event_types: @program.event_types
+
   .dropdown.program-dropdown
-    %button{ type: "button", class: "btn btn-default dropdown-toggle", 'data-toggle' => "dropdown" }
+    %button.btn.btn-default.dropdown-toggle{ type: "button", 'data-toggle': "dropdown" }
       Dates
       %span.caret
     %ul.dropdown-menu
@@ -29,45 +31,49 @@
         %li.li-dropdown-program
           = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
 
-  .row
 
-    / scheduled events
-    - date = nil
-    - time = nil
-    - @events_schedules.each do |event_schedule|
-      - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
+  - cache [@conference, @events_schedules, '#allEvents'] do
+    .row
+      / scheduled events
+      - date = nil
+      - time = nil
+      - @events_schedules.each do |event_schedule|
+        - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
+          .col-xs-12.col-md-12
+            .date-content
+              %span.date-title{ id: event_schedule.start_time.strftime('%Y-%m-%d') }
+                = inyourtz(event_schedule.start_time, @conference.timezone) do
+                  = date = event_schedule.start_time.strftime('%Y-%m-%d')
+              %a.pull-right{ title: "Go up", href: "#program" }
+                %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
+        - unless event_schedule.start_time.strftime('%H:%M').eql?(time)
+          .col-xs-12.col-md-1
+            .start-time
+              - time = event_schedule.start_time.strftime('%H:%M')
+              = inyourtz(event_schedule.start_time, @conference.timezone) do
+                = time + ' ' + timezone_text(@conference)
+          .col-xs-12.col-md-11
+            .new-time-event
+              - cache [event_schedule.event, '#scheduled#full#panel'] do
+                = render 'event', event: event_schedule.event, event_schedule: event_schedule
+        - else
+          .col-xs-12.col-md-11.col-md-offset-1
+            - cache [event_schedule.event, '#scheduled#full#panel'] do
+              = render 'event', event: event_schedule.event, event_schedule: event_schedule
+
+      / confirmed events that are not scheduled
+      - if @unscheduled_events.any?
         .col-xs-12.col-md-12
           .date-content
-            %span{ class: 'date-title', id: "#{ event_schedule.start_time.strftime('%Y-%m-%d') }" }
-              = inyourtz(event_schedule.start_time, @conference.timezone) do
-                = date = event_schedule.start_time.strftime('%Y-%m-%d')
-            %a{ title: "Go up", class: "pull-right", href: "#program" }
-              %i{ class: "fa fa-angle-double-up fa-lg", 'aria-hidden' => true }
-      - unless event_schedule.start_time.strftime('%H:%M').eql?(time)
-        .col-xs-12.col-md-1
-          .start-time
-            - time = event_schedule.start_time.strftime('%H:%M')
-            = inyourtz(event_schedule.start_time, @conference.timezone) do
-              = time + ' ' + timezone_text(@conference)
-        .col-xs-12.col-md-11
-          .new-time-event
-            = render 'event', event: event_schedule.event, event_schedule: event_schedule
-      - else
-        .col-xs-12.col-md-11.col-md-offset-1
-          = render 'event', event: event_schedule.event, event_schedule: event_schedule
-
-    / confirmed events that are not scheduled
-    - if @unscheduled_events.any?
-      .col-xs-12.col-md-12
-        .date-content
-          %span.date-title#unscheduled
-            Unscheduled events
-          %a{ title: "Go up", class: "pull-right", href: "#program" }
-            %i{ class: "fa fa-angle-double-up fa-lg", 'aria-hidden' => true }
-      - @unscheduled_events.each do |event|
-        .col-xs-12.col-md-12
-          .unscheduled-event
-            = render partial: 'event', locals: { event: event, event_schedule: nil }
+            %span.date-title#unscheduled
+              Unscheduled events
+            %a.pull-right{ title: "Go up", href: "#program" }
+              %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
+        - @unscheduled_events.each do |event|
+          .col-xs-12.col-md-12
+            .unscheduled-event
+              - cache [event, '#unscheduled#full#panel'] do
+                = render 'event', event: event, event_schedule: nil
 
 :javascript
   $('.program-selector').on('click', function(e) {
@@ -80,4 +86,6 @@
     if(tag !== ""){
       document.getElementById(tag).scrollIntoView();
     }
+
+    updateFavouriteStatus({ events: #{@favourited_events}, loggedIn: #{current_user.present?} });
   });

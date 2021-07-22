@@ -120,8 +120,8 @@ feature Registration, feature: true, js: true do
         expect(current_path).to eq(conference_tickets_path(conference.short_title))
 
         click_button 'Continue'
-        expect(current_path).to eq(new_conference_conference_registration_path(conference.short_title))
-        expect(flash).to eq('Thanks! Your ticket is booked successfully. Please register for the conference.')
+        expect(current_path).to eq(conference_physical_tickets_path(conference.short_title))
+        expect(flash).to eq("Thanks! Your ticket is booked successfully & you have been registered for #{conference.title}")
 
         purchase = TicketPurchase.where(user_id: participant.id, ticket_id: first_registration_ticket.id).first
         expect(purchase.quantity).to eq(1)

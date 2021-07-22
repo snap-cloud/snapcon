@@ -60,7 +60,7 @@ class ConferencesController < ApplicationController
       if @splashpage.include_booths?
         @booths = @conference.confirmed_booths.order('title')
       end
-      if @splashpage.include_happening_now?
+      if @splashpage.include_happening_now
         load_happening_now
       end
     end

@@ -10,6 +10,11 @@
     Happening Now at
     = @conference.title
 
+  %p.text-center
+    All Events are currently scheduled in #{@conference.timezone}.
+
+  = render 'event_types_key', event_types: @program.event_types
+
   .row
     .col-md-12
       %h2
@@ -17,7 +22,7 @@
         %br
         %small
           This page was loaded at
-          = inyourtz(Time.now) do
+          = inyourtz(Time.now, 'GMT') do
             = Time.now.strftime('%a %b %d at %I:%M %P (%z)')
           \.
 
@@ -33,10 +38,11 @@
               = inyourtz(event_schedule.start_time, @conference.timezone) do
                 = date = event_schedule.start_time.strftime('%Y-%m-%d')
             %a.pull-right{ title: 'Go up', href: '#program' }
-              %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden' => true }
+              %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
       - if event_schedule.start_time.strftime('%H:%M').eql?(time)
         .col-xs-12.col-md-11.col-md-offset-1
-          = render 'event', event: event_schedule.event, event_schedule: event_schedule
+          - cache [event_schedule.event, '#scheduled#full#panel'] do
+            = render 'event', event: event_schedule.event, event_schedule: event_schedule
       - else
         .col-xs-12.col-md-1
           .start-time
@@ -44,7 +50,8 @@
               = time = event_schedule.start_time.strftime('%H:%M')
         .col-xs-12.col-md-11
           .new-time-event
-            = render 'event', event: event_schedule.event, event_schedule: event_schedule
+            - cache [event_schedule.event, '#scheduled#full#panel'] do
+              = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
 :javascript
   // Refresh the page every 5 minutes.
@@ -53,3 +60,5 @@
       window.location = window.location;
     }, 5 * 60 * 1000);
   });
+
+  updateFavouriteStatus({ events: #{@favourited_events}, loggedIn: #{current_user.present?} });

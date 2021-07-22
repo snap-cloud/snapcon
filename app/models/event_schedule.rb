@@ -24,7 +24,7 @@ class EventSchedule < ApplicationRecord
   default_scope { where(enabled: true) }
 
   belongs_to :schedule, touch: true
-  belongs_to :event
+  belongs_to :event, touch: true
   belongs_to :room
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
