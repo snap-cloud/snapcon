@@ -42,9 +42,10 @@ module Admin
       ticket_purchase = @ticket.ticket_purchases.new(gift_ticket_params)
       recipient = ticket_purchase.user
       if ticket_purchase.save
+        registration = @conference.register_user(recipient) if @ticket.registration_ticket?
         redirect_to(
           admin_conference_ticket_path(@conference.short_title, @ticket),
-          notice: "#{recipient.name} was given a #{@ticket.title} ticket."
+          notice: "#{recipient.name} was given a #{@ticket.title} ticket #{'and registered' if registration}."
         )
       else
         redirect_back(
@@ -78,9 +79,7 @@ module Admin
     end
 
     def gift_ticket_params
-      response = params.require(:ticket_purchase).permit(
-        :user_id
-      )
+      response = params.require(:ticket_purchase).permit(:user_id)
       response.merge(paid: true, amount_paid: 0, conference: @conference)
     end
   end

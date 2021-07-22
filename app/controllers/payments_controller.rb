@@ -28,6 +28,12 @@ class PaymentsController < ApplicationController
 
       has_registration_ticket = params[:has_registration_ticket]
       if has_registration_ticket == 'true'
+        registration = @conference.register_user(current_user)
+        if registration
+          redirect_to conference_physical_tickets_path,
+                      notice: "Thanks! Your ticket is booked successfully and you have been registered for #{@coference.title}."
+          return
+        end
         redirect_to new_conference_conference_registration_path(@conference.short_title),
                     notice: 'Thanks! Your ticket is booked successfully. Please register for the conference.'
       else
