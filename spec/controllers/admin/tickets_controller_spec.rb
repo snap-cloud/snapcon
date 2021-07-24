@@ -223,6 +223,10 @@ describe Admin::TicketsController do
           expect(admin.ticket_purchases.count).to eq(purchase_count + 1)
           expect(admin.ticket_purchases.last.ticket).to eq(ticket)
         end
+
+        it 'creates physical tickets for users' do
+          expect(admin.physical_tickets.last.ticket).to eq(ticket)
+        end
       end
 
       context 'giving fails' do
