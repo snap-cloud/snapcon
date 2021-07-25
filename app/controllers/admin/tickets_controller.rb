@@ -42,6 +42,9 @@ module Admin
       ticket_purchase = @ticket.ticket_purchases.new(gift_ticket_params)
       recipient = ticket_purchase.user
       if ticket_purchase.save
+        # We must pay for a ticket purchase to create a physical ticket.
+        # Because there is no CC xact, the Payment does not need to be saved.
+        ticket_purchase.pay(Payment.new)
         registration = @conference.register_user(recipient) if @ticket.registration_ticket?
         redirect_to(
           admin_conference_ticket_path(@conference.short_title, @ticket),
