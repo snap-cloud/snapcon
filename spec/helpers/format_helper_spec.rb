@@ -13,12 +13,15 @@ describe FormatHelper, type: :helper do
       expect(Redcarpet::Markdown).to receive(:new)
       .with(
         Redcarpet::Render::HTML,
-        autolink:            true,
-        space_after_headers: true,
-        tables:              true,
-        strikethrough:       true,
-        footnotes:           true,
-        superscript:         true
+        autolink:                     true,
+        space_after_headers:          true,
+        tables:                       true,
+        strikethrough:                true,
+        footnotes:                    true,
+        superscript:                  true,
+        no_intra_emphasis:            true,
+        fenced_code_blocks:           true,
+        disable_indented_code_blocks: true
       )
       .and_call_original
 
