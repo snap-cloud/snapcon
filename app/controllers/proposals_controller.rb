@@ -134,6 +134,7 @@ class ProposalsController < ApplicationController
     else
       flash[:error] = message
       redirect_to conference_program_proposal_path(@conference, @event)
+    end
   end
 
   def withdraw
