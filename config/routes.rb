@@ -176,6 +176,7 @@ Osem::Application.routes.draw do
       resources :proposals, except: :destroy do
         get 'commercials/render_commercial' => 'commercials#render_commercial'
         resources :commercials, only: [:create, :update, :destroy]
+        get :join
         member do
           get :registrations
           patch '/withdraw' => 'proposals#withdraw'
