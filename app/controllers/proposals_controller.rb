@@ -108,6 +108,34 @@ class ProposalsController < ApplicationController
     render json: {}
   end
 
+  # Joining an event marks as user as attending the event, and redirects to room url.
+  def join
+    if current_user.roles.where(id: @conference.roles).any?
+      can_view_event = true
+    elsif current_user.registered_to_event?(@conference)
+      if @event.happening_now?
+        can_view_event = true
+      else
+        can_view_event = false
+        message = 'You cannot join this event yet. Please try again closer to the start of the event.'
+      end
+    else
+      can_view_event = false
+      message = "You must be registered for #{@conference} to join this event"
+    end
+
+    if event.url.present? && can_view_event
+      # TODO: Mark attended conference
+      # TODO: Mark attended event
+      redirect_to event.url
+    elsif event.url.present?
+      flash[:notice] = 'There is no URL to join this event.'
+      redirect_to conference_program_proposal_path(@conference, @event)
+    else
+      flash[:error] = message
+      redirect_to conference_program_proposal_path(@conference, @event)
+  end
+
   def withdraw
     authorize! :update, @event
     @url = conference_program_proposal_path(@conference.short_title, params[:id])

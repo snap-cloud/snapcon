@@ -45,7 +45,7 @@
                 = date = event_schedule.start_time.strftime('%Y-%m-%d')
             %a.pull-right{ title: "Go up", href: "#program" }
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
-      - unless event_schedule.start_time.strftime('%H:%M').eql?(time) && event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
+      - unless event_schedule.start_time.strftime('%H:%M').eql?(time) && !event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
         .col-xs-12.col-md-1
           .start-time
             - time = event_schedule.start_time.strftime('%H:%M')
