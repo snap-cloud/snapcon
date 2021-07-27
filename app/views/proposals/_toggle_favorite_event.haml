@@ -1,4 +1,3 @@
-- is_favourite = defined?(is_favourite) && is_favourite || event_favourited?(event, current_user)
 %span.js-toggleEvent{ style: 'padding: 8px;' }
   = link_to('#', onClick: 'starClicked();',
             'aria-label': "#{is_favourite ? 'un' : ''}favorite event #{event.title}") do

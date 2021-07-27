@@ -13,3 +13,8 @@
 - else
   .row
     %h3.text-center There are no upcoming events.
+
+:javascript
+  $(document).ready(function(){
+    updateFavouriteStatus({ events: #{@favourited_events || []}, loggedIn: #{current_user.present?} });
+  });

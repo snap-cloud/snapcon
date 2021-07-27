@@ -12,8 +12,9 @@
       = replacement_event_notice(event_schedule)
 
     %div{ style: 'display: flex; flex-direction: row;' }
+      -# In the schedule view, favorited events show as false, until set by JS. (Caching perf)
       = render 'proposals/toggle_favorite_event',
-              event: event, color: contrast_color(header_color), conference: @conference, is_favourite: nil
+              event: event, color: contrast_color(header_color), conference: @conference, is_favourite: false
 
       %h3{ style: 'margin: auto 3px; flex: 1' }
         = link_to conference_program_proposal_path(@conference.short_title, event.id),
@@ -33,11 +34,10 @@
 
   .panel-body
     %div{ onClick: 'eventClicked(event, this);', 'data-url': conference_program_proposal_url(@conference.short_title, event.id) }
-      - if (event.speakers.any?)
+      - if event.speakers.any?
         %h4
           = event.speaker_names
-      %span.h5
-        = join_event_link(event, current_user)
+      = join_event_link(event, current_user)
       %p
         = truncate(markdown(event.abstract), length: abstract_length, escape: false) do
           %br

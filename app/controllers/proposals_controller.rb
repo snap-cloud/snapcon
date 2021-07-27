@@ -103,9 +103,32 @@ class ProposalsController < ApplicationController
     else
       @event.favourite_users << current_user
     end
+    # TODO: Remove cache busting?
     @event.touch
     @program.touch
     render json: {}
+  end
+
+  # Joining an event marks as user as attending the event, and redirects to room url.
+  def join
+    message = 'You cannot join this event yet. Please try again closer to the start of the event.'
+
+    can_view_event = if current_user.roles.where(id: @conference.roles).any?
+                       @event.url.present?
+                     elsif current_user.registered_to_event?(@conference)
+                       # attendees can only join during the event time
+                       @event.url.present? && @event.happening_now?
+                     else
+                       false
+                     end
+
+    if can_view_event
+      current_user.mark_attendance_for_conference(@conference)
+      current_user.mark_attendance_for_event(@event)
+      redirect_to @event.url
+    else
+      redirect_to conference_program_proposal_path(@conference, @event), error: message
+    end
   end
 
   def withdraw

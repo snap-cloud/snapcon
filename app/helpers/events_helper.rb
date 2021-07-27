@@ -218,19 +218,28 @@ module EventsHelper
     conference = event.conference
     is_now = event.happening_now?
 
-    if current_user.roles.where(id: conference.roles).any?
-      # Show Pre-Event links for any memeber of the conference team.
-      link_to("Join Live Event #{'(Admin link)' unless is_now}",
-              event.url, target: '_blank')
-    elsif current_user.registered_to_event?(conference)
-      if is_now
-        link_to('Join Live Event', event.url, target: '_blank')
-      else
-        link_to('(Live Event Link Available During Event)', '#')
-      end
-    elsif is_now
-      link_to('Register for the conference to join this event.',
-              conference_conference_registration_path(conference))
+    link = if current_user.roles.where(id: conference.roles).any?
+             # Show Pre-Event links for any memeber of the conference team.
+             link_to("Join Event Now #{'(Admin link)' unless is_now}",
+                     event.url, target: '_blank', class: 'btn btn-primary',
+                     'aria-label': "Join #{event.title}")
+           elsif current_user.registered_to_event?(conference)
+             if is_now
+               link_to('Join Event Now', event.url,
+                       target: '_blank', class: 'btn btn-primary',
+                       'aria-label': "Join #{event.title}")
+             else
+               content_tag :button, disabled: true, class: 'btn btn-default btn-sm' do
+                 'Click to Join During Event'
+               end
+             end
+           else
+             link_to('Register for the conference to join this event.',
+                     conference_conference_registration_path(conference),
+                     'aria-label': "Register for #{event.title}")
+           end
+    content_tag :span, class: 'h4' do
+      link
     end
   end
 
