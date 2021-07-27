@@ -27,8 +27,7 @@
             %br
             %small
               = @event.subtitle
-        %h3{ style: 'margin: 4px 0' }
-          = join_event_link(@event, current_user)
+        = join_event_link(@event, current_user)
 
     .btn-group
       - if @event_schedule&.start_time && user_signed_in?
