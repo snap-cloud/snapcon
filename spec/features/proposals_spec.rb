@@ -233,10 +233,11 @@ feature Event do
       expect(page).not_to have_content('Google Calendar')
     end
 
-    context 'for events where you join the room via a link', feature: true, focus: true do
+    context 'for events where you join the room via a link', feature: true do
       before do
         sign_in participant
       end
+
       it 'redirects to the event page with no URL' do
         visit conference_program_proposal_path(conference, @scheduled_event1)
         expect(response).to redirect_to(conference_program_proposal_path(conference, @scheduled_event1))
