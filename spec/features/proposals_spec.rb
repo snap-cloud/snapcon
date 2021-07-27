@@ -240,31 +240,37 @@ feature Event do
 
       it 'redirects to the event page with no URL' do
         visit conference_program_proposal_path(conference, @scheduled_event1)
-        expect(response).to redirect_to(conference_program_proposal_path(conference, @scheduled_event1))
-        expect(response.status).to eq(301)
+        expect(current_path).to eq conference_program_proposal_path(conference, @scheduled_event1)
       end
 
       context 'with a fully setup event' do
-        let(:room) { create(:room, url: 'https://example.com') }
+        let(:venue) { create(:venue, conference: conference) }
+        let(:room) { create(:room, venue: venue) }
         let(:registration) { create(:registration, user: participant, conference: conference) }
 
         before do
+          room.update(url: 'https://www.example.com/')
           @scheduled_event1.room = room
           @scheduled_event1.save
+          room.reload
         end
 
         it 'redirects you to the room if you are registered' do
-          visit conference_program_proposal_path(conference, @scheduled_event1)
-          expect(response).to redirect_to('https://example.com')
+          visit join_conference_program_proposal_path(conference, @scheduled_event1)
+          expect(current_url).to eq 'http://www.example.com/'
         end
 
         it 'marks you as having attended the event and conference' do
-          # binding.pry
           expect(registration.attended).to be false
-          expect(participant.attended_event?(@scheduled_event)).to be false
-          visit conference_program_proposal_path(conference, @scheduled_event1)
+          expect(participant.attended_event?(@scheduled_event1)).to be false
+          Timecop.travel @event_schedule1.start_time
+          # A check to make sure all conditions are met.
+          expect(@scheduled_event1.happening_now?).to be true
+          visit join_conference_program_proposal_path(conference, @scheduled_event1)
+          registration.reload
           expect(registration.attended).to be true
-          expect(participant.attended_event?(@scheduled_event)).to be true
+          expect(participant.attended_event?(@scheduled_event1)).to be true
+          Timecop.return
         end
       end
     end
