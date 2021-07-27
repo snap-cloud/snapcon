@@ -39,7 +39,7 @@
         You have no events on your agenda.
       %br
       %strong
-        Why don't you #{link_to 'view the full program', events_conference_schedule_path(@conference.short_title, favourites: false)} and add events to your schedule?
+        #{link_to 'View the full program', events_conference_schedule_path(@conference.short_title, favourites: false)} and add events to your schedule?
   .row
     / scheduled events
     - date = nil
