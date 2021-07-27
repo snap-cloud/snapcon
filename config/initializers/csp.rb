@@ -10,3 +10,6 @@ Rails.application.config.content_security_policy do |policy|
   # Determine where this can be put in an <iframe>
   policy.frame_ancestors 'self, ohyay.co'
 end
+
+# Unset X-Frame-Options since we have CSP.
+Rails.application.config.action_dispatch.default_headers['X-Frame-Options'] = nil
