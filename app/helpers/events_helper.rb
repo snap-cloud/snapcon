@@ -226,13 +226,13 @@ module EventsHelper
     elsif current_user.registered_to_event?(conference)
       link = if is_now
                link_to('Join Event Now', event.url,
-                             target: '_blank', class: 'btn btn-primary',
-                             'aria-label': "Join #{event.title}")
+                       target: '_blank', class: 'btn btn-primary',
+                       'aria-label': "Join #{event.title}")
              else
                content_tag :button, disabled: true, class: 'btn btn-default btn-sm' do
                  'Click to Join During Event'
+               end
              end
-      end
     elsif
       link = link_to('Register for the conference to join this event.',
                      conference_conference_registration_path(conference),
