@@ -221,11 +221,13 @@ module EventsHelper
     if current_user.roles.where(id: conference.roles).any?
       # Show Pre-Event links for any memeber of the conference team.
       link = link_to("Join Event Now #{'(Admin link)' unless is_now}",
-              event.url, target: '_blank', class: 'btn btn-primary','aria-label': "Join #{event.title}")
+                     event.url, target: '_blank', class: 'btn btn-primary',
+                     'aria-label': "Join #{event.title}")
     elsif current_user.registered_to_event?(conference)
       if is_now
         link = link_to('Join Event Now', event.url,
-                       target: '_blank', class: 'btn btn-primary', 'aria-label': "Join #{event.title}")
+                       target: '_blank', class: 'btn btn-primary',
+                       'aria-label': "Join #{event.title}")
       else
         link = content_tag :button, disabled: true, class: 'btn btn-default btn-sm' do
           'Click to Join During Event'

@@ -156,6 +156,13 @@ describe ProposalsController do
         end
       end
     end
+
+    describe 'GET #join' do
+      it 'redirects to #login with no user' do
+        get :join, params: { id: event.id, conference_id: conference.short_title }
+        expect(response).to redirect_to new_user_session_path
+      end
+    end
   end
 
   context 'event submitter is signed in' do

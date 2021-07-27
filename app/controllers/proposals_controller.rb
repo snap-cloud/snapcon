@@ -112,7 +112,7 @@ class ProposalsController < ApplicationController
   # Joining an event marks as user as attending the event, and redirects to room url.
   def join
     message = 'You cannot join this event yet. Please try again closer to the start of the event.'
-
+    binding.pry
     if current_user.roles.where(id: @conference.roles).any?
       can_view_event = @event.url.present?
     elsif current_user.registered_to_event?(@conference)

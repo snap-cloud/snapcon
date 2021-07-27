@@ -232,6 +232,42 @@ feature Event do
       visit conference_program_proposal_path(conference.short_title, @scheduled_event1.id)
       expect(page).not_to have_content('Google Calendar')
     end
+
+    context 'for events where you join the room via a link', feature: true, focus: true do
+      before do
+        sign_in participant
+      end
+      it 'redirects to the event page with no URL' do
+        visit conference_program_proposal_path(conference, @scheduled_event1)
+        expect(response).to redirect_to(conference_program_proposal_path(conference, @scheduled_event1))
+        expect(response.status).to eq(301)
+      end
+
+      context 'with a fully setup event' do
+        let(:room) { create(:room, url: 'https://example.com') }
+        let(:registration) { create(:registration, user: participant, conference: conference) }
+
+        before do
+          @scheduled_event1.room = room
+          @scheduled_event1.save
+        end
+
+        it 'redirects you to the room if you are registered' do
+          visit conference_program_proposal_path(conference, @scheduled_event1)
+          expect(response).to redirect_to('https://example.com')
+        end
+
+        it 'marks you as having attended the event and conference' do
+          # binding.pry
+          expect(registration.attended).to be false
+          expect(participant.attended_event?(@scheduled_event)).to be false
+          visit conference_program_proposal_path(conference, @scheduled_event1)
+          expect(registration.attended).to be true
+          expect(participant.attended_event?(@scheduled_event)).to be true
+        end
+      end
+    end
+
   end
 
   context 'happening now or next section' do
