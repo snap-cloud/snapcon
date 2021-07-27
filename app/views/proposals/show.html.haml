@@ -17,7 +17,8 @@
   .row.page-header
     .col-md-8{ style: 'display: flex; flex-direction: row;' }
       = render 'proposals/toggle_favorite_event',
-               event: @event, color: '#000000', conference: @conference
+               event: @event, color: '#000000', conference: @conference,
+               is_favourite: event_favourited?(@event, current_user)
 
       .div{ style: 'margin: 3px; flex: 1' }
 

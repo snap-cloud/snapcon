@@ -5,8 +5,7 @@
 
 
 .container#program
-  -if @events_schedules.any?
-    = render partial: 'schedule_tabs', locals: { active: 'program' }
+  = render partial: 'schedule_tabs', locals: { active: 'program' }
 
   %h1.text-center
     - if @favourites && current_user
@@ -30,7 +29,6 @@
       - if @unscheduled_events.any?
         %li.li-dropdown-program
           = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
-
 
   .row
     / scheduled events
