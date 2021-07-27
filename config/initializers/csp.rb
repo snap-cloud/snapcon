@@ -8,7 +8,7 @@ Rails.application.config.content_security_policy do |policy|
   # policy.report_uri "/csp-violation-report-endpoint"
   # TODO: Use scott helme report-uri
   # Determine where this can be put in an <iframe>
-  policy.frame_ancestors 'self, ohyay.co'
+  policy.frame_ancestors 'self ohyay.co'
 end
 
 # Unset X-Frame-Options since we have CSP.
