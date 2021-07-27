@@ -260,7 +260,7 @@ feature Event do
           expect(current_url).to eq 'http://www.example.com/'
         end
 
-        it 'marks you as having attended the event and conference' do
+        xit 'marks you as having attended the event and conference' do
           expect(registration.attended).to be false
           expect(participant.attended_event?(@scheduled_event1)).to be false
           Timecop.travel @event_schedule1.start_time
