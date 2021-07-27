@@ -1,3 +1,3 @@
 web: bundle exec puma -C config/puma.rb
 worker: bundle exec rails jobs:work
-release: rake db:migrate cache:clear
+release: rake db:migrate
