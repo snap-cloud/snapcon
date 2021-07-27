@@ -113,15 +113,14 @@ class ProposalsController < ApplicationController
   def join
     message = 'You cannot join this event yet. Please try again closer to the start of the event.'
 
-    if current_user.roles.where(id: @conference.roles).any?
-      can_view_event = @event.url.present?
-    elsif current_user.registered_to_event?(@conference)
-      # attendees can only join during the event time
-      can_view_event = @event.url.present? && @event.happening_now?
-    else
-      can_view_event = false
-      message = "You must be registered for #{@conference} to join this event"
-    end
+    can_view_event = if current_user.roles.where(id: @conference.roles).any?
+                      @event.url.present?
+                    elsif current_user.registered_to_event?(@conference)
+                      # attendees can only join during the event time
+                      @event.url.present? && @event.happening_now?
+                    else
+                      false
+                    end
 
     if can_view_event
       current_user.mark_attendance_for_conference(@conference)
