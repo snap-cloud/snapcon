@@ -82,15 +82,11 @@
               - cache [event, '#unscheduled#full#panel'] do
                 = render 'event', event: event, event_schedule: nil
 
-
-
-
 :javascript
   $('.program-selector').on('click', function(e) {
     $('.li-dropdown-program').removeClass('active');
   });
 
-  // Go to current date and time
   $(document).ready(function(){
     tag = "#{ @tag }";
     if(tag !== ""){
