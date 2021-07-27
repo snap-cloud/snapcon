@@ -125,7 +125,7 @@ class ProposalsController < ApplicationController
 
     if can_view_event
       current_user.mark_attendance_for_conference(@conference)
-      # TODO: Mark attended event
+      current_user.mark_attendance_for_event(@event)
       redirect_to @event.url
     else
       redirect_to conference_program_proposal_path(@conference, @event), error: message
