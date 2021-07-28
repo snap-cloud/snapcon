@@ -39,8 +39,18 @@ module Admin
     end
 
     def give
+      message = ''
       ticket_purchase = @ticket.ticket_purchases.new(gift_ticket_params)
       recipient = ticket_purchase.user
+      old_ticket_purchases = @ticket.ticket_purchases.where(
+        user_id: recipient.id, paid: false, conference: @conference
+      )
+      # We need to cancel any in progress ticket purchases
+      # TODO-SNAPCON: Add tests, update existing DB records?
+      if old_ticket_purchases.any?
+        message = "(Found #{pluarlize(old_ticket_purchases, 'unpaid ticket')} that was replaced)."
+        old_ticket_purchases.destroy_all
+      end
       if ticket_purchase.save
         # We must pay for a ticket purchase to create a physical ticket.
         # Because there is no CC xact, the Payment does not need to be saved.
@@ -48,7 +58,7 @@ module Admin
         registration = @conference.register_user(recipient) if @ticket.registration_ticket?
         redirect_to(
           admin_conference_ticket_path(@conference.short_title, @ticket),
-          notice: "#{recipient.name} was given a #{@ticket.title} ticket #{'and registered' if registration}."
+          notice: "#{recipient.name} was given a #{@ticket.title} ticket #{'and registered' if registration}. #{message}"
         )
       else
         redirect_back(
