@@ -46,9 +46,9 @@ module Admin
         user_id: recipient.id, paid: false, conference: @conference
       )
       # We need to cancel any in progress ticket purchases
-      # TODO-SNAPCON: Add tests, update existing DB records?
+      # TODO-SNAPCON: Add tests, update existing DB records? Add pluralize
       if old_ticket_purchases.any?
-        message = "(Found #{pluarlize(old_ticket_purchases, 'unpaid ticket')} that was replaced)."
+        message = "(Removed #{old_ticket_purchases.count} unpaid ticket)."
         old_ticket_purchases.destroy_all
       end
       if ticket_purchase.save
