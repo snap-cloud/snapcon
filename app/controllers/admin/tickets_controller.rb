@@ -44,7 +44,7 @@ module Admin
       recipient = ticket_purchase.user
       old_ticket_purchases = TicketPurchase.unpaid.by_conference(@conference)
                                            .where(
-                                             user_id: gift_ticket_params[:user_id],
+                                             user_id:   gift_ticket_params[:user_id],
                                              ticket_id: @conference.registration_tickets
                                            )
       # We need to cancel any in progress ticket purchases
