@@ -45,28 +45,23 @@
     - date = nil
     - time = nil
     - @events_schedules.each do |event_schedule|
-      - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
+      - start_ymd = event_schedule.start_time.strftime('%Y-%m-%d')
+      - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
           .date-content
-            %span.date-title{ id: event_schedule.start_time.strftime('%Y-%m-%d') }
+            %span.date-title{ id: start_ymd }
               = inyourtz(event_schedule.start_time, @conference.timezone) do
-                = date = event_schedule.start_time.strftime('%Y-%m-%d')
+                = date = start_ymd
             %a.pull-right{ title: "Go up", href: "#program" }
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
-      - unless event_schedule.start_time.strftime('%H:%M').eql?(time) && !event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
-        .col-xs-12.col-md-1
-          .start-time
-            - time = event_schedule.start_time.strftime('%H:%M')
-            = inyourtz(event_schedule.start_time, @conference.timezone) do
-              = time + ' ' + timezone_text(@conference)
-        .col-xs-12.col-md-11
-          .new-time-event
-            - cache [event_schedule.event, '#scheduled#full#panel'] do
-              = render 'event', event: event_schedule.event, event_schedule: event_schedule
-      - else
-        .col-xs-12.col-md-11.col-md-offset-1
-          - cache [event_schedule.event, '#scheduled#full#panel'] do
-            = render 'event', event: event_schedule.event, event_schedule: event_schedule
+      .col-xs-12.col-md-1
+        - if !event_schedule.start_time.strftime('%H:%M').eql?(time) || !start_ymd.eql?(date)
+          - time = event_schedule.start_time.strftime('%H:%M')
+          = inyourtz(event_schedule.start_time, @conference.timezone) do
+            = time + ' ' + timezone_text(@conference)
+      .col-xs-12.col-md-11
+        - cache [event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+          = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
       / confirmed events that are not scheduled
       - if @unscheduled_events.any?
@@ -79,7 +74,7 @@
         - @unscheduled_events.each do |event|
           .col-xs-12.col-md-12
             .unscheduled-event
-              - cache [event, '#unscheduled#full#panel'] do
+              - cache [event, current_user, '#unscheduled#full#panel'] do
                 = render 'event', event: event, event_schedule: nil
 
 :javascript
