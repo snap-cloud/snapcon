@@ -221,10 +221,10 @@ module EventsHelper
     admin = current_user.roles.where(id: conference.roles).any?
 
     link = if admin || (is_now && is_registered)
-              link_to("Join Event Now #{'(Admin)' if !is_now}",
-                      join_conference_program_proposal_path(conference, event),
-                      target: '_blank', class: 'btn btn-primary',
-                      'aria-label': "Join #{event.title}")
+             link_to("Join Event Now #{'(Admin)' unless is_now}",
+                     join_conference_program_proposal_path(conference, event),
+                     target: '_blank', class: 'btn btn-primary',
+                     'aria-label': "Join #{event.title}")
            elsif is_registered
              content_tag :span, class: 'btn btn-default btn-sm' do
                'Click to Join During Event'
