@@ -213,25 +213,21 @@ module EventsHelper
 
   def join_event_link(event, current_user)
     # TODO: Should this take in an event_schedule?
-    return unless event.url.present? && current_user
+    return unless current_user && event.room&.url.present?
 
     conference = event.conference
     is_now = event.happening_now?
+    is_registered = current_user.registered_to_event?(conference)
+    admin = current_user.roles.where(id: conference.roles).any?
 
-    link = if current_user.roles.where(id: conference.roles).any?
-             # Show Pre-Event links for any memeber of the conference team.
-             link_to("Join Event Now #{'(Admin link)' unless is_now}",
-                     event.url, target: '_blank', class: 'btn btn-primary',
-                     'aria-label': "Join #{event.title}")
-           elsif current_user.registered_to_event?(conference)
-             if is_now
-               link_to('Join Event Now', event.url,
-                       target: '_blank', class: 'btn btn-primary',
-                       'aria-label': "Join #{event.title}")
-             else
-               content_tag :button, disabled: true, class: 'btn btn-default btn-sm' do
-                 'Click to Join During Event'
-               end
+    link = if admin || (is_now && is_registered)
+              link_to("Join Event Now #{'(Admin)' if !is_now}",
+                      join_conference_program_proposal_path(conference, event),
+                      target: '_blank', class: 'btn btn-primary',
+                      'aria-label': "Join #{event.title}")
+           elsif is_registered
+             content_tag :span, class: 'btn btn-default btn-sm' do
+               'Click to Join During Event'
              end
            else
              link_to('Register for the conference to join this event.',
