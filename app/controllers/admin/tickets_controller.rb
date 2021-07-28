@@ -42,9 +42,11 @@ module Admin
       message = ''
       ticket_purchase = @ticket.ticket_purchases.new(gift_ticket_params)
       recipient = ticket_purchase.user
-      old_ticket_purchases = @ticket.ticket_purchases.where(
-        user_id: recipient.id, paid: false, conference: @conference
-      )
+      old_ticket_purchases = TicketPurchase.unpaid.by_conference(@conference)
+                                           .where(
+                                             user_id: gift_ticket_params[:user_id],
+                                             ticket_id: @conference.registration_tickets
+                                           )
       # We need to cancel any in progress ticket purchases
       # TODO-SNAPCON: Add tests, update existing DB records? Add pluralize
       if old_ticket_purchases.any?
