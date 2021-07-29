@@ -232,7 +232,7 @@ module EventsHelper
     else
       link_to('Register for the conference to join this event.',
               conference_conference_registration_path(conference),
-              class: 'btn btn-default btn-xs',
+              class:        'btn btn-default btn-xs',
               'aria-label': "Register for #{event.title}")
     end
   end
