@@ -222,7 +222,8 @@ module EventsHelper
 
     if admin || (is_now && is_registered)
       link_to("Join Event Now #{'(Admin)' unless is_now}",
-              join_conference_program_proposal_path(conference, event),
+              event.room.url,
+              # join_conference_program_proposal_path(conference, event),
               target: '_blank', class: 'btn btn-primary',
               'aria-label': "Join #{event.title}")
     elsif is_registered
