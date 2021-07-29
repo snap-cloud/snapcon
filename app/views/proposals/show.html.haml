@@ -21,13 +21,18 @@
                is_favourite: event_favourited?(@event, current_user)
 
       .div{ style: 'margin: 3px; flex: 1' }
-
         %h2{ style: 'margin: 0' }
           = @event.title
           - if @event.subtitle.present?
             %br
             %small
               = @event.subtitle
+          - if @event.event_type.present?
+            - header_color = @event.event_type&.color || '#f5f5f5'
+            - color = "background-color: #{header_color}; color: #{contrast_color(header_color)};"
+            .label{ style: "#{color} margin: 4px; display: inline-block", 'aria-hidden': true }
+              = @event.event_type.title
+
         = join_event_link(@event, current_user)
 
     .btn-group
@@ -103,6 +108,10 @@
               .col-md-12
                 %dt Language:
                 %dd= @event.language
+            - if @event.event_type
+              .col-md-12
+                %dt Type:
+                %dd= @event.event_type&.title
             - if @event.track
               .col-md-12
                 %dt Track:

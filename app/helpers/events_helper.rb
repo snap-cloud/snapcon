@@ -220,22 +220,20 @@ module EventsHelper
     is_registered = current_user.registered_to_event?(conference)
     admin = current_user.roles.where(id: conference.roles).any?
 
-    link = if admin || (is_now && is_registered)
-             link_to("Join Event Now #{'(Admin)' unless is_now}",
-                     join_conference_program_proposal_path(conference, event),
-                     target: '_blank', class: 'btn btn-primary',
-                     'aria-label': "Join #{event.title}")
-           elsif is_registered
-             content_tag :span, class: 'btn btn-default btn-sm' do
-               'Click to Join During Event'
-             end
-           else
-             link_to('Register for the conference to join this event.',
-                     conference_conference_registration_path(conference),
-                     'aria-label': "Register for #{event.title}")
-           end
-    content_tag :span, class: 'h4' do
-      link
+    if admin || (is_now && is_registered)
+      link_to("Join Event Now #{'(Admin)' unless is_now}",
+              join_conference_program_proposal_path(conference, event),
+              target: '_blank', class: 'btn btn-primary',
+              'aria-label': "Join #{event.title}")
+    elsif is_registered
+      content_tag :span, class: 'btn btn-default btn-xs disabled' do
+        'Click to Join During Event'
+      end
+    else
+      link_to('Register for the conference to join this event.',
+              conference_conference_registration_path(conference),
+              class: 'btn btn-default btn-xs',
+              'aria-label': "Register for #{event.title}")
     end
   end
 
