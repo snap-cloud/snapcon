@@ -211,17 +211,17 @@ module EventsHelper
     Time.now.in_time_zone(object.timezone).strftime('%Z')
   end
 
-  def join_event_link(event, current_user)
-    # TODO: Should this take in an event_schedule?
-    return unless current_user && event.room&.url.present?
+  def join_event_link(event, event_schedule, current_user)
+    return unless current_user && event_schedule && event.room&.url.present?
+    return if event_schedule.ended?
 
     conference = event.conference
-    is_now = event.happening_now? # 30 minute threshold.
+    is_now = event_schedule.happening_now? # 30 minute threshold.
     is_registered = current_user.registered_to_event?(conference)
     admin = current_user.roles.where(id: conference.roles).any?
-    # TODO: Show Speakers a Link Earlier?
+    is_presenter = event.speakers.include?(current_user) || event.volunteers.include?(current_user)
 
-    if admin || (is_now && is_registered)
+    if admin || is_presenter || (is_now && is_registered)
       link_to("Join Event Now #{'(Early)' unless is_now}",
               # event.room.url,
               join_conference_program_proposal_path(conference, event),

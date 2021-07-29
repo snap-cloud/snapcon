@@ -94,6 +94,13 @@ class EventSchedule < ApplicationRecord
   end
 
   ##
+  #
+  #
+  def ended?
+    end_time > Time.now
+  end
+
+  ##
   # Returns a time + room number string for sorting.
   #
   def sortable_timestamp

@@ -37,7 +37,7 @@
       - if event.speakers.any?
         %h4
           = event.speaker_names
-      = join_event_link(event, current_user)
+      = join_event_link(event, event_schedule, current_user)
       %p
         = truncate(markdown(event.abstract), length: abstract_length, escape: false) do
           %br

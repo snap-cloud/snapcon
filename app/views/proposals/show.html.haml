@@ -33,7 +33,7 @@
             .label{ style: "#{color} margin: 4px; display: inline-block", 'aria-hidden': true }
               = @event.event_type.title
 
-        = join_event_link(@event, current_user)
+        = join_event_link(@event, @event_schedule, current_user)
 
     .btn-group
       - if @event_schedule&.start_time && user_signed_in?
@@ -100,7 +100,6 @@
               %dt Room:
               %dd
                 = @event.room&.name
-                = join_event_link(@event, current_user)
             .col-md-12
               %dt Conference:
               %dd= link_to @event.program.conference.title, conference_path(@conference)
