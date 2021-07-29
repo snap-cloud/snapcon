@@ -216,14 +216,15 @@ module EventsHelper
     return unless current_user && event.room&.url.present?
 
     conference = event.conference
-    is_now = event.happening_now?
+    is_now = event.happening_now? # 30 minute threshold.
     is_registered = current_user.registered_to_event?(conference)
     admin = current_user.roles.where(id: conference.roles).any?
+    # TODO: Show Speakers a Link Earlier?
 
     if admin || (is_now && is_registered)
-      link_to("Join Event Now #{'(Admin)' unless is_now}",
-              event.room.url,
-              # join_conference_program_proposal_path(conference, event),
+      link_to("Join Event Now #{'(Early)' unless is_now}",
+              # event.room.url,
+              join_conference_program_proposal_path(conference, event),
               target: '_blank', class: 'btn btn-primary',
               'aria-label': "Join #{event.title}")
     elsif is_registered
