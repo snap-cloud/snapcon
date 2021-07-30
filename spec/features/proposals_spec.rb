@@ -9,7 +9,6 @@ feature Event do
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:participant) { create(:user) }
   let!(:participant_without_bio) { create(:user, biography: '') }
-  let(:registration) { create(:registration, user: participant, conference: conference) }
 
   before(:each) do
     @options = {}
@@ -221,6 +220,8 @@ feature Event do
       @program.update_attributes!(selected_schedule: @selected_schedule)
       @scheduled_event1 = create(:event, program: @program, state: 'confirmed', abstract: '`markdown`')
       @event_schedule1 = create(:event_schedule, event: @scheduled_event1, schedule: @selected_schedule, start_time: conference.start_hour + 1.hour)
+      @registration = conference.register_user(participant)
+
     end
 
     scenario 'for a scheduled event, can add an event to google calendar if signed in', feature: true do
@@ -239,8 +240,9 @@ feature Event do
         sign_in participant
       end
 
+      # TODO-SNAPCON: Add test for unregistered user...
       it 'redirects to the event page with no URL' do
-        visit conference_program_proposal_path(conference, @scheduled_event1)
+        visit join_conference_program_proposal_path(conference, @scheduled_event1)
         expect(current_path).to eq conference_program_proposal_path(conference, @scheduled_event1)
       end
 
@@ -249,26 +251,25 @@ feature Event do
         let(:room) { create(:room, venue: venue) }
 
         before do
-          room.update(url: 'https://www.example.com/')
-          @scheduled_event1.room = room
-          @scheduled_event1.save
-          room.reload
+          room.update(url: 'https://www.example.com')
+          @event_schedule1.room = room
+          @event_schedule1.save
         end
 
         it 'redirects you to the room if you are registered' do
           visit join_conference_program_proposal_path(conference, @scheduled_event1)
-          expect(current_url).to eq 'http://www.example.com/'
+          expect(current_url).to eq 'http://www.example.com'
         end
 
-        xit 'marks you as having attended the event and conference' do
-          expect(registration.attended).to be false
+        it 'marks you as having attended the event and conference' do
+          expect(@registration.attended).to be false
           expect(participant.attended_event?(@scheduled_event1)).to be false
-          Timecop.travel @event_schedule1.start_time
+          Timecop.travel @event_schedule1.start_time_in_conference_timezone - (Time.now.getlocal.utc_offset / 1.hours)
           # A check to make sure all conditions are met.
           expect(@scheduled_event1.happening_now?).to be true
           visit join_conference_program_proposal_path(conference, @scheduled_event1)
-          registration.reload
-          expect(registration.attended).to be true
+          @registration.reload
+          expect(@registration.attended).to be true
           expect(participant.attended_event?(@scheduled_event1)).to be true
           Timecop.return
         end
