@@ -131,4 +131,4 @@ build-iPhoneSimulator/
 !.elasticbeanstalk/*.global.yml
 
 # common db things from heroku
-latest.dump
+latest.dump*
