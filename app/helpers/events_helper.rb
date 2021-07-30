@@ -213,20 +213,20 @@ module EventsHelper
 
   def join_event_link(event, event_schedule, current_user)
     return unless current_user && event_schedule && event_schedule.room_url.present?
-    return if event_schedule.ended?
+    # return if event_schedule.ended?
 
     conference = event.conference
     is_now = event_schedule.happening_now? # 30 minute threshold.
-    @is_registered ||= conference.user_registered?(current_user)
-    @admin ||= current_user.roles.where(id: conference.roles).any?
+    is_registered = conference.user_registered?(current_user)
+    admin = current_user.roles.where(id: conference.roles).any?
     # is_presenter = event.speakers.include?(current_user) || event.volunteers.include?(current_user)
 
-    if @admin || (is_now && @is_registered)
+    if admin || (is_now && is_registered)
       link_to("Join Event Now #{'(Early)' unless is_now}",
               join_conference_program_proposal_path(conference, event),
               target: '_blank', class: 'btn btn-primary',
               'aria-label': "Join #{event.title}")
-    elsif @is_registered
+    elsif is_registered
       content_tag :span, class: 'btn btn-default btn-xs disabled' do
         'Click to Join During Event'
       end
