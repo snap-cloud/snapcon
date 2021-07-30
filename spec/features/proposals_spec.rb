@@ -9,6 +9,7 @@ feature Event do
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:participant) { create(:user) }
   let!(:participant_without_bio) { create(:user, biography: '') }
+  let(:registration) { create(:registration, user: participant, conference: conference) }
 
   before(:each) do
     @options = {}
@@ -246,7 +247,6 @@ feature Event do
       context 'with a fully setup event' do
         let(:venue) { create(:venue, conference: conference) }
         let(:room) { create(:room, venue: venue) }
-        let(:registration) { create(:registration, user: participant, conference: conference) }
 
         before do
           room.update(url: 'https://www.example.com/')
