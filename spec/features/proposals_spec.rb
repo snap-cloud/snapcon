@@ -256,7 +256,7 @@ feature Event do
           @event_schedule1.save
         end
 
-        it 'redirects you to the room if you are registered' do
+        xit 'redirects you to the room if you are registered' do
           visit join_conference_program_proposal_path(conference, @scheduled_event1)
           expect(current_url).to eq 'http://www.example.com'
         end
