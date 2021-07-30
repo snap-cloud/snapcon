@@ -1,15 +1,15 @@
 :ruby
   header_color = event.event_type&.color || '#f5f5f5'
-  color_style = "color: #{contrast_color(header_color)}"
+  color_style = css_background_color(header_color)
   condensed_view = defined?(is_brief) && is_brief
-  abstract_length = condensed_view ? 300 : 400
+  abstract_length = condensed_view ? 250 : 400
 
 .panel.panel-default
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
-  .panel-heading{ style: "background-color: #{header_color}; #{color_style}; border-radius: 4px" }
+  .panel-heading{ style: "#{color_style} border-radius: 4px" }
     %p
       = canceled_replacement_event_label(event, event_schedule)
-      = replacement_event_notice(event_schedule)
+      = replacement_event_notice(event_schedule, styles: color_style)
 
     %div{ style: 'display: flex; flex-direction: row;' }
       -# In the schedule view, favorited events show as false, until set by JS. (Caching perf)
@@ -37,26 +37,26 @@
       - if event.speakers.any?
         %h4
           = event.speaker_names
-      = join_event_link(event, current_user)
+      = join_event_link(event, event_schedule, current_user)
       %p
         = truncate(markdown(event.abstract), length: abstract_length, escape: false) do
           %br
-          = link_to 'more', conference_program_proposal_path(@conference.short_title, event.id)
+          = link_to 'read more', conference_program_proposal_path(@conference.short_title, event.id)
         -# TODO: More informative text or aria-label.
 
     - if !condensed_view
       - if event_schedule.present?
         = inyourtz(event_schedule.start_time, event.timezone) do
           %span.fa.fa-clock-o
-            .label{ style: 'background-color: grey' }
+            .label.label-info
               = event_schedule.start_time.strftime('%l:%M %P')
               \-
               = "#{event_schedule.end_time.strftime('%l:%M %P')} #{timezone_text(event)}"
         %span.fa.fa-map-marker
-          .label{ style: 'background-color: grey' }
+          .label.label-info
             = event_schedule.room.name
       - if event.track
         .track
           %span.fa.fa-road
-          .label{ style: "background-color: #{event.track.color}; color: #{ contrast_color(event.track.color) }" }
+          .label{ style: css_background_color(event.track.color) }
             = event.track.name

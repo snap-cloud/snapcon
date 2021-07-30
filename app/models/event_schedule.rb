@@ -26,6 +26,7 @@ class EventSchedule < ApplicationRecord
   belongs_to :schedule, touch: true
   belongs_to :event, touch: true
   belongs_to :room
+  delegate :url, to: :room, prefix: true, allow_nil: true
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
@@ -91,6 +92,13 @@ class EventSchedule < ApplicationRecord
   #
   def end_time
     start_time + event.event_type.length.minutes
+  end
+
+  ##
+  # Returns if the event is in the past.
+  #
+  def ended?
+    end_time < Time.now
   end
 
   ##

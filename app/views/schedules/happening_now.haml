@@ -41,7 +41,7 @@
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
       - if event_schedule.start_time.strftime('%H:%M').eql?(time)
         .col-xs-12.col-md-11.col-md-offset-1
-          - cache [event_schedule.event, '#scheduled#full#panel'] do
+          - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
             = render 'event', event: event_schedule.event, event_schedule: event_schedule
       - else
         .col-xs-12.col-md-1
@@ -50,7 +50,7 @@
               = time = event_schedule.start_time.strftime('%H:%M')
         .col-xs-12.col-md-11
           .new-time-event
-            - cache [event_schedule.event, '#scheduled#full#panel'] do
+            - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
               = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
 :javascript

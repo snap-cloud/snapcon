@@ -32,12 +32,12 @@ module EventsHelper
     content_tag('span', "#{rating}/#{max}", **options)
   end
 
-  def replacement_event_notice(event_schedule)
+  def replacement_event_notice(event_schedule, styles: '')
     if event_schedule.present? && event_schedule.replacement?(@withdrawn_event_schedules)
       replaced_event = event_schedule.replaced_event_schedule.try(:event)
       content_tag :span do
-        concat content_tag :span, 'Please note that this talk replaces '
-        concat link_to replaced_event.title, conference_program_proposal_path(@conference.short_title, replaced_event.id)
+        concat content_tag :span, 'Please note that this event replaces '
+        concat link_to replaced_event.title, conference_program_proposal_path(@conference.short_title, replaced_event.id), style: styles
       end
     end
   end
@@ -211,23 +211,22 @@ module EventsHelper
     Time.now.in_time_zone(object.timezone).strftime('%Z')
   end
 
-  def join_event_link(event, current_user)
-    # TODO: Should this take in an event_schedule?
-    return unless current_user && event.room&.url.present?
+  def join_event_link(event, event_schedule, current_user)
+    return unless current_user && event_schedule && event_schedule.room_url.present?
+    return if event_schedule.ended?
 
     conference = event.conference
-    is_now = event.happening_now? # 30 minute threshold.
-    is_registered = current_user.registered_to_event?(conference)
-    admin = current_user.roles.where(id: conference.roles).any?
-    # TODO: Show Speakers a Link Earlier?
+    is_now = event_schedule.happening_now? # 30 minute threshold.
+    @is_registered ||= conference.user_registered?(current_user)
+    @admin ||= current_user.roles.where(id: conference.roles).any?
+    # is_presenter = event.speakers.include?(current_user) || event.volunteers.include?(current_user)
 
-    if admin || (is_now && is_registered)
+    if @admin || (is_now && @is_registered)
       link_to("Join Event Now #{'(Early)' unless is_now}",
-              # event.room.url,
               join_conference_program_proposal_path(conference, event),
               target: '_blank', class: 'btn btn-primary',
               'aria-label': "Join #{event.title}")
-    elsif is_registered
+    elsif @is_registered
       content_tag :span, class: 'btn btn-default btn-xs disabled' do
         'Click to Join During Event'
       end
@@ -255,7 +254,7 @@ module EventsHelper
       action:   'TEMPLATE',
       text:     "#{event.title} at #{conference.title}",
       details:  calendar_event_text(event, event_schedule, conference),
-      location: "#{event.room.name} #{event.url}",
+      location: "#{event_schedule.room.name} #{event_schedule.room_url}",
       dates:    "#{start_timestamp}/#{end_timestamp}",
       ctz:      event_schedule.timezone
     }

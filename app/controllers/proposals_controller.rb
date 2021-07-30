@@ -110,24 +110,19 @@ class ProposalsController < ApplicationController
   end
 
   # Joining an event marks as user as attending the event, and redirects to room url.
+  # attendees can only join during the event time
   def join
-    message = 'You cannot join this event yet. Please try again closer to the start of the event.'
-
-    can_view_event = if current_user.roles.where(id: @conference.roles).any?
-                       @event.url.present?
-                     elsif current_user.registered_to_event?(@conference)
-                       # attendees can only join during the event time
-                       @event.url.present? && @event.happening_now?
-                     else
-                       false
-                     end
+    admin = current_user.roles.where(id: @conference.roles).any?
+    registered_happening_now = @conference.user_registered?(current_user) && @event.happening_now?
+    can_view_event = @event.url.present? && (admin || registered_happening_now)
 
     if can_view_event
       current_user.mark_attendance_for_conference(@conference)
       current_user.mark_attendance_for_event(@event)
       redirect_to @event.url
     else
-      redirect_to conference_program_proposal_path(@conference, @event), error: message
+      redirect_to conference_program_proposal_path(@conference, @event),
+                  error: 'You cannot join this event yet. Please try again closer to the start of the event.'
     end
   end
 
