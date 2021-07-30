@@ -33,7 +33,7 @@ class Room < ApplicationRecord
   after_update lambda {
     return unless url.present?
 
-    event_schedules.enabled.update_all(updated_at: Time.now)
+    event_schedules.update_all(updated_at: Time.now)
   }
 
   def conference
