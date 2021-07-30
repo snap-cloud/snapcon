@@ -60,7 +60,7 @@
           = inyourtz(event_schedule.start_time, @conference.timezone) do
             = time + ' ' + timezone_text(@conference)
       .col-xs-12.col-md-11
-        - cache [event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+        - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
           = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
       / confirmed events that are not scheduled
