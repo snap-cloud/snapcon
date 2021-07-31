@@ -7,18 +7,18 @@
 .panel.panel-default
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
   .panel-heading{ style: "#{color_style} border-radius: 4px" }
-    %p
-      = canceled_replacement_event_label(event, event_schedule)
-      = replacement_event_notice(event_schedule, styles: color_style)
+    -# %p
+    -#   = canceled_replacement_event_label(event, event_schedule)
+    -#   = replacement_event_notice(event_schedule, styles: color_style)
 
     %div{ style: 'display: flex; flex-direction: row;' }
       -# In the schedule view, favorited events show as false, until set by JS. (Caching perf)
       = render 'proposals/toggle_favorite_event',
               event: event, color: contrast_color(header_color), conference: @conference, is_favourite: false
 
-      %h3{ style: 'margin: auto 3px; flex: 1' }
-        = link_to conference_program_proposal_path(@conference.short_title, event.id),
-                  style: color_style do
+      = link_to conference_program_proposal_path(@conference.short_title, event.id),
+                style: "#{color_style}" do
+        %h3
           = event.title
           - if event.subtitle.present?
             %br
