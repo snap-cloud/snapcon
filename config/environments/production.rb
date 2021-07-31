@@ -67,6 +67,20 @@ Osem::Application.configure do
     }
   end
 
+  if ENV["OSEM_REDIS_CACHE_STORE"]
+    config.cache_store = :redis_cache_store, {
+      url: ENV["OSEM_REDIS_CACHE_STORE"],
+
+      reconnect_attempts: 1,   # Defaults to 0
+
+      error_handler: -> (method:, returning:, exception:) {
+        # Report errors to Sentry as warnings
+        Raven.capture_exception exception, level: 'warning',
+          tags: { method: method, returning: returning }
+      }
+    }
+  end
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server
   # config.action_controller.asset_host = "http://assets.example.com"
 
