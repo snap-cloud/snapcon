@@ -11,10 +11,8 @@
     %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', scrolling: 'no', allowtransparency: 'true', src: "//instagram.com/p/#{commercial.commercial_id}/embed/"}
   - elsif commercial.commercial_type == 'YouTube'
     %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', src: "https://www.youtube.com/embed/#{commercial.commercial_id}?rel=0"}
-  - elsif commercial.url&.match /youtube/i
-    = Commercial.render_from_url(commercial.url)[:html]
   - elsif commercial.url
-    %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', src: commercial.url }
+    = Commercial.render_from_url(commercial.url)[:html]
 - if commercial.url
   %br
   = link_to('Open in a new tab', commercial.url, target: '_blank', class: 'btn btn-info')

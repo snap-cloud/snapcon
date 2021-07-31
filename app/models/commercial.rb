@@ -21,7 +21,7 @@ class Commercial < ApplicationRecord
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
   validates :url, presence: true, uniqueness: { scope: :commercialable }
-  validates :url, format: URI::regexp(%w(http https))
+  validates :url, format: URI::regexp(%w(https))
 
   validate :valid_url
 
@@ -37,8 +37,7 @@ class Commercial < ApplicationRecord
   end
 
   def self.iframe_fallback(url)
-    # <br><a href='#{url}' target=_blank>Open in a new tab</a>
-    "<iframe src=\"#{url}\"></iframe>".html_safe
+    "<iframe width=560 height=315 frameborder=0 allowfullscreen=true src=\"#{url}\"></iframe>".html_safe
   end
 
   def self.read_file(file)
