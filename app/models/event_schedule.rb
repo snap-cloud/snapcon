@@ -98,7 +98,7 @@ class EventSchedule < ApplicationRecord
   # Returns if the event is in the past.
   #
   def ended?
-    end_time < Time.now
+    end_time_in_conference_timezone < time_in_conference_timezone(Time.now)
   end
 
   ##
