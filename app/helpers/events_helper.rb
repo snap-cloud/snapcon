@@ -212,9 +212,8 @@ module EventsHelper
   end
 
   def join_event_link(event, event_schedule, current_user)
+    # TODO-SNAPCON: renable ended? check
     return unless current_user && event_schedule && event_schedule.room_url.present?
-    # TODO: Why is this broken?
-    # return if event_schedule.ended?
 
     conference = event.conference
     is_now = event_schedule.happening_now? # 30 minute threshold.
