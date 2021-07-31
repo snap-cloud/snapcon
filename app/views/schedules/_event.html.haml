@@ -7,7 +7,7 @@
 .panel.panel-default
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
   .panel-heading{ style: "#{color_style} border-radius: 4px" }
-    %p
+    -# %p
       = canceled_replacement_event_label(event, event_schedule)
       = replacement_event_notice(event_schedule, styles: color_style)
 
