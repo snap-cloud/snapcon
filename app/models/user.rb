@@ -181,10 +181,25 @@ class User < ApplicationRecord
     event_registration.attended
   end
 
-  def mark_attendance_for_conference conference
+  def mark_attendance_for_conference(conference)
     registration = registrations.for_conference(conference)
+    return true if registration&.attended
+
     registration.attended = true
     registration.save
+  end
+
+  def mark_attendance_for_event(event)
+    event_registration = event.events_registrations.find_by(registration: registrations)
+    return true if event_registration&.attended
+
+    if event_registration.blank?
+      conference_registration = registrations.for_conference(event.conference)
+      event_registration = event.events_registrations.build
+      event_registration.registration = conference_registration
+    end
+    event_registration.attended = true
+    event_registration.save
   end
 
   def name

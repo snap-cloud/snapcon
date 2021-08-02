@@ -9,7 +9,7 @@ class ProposalsController < ApplicationController
   load_resource :program, through: :conference, singleton: true
   load_and_authorize_resource :event, parent: false, through: :program
   # We authorize manually in these actions
-  skip_authorize_resource :event, only: [:confirm, :restart, :withdraw]
+  skip_authorize_resource :event, only: [:join, :confirm, :restart, :withdraw]
 
   def index
     @event = @program.events.new
@@ -103,9 +103,27 @@ class ProposalsController < ApplicationController
     else
       @event.favourite_users << current_user
     end
+    # TODO: Remove cache busting?
     @event.touch
     @program.touch
     render json: {}
+  end
+
+  # Joining an event marks as user as attending the event, and redirects to room url.
+  # attendees can only join during the event time
+  def join
+    admin = current_user.roles.where(id: @conference.roles).any?
+    registered_happening_now = @conference.user_registered?(current_user) && @event.happening_now?
+    can_view_event = @event.url.present? && (admin || registered_happening_now)
+
+    if can_view_event
+      current_user.mark_attendance_for_conference(@conference)
+      current_user.mark_attendance_for_event(@event)
+      redirect_to @event.url
+    else
+      redirect_to conference_program_proposal_path(@conference, @event),
+                  error: 'You cannot join this event yet. Please try again closer to the start of the event.'
+    end
   end
 
   def withdraw

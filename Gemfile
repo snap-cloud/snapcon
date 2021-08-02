@@ -216,13 +216,12 @@ gem 'bullet'
 # For collecting performance data
 gem 'skylight'
 
-# Nokogiri < 1.8.1 is subject to:
-# CVE-2017-0663, CVE-2017-7375, CVE-2017-7376, CVE-2017-9047, CVE-2017-9048,
-# CVE-2017-9049, CVE-2017-9050
 gem 'nokogiri'
 
 # memcached binary connector
-gem 'dalli'
+gem 'dalli', require: false
+# Redis Cache
+gem 'redis'
 
 gem 'icalendar'
 

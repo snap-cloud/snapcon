@@ -5,8 +5,7 @@
 
 
 .container#program
-  -if @events_schedules.any?
-    = render partial: 'schedule_tabs', locals: { active: 'program' }
+  = render partial: 'schedule_tabs', locals: { active: 'program' }
 
   %h1.text-center
     - if @favourites && current_user
@@ -16,6 +15,9 @@
 
   %p.text-center
     All Events are currently scheduled in #{@conference.timezone}.
+  - if current_user && !@favourites
+    %p.text-center
+      Click the star next to each event to add it to #{link_to 'your personal schedule', events_conference_schedule_path(@conference.short_title, favourites: true)}.
 
   = render 'event_types_key', event_types: @program.event_types
 
@@ -31,35 +33,35 @@
         %li.li-dropdown-program
           = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
 
-
-  - cache [@conference, @events_schedules, '#allEvents'] do
+  - if @favourites && current_user &&  @events_schedules.empty?
     .row
-      / scheduled events
-      - date = nil
-      - time = nil
-      - @events_schedules.each do |event_schedule|
-        - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
-          .col-xs-12.col-md-12
-            .date-content
-              %span.date-title{ id: event_schedule.start_time.strftime('%Y-%m-%d') }
-                = inyourtz(event_schedule.start_time, @conference.timezone) do
-                  = date = event_schedule.start_time.strftime('%Y-%m-%d')
-              %a.pull-right{ title: "Go up", href: "#program" }
-                %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
-        - unless event_schedule.start_time.strftime('%H:%M').eql?(time)
-          .col-xs-12.col-md-1
-            .start-time
-              - time = event_schedule.start_time.strftime('%H:%M')
+      %strong
+        You have no events on your agenda.
+      %br
+      %strong
+        #{link_to 'View the full program', events_conference_schedule_path(@conference.short_title, favourites: false)} and add events to your schedule?
+  .row
+    / scheduled events
+    - date = nil
+    - time = nil
+    - @events_schedules.each do |event_schedule|
+      - start_ymd = event_schedule.start_time.strftime('%Y-%m-%d')
+      - unless start_ymd.eql?(date)
+        .col-xs-12.col-md-12
+          .date-content
+            %span.date-title{ id: start_ymd }
               = inyourtz(event_schedule.start_time, @conference.timezone) do
-                = time + ' ' + timezone_text(@conference)
-          .col-xs-12.col-md-11
-            .new-time-event
-              - cache [event_schedule.event, '#scheduled#full#panel'] do
-                = render 'event', event: event_schedule.event, event_schedule: event_schedule
-        - else
-          .col-xs-12.col-md-11.col-md-offset-1
-            - cache [event_schedule.event, '#scheduled#full#panel'] do
-              = render 'event', event: event_schedule.event, event_schedule: event_schedule
+                = date = start_ymd
+            %a.pull-right{ title: "Go up", href: "#program" }
+              %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
+      .col-xs-12.col-md-1
+        - if !event_schedule.start_time.strftime('%H:%M').eql?(time) || !start_ymd.eql?(date)
+          - time = event_schedule.start_time.strftime('%H:%M')
+          = inyourtz(event_schedule.start_time, @conference.timezone) do
+            = time + ' ' + timezone_text(@conference)
+      .col-xs-12.col-md-11
+        - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+          = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
       / confirmed events that are not scheduled
       - if @unscheduled_events.any?
@@ -72,7 +74,7 @@
         - @unscheduled_events.each do |event|
           .col-xs-12.col-md-12
             .unscheduled-event
-              - cache [event, '#unscheduled#full#panel'] do
+              - cache [event, current_user, '#unscheduled#full#panel'] do
                 = render 'event', event: event, event_schedule: nil
 
 :javascript
@@ -80,7 +82,6 @@
     $('.li-dropdown-program').removeClass('active');
   });
 
-  // Go to current date and time
   $(document).ready(function(){
     tag = "#{ @tag }";
     if(tag !== ""){

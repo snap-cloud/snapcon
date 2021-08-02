@@ -149,7 +149,7 @@ class Conference < ApplicationRecord
   # * +false+ -> If the user is registered
   # * +true+ - If the user isn't registered
   def user_registered? user
-    user.present? && registrations.where(user_id: user.id).count > 0
+    user.present? && registrations.where(user_id: user.id).present?
   end
 
   ##

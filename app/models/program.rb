@@ -235,7 +235,7 @@ class Program < ApplicationRecord
       selected_event_schedules(includes: [:event, :room,
                                           { event: [:event_type, :speakers, :speaker_event_users,
                                                     :submitter, :submitter_event_user,
-                                                    { track: [:submitter] }, :program] }])
+                                                    :track, :program] }])
     end
   end
 

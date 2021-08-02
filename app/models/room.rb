@@ -29,6 +29,13 @@ class Room < ApplicationRecord
 
   default_scope { order(order: :asc) }
 
+  # Cache Busting on the events page, touch all events.
+  after_update lambda {
+    return unless url.present?
+
+    event_schedules.update_all(updated_at: Time.now)
+  }
+
   def conference
     venue.conference
   end
