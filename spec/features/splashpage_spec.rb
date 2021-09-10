@@ -167,7 +167,7 @@ feature Splashpage do
 
   context 'clarify registration status' do
     let!(:splashpage) { create(:splashpage, conference: conference, public: true)}
-    let!(:ticket_1) { create(:ticket) }
+    let!(:ticket_1) { create(:ticket, registration_ticket: true) }
     let!(:free_ticket) { create(:ticket, price_cents: 0) }
 
     scenario 'user signed in with no tickets', feature: true do
@@ -183,6 +183,7 @@ feature Splashpage do
       expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end
 
+    # TODO SNAP-CON: This should check for reg tickets, not just any ticket.
     scenario 'user signed in with 1 paid ticket', feature: true do
       sign_in participant
       create(:ticket_purchase, conference: conference, user: participant, ticket: ticket_1, quantity: 1)
