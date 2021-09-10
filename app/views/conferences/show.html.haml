@@ -15,11 +15,11 @@
 - provide :title, @conference.title
 
 = content_for :additional_messages do
-  - if user_signed_in? && @conference.tickets.any? && current_user.ticket_purchases.by_conference(@conference).empty?
+  - if user_signed_in? && @conference.registration_tickets.any? && current_user.ticket_purchases.by_conference(@conference).empty?
     .alert.alert-dismissable.alert-info.text-center#no-tickets{ role: 'alert' }
-      %button.button.close{ "data-dismiss" => "alert", "aria-label"=>"close" }
+      %button.button.close{ "data-dismiss": "alert", "aria-label": "close" }
         &times;
-      You have not purchased any tickets for this conference yet.
+      You have not booked any tickets for this conference yet.
       = link_to "Book your tickets now!", "#tickets", class: 'btn btn-info btn-lg'
 
   - if @unpaid_tickets
