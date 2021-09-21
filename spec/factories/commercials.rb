@@ -7,6 +7,7 @@
 #  id                  :bigint           not null, primary key
 #  commercial_type     :string
 #  commercialable_type :string
+#  title               :string
 #  url                 :string
 #  created_at          :datetime
 #  updated_at          :datetime
