@@ -35,6 +35,7 @@
           .row
             .col-md-6
               = semantic_form_for(Commercial.new,as: :commercial, url: admin_conference_venue_venue_commercial_path(conference_id: @conference.short_title)) do |f|
+                = f.input :title, label: 'Title', as: :string
                 = f.input :url, label: 'URL', as: :string, input_html: { required: 'required', type: 'url' },
                 hint: 'Just paste the url of your video/photo provider. Anything that supports an iframe is allowed.'
                 = f.action :submit, as: :button, button_html: { class: 'btn btn-primary pull-right', disabled: true }
@@ -48,6 +49,7 @@
                 .caption
                   - if can? :update, @venue.commercial
                     = semantic_form_for @venue.commercial, as: :commercial, url: admin_conference_venue_venue_commercial_path(conference_id: @conference.short_title, id: @venue.commercial.id) do |f|
+                      = f.input :title, label: 'Title', as: :string
                       = f.input :url, label: 'URL', as: :string, input_html: { id: "commercial_url_#{@venue.commercial.id}", required: 'required' }, hint: 'Just paste the url of your video/photo provider'
                       = f.action :submit, as: :button, button_html: { class: 'btn btn-success' }, label: 'Update'
                       - if can? :destroy, @venue.commercial

@@ -3,10 +3,10 @@
     = render 'shared/media_item', commercial: commercials.first, cache: true
   - else
     %ul.nav.nav-tabs{ role: 'tablist' }
-      - commercials.each.with_index(1) do  |commercial, index|
+      - commercials.each.with_index(1) do |commercial, index|
         %li{class: "#{'active' if (index == 1)}"}
           %a{ href: "##{index}", role: 'tab', 'data-toggle': 'tab' }
-            = index
+            = commercial.title || index
     .tab-content
       - commercials.each.with_index(1) do  |commercial, index|
         - if index == 1
