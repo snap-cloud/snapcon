@@ -1,17 +1,10 @@
 - unless commercials.empty?
-  - if commercials.length == 1
-    = render 'shared/media_item', commercial: commercials.first, cache: true
-  - else
-    %ul.nav.nav-tabs{ role: 'tablist' }
-      - commercials.each.with_index(1) do |commercial, index|
-        %li{class: "#{'active' if (index == 1)}"}
-          %a{ href: "##{index}", role: 'tab', 'data-toggle': 'tab' }
-            = commercial.title || index
-    .tab-content
-      - commercials.each.with_index(1) do  |commercial, index|
-        - if index == 1
-          .tab-pane.active{ id: index }
-            = render 'shared/media_item', commercial: commercial, cache: true
-        - else
-          .tab-pane{ id: index }
-            = render 'shared/media_item', commercial: commercial, cache: true
+  %ul.nav.nav-tabs{ role: 'tablist' }
+    - commercials.each.with_index(1) do |commercial, index|
+      %li{class: "#{'active' if (index == 1)}"}
+        %a{ href: "##{index}", role: 'tab', 'data-toggle': 'tab' }
+          = commercial.title || index
+  .tab-content
+    - commercials.each.with_index(1) do |commercial, index|
+      .tab-pane{ id: index, class: "#{'active' if (index == 1)}" }
+        = render 'shared/media_item', commercial: commercial, cache: true
