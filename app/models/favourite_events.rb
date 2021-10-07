@@ -10,8 +10,6 @@
 #  index_events_users_on_event_id  (event_id)
 #  index_events_users_on_user_id   (user_id)
 #
-# Tracks status of favouriting an event.
-#
 class FavouriteEvents < ApplicationRecord
   self.table_name = 'events_users'
 end

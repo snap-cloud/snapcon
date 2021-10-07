@@ -51,6 +51,6 @@ class CommercialsController < ApplicationController
   end
 
   def commercial_params
-    params.require(:commercial).permit(:url)
+    params.require(:commercial).permit(:title, :url)
   end
 end

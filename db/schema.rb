@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_04_01_050437) do
+ActiveRecord::Schema.define(version: 2021_09_21_221059) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(version: 2021_04_01_050437) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string "url"
+    t.string "title"
   end
 
   create_table "conferences", force: :cascade do |t|
