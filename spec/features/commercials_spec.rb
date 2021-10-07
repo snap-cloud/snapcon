@@ -23,6 +23,7 @@ feature Commercial do
 
     scenario 'adds, updates, deletes of a conference', feature: true, js: true do
       # Create valid commercial
+      fill_in 'commercial_title', with: 'My Cool Talk!'
       fill_in 'commercial_url', with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
       click_button 'Save Materials'
       page.find('#flash')
@@ -90,12 +91,14 @@ feature Commercial do
                           commercialable_type: 'Event')
       visit edit_conference_program_proposal_path(conference.short_title, event.id)
       click_link 'Materials'
+      fill_in "commercial_title_#{commercial.id}", with: 'My Cool Talk!'
       fill_in "commercial_url_#{commercial.id}", with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
       click_button 'Update'
       page.find('#flash')
       expect(flash).to eq('Materials were successfully updated.')
       expect(event.commercials.count).to eq(1)
       commercial.reload
+      expect(commercial.title).to eq('My Cool Talk!')
       expect(commercial.url).to eq('https://www.youtube.com/watch?v=M9bq_alk-sw')
     end
 
@@ -106,6 +109,7 @@ feature Commercial do
                           url:                 'https://www.youtube.com/watch?v=BTTygyxuGj8')
       visit edit_conference_program_proposal_path(conference.short_title, event.id)
       click_link 'Materials'
+      fill_in 'commercial_title', with: 'My Cool Talk!'
       fill_in "commercial_url_#{commercial.id}", with: 'invalid_commercial_url'
       click_button 'Update'
       find('#flash')
