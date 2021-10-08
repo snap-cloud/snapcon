@@ -167,7 +167,7 @@ feature Splashpage do
 
   context 'clarify registration status' do
     let!(:splashpage) { create(:splashpage, conference: conference, public: true)}
-    let!(:ticket_1) { create(:ticket, registration_ticket: true) }
+    let!(:ticket_1) { create(:ticket, registration_ticket: true, conference: conference) }
     let!(:free_ticket) { create(:ticket, price_cents: 0) }
 
     scenario 'user signed in with no tickets', feature: true do
