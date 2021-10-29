@@ -128,9 +128,6 @@ end
 # as date picker
 gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
-# for switch checkboxes
-gem 'bootstrap-switch-rails', '~> 3.0.0'
-
 # data tables
 gem 'ajax-datatables-rails'
 gem 'jquery-datatables'
