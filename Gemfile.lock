@@ -338,7 +338,7 @@ GEM
       ruby2_keywords (~> 0.0.1)
     nenv (0.3.0)
     netrc (0.11.0)
-    nio4r (2.5.7)
+    nio4r (2.5.8)
     nokogiri (1.11.4)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
@@ -439,7 +439,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.10)
     public_suffix (4.0.6)
-    puma (5.3.1)
+    puma (5.5.1)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -774,7 +774,7 @@ DEPENDENCIES
   pronto-rubocop
   pry
   pry-byebug
-  puma (~> 5.3)
+  puma (~> 5.5)
   rails (~> 5.2)
   rails-assets-bootstrap-markdown!
   rails-assets-bootstrap-select!
