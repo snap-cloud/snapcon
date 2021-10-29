@@ -1,3 +1,6 @@
+def next?
+  File.basename(__FILE__) == "Gemfile.next"
+end
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
@@ -9,14 +12,19 @@ if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
   abort "Bundler version >= 1.8.4 is required"
 end
 
-gem 'rails', '~> 5.2'
+# as web framework
+if next?
+  gem 'rails', '~> 6'
+else
+  gem 'rails', '~> 5.2'
+end
 
 # Use Puma as the app server
 gem 'puma', '~> 5.3'
 
 # respond_to methods have been extracted to the responders gem
 # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#responders
-gem 'responders', '~> 2.0'
+gem 'responders', '~> 3.0'
 
 # as supported databases
 gem 'pg'
@@ -46,6 +54,7 @@ gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-openid'
+gem 'omniauth-rails_csrf_protection'
 
 # Bot-filtering
 gem 'recaptcha', require: 'recaptcha/rails'
@@ -146,7 +155,6 @@ gem 'prawn-rails'
 gem 'rqrcode'
 
 # to render XLS spreadsheets
-gem 'caxlsx'
 gem 'caxlsx_rails'
 
 # Application Monitoring
@@ -182,6 +190,9 @@ gem 'money-rails'
 
 # for lists
 gem 'acts_as_list'
+
+# for switch checkboxes
+gem 'bootstrap-switch-rails', '~> 3.3.5'
 
 # for parsing OEmbed data
 gem 'ruby-oembed'
@@ -296,4 +307,6 @@ end
 group :development, :test do
   # as development/test database
   gem 'sqlite3'
+  # to test new rails version
+  gem 'next_rails'
 end

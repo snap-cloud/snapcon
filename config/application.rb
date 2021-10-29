@@ -1,46 +1,22 @@
-require File.expand_path('../boot', __FILE__)
+require_relative 'boot'
 
 require 'rails/all'
-ActiveSupport::Deprecation.debug = true if Rails.env.test?
-include ActionView::Helpers::NumberHelper
 
-if defined?(Bundler)
-  # If you precompile assets before deploying to production, use this line
-  Bundler.require(*Rails.groups(assets: %w(development test)))
-  # If you want your assets lazily compiled in production, use this line
-  # Bundler.require(:default, :assets, Rails.env)
-end
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
 
 module Osem
   class Application < Rails::Application
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults 5.0
 
-    # Custom directories with classes and modules you want to be autoloadable.
-    # config.autoload_paths += %W(#{config.root}/extras)
-
-    # Only load the plugins named here, in the order given (default is alphabetical).
-    # :all can be used as a placeholder for all plugins not explicitly named.
-    # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
-
-    # Activate observers that should always be running.
-    # config.active_record.observers = :cacher, :garbage_collector, :forum_observer
-
-    # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
-    # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
-    config.time_zone = (ENV['OSEM_TIME_ZONE'] || 'UTC')
-
-    # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
-    # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
-    # config.i18n.default_locale = :de
-
-    # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = 'utf-8'
-
-    # Configure sensitive parameters which will be filtered from the log file.
-    config.filter_parameters += [:password]
-
+    # Configuration for the application, engines, and railties goes here.
+    #
+    # These settings can be overridden in specific environments using the files
+    # in config/environments, which are processed later.
+    #
+    config.time_zone = ENV.fetch('OSEM_TIME_ZONE') { 'UTC' }
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true
 
@@ -72,20 +48,14 @@ module Osem
       default_color:         (ENV['DEFAULT_COLOR'] || '#0B3559')
     }
 
-    config.before_configuration do
-      env_file = File.join(Rails.root, 'config', 'local_env.yml')
-      if File.exist?(env_file)
-        YAML.safe_load(File.open(env_file)).each do |key, value|
-          ENV[key.to_s] = value
-        end
-      end
-    end
-
     # Before Moving to Webpack, you can add assets to package.json
     config.assets.paths << Rails.root.join('node_modules')
 
     config.fullcalendar = {
       license_key: ENV['FULL_CALENDAR_LICENSE_KEY']
     }
+    config.active_record.sqlite3.represent_boolean_as_integer = false
+    # Require `belongs_to` associations by default. Previous versions had false.
+    config.active_record.belongs_to_required_by_default = false
   end
 end

@@ -49,10 +49,6 @@ describe Event do
   end
 
   describe 'validation' do
-    it 'has a valid factory' do
-      expect(build(:event)).to be_valid
-    end
-
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_presence_of(:abstract) }
     it { is_expected.to validate_presence_of(:program) }
@@ -336,22 +332,6 @@ describe Event do
       submitter = create(:user)
       submitted_event = create(:event, submitter: submitter)
       expect(submitted_event.submitter).to eq submitter
-    end
-  end
-
-  describe '#abstract_word_count' do
-    it 'counts words in abstract' do
-      event = build(:event)
-      expect(event.abstract_word_count).to eq(event.abstract.to_s.split.size)
-      event.update_attributes!(abstract: 'abstract.')
-      expect(event.abstract_word_count).to eq(1)
-    end
-
-    it 'counts 0 when abstract is empty' do
-      event = build(:event, abstract: nil)
-      expect(event.abstract_word_count).to eq(0)
-      event.abstract = ''
-      expect(event.abstract_word_count).to eq(0)
     end
   end
 

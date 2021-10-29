@@ -1,61 +1,42 @@
-name: Specs
+name: Next-rails
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
   workflow_dispatch:
 
 jobs:
-  linters:
-    continue-on-error: true
+  next-rails:
+    if: contains(github.head_ref, 'next-rails')
     runs-on: ubuntu-latest
-    env:
-      OSEM_RUBY_VERSION: 2.6.6
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.6.6
-          bundler-cache: true
-      - run: bundle exec rubocop
-      - run: bundle exec haml-lint app/views
-  spec:
-    continue-on-error: true
-    runs-on: ubuntu-latest
-    name: spec
+    name: next-rails
     env:
       OSEM_DB_ADAPTER: sqlite3
-      OSEM_RUBY_VERSION: 2.6.6
       RAILS_ENV: test
     strategy:
       matrix:
         suite: [models, features, controllers, ability, leftovers]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v2
+      - name: Sets env vars for next-rails
+        run: |
+          echo "BUNDLE_GEMFILE=Gemfile.next" >> $GITHUB_ENV
+          echo "BUNDLE_CACHE_PATH=vendor/cache.next" >> $GITHUB_ENV
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6.6
+          ruby-version: 2.5
           bundler-cache: true
-      - name: Use Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'
-      - name: Install JavaScript libraries via npm
-        run: npm install
       - name: Prepare spec
         run: |
           rm -f osem_test osem_development
           bundle exec rake db:setup --trace
           bundle exec bin/rails webdrivers:chromedriver:update
-          bundle exec rake factory_bot:lint RAILS_ENV=test
       - name: spec/${{ matrix.suite }}
         run: bundle exec rake spec:${{ matrix.suite }}
       - name: coverage upload ${{ matrix.suite }}
-        uses: codacy/codacy-coverage-reporter-action@v1
+        uses: codacy/codacy-coverage-reporter-action@master
         if: github.ref == 'refs/heads/master'
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}

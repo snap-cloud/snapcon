@@ -182,10 +182,11 @@ module FormatHelper
       superscript:                  true,
       no_intra_emphasis:            true,
       fenced_code_blocks:           true,
-      disable_indented_code_blocks: true
+      disable_indented_code_blocks: true,
+      safe_links_only:              true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(escape_html: escape_html), options)
-    markdown.render(text).html_safe
+    sanitize(markdown.render(text))
   end
 
   def markdown_hint(text='')
