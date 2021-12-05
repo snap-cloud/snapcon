@@ -57,7 +57,7 @@ describe Program do
 
     it { is_expected.to validate_numericality_of(:rating).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10).only_integer }
 
-    it { is_expected.to validate_numericality_of(:schedule_interval).is_greater_than_or_equal_to(5).is_less_than_or_equal_to(60) }
+    it { is_expected.to validate_numericality_of(:schedule_interval).is_greater_than_or_equal_to(1).is_less_than_or_equal_to(60) }
 
     describe 'schedule_interval_divisor_60' do
       it 'is valid, when schedule_interval is divisor of 60' do
