@@ -86,7 +86,7 @@ class Program < ApplicationRecord
 
   # validates :conference_id, presence: true, uniqueness: true
   validates :rating, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10, only_integer: true }
-  validates :schedule_interval, numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 60 }, presence: true
+  validates :schedule_interval, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 60 }, presence: true
   validate :schedule_interval_divisor_60
   validate :voting_start_date_before_end_date
   validate :voting_dates_exist
