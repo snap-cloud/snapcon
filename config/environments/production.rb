@@ -71,15 +71,16 @@ Rails.application.configure do
 
   if ENV["OSEM_REDIS_CACHE_STORE"]
     config.cache_store = :redis_cache_store, {
-      url: ENV["OSEM_REDIS_CACHE_STORE"],
-
-      reconnect_attempts: 1,   # Defaults to 0
-
-      error_handler: -> (method:, returning:, exception:) {
+      url:                ENV["OSEM_REDIS_CACHE_STORE"],
+      reconnect_attempts: 1, # Defaults to 0
+      error_handler:      lambda do |method:, returning:, exception:|
         # Report errors to Sentry as warnings
-        Raven.capture_exception exception, level: 'warning',
-          tags: { method: method, returning: returning }
-      }
+        Raven.capture_exception(
+          exception,
+          level: 'warning',
+          tags:  { method: method, returning: returning }
+        )
+      end
     }
   end
 

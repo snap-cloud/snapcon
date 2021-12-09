@@ -31,7 +31,7 @@ class Room < ApplicationRecord
 
   # Cache Busting on the events page, touch all events.
   after_update lambda {
-    return unless url.present?
+    return unless previous_changes[:url]
 
     event_schedules.update_all(updated_at: Time.now)
   }
