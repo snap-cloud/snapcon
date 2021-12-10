@@ -106,8 +106,7 @@ class User < ApplicationRecord
                       [:database_authenticatable, :registerable,
                        :recoverable, :rememberable, :trackable, :validatable, :confirmable,
                        :omniauthable,
-                      #  omniauth_providers: [:suse, :google, :facebook, :github, :discourse]]
-                       omniauth_providers: [:google, :discourse]]
+                       omniauth_providers: [:suse, :google, :facebook, :github, :discourse]]
                     end
 
   devise(*devise_modules)
