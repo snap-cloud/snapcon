@@ -186,7 +186,8 @@ module FormatHelper
       safe_links_only:              true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(escape_html: escape_html), options)
-    sanitize(markdown.render(text))
+    # TODO-SNAPCON: Figure out sanitize()
+    markdown.render(text).html_safe
   end
 
   def markdown_hint(text='')
