@@ -4,6 +4,7 @@ end
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby ENV['TRAVIS_RUBY_VERSION'] || '~>2.6'
 
@@ -49,7 +50,7 @@ gem 'devise'
 gem 'devise_ichain_authenticatable'
 
 gem 'omniauth'
-gem 'omniauth-discourse'
+gem 'omniauth-discourse', github: 'snap-cloud/omniauth-discourse'
 gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'

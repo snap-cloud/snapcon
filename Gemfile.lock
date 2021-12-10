@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/snap-cloud/omniauth-discourse.git
+  revision: 96dbfcb55bf7bef5a33f83a4919879c891af367c
+  specs:
+    omniauth-discourse (1.1.0)
+      addressable (~> 2.7)
+      omniauth (~> 2.0)
+      rack
+
 GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
@@ -771,6 +780,7 @@ DEPENDENCIES
   next_rails
   nokogiri
   omniauth
+  omniauth-discourse!
   omniauth-facebook
   omniauth-github
   omniauth-google-oauth2
