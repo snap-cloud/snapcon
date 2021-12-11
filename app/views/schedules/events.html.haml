@@ -63,19 +63,19 @@
         - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
           = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
-      / confirmed events that are not scheduled
-      - if @unscheduled_events.any?
+    / confirmed events that are not scheduled
+    - if @unscheduled_events.any?
+      .col-xs-12.col-md-12
+        .date-content
+          %span.date-title#unscheduled
+            Unscheduled events
+          %a.pull-right{ title: "Go up", href: "#program" }
+            %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
+      - @unscheduled_events.each do |event|
         .col-xs-12.col-md-12
-          .date-content
-            %span.date-title#unscheduled
-              Unscheduled events
-            %a.pull-right{ title: "Go up", href: "#program" }
-              %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
-        - @unscheduled_events.each do |event|
-          .col-xs-12.col-md-12
-            .unscheduled-event
-              - cache [event, current_user, '#unscheduled#full#panel'] do
-                = render 'event', event: event, event_schedule: nil
+          .unscheduled-event
+            - cache [event, current_user, '#unscheduled#full#panel'] do
+              = render 'event', event: event, event_schedule: nil
 
 :javascript
   $('.program-selector').on('click', function(e) {
