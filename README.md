@@ -10,7 +10,7 @@
 ## Spring 2022 CS169L:
 [![Bluejay Dashboard](https://img.shields.io/badge/Bluejay-Dashboard_Snap!Con-blue.svg)](http://dashboard.bluejay.governify.io/dashboard/script/dashboardLoader.js?dashboardURL=https://reporter.bluejay.governify.io/api/v4/dashboards/tpa-CS169L-22-GH-yewchung_snapcon/main)
 [![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
-[![Github Actions CI](https://github.com/cs169L-spring2022-snapcon/snapcon/actions/workflows/rubyonrails.yml/badge.svg)](https://github.com/yewchung/snapcon/actions/workflows/rubyonrails.yml)
+[![build](https://github.com/cs169L-spring2022-snapcon/snapcon/actions/workflows/ruby.yml/badge.svg)](https://github.com/cs169L-spring2022-snapcon/snapcon/actions/workflows/ruby.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6b5dc427c6d2ae2b810e/maintainability)](https://codeclimate.com/github/cs169L-spring2022-snapcon/snapcon/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6b5dc427c6d2ae2b810e/test_coverage)](https://codeclimate.com/github/cs169L-spring2022-snapcon/snapcon/test_coverage)
 
