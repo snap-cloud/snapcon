@@ -4,7 +4,7 @@ project:
   teamId: 'Snap!Con'
   identities:
     pivotal: 'https://www.pivotaltracker.com/n/projects/2487653'
-    heroku: 'https://enigmatic-reef-42328.herokuapp.com/'
+    heroku: 'https://snap-con.herokuapp.com/'
   members:
     member1:
       name: 'Governify'
