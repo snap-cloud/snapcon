@@ -19,7 +19,7 @@ gem 'puma', '~> 5.5'
 gem 'responders', '~> 2.0'
 
 # as supported databases
-# gem 'pg'
+gem 'pg'
 gem 'pghero'
 # gem 'pg_query', '>= 0.9.0'
 
@@ -298,6 +298,6 @@ group :development, :test do
   gem 'sqlite3'
 end
 
-group :production do
-  gem 'pg'
-end
+# group :production do
+#   gem 'pg'
+# end
