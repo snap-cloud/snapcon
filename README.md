@@ -10,6 +10,8 @@
 ## Spring 2022 CS169L:
 [![Bluejay Dashboard](https://img.shields.io/badge/Bluejay-Dashboard_Snap!Con-blue.svg)](http://dashboard.bluejay.governify.io/dashboard/script/dashboardLoader.js?dashboardURL=https://reporter.bluejay.governify.io/api/v4/dashboards/tpa-CS169L-22-GH-yewchung_snapcon/main)
 
+[![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
+
 # [Snap!Con](https://snapcon.org)
 forked from:
 ## Open Source Event Manager - [osem.io](https://osem.io)
