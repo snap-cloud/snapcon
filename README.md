@@ -12,6 +12,8 @@
 
 [![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
 
+[![Github Actions CI](https://github.com/yewchung/snapcon/actions/workflows/rubyonrails.yml/badge.svg)](https://github.com/yewchung/snapcon/actions/workflows/rubyonrails.yml)
+
 # [Snap!Con](https://snapcon.org)
 forked from:
 ## Open Source Event Manager - [osem.io](https://osem.io)
