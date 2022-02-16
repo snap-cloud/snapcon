@@ -1,0 +1,18 @@
+project:
+  name: 'snapcon'
+  owner: 'CS169L-22'
+  teamId: 'Snap!Con'
+  identities:
+    pivotal: 'https://www.pivotaltracker.com/n/projects/2487653'
+    heroku: 'https://enigmatic-reef-42328.herokuapp.com/'
+  members:
+    member1:
+      name: 'Governify'
+      surname: 'Auditor' 
+      githubUsername: 'governifyauditor'
+      pivotalUsername: 'governifyauditor'
+      herokuEmail: 'governify.auditor@gmail.com'
+    member2:
+      name: 'Huy'
+      surname: 'Do' 
+      githubUsername: 'huydocs19'
