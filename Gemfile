@@ -19,8 +19,8 @@ gem 'puma', '~> 5.5'
 gem 'responders', '~> 2.0'
 
 # as supported databases
-gem 'pg'
-gem 'pghero'
+# gem 'pg'
+# gem 'pghero'
 # gem 'pg_query', '>= 0.9.0'
 
 # for tracking data changes
@@ -296,4 +296,8 @@ end
 group :development, :test do
   # as development/test database
   gem 'sqlite3'
+end
+
+group :production do
+  gem 'pg'
 end
