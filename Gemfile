@@ -20,7 +20,7 @@ gem 'responders', '~> 2.0'
 
 # as supported databases
 # gem 'pg'
-
+gem 'pghero'
 # gem 'pg_query', '>= 0.9.0'
 
 # for tracking data changes
@@ -300,5 +300,4 @@ end
 
 group :production do
   gem 'pg'
-  gem 'pghero'
 end
