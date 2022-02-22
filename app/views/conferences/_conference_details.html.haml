@@ -15,7 +15,7 @@
           - if conference.venue
             %p
               = "#{conference.city}/#{conference.country_name}"
-          = markdown(truncate(conference.description, length: 1000, separator: "\n"), escape_html=false)
+          = markdown(truncate(conference.description, length: 1000, separator: "\n", escape: false), escape_html=false)
         .col-md-2
           .btn-group-vertical
             - if !@conference || @conference != conference
