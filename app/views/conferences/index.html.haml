@@ -11,10 +11,10 @@
         .page-header
           %button{ type: 'button', class: 'btn btn-link btn-sm', 'data-toggle' => 'collapse', 'data-target' => '#antiquated', 'aria-expanded' => 'true', 'aria-controls' => 'antiquated'}
             %h2 Past Conferences
-            %span.notranslate
-              = "(#{@antiquated.count})"
-              %i.fa.fa-chevron-right{ style: 'display: none' }
-              %i.fa.fa-chevron-down
+              %span.notranslate
+                = "(#{@antiquated.count})"
+                %i.fa.fa-chevron-right{ style: 'display: none' }
+                %i.fa.fa-chevron-down
     #antiquated
       - @antiquated.each do |conference|
         = render '/conferences/conference_details', conference: conference
