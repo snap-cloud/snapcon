@@ -8,6 +8,8 @@ $( document ).ready(function() {
     let offset = $fullCalendar.data('tzOffset');
     let interval = $fullCalendar.data('minInterval');
     let localOffset = (new Date()).getTimezoneOffset()/60;
+    let event_num_days = $fullCalendar.data('end_date') - $fullCalendar.data('start_date')
+    let width = [4, event_num_days].min()
     let startTime = $fullCalendar.data('startHour') - offset - localOffset;
     let endTime = $fullCalendar.data('endHour') - offset - localOffset;
     let localName = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -63,7 +65,7 @@ $( document ).ready(function() {
       views: {
         resourceTimeGridFourDay: {
           type: 'resourceTimeGrid',
-          duration: { days: 4 },
+          duration: { days: width},
           buttonText: 'overview',
           datesAboveResources: true
         },
