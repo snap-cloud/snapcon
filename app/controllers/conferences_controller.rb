@@ -11,7 +11,7 @@ class ConferencesController < ApplicationController
 
   def index
     @current    = Conference.upcoming.reorder(start_date: :asc)
-    @antiquated = Conference.past
+    @antiquated = Conference.past.select { |conf| conf.splashpage&.public? }
     if @antiquated.empty? && @current.empty? && User.empty?
       render :new_install
     end

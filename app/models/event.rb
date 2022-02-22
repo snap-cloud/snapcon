@@ -410,6 +410,8 @@ class Event < ApplicationRecord
   end
 
   def before_end_of_conference
+    return if submitter&.is_admin?
+
     errors
         .add(:created_at, "can't be after the conference end date!") if program.conference&.end_date &&
         (Date.today > program.conference.end_date)
