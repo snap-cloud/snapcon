@@ -2,10 +2,10 @@
   .col-md-12
     .well
       .row
-        .col-md-2.text-left
-          = image_tag(conference.picture_url, class: 'img-responsive') if conference.picture?
-      .row
         .col-md-10
+          .row
+            .col-md-3.text-center
+              = image_tag(conference.picture_url, class: 'img-responsive') if conference.picture?
           %h3
             = conference.title.html_safe
             %small
@@ -16,7 +16,7 @@
               = "#{conference.city}/#{conference.country_name}"
           - unless conference.description.blank?
             %p
-              = truncate(markdown(conference.description, escape_html=false), espace: false) do
+              = truncate(markdown(conference.description, escape_html=false), length: 2500, separator: '<hr', escape: false) do
                 = link_to 'View More', conference_path(conference.short_title)
         .col-md-2
           .btn-group-vertical
