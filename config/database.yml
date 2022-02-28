@@ -20,6 +20,7 @@ default: &default
 development:
   <<: *default
   host: localhost
+  # username: <%= ENV['OSEM_DB_USER'] || 'postgres' %>
   database: osem_development
 
 # Warning: The database defined as "test" will be erased and

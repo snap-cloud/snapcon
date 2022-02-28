@@ -38,5 +38,5 @@ In addition to the environment variables detailed under [INSTALL.md#configuratio
 ### `MAILBLUSTER_API_KEY`
 A generated API key necessary to utilize the Mailbluster integration.
 
-### `FULL_CALENDAR_LICENSE_KEY`
+### `FULL_CALENDAR_LICENSE_KEY=GPL-My-Project-Is-Open-Source`
 If utilizing the FullCalendar display module, necessary to disable the license key warning.
