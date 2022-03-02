@@ -1,21 +1,22 @@
 $( document ).ready(function() {
-    let calendarEl = document.getElementById('vert-schedule-full-calendar');
+        let calendarEl = document.getElementById('vert-schedule-full-calendar');
     if (!calendarEl) return; //check that we need a vertical schedule
     let $fullCalendar = $('#fullcalendar');
 
-    let license_key = "<%= Rails.configuration.fullcalendar[:license_key] %>";
+    let license_key = "<%= Rails.configuration.fullcalendar[:license_key]%>";
 
     let offset = $fullCalendar.data('tzOffset');
     let interval = $fullCalendar.data('minInterval');
     let localOffset = (new Date()).getTimezoneOffset()/60;
-    let event_num_days = $fullCalendar.data('end_date') - $fullCalendar.data('start_date')
-    let width = [4, event_num_days].min()
     let startTime = $fullCalendar.data('startHour') - offset - localOffset;
     let endTime = $fullCalendar.data('endHour') - offset - localOffset;
+    let startDate = new Date($fullCalendar.data('startDate'));
+    let endDate = new Date($fullCalendar.data('endDate'));
+    let event_num_days = (endDate.getTime() - startDate.getTime())/ (1000 * 3600 * 24);
+    let width = Math.min(4, event_num_days);
     let localName = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // Program Hours * Minutes / Interval * Min Row Height for an event.
     let contentHeight = Math.max(400, (endTime - startTime) * 60 / interval * 16);
-
     // UTC JS offsets are "-1 *" of how they're displayed.
     let operator = localOffset < 0 ? '+' : '-';
     $('.js-localTimezone').text(`(${localName} UTC ${operator}${Math.abs(localOffset)})`);
@@ -65,7 +66,7 @@ $( document ).ready(function() {
       views: {
         resourceTimeGridFourDay: {
           type: 'resourceTimeGrid',
-          duration: { days: width},
+          duration: { days: width },
           buttonText: 'overview',
           datesAboveResources: true
         },
