@@ -22,7 +22,8 @@ Style/CommentAnnotation:
     - OPTIMIZE
     - HACK
     - REVIEW
-
+Layout/EndOfLine:
+   Enabled: False
 ##################### Metrics ##################################
 
 ##################### Rails ##################################
