@@ -35,7 +35,6 @@
 #
 #  index_conferences_on_organization_id  (organization_id)
 #
-# rubocop:disable Metrics/ClassLength
 class Conference < ApplicationRecord
   include RevisionCount
   require 'uri'
