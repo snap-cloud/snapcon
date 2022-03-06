@@ -47,14 +47,6 @@ describe Program do
   end
 
   describe 'validation' do
-    it 'has a valid factory' do
-      expect(build(:program)).to be_valid
-    end
-
-    it 'is valid for rating of 5' do
-      expect(build(:program, rating: 5)).to be_valid
-    end
-
     it { is_expected.to validate_numericality_of(:rating).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10).only_integer }
 
     it { is_expected.to validate_numericality_of(:schedule_interval).is_greater_than_or_equal_to(1).is_less_than_or_equal_to(60) }
@@ -222,8 +214,8 @@ describe Program do
       program.schedule_interval = 5
       program.save!
 
-      program.event_types.first.update_attributes length: 5
-      program.event_types.last.update_attributes length: 25
+      program.event_types.first.update_attribute(:length, 5)
+      program.event_types.last.update_attribute(:length, 25)
       create(:event_type, program: program, length: 30)
 
       program.schedule_interval = 10

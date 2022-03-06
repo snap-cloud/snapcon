@@ -1,22 +1,30 @@
+def next?
+  File.basename(__FILE__) == "Gemfile.next"
+end
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
 
-ruby ENV['TRAVIS_RUBY_VERSION'] || '~>2.6'
+ruby ENV['OSEM_RUBY_VERSION'] || '3.1.0'
 
 # rails-assets requires >= 1.8.4
 if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
   abort "Bundler version >= 1.8.4 is required"
 end
 
-gem 'rails', '~> 5.2'
+# as web framework
+if next?
+  gem 'rails', '~> 7.1'
+else
+  gem 'rails', '~> 7.0'
+end
 
 # Use Puma as the app server
 gem 'puma', '~> 5.5'
 
 # respond_to methods have been extracted to the responders gem
 # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#responders
-gem 'responders', '~> 2.0'
+gem 'responders', '~> 3.0'
 
 # as supported databases
 gem 'pg'
@@ -46,6 +54,7 @@ gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-openid'
+gem 'omniauth-rails_csrf_protection'
 
 # Bot-filtering
 gem 'recaptcha', require: 'recaptcha/rails'
@@ -79,8 +88,6 @@ gem 'uglifier', '>= 1.3.0'
 gem 'autoprefixer-rails'
 gem 'bootstrap-sass', '~> 3.4.0'
 gem 'cocoon'
-gem 'formtastic', '~> 3.1.5'
-gem 'formtastic-bootstrap'
 
 # as the JavaScript library
 # TODO: Consolidate with the rails-assets below or move to webpack...
@@ -141,12 +148,18 @@ gem 'country_select'
 # as PDF generator
 gem 'prawn-qrcode'
 gem 'prawn-rails'
+# FIXME: for prawn, matrix isn't in the default set of Ruby 3.1 anymore
+# see https://github.com/prawnpdf/prawn/commit/3658d5125c3b20eb11484c3b039ca6b89dc7d1b7
+gem 'matrix', '~> 0.4'
+
+# FIXME: for selenium-webdriver, rexml isn't in the default set of Ruby 3.1 anymore
+# see https://github.com/SeleniumHQ/selenium/commit/526fd9d0de60a53746ffa982feab985fed09a278
+gem 'rexml'
 
 # for QR code generation
 gem 'rqrcode'
 
 # to render XLS spreadsheets
-gem 'caxlsx'
 gem 'caxlsx_rails'
 
 # Application Monitoring
@@ -165,9 +178,6 @@ gem 'font-awesome-rails'
 
 # for markdown
 gem 'redcarpet'
-
-# for visitor tracking
-gem 'piwik_analytics', '~> 1.0.1'
 
 # for recurring jobs
 gem 'delayed_job_active_record'
@@ -266,7 +276,7 @@ group :test do
   # for mocking external requests
   gem 'webmock'
   # for mocking Stripe responses in tests
-  gem 'stripe-ruby-mock'
+  gem 'stripe-ruby-mock', '~> 3.1.0.rc3'
   # For validating JSON schemas
   gem 'json-schema'
   # For using 'assigns' in tests
@@ -296,4 +306,6 @@ end
 group :development, :test do
   # as development/test database
   gem 'sqlite3'
+  # to test new rails version
+  gem 'next_rails'
 end

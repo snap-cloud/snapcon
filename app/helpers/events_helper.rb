@@ -50,15 +50,6 @@ module EventsHelper
     end
   end
 
-  def track_selector_input(form)
-    if @program.tracks.confirmed.cfp_active.any?
-      form.input :track_id, as:            :select,
-                            collection:    @program.tracks.confirmed.cfp_active.pluck(:name, :id),
-                            include_blank: '(Please select)'
-    end
-  end
-
-  # TODO-SNAPCON: Move to admin helper
   def rating_tooltip(event, max_rating)
     "#{event.average_rating}/#{max_rating}, #{pluralize(event.voters.length, 'vote')}"
   end

@@ -67,10 +67,6 @@ describe User do
   let(:events_registration) { create(:events_registration, event: event1, registration: registration) }
 
   describe 'validation' do
-    it 'has a valid factory' do
-      expect(build(:user)).to be_valid
-    end
-
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_presence_of(:username) }
     it { is_expected.to validate_uniqueness_of(:username).ignoring_case_sensitivity }
@@ -168,7 +164,7 @@ describe User do
     describe '#attended_event?' do
       context 'user has attended to the event' do
         before do
-          events_registration.update_attributes(attended: true)
+          events_registration.update_attribute(:attended, true)
         end
 
         it 'returns true' do
@@ -251,7 +247,7 @@ describe User do
     end
 
     describe '.for_ichain_username' do
-      before { user.update_attributes(current_sign_in_at: Date.new(2014, 12, 12)) }
+      before { user.update_attribute(:current_sign_in_at, Date.new(2014, 12, 12)) }
 
       context 'user exists' do
         it 'updates last_sign_in_at of user' do
@@ -270,7 +266,7 @@ describe User do
       end
 
       context 'user is disabled' do
-        before { user.update_attributes(is_disabled: true) }
+        before { user.update_attribute(:is_disabled, true) }
 
         it 'User.for_ichain_username raises exception if user is disabled' do
           expect{ User.for_ichain_username(user.username, email: user.email) }
@@ -342,7 +338,7 @@ describe User do
       let(:conf2_organizer_role) { Role.find_by(name: 'organizer', resource: conference2) }
 
       before do
-        user.update_attributes(role_ids: [organizer_role.id, cfp_role.id, conf2_organizer_role.id])
+        user.update_attribute(:role_ids, [organizer_role.id, cfp_role.id, conf2_organizer_role.id])
       end
 
       it 'returns hash of role and conference' do
@@ -401,7 +397,7 @@ describe User do
       end
 
       context 'unconfirmed user' do
-        before { user.update_attributes(confirmed_at: nil) }
+        before { user.update_attribute(:confirmed_at, nil) }
 
         it 'returns false' do
           expect(user.confirmed?).to eq false

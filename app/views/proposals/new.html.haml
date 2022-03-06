@@ -25,42 +25,30 @@
               Already have a Snap!Con account?
       .tab-content
         .tab-pane.active{role: 'tabpanel', id: 'signup'}
-
-          = semantic_form_for(@event, url: @url) do |f|
-
-            = render partial: 'devise/shared/sign_up_form_embedded'
-
-            = f.inputs name: 'Proposal Information' do
-              = f.input :title, as: :string, required: true, input_html: { required: true }
-
-              - if @program.languages.present?
-                = f.input :language, as: :select,
-                  collection: @languages,
-                  include_blank: false, label: 'Language', input_html: { class: 'select-help-toggle' }
-
-              - if @program.difficulty_levels.present?
-                = f.input :difficulty_level, as: :select, collection: @program.difficulty_levels,
-                  input_html: { class: 'select-help-toggle' },
-                  include_blank: '(Please select)' if @conference.program.difficulty_levels.any?
-
-                - @program.difficulty_levels.each do |difficulty_level|
-                  %span.help-block.select-help-text.collapse.event_difficulty_level_id{ id: "#{difficulty_level.id}-help" }
-                    = difficulty_level.description
-
+          = form_for(@event, url: @url) do |f|
+            = render partial: 'devise/registrations/new_embedded'
+            %h4
+              Proposal Information
+            %hr
+            .form-group
+              = f.label :title
+              = f.text_field :title, required: true, class: 'form-control'
+            = f.label :event_type_id, 'Type'
+            = f.select :event_type_id, @program.event_types.map {|type| ["#{type.title} - #{show_time(type.length)}", type.id] }, { include_blank: false }, { class: 'select-help-toggle form-control' }
+            - if @program.languages.present?
+              = f.label :language
+              = f.select :language, @languages, include_blank: false, class: 'select-help-toggle form-control'
               = render 'submission_type_content_form', f: f, program: @program
-
-              - if @program.cfp.enable_registrations?
-                = f.input :require_registration, label: 'Require participants to register to your event'
-
               %p.text-right
-                = link_to '#description', 'data-toggle' => 'collapse', id: 'description_link' do
-                  Do you require something special?
+                = link_to '#description',  'data-toggle' => 'collapse', id: 'description_link' do
+                  Do you require something special for your event?
               .collapse#description
-                Tell us if you'd like to try something unique or interesting or need help in sharing your presentation online.
-                = f.input :description, input_html: { rows: 5 }, label: 'Requirements', placeholder: 'Eg. Whiteboard, printer, or something like that.'
-
+                .form-group
+                  = f.label :description, 'Requirements'
+                  = f.text_area :description, rows: 5, class: 'form-control'
+                  %span.help-block
+                    Tell us what you need for your event. A whiteboard, a printer or something like that.
             %p.text-right
-              = f.submit 'Submit Proposal', class: 'btn btn-success btn-lg'
-
+              = f.submit 'Create Proposal', class: 'btn btn-success'
         .tab-pane{role: 'tabpanel', id: 'signin'}
-          = render partial: 'devise/shared/sign_in_form_embedded'
+          = render partial: 'devise/sessions/new_embedded'

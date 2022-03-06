@@ -12,6 +12,7 @@ AllCops:
   MaxFilesInCache: 4000
   Exclude:
     - db/schema.rb
+  NewCops: enable
 
 #################### Style ###########################
 
@@ -23,23 +24,17 @@ Style/CommentAnnotation:
     - HACK
     - REVIEW
 
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
+
 ##################### Metrics ##################################
 
 ##################### Rails ##################################
 
-Rails:
-  Enabled: true
-
 ##################### RSpec ##################################
-
-FactoryBot/AttributeDefinedStatically:
-  Enabled: true
 
 RSpec/DescribeClass:
   Exclude:
     - "spec/views/**/*"
     - "spec/ability/*"
-
-Layout/AlignHash:
-  EnforcedHashRocketStyle: table
-  EnforcedColonStyle: table

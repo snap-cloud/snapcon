@@ -12,6 +12,9 @@ Osem::Application.routes.draw do
   end
 
   resources :users, except: [:new, :index, :create, :destroy] do
+    collection do
+      get :search
+    end
     resources :openids, only: :destroy
   end
 

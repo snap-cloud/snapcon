@@ -1,9 +1,6 @@
 -# PARTIAL FOR EVENT/PROPOSAL FORM
-
-= f.input :event_type_id, as: :select, include_blank: false, label: 'Type',
-  input_html: { class: 'select-help-toggle' },
-  collection: event_type_options(program.event_types)
-
+= f.label :event_type_id, 'Type'
+= f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
 
 - program.event_types.each do |event_type|
   .help-block.event_event_type_id.collapse{ id: "#{event_type.id}-help" }
@@ -17,9 +14,8 @@
   You are encouraged to include links or other references as appropriate.
 
 = f.label :abstract, class: 'sr-only'
-= f.input :abstract, required: true, label: false,
-  input_html: { rows: 5, data: { provide: 'markdown' } },
-  hint: markdown_hint
+= f.text_area :abstract, required: true, label: false, rows: 5, data: { provide: 'markdown' }
+%span.help-block = markdown_hint
 
 %p
   You have used
@@ -63,6 +59,5 @@
           %span.small You may want to use this if you have changed the submission type.
 
 = f.label :submission_text, class: 'sr-only'
-= f.input :submission_text, label: false,
-  input_html: { rows: 10, data: { provide: 'markdown' } },
-  hint: markdown_hint
+= f.text_area :submission_text,rows: 10, data: { provide: 'markdown' }
+%span.help-block = markdown_hint

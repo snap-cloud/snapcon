@@ -1,67 +1,82 @@
-= semantic_form_for(@event, url: @url) do |f|
-  = f.inputs name: 'Proposal Information' do
-    = f.input :title, as: :string, input_html: { autofocus: true }, required: true
+= form_for(@event, url: @url) do |f|
+  %h4
+    Proposal Information
+  %hr
+  .form-group
+    = f.label :title
+    %abbr{title: 'This field is required'} *
+    = f.text_field :title, autofocus: true, required: true, class: 'form-control'
+  .form-group
+    = f.label :subtitle
+    = f.text_field :subtitle, class: 'form-control'
 
-    = f.input :subtitle, as: :string
+  = speaker_selector_input f
 
-    = speaker_selector_input f
-
-    - if current_user.manages_volunteers?(@conference)
+  - if current_user.manages_volunteers?(@conference)
       = volunteer_selector_input f
 
-    = track_selector_input f
+  - if @program.tracks.confirmed.cfp_active.any?
+    = f.label :track_id, 'Track'
+    = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), include_blank: '(Please select)'
 
-    - if @program.languages.present?
-      = f.input :language, as: :select,
-        collection: @languages,
-        include_blank: false, label: 'Language', input_html: { class: 'select-help-toggle' }
+  - if @program.languages.present?
+    = f.label :language
+    = f.select :language, @languages, { include_blank: false }, { class: 'select-help-toggle form-control' }
 
-    - if @program.difficulty_levels.present?
-      = f.input :difficulty_level, as: :select, collection: @program.difficulty_levels,
-        input_html: { class: 'select-help-toggle' },
-        include_blank: '(Please select)' if @conference.program.difficulty_levels.any?
+  - if @conference.program.difficulty_levels.any?
+    = f.label :difficulty_level
+    = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{ |level| [level.title, level.id ] }, { include_blank: false }, { class: 'select-help-toggle form-control' }
+    - @conference.program.difficulty_levels.each do |difficulty_level|
+      %span{ class: 'help-block select-help-text collapse event_difficulty_level_id', id: "#{difficulty_level.id}-help" }
+        = difficulty_level.description
 
-      - @program.difficulty_levels.each do |difficulty_level|
-        %span{ class: 'help-block select-help-text collapse event_difficulty_level_id', id: "#{difficulty_level.id}-help" }
-          = difficulty_level.description
+  = render 'proposals/submission_type_content_form', f: f, program: @program
 
-    = render 'proposals/submission_type_content_form', f: f, program: @program
+  -# TODO-SNAPCON: Extract this to be a `conference_committee_role?`
+  - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
+    %br
+    = f.label :committee_review
+    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }
+    %span.help-block = markdown_hint('This field is shared with the submission authors.')
+  - elsif @event.committee_review.present?
+    %br
+    %strong.control-label Committee Review
+    %small
+      Use this feedback to improve your submission.
+    .well
+      = markdown(@event.committee_review)
 
-    -# TODO-SNAPCON: Extract this to be a `conference_committee_role?`
+  - if @program.cfp&.enable_registrations?
+      %h4
+        Event Registration
+      %hr
+      .checkbox
+        %label
+          = f.check_box :require_registration
+          Require participants to register to your event
+      .form-group
+        = f.number_field :max_attendees
+        %span.help-block
+          - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
+          = 'The maximum number of participants. ' + message
+
     - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
-      %br
-      = f.input :committee_review,
-                input_html: { rows: 5, data: { provide: 'markdown' } },
-                hint: markdown_hint('This field is shared with the submission authors.')
-    - elsif @event.committee_review.present?
-      %br
-      %strong.control-label Committee Review
-      %small
-        Use this feedback to improve your submission.
-      .well
-        = markdown(@event.committee_review)
-
-    - if @program.cfp&.enable_registrations?
-      = f.inputs 'Enable pre-registration' do
-        = f.input :require_registration, label: 'Require participants to register to your event'
-        - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
-        = f.input :max_attendees, hint: 'The maximum number of participants. ' + message
-
-    %p.text-right
-      = link_to '#description', 'data-toggle' => 'collapse' do
-        Do you require something special?
-    #description{ class: "collapse #{ 'in' if @event.description.present? }" }
-      = f.input :description, input_html: { rows: 5 }, label: 'Requirements', placeholder: 'Eg. Whiteboard, printer, or something like that.'
-
-    - if current_user.has_any_role? :admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference }
-      %p (Admin Only)
-      = f.input :is_highlight
+    .checkbox
+      %label
+        = f.check_box :is_highlight
+        Is a highlight?
+  %p.text-right
+    = link_to '#description', 'data-toggle' => 'collapse' do
+      Do you require something special for your event?
+  #description{ class: "collapse #{ 'in' if @event.description.present? }" }
+    .form-group
+      = f.label :description, 'Requirements'
+      = f.text_area :description, rows: 5, class: 'form-control'
+      %span.help-block
+        Eg. Whiteboard, printer, or something like that.
 
   %p.text-right
-    - if @event.new_record?
-      = f.submit 'Submit Proposal', class: 'btn btn-success'
-    - else
-      = f.submit 'Update Proposal', class: 'btn btn-primary'
+    = f.submit 'Update Proposal', class: 'btn btn-success'
 
 :javascript
   $(document).ready(function() {

@@ -23,11 +23,6 @@ describe Ticket do
   let(:user) { create(:user) }
 
   describe 'validation' do
-
-    it 'has a valid factory' do
-      expect(build(:ticket)).to be_valid
-    end
-
     it 'is not valid without a title' do
       should validate_presence_of(:title)
     end
@@ -104,7 +99,7 @@ describe Ticket do
     end
 
     context 'user has paid' do
-      before { ticket_purchase.update_attributes(paid: true) }
+      before { ticket_purchase.update_attribute(:paid, true) }
 
       it 'returns false' do
         expect(ticket.unpaid?(user)).to eq(false)
@@ -140,7 +135,7 @@ describe Ticket do
 
     context 'user has paid' do
       let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket, quantity: 20) }
-      before { ticket_purchase.update_attributes(paid: true) }
+      before { ticket_purchase.update_attribute(:paid, true) }
 
       it 'returns the correct value if the user has bought and paid for this ticket' do
         expect(ticket.quantity_bought_by(user, paid: true)).to eq(20)
@@ -165,7 +160,7 @@ describe Ticket do
 
     context 'user has paid' do
       let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket, quantity: 20) }
-      before { ticket_purchase.update_attributes(paid: true) }
+      before { ticket_purchase.update_attribute(:paid, true) }
 
       it 'returns the correct value if the user has bought this ticket' do
         expect(ticket.total_price(user, paid: true)).to eq(Money.new(100000, 'USD'))
@@ -223,7 +218,7 @@ describe Ticket do
 
       it 'should allow currency update' do
         free_ticket = Ticket.first
-        expect { free_ticket.update_attributes(price_currency: 'INR') }.to change { free_ticket.reload.price_currency }.from('USD').to('INR')
+        expect { free_ticket.update_attribute(:price_currency, 'INR') }.to change { free_ticket.reload.price_currency }.from('USD').to('INR')
       end
     end
   end

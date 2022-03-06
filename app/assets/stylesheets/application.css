@@ -1,18 +1,6 @@
 /*
  *= require strap-on
-
-*= require datatables/dataTables.bootstrap
- *= require datatables/extensions/Buttons/buttons.dataTables
- *= require datatables/extensions/Buttons/buttons.bootstrap
- *= require formtastic-bootstrap
-
- *= require selectize
- *= require selectize.bootstrap3
- *= require bootstrap-select
- *= require bootstrap-markdown
- *= require bootstrap-datetimepicker
- *= require leaflet
-
+ *= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
  *= require osem
  *= require osem-rating
  *= require osem-schedule
