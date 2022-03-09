@@ -297,7 +297,3 @@ group :development, :test do
   # as development/test database
   gem 'sqlite3'
 end
-
-group :production do
-  gem 'pg'
-end
