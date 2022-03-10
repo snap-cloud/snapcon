@@ -1,6 +1,8 @@
 /*
  *= require strap-on
- *= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
+ *= require datatables/dataTables.bootstrap
+ *= require datatables/extensions/Buttons/buttons.dataTables
+ *= require datatables/extensions/Buttons/buttons.bootstrap
  *= require osem
  *= require osem-rating
  *= require osem-schedule
