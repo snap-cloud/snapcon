@@ -49,7 +49,7 @@ gem 'devise'
 gem 'devise_ichain_authenticatable'
 
 gem 'omniauth'
-gem 'omniauth-discourse'
+gem 'omniauth-discourse', github: 'snap-cloud/omniauth-discourse'
 gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
