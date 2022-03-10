@@ -358,6 +358,7 @@ class Event < ApplicationRecord
   end
 
   def serializable_hash(options = {})
+    include ActionView::Helpers::SanitizeHelper
     super(options).merge('rendered_abstract' => markdown(abstract))
   end
 
