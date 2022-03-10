@@ -13,7 +13,7 @@
   = speaker_selector_input f
 
   - if current_user.manages_volunteers?(@conference)
-      = volunteer_selector_input f
+    = volunteer_selector_input f
 
   - if @program.tracks.confirmed.cfp_active.any?
     = f.label :track_id, 'Track'
@@ -47,24 +47,24 @@
       = markdown(@event.committee_review)
 
   - if @program.cfp&.enable_registrations?
-      %h4
-        Event Registration
-      %hr
-      .checkbox
-        %label
-          = f.check_box :require_registration
-          Require participants to register to your event
-      .form-group
-        = f.number_field :max_attendees
-        %span.help-block
-          - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
-          = 'The maximum number of participants. ' + message
+    %h4 Event Registration
+    %hr
+    .checkbox
+      %label
+        = f.check_box :require_registration
+        Require participants to register to your event
+    .form-group
+      = f.number_field :max_attendees
+      %span.help-block
+        - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
+        = 'The maximum number of participants. ' + message
 
-    - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
+  - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
     .checkbox
       %label
         = f.check_box :is_highlight
         Is a highlight?
+
   %p.text-right
     = link_to '#description', 'data-toggle' => 'collapse' do
       Do you require something special for your event?
