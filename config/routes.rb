@@ -234,7 +234,7 @@ Osem::Application.routes.draw do
   # Handle conferences on custom domains.
   # This *must* come before any other root definition.
   constraints DomainConstraint do
-    root to: 'conferences#show'
+    get '/', to: 'conferences#show'
   end
 
   unless ENV['OSEM_ROOT_CONFERENCE'].blank?
