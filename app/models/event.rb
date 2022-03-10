@@ -33,6 +33,7 @@
 #
 class Event < ApplicationRecord
   include ActionView::Helpers::NumberHelper # for number_with_precision
+  include ActionView::Helpers::SanitizeHelper
   include ActiveRecord::Transitions
   include RevisionCount
   include FormatHelper
@@ -358,7 +359,6 @@ class Event < ApplicationRecord
   end
 
   def serializable_hash(options = {})
-    include ActionView::Helpers::SanitizeHelper
     super(options).merge('rendered_abstract' => markdown(abstract))
   end
 
