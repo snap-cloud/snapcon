@@ -84,23 +84,23 @@ describe ConferenceHelper, type: :helper do
     let!(:program) { conference2.program }
     let!(:selected_schedule) { create(:schedule, program: program) }
     let!(:scheduled_event1) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
     end
     let!(:current_time) { Time.now.in_time_zone(conference2.timezone) }
     let!(:event_schedule1) { create(:event_schedule, event: scheduled_event1, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S')) }
     let!(:scheduled_event2) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule2) { create(:event_schedule, event: scheduled_event2, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S')) }
     let!(:scheduled_event3) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule3) { create(:event_schedule, event: scheduled_event3, schedule: selected_schedule, start_time: (current_time - 1.hour).strftime('%a, %d %b %Y %H:%M:%S')) }
     let!(:scheduled_event4) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule4) { create(:event_schedule, event: scheduled_event4, schedule: selected_schedule, start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S')) }

@@ -11,13 +11,13 @@ describe FullCalendarFormatter do
   let!(:selected_schedule) { create(:schedule, program: program) }
   let!(:event_type1) { create(:event_type, color: '#ffffff') }
   let!(:event1) do
-    program.update_attributes!(selected_schedule: selected_schedule)
+    program.update!(selected_schedule: selected_schedule)
     create(:event, program: program, event_type: event_type1)
   end
   let!(:event_schedule1) { create(:event_schedule, event: event1, schedule: selected_schedule, room: room1) }
   let!(:event_type2) { create(:event_type, color: '#000000') }
   let!(:event2) do
-    program.update_attributes!(selected_schedule: selected_schedule)
+    program.update!(selected_schedule: selected_schedule)
     create(:event, program: program, room: room2, event_type: event_type2)
   end
   let!(:event_schedule2) { create(:event_schedule, event: event2, schedule: selected_schedule, room: room2) }

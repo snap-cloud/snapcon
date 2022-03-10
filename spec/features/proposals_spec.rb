@@ -217,7 +217,7 @@ feature Event do
     before(:each) do
       @program = conference.program
       @selected_schedule = create(:schedule, program: @program)
-      @program.update_attributes!(selected_schedule: @selected_schedule)
+      @program.update!(selected_schedule: @selected_schedule)
       @scheduled_event1 = create(:event, program: @program, state: 'confirmed', abstract: '`markdown`')
       @event_schedule1 = create(:event_schedule, event: @scheduled_event1, schedule: @selected_schedule, start_time: conference.start_hour + 1.hour)
       @registration = conference.register_user(participant)
@@ -285,19 +285,19 @@ feature Event do
     let!(:splashpage) { create(:full_splashpage, conference: conference1, public: true) }
 
     let!(:scheduled_event1) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event2) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event3) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event4) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:current_time) { Time.now.in_time_zone(conference1.timezone) }

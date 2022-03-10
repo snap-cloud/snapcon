@@ -88,19 +88,19 @@ feature Splashpage do
     let!(:splashpage) { create(:full_splashpage, conference: conference2, public: true)}
 
     let!(:scheduled_event1) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
     end
     let!(:scheduled_event2) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event3) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event4) do
-      program.update_attributes!(selected_schedule: selected_schedule)
+      program.update!(selected_schedule: selected_schedule)
       create(:event, program: program, state: 'confirmed')
     end
     let!(:current_time) { Time.now.in_time_zone(conference2.timezone) }
