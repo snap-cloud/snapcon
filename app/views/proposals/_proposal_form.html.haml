@@ -36,8 +36,8 @@
   - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
     %br
     = f.label :committee_review
-    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }
-    %span.help-block = markdown_hint('This field is shared with the submission authors.')
+    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }, class: 'form-control md-input'
+    %span.help-block= markdown_hint('This field is shared with the submission authors.')
   - elsif @event.committee_review.present?
     %br
     %strong.control-label Committee Review
