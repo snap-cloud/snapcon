@@ -12,7 +12,7 @@ describe FormatHelper, type: :helper do
     it 'should return HTML for header markdown' do
       expect(Redcarpet::Markdown).to receive(:new)
       .with(
-        Redcarpet::Render::HTML,
+        Redcarpet::Render::HTML(escape_html: true),
         autolink:            true,
         space_after_headers: true,
         tables:              true,
