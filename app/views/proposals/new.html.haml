@@ -40,7 +40,7 @@
               = f.select :language, @languages, include_blank: false, class: 'select-help-toggle form-control'
               = render 'submission_type_content_form', f: f, program: @program
               %p.text-right
-                = link_to '#description',  'data-toggle' => 'collapse', id: 'description_link' do
+                = link_to '#description', 'data-toggle': 'collapse', id: 'description_link' do
                   Do you require something special for your event?
               .collapse#description
                 .form-group

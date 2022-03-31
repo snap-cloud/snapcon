@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 describe UserDatatable do
-  subject!(:user_datatable) do
-    described_class.new(view)
+  subject! do
+    described_class.new({}, view_context: view)
   end
 
   let(:data_cols) do
@@ -97,22 +97,18 @@ describe UserDatatable do
     before { skip('Investigate CI failures') }
 
     it 'recordsTotal' do
-      skip('This fails since Ruby 2.5.8')
       expect(output[:recordsTotal]).to eq(1)
     end
 
     it 'recordsFiltered' do
-      skip('This fails since Ruby 2.5.8')
       expect(output[:recordsFiltered]).to eq(1)
     end
 
     it 'data length' do
-      skip('This fails since Ruby 2.5.8')
       expect(output[:data].length).to eq(1)
     end
 
     it 'has expected data columns' do
-      skip('This fails since Ruby 2.5.8')
       expect(output[:data].first.keys).to eq(data_cols)
     end
 
@@ -120,32 +116,26 @@ describe UserDatatable do
       let(:user_data) { output[:data].first }
 
       it 'id' do
-        skip('This fails since Ruby 2.5.8')
         expect(user_data[:id].to_i).to eq(user.id)
       end
 
       it 'name' do
-        skip('This fails since Ruby 2.5.8')
         expect(user_data[:name]).to eq(user.name)
       end
 
       it 'email' do
-        skip('This fails since Ruby 2.5.8')
         expect(user_data[:email]).to eq(user.email)
       end
 
       it 'confirmed_at' do
-        skip('This fails since Ruby 2.5.8')
         expect(Date.parse(user_data[:confirmed_at])).to eq(user.confirmed_at.to_date)
       end
 
       it 'attended' do
-        skip('This fails since Ruby 2.5.8')
         expect(user_data[:attended].to_i).to eq(user.attended_count)
       end
 
       it 'roles' do
-        skip('This fails since Ruby 2.5.8')
         expect(user_data[:roles]).to eq('None')
       end
     end

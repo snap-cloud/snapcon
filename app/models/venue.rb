@@ -42,7 +42,7 @@ class Venue < ApplicationRecord
 
   def country_name
     name = ISO3166::Country[country]
-    name&.name
+    name&.iso_short_name
   end
 
   def location?

@@ -51,4 +51,8 @@ class Survey < ActiveRecord::Base
       now <= end_date
     end
   end
+
+  def closed?
+    !active?
+  end
 end

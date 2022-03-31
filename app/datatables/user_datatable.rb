@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
-class UserDatatable < AjaxDatatablesRails::Base
+class UserDatatable < AjaxDatatablesRails::ActiveRecord
   extend Forwardable
 
   def_delegator :@view, :show_roles
   def_delegator :@view, :admin_user_path
   def_delegator :@view, :edit_admin_user_path
+
+  def initialize(params, opts = {})
+    @view = opts[:view_context]
+    super
+  end
 
   def view_columns
     # Declare strings in this format: ModelName.column_name
@@ -18,8 +23,7 @@ class UserDatatable < AjaxDatatablesRails::Base
       username:     { source: 'User.username' },
       attended:     { source: 'attended_count', searchable: false },
       roles:        { source: 'Role.name' },
-      view_url:     { source: 'User.id', searchable: false, orderable: false },
-      edit_url:     { source: 'User.id', searchable: false, orderable: false }
+      actions:      { source: 'User.id', searchable: false, orderable: false }
     }
   end
 

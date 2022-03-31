@@ -1,0 +1,27 @@
+:javascript
+  $(document).ready(function() {
+    $('.js-userSelector, #users_selectize').selectize({
+      persist: false,
+      create: false,
+      valueField: 'id',
+      labelField: 'username',
+      searchField: 'username',
+      load: function(query, callback) {
+        if (!query.length) return callback();
+        $.ajax({
+          url: "#{search_users_path}.json",
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            query: query,
+          },
+          error: function(res) {
+            callback();
+          },
+          success: function(res) {
+            callback(res.users);
+          }
+        });
+      }
+    });
+  });

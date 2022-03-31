@@ -5,7 +5,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV['OSEM_RUBY_VERSION'] || '3.1.0'
+ruby ENV['OSEM_RUBY_VERSION'] || '3.1.1'
 
 # rails-assets requires >= 1.8.4
 if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
@@ -20,7 +20,7 @@ else
 end
 
 # Use Puma as the app server
-gem 'puma', '~> 5.6'
+gem 'puma'
 
 # respond_to methods have been extracted to the responders gem
 # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#responders
@@ -126,9 +126,6 @@ end
 # as date picker
 gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
-# for switch checkboxes
-gem 'bootstrap-switch-rails', '~> 3.0.0'
-
 # data tables
 gem 'ajax-datatables-rails'
 gem 'jquery-datatables'
@@ -192,6 +189,9 @@ gem 'money-rails'
 
 # for lists
 gem 'acts_as_list'
+
+# for switch checkboxes
+gem 'bootstrap-switch-rails', '3.3.3' # Locked pending Bttstrp/bootstrap-switch#707
 
 # for parsing OEmbed data
 gem 'ruby-oembed'

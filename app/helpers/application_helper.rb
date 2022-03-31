@@ -125,28 +125,18 @@ module ApplicationHelper
     safe_join(event.speakers.map{ |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
   end
 
-  def speaker_selector_input(form)
-    user_selector_input(:speakers, form, '', true)
-  end
-
   def volunteer_links(event)
     safe_join(event.volunteers.map do |volunteer|
       link_to(volunteer.name, admin_user_path(volunteer))
     end, ', ')
   end
 
+  # TODO-SNAPCON: Migrate this like the speakers selector code.
   def volunteer_selector_input(form)
     user_selector_input(:volunteers, form, '', true)
   end
 
-  def responsibles_selector_input(form)
-    user_selector_input(
-      :responsibles,
-      form,
-      "The people responsible for the #{t 'booth'}. You can only select existing users."
-    )
-  end
-
+  # TODO-SNAPCON: Migrate this like the speakers selector code.
   def user_selector_input(field, form, _hint = '', multiple = true)
     users = User.where(is_disabled: false).pluck(:id, :name, :username, :email).map { |user| [user[0], user[1].blank? ? user[2] : user[1], user[2], user[3]] }.sort_by { |user| user[1].downcase }
     form.select(

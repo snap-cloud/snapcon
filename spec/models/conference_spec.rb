@@ -69,7 +69,7 @@ end
 
 describe Conference do
 
-  let(:subject) { create(:conference, start_date: Date.new(2014, 06, 30), end_date: Date.new(2014, 06, 30)) }
+  subject(:test_subject) { create(:conference, start_date: Date.new(2014, 06, 30), end_date: Date.new(2014, 06, 30)) }
 
   describe '#write_event_distribution_to_db' do
 
