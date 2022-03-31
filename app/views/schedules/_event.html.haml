@@ -22,8 +22,7 @@
           = event.title
           - if event.subtitle.present?
             %br
-            %small{ style: color_style }
-              = event.subtitle
+            %small= event.subtitle
 
       - if !condensed_view
         %span
