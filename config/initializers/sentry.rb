@@ -1,5 +1,5 @@
 Sentry.init do |config|
-  config.enabled_environments = %|production staging|
+  config.enabled_environments = %(production staging)
   config.dsn = ENV['SENTRY_DSN']
   # config.dsn = ENV.fetch('OSEM_SENTRY_DSN', Rails.application.secrets.sentry_dsn)
   config.breadcrumbs_logger = [:active_support_logger]

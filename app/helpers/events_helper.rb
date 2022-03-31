@@ -59,11 +59,11 @@ module EventsHelper
       [
         "#{type.title} - #{show_time(type.length)}",
         type.id,
-        data: {
+        { data: {
           min_words:    type.minimum_abstract_length,
           max_words:    type.maximum_abstract_length,
           instructions: type.submission_instructions
-        }
+        } }
       ]
     end
   end

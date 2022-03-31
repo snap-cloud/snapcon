@@ -147,7 +147,7 @@ module ApplicationHelper
     )
   end
 
-  def user_selector_input(field, form, hint = '', multiple = true)
+  def user_selector_input(field, form, _hint = '', multiple = true)
     users = User.where(is_disabled: false).pluck(:id, :name, :username, :email).map { |user| [user[0], user[1].blank? ? user[2] : user[1], user[2], user[3]] }.sort_by { |user| user[1].downcase }
     form.select(
       field,

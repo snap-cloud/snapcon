@@ -82,9 +82,7 @@ module ConferenceHelper
 
     # events_schedules have been sorted by start_time in selected_event_schedules
     happening_next_time = events_schedules[0].start_time
-    events_schedules = events_schedules.select { |s| s.start_time == happening_next_time }
-
-    events_schedules
+    events_schedules.select { |s| s.start_time == happening_next_time }
   end
 
   def load_happening_now

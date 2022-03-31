@@ -33,7 +33,7 @@ describe EventsHelper, type: :helper do
     describe 'returns nothing' do
       it "when the event isn't cancelled and is not a replacement" do
         event.state = 'confirmed'
-        expect(canceled_replacement_event_label(event, nil, 'text-class')).to eq nil
+        expect(canceled_replacement_event_label(event, nil, 'text-class')).to be_nil
       end
 
       it 'when the event is canceled' do

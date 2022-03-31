@@ -22,7 +22,7 @@ class AddOrganizationToVersions < ActiveRecord::Migration[5.2]
   def deconflate
     say 'deconflate'
 
-    PaperTrail::Version.where.not(conference_id: nil).where(item_type: %[Role UsersRole]).each do |version|
+    PaperTrail::Version.where.not(conference_id: nil).where(item_type: %(Role UsersRole)).each do |version|
       id = version.conference_id
 
       if Organization.exists?(id)

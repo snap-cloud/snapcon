@@ -41,22 +41,22 @@ require 'spec_helper'
 
 context 'Delegation' do
   subject do
-    FactoryBot.create(:conference, start_date: 1.month.from_now, end_date: 2.month.from_now)
+    create(:conference, start_date: 1.month.from_now, end_date: 2.month.from_now)
   end
 
   context 'Venue' do
     context 'when venue has not been set' do
       it 'the accessors should be nil' do
-        expect(subject.city).to eq(nil)
-        expect(subject.country_name).to eq(nil)
-        expect(subject.venue_name).to eq(nil)
-        expect(subject.venue_street).to eq(nil)
+        expect(subject.city).to be_nil
+        expect(subject.country_name).to be_nil
+        expect(subject.venue_name).to be_nil
+        expect(subject.venue_street).to be_nil
       end
     end
 
     context 'when venue has been set' do
       it 'should delegate to venue' do
-        venue = FactoryBot.create(:venue)
+        venue = create(:venue)
         subject.update(venue: venue)
         expect(subject.city).to eq(venue.city)
         expect(subject.country_name).to eq(venue.country_name)
@@ -780,7 +780,7 @@ describe Conference do
   end
 
   describe '#get_submission_line_colors' do
-    it ' returns correct values' do
+    it 'returns correct values' do
       result = []
       result.push(short_title: 'Submitted', color: 'blue')
       result.push(short_title: 'Confirmed', color: 'green')
