@@ -93,14 +93,6 @@ module ApplicationHelper
     end
   end
 
-  def redirect_back_or_to(options = {}, response_status = {})
-    if request.env['HTTP_REFERER']
-      redirect_back(fallback_location: root_path)
-    else
-      redirect_to options, response_status
-    end
-  end
-
   # TODO: Move to the event model.
   def concurrent_events(event)
     return nil unless event.scheduled? && event.program.selected_event_schedules
