@@ -14,7 +14,9 @@ GEM
       rails-assets-jquery (>= 1.9.1, < 4)
     rails-assets-bootstrap-markdown (2.10.0)
       rails-assets-bootstrap (~> 3)
-    rails-assets-bootstrap-select (1.13.10)
+    rails-assets-bootstrap-markdown (2.10.0)
+      rails-assets-bootstrap (~> 3)
+    rails-assets-bootstrap-select (1.13.3)
       rails-assets-bootstrap (>= 3.0.0)
       rails-assets-jquery (>= 1.9.1, < 4)
     rails-assets-date.format (1.2.3)
@@ -841,7 +843,7 @@ DEPENDENCIES
   pronto-rubocop
   pry
   pry-byebug
-  puma (~> 5.5)
+  puma (~> 5.6)
   rails (~> 7.0)
   rails-assets-bootstrap-markdown!
   rails-assets-bootstrap-select!
