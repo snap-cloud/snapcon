@@ -36,7 +36,7 @@ feature Commercial do
                         commercialable_type: 'Event')
     visit edit_conference_program_proposal_path(conference.short_title, event.id)
     click_link 'Materials'
-    within('.thumbnail') do
+    within('.panel') do
       fill_in 'commercial_url', with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
       # Workaround to enable the 'Create Commercial' button
       page.execute_script("$('#commercial_submit_action').prop('disabled', false)")
