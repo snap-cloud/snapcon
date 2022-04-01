@@ -388,6 +388,10 @@ class User < ApplicationRecord
     User.count == 1 && User.first.email == 'deleted@localhost.osem'
   end
 
+  def display_name
+    "#{name} (#{email}"
+  end
+
   private
 
   def setup_role

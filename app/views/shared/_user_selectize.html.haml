@@ -1,13 +1,13 @@
 :javascript
   $(document).ready(function() {
     $('.js-userSelector, #users_selectize').selectize({
-      persist: false,
-      create: false,
+      plugins: ['remove_button'],
       valueField: 'id',
       labelField: 'username',
-      searchField: 'username',
+      searchField: 'username, name, email',
       load: function(query, callback) {
-        if (!query.length) return callback();
+        console.log('loaded...')
+        /* if (!query.length) return callback(); */
         $.ajax({
           url: "#{search_users_path}.json",
           type: 'GET',
@@ -16,9 +16,11 @@
             query: query,
           },
           error: function(res) {
+            console.log('error', res)
             callback();
           },
           success: function(res) {
+            console.log('success', res)
             callback(res.users);
           }
         });

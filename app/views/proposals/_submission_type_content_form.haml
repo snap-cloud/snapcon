@@ -1,7 +1,3 @@
--# PARTIAL FOR EVENT/PROPOSAL FORM
-= f.label :event_type_id, 'Type'
-= f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
-
 - program.event_types.each do |event_type|
   .help-block.event_event_type_id.collapse{ id: "#{event_type.id}-help" }
     %strong Description
@@ -14,7 +10,7 @@
   You are encouraged to include links or other references as appropriate.
 
 = f.label :abstract, class: 'sr-only'
-= f.text_area :abstract, required: true, label: false, rows: 5, data: { provide: 'markdown' }, class: 'form-control md-input'
+= f.text_area :abstract, required: true, label: nil, rows: 5, data: { provide: 'markdown' }, class: 'form-control md-input'
 %span.help-block= markdown_hint
 
 %p
