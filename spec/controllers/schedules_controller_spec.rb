@@ -23,7 +23,7 @@ describe SchedulesController do
       end
 
       it 'has 200 status code' do
-        expect(response).to be_successful
+        expect(response).to have_http_status(:success)
       end
     end
 
@@ -61,7 +61,7 @@ describe SchedulesController do
       end
 
       it 'has 200 status code' do
-        expect(response).to be_success
+        expect(response).to have_http_status(:success)
       end
     end
 
@@ -71,7 +71,7 @@ describe SchedulesController do
       end
 
       it 'has 200 status code' do
-        expect(response).to be_success
+        expect(response).to have_http_status(:success)
       end
 
       it 'returns the events that are happening now' do

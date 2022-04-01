@@ -145,4 +145,9 @@
   margin: auto 3px;
   flex: 1;
   line-height: 1.4;
+
+  // Override Boostrap setting.
+  h3 small {
+    line-height: 1.4;
+  }
 }
