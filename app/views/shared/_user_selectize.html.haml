@@ -3,8 +3,8 @@
     $('.js-userSelector, #users_selectize').selectize({
       plugins: ['remove_button'],
       valueField: 'id',
-      labelField: 'username',
-      searchField: 'username, name, email',
+      labelField: 'display_name',
+      searchField: 'username, name, email ',
       load: function(query, callback) {
         console.log('loaded...')
         /* if (!query.length) return callback(); */

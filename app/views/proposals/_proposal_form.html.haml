@@ -15,7 +15,7 @@
       %p
         Current:
         = f.object.speakers.pluck(:username).join(', ')
-    = f.select :speaker_ids, [], {}, {  multiple: true, class: "form-control", id: "users_selectize", placeholder: "Speakers" }
+    = f.select :speaker_ids, [], {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
     %span.help-block
       The people responsible for the event, beside you. You can only select existing users.
 
