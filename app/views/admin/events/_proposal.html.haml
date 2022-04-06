@@ -72,9 +72,12 @@
           %td
             %b Submitter
           %td
-            = link_to @event.submitter.name, admin_user_path(@event.submitter)
-            - if @event.submitter.email_public
-              (#{mail_to(@event.submitter.email)})
+            - if @event.submitter
+              = link_to @event.submitter.name, admin_user_path(@event.submitter)
+              - if @event.submitter.email_public
+                (#{mail_to(@event.submitter.email)})
+            - else
+              %span.text-danger Unkown Submitter
         %tr
           %td
             %b Speakers
