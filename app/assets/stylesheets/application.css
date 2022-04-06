@@ -9,12 +9,12 @@
  *= require osem-dashboard
  *= require osem-splash
  *= require font-awesome
- *= require osem-fonts
  *= require bootstrap3-switch
  *= require osem-payments
  *= require osem-navbar
- *= require mastodon
- *= require conferences
+ *= require selectize
+ *= require selectize.bootstrap3
+ *= require bootstrap-select
 
  *= require fullcalendar-scheduler/main.css
 */
