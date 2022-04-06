@@ -3,11 +3,9 @@
     $('.js-userSelector, #users_selectize').selectize({
       plugins: ['remove_button'],
       valueField: 'id',
-      labelField: 'dropdown_display',
+      labelField: 'dropdwon_display',
       searchField: ['username', 'name', 'email'],
       load: function(query, callback) {
-        console.log('loaded...')
-        /* if (!query.length) return callback(); */
         $.ajax({
           url: "#{search_users_path}.json",
           type: 'GET',
@@ -16,11 +14,9 @@
             query: query,
           },
           error: function(res) {
-            console.log('error', res)
             callback();
           },
           success: function(res) {
-            console.log('success', res)
             callback(res.users);
           }
         });
