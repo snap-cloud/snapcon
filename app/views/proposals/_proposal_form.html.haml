@@ -15,9 +15,9 @@
       %p
         Current:
         = f.object.speakers.pluck(:username).join(', ')
-    = f.select :speaker_ids, [], {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
+    = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {},{ multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
     %span.help-block
-      The people responsible for the event, beside you. You can only select existing users.
+      The people responsible for the event. You can only select existing users.
 
   - if current_user.manages_volunteers?(@conference)
     = volunteer_selector_input f

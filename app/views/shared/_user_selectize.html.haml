@@ -4,7 +4,7 @@
       plugins: ['remove_button'],
       valueField: 'id',
       labelField: 'display_name',
-      searchField: 'username, name, email ',
+      searchField: ['username', 'name', 'email'],
       load: function(query, callback) {
         console.log('loaded...')
         /* if (!query.length) return callback(); */

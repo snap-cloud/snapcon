@@ -256,6 +256,12 @@ module EventsHelper
     "background-color: #{color}; color: #{contrast_color(color)};"
   end
 
+  def user_options_for_dropdown(event, column)
+    # TODO: Consider USERNAME?
+    users = event.send(column).pluck(:id, :name, :email)
+    options_for_select(users.map{ |u| ["#{u[1]} (#{u[2]})", u[0]] })
+  end
+
   private
 
   def calendar_event_text(event, event_schedule, conference)
