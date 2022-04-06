@@ -59,8 +59,8 @@
               Give a #{@ticket.title} Ticket
           .modal-body
             .form-group
-              = f.label :user, 'Search Users'
-              = f.select :user, [], {}, { multiple: false, class: "select-help-toggle js-userSelector form-control", placeholder: "Search users..." }
+              = f.label :user_id, 'Search Users'
+              = f.select :user_id, [], {}, { multiple: false, class: "select-help-toggle js-userSelector form-control", placeholder: "Search users..." }
               %span.help-block
                 Search for a user by name, email, or username.
           .modal-footer
