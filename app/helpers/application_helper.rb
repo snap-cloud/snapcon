@@ -122,31 +122,6 @@ module ApplicationHelper
     end, ', ')
   end
 
-  # TODO-SNAPCON: Migrate this like the speakers selector code.
-  def volunteer_selector_input(form)
-    user_selector_input(:volunteers, form, '', true)
-  end
-
-  # TODO-SNAPCON: Migrate this like the speakers selector code.
-  def user_selector_input(field, form, _hint = '', multiple = true)
-    users = User.where(is_disabled: false).pluck(:id, :name, :username, :email).map { |user| [user[0], user[1].blank? ? user[2] : user[1], user[2], user[3]] }.sort_by { |user| user[1].downcase }
-    form.select(
-      field,
-      # include_blank: true,
-      # label:         field.to_s.titleize,
-      # hint:          hint,
-      options_for_select(
-        users.map { |user| ["#{user[1]} (#{user[2]}) #{user[3]}", user[0]] },
-        (form.object.send(field)&.map(&:id) || form.object.send(field)&.id)
-      ),
-      {
-        class:       'select-help-toggle js-userSelector',
-        multiple:    multiple,
-        placeholder: (multiple ? 'Select users...' : 'Select a user...')
-      }
-    )
-  end
-
   def event_types_sentence(conference)
     conference.event_types.map { |et| et.title.pluralize }.to_sentence
   end

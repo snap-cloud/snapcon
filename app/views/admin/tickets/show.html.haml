@@ -60,7 +60,11 @@
               = @ticket.title
               Ticket
           .modal-body
-            = user_selector_input(:user, f, '', false)
+            .form-group
+              = f.label :user, 'Search Users'
+              = f.select :user, [], {}, { multiple: false, class: "select-help-toggle js-userSelector form-control", placeholder: "Search users..." }
+              %span.help-block
+                Search for a user by name or emai.
           .modal-footer
             = f.action :submit, as: :button, button_html: { class: 'btn btn-primary' }
 
