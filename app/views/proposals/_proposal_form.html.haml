@@ -11,16 +11,17 @@
     = f.text_field :subtitle, class: 'form-control'
   .form-group
     = f.label :speaker_ids, 'Speakers'
-    - if f.object.speakers.any?
-      %p
-        Current:
-        = f.object.speakers.pluck(:username).join(', ')
-    = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {},{ multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
+    = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
     %span.help-block
       The people responsible for the event. You can only select existing users.
 
   - if current_user.manages_volunteers?(@conference)
-    = volunteer_selector_input f
+    .form-group
+      = f.label :volunteer_ids, 'Volunteers'
+      = f.select :volunteer_ids, user_options_for_dropdown(@event, :volunteers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select volunteers..." }
+      %span.help-block
+        Assign volunteers to help run this session.
+
 
   - if @program.tracks.confirmed.cfp_active.any?
     .form-group

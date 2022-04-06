@@ -258,8 +258,8 @@ module EventsHelper
 
   def user_options_for_dropdown(event, column)
     # TODO: Consider USERNAME?
-    users = event.send(column).pluck(:id, :name, :email)
-    options_for_select(users.map{ |u| ["#{u[1]} (#{u[2]})", u[0]] })
+    users = event.send(column).pluck(:id, :name, :username, :email)
+    options_for_select(users.map{ |u| ["#{u[1]} (#{u[2]} #{u[3]})", u[0]] }, users.map(&:first))
   end
 
   private

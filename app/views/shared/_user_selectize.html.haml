@@ -3,7 +3,7 @@
     $('.js-userSelector, #users_selectize').selectize({
       plugins: ['remove_button'],
       valueField: 'id',
-      labelField: 'display_name',
+      labelField: 'dropdown_display',
       searchField: ['username', 'name', 'email'],
       load: function(query, callback) {
         console.log('loaded...')

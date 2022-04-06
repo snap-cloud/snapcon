@@ -3,6 +3,13 @@
  *= require datatables/dataTables.bootstrap
  *= require datatables/extensions/Buttons/buttons.dataTables
  *= require datatables/extensions/Buttons/buttons.bootstrap
+
+ *= require selectize
+ *= require selectize.bootstrap3
+ *= require bootstrap-markdown
+ *= require bootstrap-datetimepicker
+ *= require bootstrap-select
+
  *= require osem
  *= require osem-rating
  *= require osem-schedule
@@ -12,9 +19,6 @@
  *= require bootstrap3-switch
  *= require osem-payments
  *= require osem-navbar
- *= require selectize
- *= require selectize.bootstrap3
- *= require bootstrap-select
 
  *= require fullcalendar-scheduler/main.css
 */

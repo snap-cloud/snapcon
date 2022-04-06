@@ -388,8 +388,8 @@ class User < ApplicationRecord
     User.count == 1 && User.first.email == 'deleted@localhost.osem'
   end
 
-  def display_name
-    "#{name} (#{email}"
+  def dropdwon_display
+    "#{name} (#{username} #{email})"
   end
 
   private

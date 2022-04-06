@@ -31,7 +31,7 @@ class UsersController < ApplicationController
             'username ILIKE :search OR email ILIKE :search OR name ILIKE :search',
             search: "%#{params[:query]}%"
           ).as_json(only:
-            [:username, :id, :name, :email], methods: :display_name
+            [:username, :id, :name, :email], methods: :dropdwon_display
         )}
       end
     end
