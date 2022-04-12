@@ -14,7 +14,7 @@
       Program for #{@conference.title}
 
   %p.text-center
-    All Events are currently scheduled in #{@conference.timezone}.
+    All Events are currently scheduled in #{timezone_mapping(current_user) || @conference.timezone}.
   - if current_user && !@favourites
     %p.text-center
       Click the star next to each event to add it to #{link_to 'your personal schedule', events_conference_schedule_path(@conference.short_title, favourites: true)}.
@@ -28,7 +28,8 @@
     %ul.dropdown-menu
       - @dates.each do |date|
         %li.li-dropdown-program
-          = link_to date, "##{date}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
+          - new_date = current_user ? convert_timezone(date.to_datetime.change(hour: @conference.start_hour), @conference.timezone, current_user.timezone) || date : date
+          = link_to new_date.strftime('%Y-%m-%d'), "##{new_date.strftime('%Y-%m-%d')}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
       - if @unscheduled_events.any?
         %li.li-dropdown-program
           = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
@@ -45,7 +46,8 @@
     - date = nil
     - time = nil
     - @events_schedules.each do |event_schedule|
-      - start_ymd = event_schedule.start_time.strftime('%Y-%m-%d')
+      - new_start_time = current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) || event_schedule.start_time : event_schedule.start_time
+      - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
           .date-content
@@ -56,9 +58,9 @@
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
       .col-xs-12.col-md-1
         - if !event_schedule.start_time.strftime('%H:%M').eql?(time) || !start_ymd.eql?(date)
-          - time = event_schedule.start_time.strftime('%H:%M')
+          - time = new_start_time.strftime('%H:%M')
           = inyourtz(event_schedule.start_time, @conference.timezone) do
-            = time + ' ' + timezone_text(@conference)
+            = time + ' ' + timezone_text(current_user || @conference)
       .col-xs-12.col-md-11
         - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
           = render 'event', event: event_schedule.event, event_schedule: event_schedule
