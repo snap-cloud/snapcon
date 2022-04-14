@@ -17,6 +17,6 @@ class TicketsController < ApplicationController
   end
 
   def load_tickets
-    @tickets = @conference.tickets.visible
+    @tickets = @conference.tickets.visible.order(:title)
   end
 end
