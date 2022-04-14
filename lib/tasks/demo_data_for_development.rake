@@ -43,10 +43,12 @@ namespace :data do
       create(:event, program: program, title: 'Demo Unconfirmed Event', state: 'unconfirmed', abstract: 'This is a demo event instance in unconfirmed state.')
       create(:event, program: program, title: 'Demo Confirmed Unscheduled Event', state: 'confirmed', abstract: 'This is a demo event instance in a confirmed state.')
 
-      first_scheduled_event = create(:event, program: program, title: 'first_scheduled_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance.')
-      second_scheduled_event = create(:event, program: program, title: 'second_scheduled_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance.')
-      multiple_speaker_event = create(:event, program: program, title: 'multiple_speaker_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance having multiple speakers.')
-
+      panel = create(:event_type, title: 'Panel', color: '#CE4AD9', program: program)
+      lightning_talk = create(:event_type, title: 'Lightning Talk', color: '#05A178', program: program)
+      lecture = create(:event_type, title: 'Lecture', color: '#63C212', program: program)
+      first_scheduled_event = create(:event, program: program, title: 'first_scheduled_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance.', event_type: lecture)
+      second_scheduled_event = create(:event, program: program, title: 'second_scheduled_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance.', event_type: lightning_talk)
+      multiple_speaker_event = create(:event, program: program, title: 'multiple_speaker_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance having multiple speakers.', event_type: panel)
       create(:event_user, event: multiple_speaker_event, user: user1, event_role: 'speaker')
       create(:event_user, event: multiple_speaker_event, user: user2, event_role: 'speaker')
 
