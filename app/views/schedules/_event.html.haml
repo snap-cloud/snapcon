@@ -62,7 +62,7 @@
             = event.track.name
     - if event.superevent
       - @events_schedules.each do |subevent_schedule|
-        - if subevent_schedule.event.parent.eql?(event.id)
+        - if subevent_schedule.event.parent_id.eql?(event.id)
           .col-xs-12.col-md-11
             - cache [subevent_schedule, subevent_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
               = render 'event', event: subevent_schedule.event, event_schedule: subevent_schedule, is_brief: true
