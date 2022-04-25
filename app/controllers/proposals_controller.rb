@@ -37,6 +37,7 @@ class ProposalsController < ApplicationController
   def edit
     @url = conference_program_proposal_path(@conference.short_title, params[:id])
     @languages = @program.languages_list
+    @superevents = @program.events.find_by(superevent: true)
   end
 
   def create
