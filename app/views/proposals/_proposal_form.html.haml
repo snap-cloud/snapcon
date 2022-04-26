@@ -11,7 +11,7 @@
 
     = track_selector_input f
 
-    = f.checkbox :superevent
+    = f.check_box :superevent
 
     = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }
 
