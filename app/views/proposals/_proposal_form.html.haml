@@ -13,7 +13,7 @@
 
     = f.check_box :superevent
 
-    = f.select :parent_id, [["Parent Event",]].concat @superevents.map { |e| [e.title, e.id] }
+    = f.select :parent_id, [["Select a Parent Event", nil]].concat @superevents.map { |e| [e.title, e.id] }
 
     - if @program.languages.present?
       = f.input :language, as: :select,
