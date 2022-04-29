@@ -61,6 +61,7 @@
           .label{ style: css_background_color(event.track.color) }
             = event.track.name
       - if event.superevent
+        %br
         - @events_schedules.each do |subevent_schedule|
           - if subevent_schedule.event.parent_id.eql?(event.id)
             .col-xs-12.col-md-11
