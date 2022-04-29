@@ -11,9 +11,13 @@
 
     = track_selector_input f
 
-    = f.check_box :superevent
+    = f.input :superevent, label: 'Is this a Parent Event?'
 
-    = f.select :parent_id, [["Select a Parent Event", nil]].concat @superevents.map { |e| [e.title, e.id] }
+    = f.input :parent_id, as: :select, 
+      collection: @superevents.map { |e| [e.title, e.id] }, 
+      include_blank: "Select a Parent Event",
+      label: 'Parent Event', 
+      input_html: { class: 'select-help-toggle' }
 
     - if @program.languages.present?
       = f.input :language, as: :select,
