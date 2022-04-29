@@ -60,7 +60,7 @@ module Admin
       @user = @event.submitter
       @url = admin_conference_program_event_path(@conference.short_title, @event)
       @languages = @program.languages_list
-      @superevents = @program.events.where(superevent: true)      
+      @superevents = @program.events.where(superevent: true)
     end
 
     def comment
