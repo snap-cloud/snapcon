@@ -83,7 +83,7 @@
         .row
           .col-md-12
             = markdown(@event.abstract)
-          - if event.superevent
+          - if @event.superevent
             .col-md-12
               - @event_schedule.each do |subevent_schedule|
                 - if subevent_schedule.event.parent_id.eql?(event.id)
