@@ -44,7 +44,7 @@ namespace :data do
       create(:event, program: program, title: 'Demo Confirmed Unscheduled Event', state: 'confirmed', abstract: 'This is a demo event instance in a confirmed state.')
 
       first_scheduled_event = create(:event, program: program, title: 'first_scheduled_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance.', superevent: true)
-      second_scheduled_event = create(:event, program: program, title: 'second_scheduled_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance.')
+      # second_scheduled_event = create(:event, program: program, title: 'second_scheduled_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance.')
       multiple_speaker_event = create(:event, program: program, title: 'multiple_speaker_event', state: 'confirmed', abstract: 'This is a demo scheduled event instance having multiple speakers.')
       first_scheduled_subevent = create(:event, program: program, title: 'first_scheduled_subevent', state: 'confirmed', abstract: 'This is a demo scheduled subevent instance having multiple speakers.', superevent: false, parent_id: first_scheduled_event.id)
       # second_scheduled_subevent = create(:event, program: program, title: 'second_scheduled_subevent', state: 'confirmed', abstract: 'This is a demo scheduled subevent instance having multiple speakers.', superevent: false, parent_id: first_scheduled_event.id)
@@ -55,16 +55,15 @@ namespace :data do
       create(:event_schedule, event: first_scheduled_event, schedule: selected_schedule, start_time: conference.start_date + conference.start_hour.hours, room: conference_rooms.first)
       create(:event_schedule, event: first_scheduled_subevent, schedule: selected_schedule, start_time: conference.start_date + conference.start_hour.hours, room: conference_rooms.first)
       # create(:event_schedule, event: second_scheduled_subevent, schedule: selected_schedule, start_time: conference.start_date + conference.start_hour.hours + 15.minutes, room: conference_rooms.first)
-      create(:event_schedule, event: second_scheduled_event, schedule: selected_schedule, start_time: conference.start_date + conference.start_hour.hours + 15.minutes, room: conference_rooms.second)
+      # create(:event_schedule, event: second_scheduled_event, schedule: selected_schedule, start_time: conference.start_date + conference.start_hour.hours + 15.minutes, room: conference_rooms.second)
       create(:event_schedule, event: multiple_speaker_event, schedule: selected_schedule, start_time: conference.start_date + conference.start_hour.hours + 30.minutes, room: conference_rooms.third)
       create(:event_schedule, event: first_scheduled_event, schedule: demo_schedule, start_time: conference.start_date + conference.start_hour.hours + 15.minutes, room: conference_rooms.third)
-      create(:event_schedule, event: second_scheduled_event, schedule: demo_schedule, start_time: conference.start_date + conference.start_hour.hours + 30.minutes, room: conference_rooms.third)
+      # create(:event_schedule, event: second_scheduled_event, schedule: demo_schedule, start_time: conference.start_date + conference.start_hour.hours + 30.minutes, room: conference_rooms.third)
       create(:event_schedule, event: multiple_speaker_event, schedule: demo_schedule, start_time: conference.start_date + conference.start_hour.hours, room: conference_rooms.first)
 
       create(:registration, user: user1, conference: conference)
       create(:registration, user: user2, conference: conference)
     end
-
 
     create(:admin, email: 'admin@osem.io', username: 'admin', password: 'password123', password_confirmation: 'password123')
     # This is a full conference demo instance that will happen in the future.
