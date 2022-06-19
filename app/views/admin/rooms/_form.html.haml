@@ -9,6 +9,8 @@
     = f.number_field :order, size: 5 # hint: 'Force the order of rooms in the schedule.'
     = f.label :url
     = f.url_field :url # hint: 'The URL is only visible to registered attendees.'
+    = f.label :discussion_url
+    = f.url_field :discussion_url # hint: 'A link to live chat during sessions in this room.'
 
   %p.text-right
     = f.submit nil, class: 'btn btn-primary'

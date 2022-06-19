@@ -1,0 +1,4 @@
+%div{style: 'display: flex; flex: 1 1 auto; height: 100%'}
+  %iframe{src: @room.url, with: '67%', style: 'flex-grow: 1'}
+  - if @room.discussion_url.present?
+    %iframe{src: @room.discussion_url, width: '33%'}

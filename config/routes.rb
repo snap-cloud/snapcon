@@ -214,6 +214,9 @@ Osem::Application.routes.draw do
         get :vertical_schedule
       end
     end
+    resources :rooms, only: [] do
+      get :live_session
+    end
   end
 
   namespace :api, defaults: {format: 'json'} do
