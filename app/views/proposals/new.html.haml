@@ -27,28 +27,6 @@
         .tab-pane.active{role: 'tabpanel', id: 'signup'}
           = form_for(@event, url: @url) do |f|
             = render partial: 'devise/registrations/new_embedded'
-            %h4
-              Proposal Information
-            %hr
-            .form-group
-              = f.label :title
-              = f.text_field :title, required: true, class: 'form-control'
-            = f.label :event_type_id, 'Type'
-            = f.select :event_type_id, @program.event_types.map {|type| ["#{type.title} - #{show_time(type.length)}", type.id] }, { include_blank: false }, { class: 'select-help-toggle form-control' }
-            - if @program.languages.present?
-              = f.label :language
-              = f.select :language, @languages, include_blank: false, class: 'select-help-toggle form-control'
-              = render 'submission_type_content_form', f: f, program: @program
-              %p.text-right
-                = link_to '#description', 'data-toggle': 'collapse', id: 'description_link' do
-                  Do you require something special for your event?
-              .collapse#description
-                .form-group
-                  = f.label :description, 'Requirements'
-                  = f.text_area :description, rows: 5, class: 'form-control'
-                  %span.help-block
-                    Tell us what you need for your event. A whiteboard, a printer or something like that.
-            %p.text-right
-              = f.submit 'Create Proposal', class: 'btn btn-success'
+            = render 'form', f: f
         .tab-pane{role: 'tabpanel', id: 'signin'}
           = render partial: 'devise/sessions/new_embedded'

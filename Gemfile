@@ -5,7 +5,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV['OSEM_RUBY_VERSION'] || '3.1.1'
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.1.2')
 
 # rails-assets requires >= 1.8.4
 if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
@@ -171,7 +171,7 @@ gem 'turbolinks'
 gem 'active_model_serializers'
 
 # as icon font
-gem 'font-awesome-rails'
+gem 'font-awesome-sass'
 
 # for markdown
 gem 'redcarpet'

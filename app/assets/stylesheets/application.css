@@ -15,10 +15,17 @@
  *= require osem-schedule
  *= require osem-dashboard
  *= require osem-splash
- *= require font-awesome
+ *= require osem-fonts
+ *= require bootstrap-markdown
+ *= require bootstrap-datetimepicker
+ *= require leaflet
  *= require bootstrap3-switch
  *= require osem-payments
  *= require osem-navbar
+ *= require selectize
+ *= require selectize.bootstrap3
+ *= require bootstrap-select
+ *= require conferences
 
  *= require fullcalendar-scheduler/main.css
 */

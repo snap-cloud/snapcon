@@ -46,16 +46,16 @@
     - if !condensed_view
       - if event_schedule.present?
         = inyourtz(event_schedule.start_time, event.timezone) do
-          %span.fa.fa-clock-o
+          %span.fa-solid.fa-clock
             .label.label-info
               = event_schedule.start_time.strftime('%l:%M %P')
               \-
               = "#{event_schedule.end_time.strftime('%l:%M %P')} #{timezone_text(event)}"
-        %span.fa.fa-map-marker
+        %span.fa-solid.fa-location-dot
           .label.label-info
             = event_schedule.room.name
       - if event.track
         .track
-          %span.fa.fa-road
+          %span.fa-solid.fa-road
           .label{ style: css_background_color(event.track.color) }
             = event.track.name

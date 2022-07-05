@@ -6,7 +6,7 @@
                                                         id: "omniauth-#{provider}",
                                                         title: "Your #{provider} login",
                                                         method: :post do
-          %i{class: "fa fa-#{provider}"}
+          %i{class: "fa-brands fa-#{provider}"}
       - else
         = link_to("user_#{provider}_omniauth_authorize".to_sym,
                   class: "btn btn-success btn-lg",
