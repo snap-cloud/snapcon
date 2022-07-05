@@ -1,8 +1,14 @@
 .row.text-center
+  .label      
+    = link_to "All Event Types", events_conference_schedule_path(@conference.short_title, favourites: @favourites),
+    id: "All Event Types", class: 'btn btn-xs', style: "#{css_background_color("#3b7ea1")} display: inline-block;"    
   - event_types.each_with_index do |type, index|
     - if (index % 5).zero? && index != 0
       %br
-    .label{ style: "#{css_background_color(type.color)} display: inline-block;" }
-      = "#{type.title} (#{type.length} minutes)"
+    .label
+      - name = "#{type.title} (#{type.length} minutes)"
+      = link_to name, events_conference_schedule_path(@conference.short_title, favourites: @favourites, event_type: type.title),
+      id: type.title, class: 'btn btn-xs', style: "#{css_background_color(type.color)} display: inline-block;"
+                
     &nbsp;
 %br
