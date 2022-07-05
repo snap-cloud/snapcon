@@ -251,11 +251,11 @@ end
 group :test do
   # as test framework
   gem 'capybara'
+  gem 'cucumber-rails', require: false
+  gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
   gem 'database_cleaner'
   gem 'geckodriver-helper'
   gem 'rspec-rails'
-  gem 'cucumber-rails', require: false
-  gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
   gem 'webdrivers'
   # for measuring test coverage
   gem 'simplecov-cobertura'

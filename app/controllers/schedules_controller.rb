@@ -49,15 +49,15 @@ class SchedulesController < ApplicationController
   def events
     @dates = @conference.start_date..@conference.end_date
     @events_schedules = @program.event_schedule_program_view || []
-    
+
     @unscheduled_events = if @program.selected_schedule
                             @program.events.confirmed - @events_schedules.map(&:event)
                           else
                             @program.events.confirmed
                           end
     event_type = params[:event_type]
-    if event_type && event_type != 'All Events'      
-      @events_schedules.select! {|event_schedule| event_schedule.event.event_type.title == event_type }
+    if event_type && event_type != 'All Events'
+      @events_schedules.select! { |event_schedule| event_schedule.event.event_type.title == event_type }
     end
 
     event_ids = @events_schedules.map { |es| es.event.id } + @unscheduled_events.map(&:id)
