@@ -8,6 +8,7 @@
       = semantic_form_for(@user, url: user_path(@user.id)) do |f|
         = f.input :name, as: :string, hint: 'This is your real name.'
         = f.input :nickname, as: :string, hint: 'This is how the other users see you, not your real name'
+        = f.input :timezone, as: :time_zone, hint: 'What timezone do you want to view this website in?'
         .control-label
           = "Current Avatar"
         = image_tag(@user.profile_picture(size: '48'), alt: "#{@user.name} profile")

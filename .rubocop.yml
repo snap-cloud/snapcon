@@ -23,6 +23,9 @@ Style/CommentAnnotation:
     - HACK
     - REVIEW
 
+Layout/EndOfLine:
+   EnforcedStyle: lf
+
 ##################### Metrics ##################################
 
 ##################### Rails ##################################

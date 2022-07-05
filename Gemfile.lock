@@ -395,7 +395,7 @@ GEM
       ruby-rc4
       ttfunk
     pg (1.2.3)
-    pghero (2.8.1)
+    pghero (2.8.2)
       activerecord (>= 5)
     piwik_analytics (1.0.2)
       actionpack
