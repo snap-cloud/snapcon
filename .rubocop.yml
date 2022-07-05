@@ -24,7 +24,7 @@ Style/CommentAnnotation:
     - REVIEW
 
 Layout/EndOfLine:
-   Enabled: lf
+   EnforcedStyle: lf
 
 ##################### Metrics ##################################
 
