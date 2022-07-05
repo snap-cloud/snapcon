@@ -17,7 +17,8 @@
       ⏰ This schedule uses your browser's local timezone.
       %span.js-localTimezone
 
-  = render 'event_types_key', event_types: @program.event_types
+  = render 'event_types_key', event_types: @program.event_types,
+    conference: @conference, favourites: @favourites
 
   #vert-schedule-full-calendar
   - cache [@conference, @rooms, @event_schedules, @day, @favourites, current_user] do

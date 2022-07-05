@@ -11,9 +11,10 @@
     = @conference.title
 
   %p.text-center
-    All Events are currently scheduled in #{@conference.timezone}.
+    All Events are currently scheduled in #{timezone_mapping(current_user) || @conference.timezone}.
 
-  = render 'event_types_key', event_types: @program.event_types
+  = render 'event_types_key', event_types: @program.event_types,
+    conference: @conference, favourites: @favourites
 
   .row
     .col-md-12
@@ -23,7 +24,8 @@
         %small
           This page was loaded at
           = inyourtz(Time.now, 'GMT') do
-            = Time.now.strftime('%a %b %d at %I:%M %P (%z)')
+            - now = current_user ? Time.now.in_time_zone(current_user.timezone) : Time.now
+            = now.strftime('%a %b %d at %I:%M %P (%z)')
           \.
 
   .row
@@ -31,12 +33,15 @@
     - date = nil
     - time = nil
     - @events_schedules.each do |event_schedule|
-      - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
+      - new_start_time = (current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) : nil)
+      || event_schedule.start_time
+      - start_ymd = new_start_time.strftime('%Y-%m-%d')
+      - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
           .date-content
-            %span.date-title{ id: event_schedule.start_time.strftime('%Y-%m-%d').to_s }
+            %span.date-title{ id: start_ymd }
               = inyourtz(event_schedule.start_time, @conference.timezone) do
-                = date = event_schedule.start_time.strftime('%Y-%m-%d')
+                = date = start_ymd
             %a.pull-right{ title: 'Go up', href: '#program' }
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
       - if event_schedule.start_time.strftime('%H:%M').eql?(time)
@@ -47,7 +52,7 @@
         .col-xs-12.col-md-1
           .start-time
             = inyourtz(event_schedule.start_time, @conference.timezone) do
-              = time = event_schedule.start_time.strftime('%H:%M')
+              = time = new_start_time.strftime('%H:%M')
         .col-xs-12.col-md-11
           .new-time-event
             - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
