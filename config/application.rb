@@ -4,8 +4,6 @@ require 'rails/all'
 ActiveSupport::Deprecation.debug = true if Rails.env.test?
 include ActionView::Helpers::NumberHelper
 
-# config.assets.initialize_on_precompile = false
-
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
   Bundler.require(*Rails.groups(assets: %w(development test)))
