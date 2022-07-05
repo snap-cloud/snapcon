@@ -19,7 +19,8 @@
     %p.text-center
       Click the star next to each event to add it to #{link_to 'your personal schedule', events_conference_schedule_path(@conference.short_title, favourites: true)}.
 
-  = render 'event_types_key', event_types: @program.event_types
+  = render 'event_types_key', event_types: @program.event_types,
+    conference: @conference, favourites: @favourites
 
   .dropdown.program-dropdown
     %button.btn.btn-default.dropdown-toggle{ type: "button", 'data-toggle': "dropdown" }

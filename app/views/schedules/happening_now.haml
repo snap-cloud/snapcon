@@ -13,7 +13,8 @@
   %p.text-center
     All Events are currently scheduled in #{timezone_mapping(current_user) || @conference.timezone}.
 
-  = render 'event_types_key', event_types: @program.event_types
+  = render 'event_types_key', event_types: @program.event_types,
+    conference: @conference, favourites: @favourites
 
   .row
     .col-md-12
