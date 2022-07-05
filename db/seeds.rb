@@ -12,7 +12,8 @@
 user = User.find_or_initialize_by(email: 'deleted@localhost.osem', name: 'User deleted',
                                   username: 'deleted_user', is_disabled: true,
                                   biography: 'Data is no longer available for deleted user.')
-user.password = Devise.friendly_token[0, 20]
+# user.password = Devise.friendly_token[0, 20]
+user.password = 'snapCon'
 user.skip_confirmation!
 user.save!
 

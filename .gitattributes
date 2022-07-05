@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 # .gitattributes snippet to force users to use same line endings for project.
         # 
         # Handle line endings automatically for files detected as text
         # and leave all files detected as binary untouched.
         * text  eol=lf   
+=======
+ # .gitattributes snippet to force users to use same line endings for project.
+        # 
+        # Handle line endings automatically for files detected as text
+        # and leave all files detected as binary untouched.
+        * text=auto
+>>>>>>> f545cfed0176824c9f005b332a05ccdf294bf016
 
         #
         # The above will handle all files NOT found below
@@ -48,4 +56,8 @@
         *.zip binary
         *.7z binary
         *.ttf binary
+<<<<<<< HEAD
         *.pyc binary   
+=======
+        *.pyc binary
+>>>>>>> f545cfed0176824c9f005b332a05ccdf294bf016
