@@ -1,6 +1,8 @@
-- tz_object = current_user&.timezone ? current_user : @conference
-- timezone = tz_object.timezone
-- provide :title, "#{@conference.title} Happening Now"
+:ruby
+  tz_object = current_user&.timezone ? current_user : @conference
+  timezone = tz_object.timezone
+  provide :title, "#{@conference.title} Happening Now"
+
 = content_for :splash_nav do
   %li
     = link_to('Schedule', events_conference_schedule_path(@conference))
@@ -30,7 +32,7 @@
     - date = nil
     - time = nil
     - @events_schedules.each do |event_schedule|
-      - new_start_time = (current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) : nil) || event_schedule.start_time
+      - new_start_time = current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) : event_schedule.start_time
       - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
