@@ -1,8 +1,5 @@
-:ruby
-  tz_object = current_user&.timezone ? current_user : @conference
-  timezone = tz_object.timezone
-  provide :title, "#{@conference.title} Happening Now"
-
+- timezone = display_timezone(current_user, @conference)
+- provide :title, "#{@conference.title} Happening Now"
 = content_for :splash_nav do
   %li
     = link_to('Schedule', events_conference_schedule_path(@conference))
@@ -32,7 +29,7 @@
     - date = nil
     - time = nil
     - @events_schedules.each do |event_schedule|
-      - new_start_time = current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) : event_schedule.start_time
+      - new_start_time = convert_timezone(event_schedule.start_time, @conference.timezone, timezone)
       - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
@@ -42,16 +39,16 @@
                 = date = start_ymd
             %a.pull-right{ title: 'Go up', href: '#program' }
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
-      - if event_schedule.start_time.strftime('%H:%M').eql?(time)
+      - if new_start_time.strftime('%H:%M').eql?(time)
         .col-xs-12.col-md-11.col-md-offset-1
           - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
             = render 'event', event: event_schedule.event, event_schedule: event_schedule
       - else
         .col-xs-12.col-md-1
           .start-time
-            - time = event_schedule.strftime('%H:%M')
+            - time = new_start_time.strftime('%H:%M')
             = inyourtz(event_schedule.start_time, timezone) do
-              = time + ' ' + timezone_text(tz_object)
+              = time + ' ' + Time.now.in_time_zone(timezone).strftime('%Z')
         .col-xs-12.col-md-11
           .new-time-event
             - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
