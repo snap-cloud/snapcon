@@ -88,8 +88,10 @@
               %dt Date:
               %dd
                 - if @event_schedule.present?
+                  - tz_object = current_user&.timezone ? current_user : @conference
+                  - start_time = convert_timezone(@event_schedule.start_time, @conference.timezone, tz_object.timezone)
                   = inyourtz(@event_schedule.start_time, @conference.timezone) do
-                    = @event_schedule.start_time.strftime('%Y %B %e - %H:%M') + ' ' + timezone_text(@event)
+                    = start_time.strftime('%Y %B %e - %H:%M') + ' ' + timezone_text(tz_object)
                 - else
                   Unscheduled
             .col-md-12

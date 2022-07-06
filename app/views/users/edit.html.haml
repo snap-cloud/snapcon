@@ -8,7 +8,14 @@
       = semantic_form_for(@user, url: user_path(@user.id)) do |f|
         = f.input :name, as: :string, hint: 'This is your real name.'
         = f.input :nickname, as: :string, hint: 'This is how the other users see you, not your real name'
-        = f.input :timezone, as: :time_zone, hint: 'What timezone do you want to view this website in?'
+        = f.label :timezone
+        %br
+        = f.select :timezone, time_zone_options_for_select(selected: @user.timezone), include_blank: true
+        %span.help-block
+          The timezone setting will update the event schedules to show using the time you selected.
+          Your browser is current set to
+          %span.js-localTimezone
+        %br
         .control-label
           = "Current Avatar"
         = image_tag(@user.profile_picture(size: '48'), alt: "#{@user.name} profile")
@@ -33,3 +40,13 @@
         %br
         %br
         = f.action :submit, as: :button, label: 'Update', button_html: {class: 'btn btn-primary'}
+
+:javascript
+  $(document).ready(function() {
+    $('#user_timezone').selectize({})
+  });
+
+    let localOffset = (new Date()).getTimezoneOffset()/60;
+    // UTC JS offsets are "-1 *" of how they're displayed.
+    let operator = localOffset < 0 ? '+' : '-';
+    $('.js-localTimezone').text(`(GMT ${operator}${Math.abs(localOffset)}).`);
