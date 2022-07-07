@@ -45,29 +45,32 @@ class Mailbot < ActionMailer::Base
   def acceptance_mail(event)
     @user = event.submitter
     @conference = event.program.conference
+    @speakers = event.speakers.map(&:email)
     @email_body = @conference.email_settings.generate_event_mail(event, @conference.email_settings.accepted_body)
 
-    mail(subject: @conference.email_settings.accepted_subject)
+    mail(subject: @conference.email_settings.accepted_subject, cc: @speakers)
   end
 
   def submitted_proposal_mail(event)
     @user = event.submitter
+    @speakers = event.speakers.map(&:email)
     @conference = event.program.conference
     @email_body = @conference.email_settings.generate_event_mail(event, @conference.email_settings.submitted_proposal_body)
 
-    mail(subject: @conference.email_settings.submitted_proposal_subject)
+    mail(subject: @conference.email_settings.submitted_proposal_subject, cc: @speakers)
   end
 
   def rejection_mail(event)
     @user = event.submitter
+    @speakers = event.speakers.map(&:email)
     @conference = event.program.conference
     @email_body = @conference.email_settings.generate_event_mail(event, @conference.email_settings.rejected_body)
 
-    mail(subject: @conference.email_settings.rejected_subject)
+    mail(subject: @conference.email_settings.rejected_subject, cc: @speakers)
   end
 
-  def confirm_reminder_mail(event)
-    @user = event.submitter
+  def confirm_reminder_mail(event, user: nil)
+    @user = user || event.submitter
     @conference = event.program.conference
     @email_body = @conference.email_settings.generate_event_mail(event, @conference.email_settings.confirmed_without_registration_body)
 
