@@ -36,7 +36,8 @@
       - if event.speakers.any?
         %h4
           = event.speaker_names
-      = join_event_link(event, event_schedule, current_user)
+      - if !condensed_view
+        = join_event_link(event, event_schedule, current_user)
       %p
         = truncate(markdown(event.abstract), length: abstract_length, escape: false) do
           %br
@@ -45,13 +46,20 @@
 
     - if !condensed_view
       - if event_schedule.present?
+        - new_start_time = current_user ? convert_timezone(event_schedule.start_time, event.timezone, current_user.timezone) || event_schedule.start_time: event_schedule.start_time
+        - new_end_time = current_user ? convert_timezone(event_schedule.end_time, event.timezone, current_user.timezone) || event_schedule.end_time: event_schedule.end_time
         = inyourtz(event_schedule.start_time, event.timezone) do
           %span.fa-solid.fa-clock
             .label.label-info
-              = event_schedule.start_time.strftime('%l:%M %P')
+              = new_start_time.strftime('%l:%M %P')
               \-
+<<<<<<< HEAD
               = "#{event_schedule.end_time.strftime('%l:%M %P')} #{timezone_text(event)}"
         %span.fa-solid.fa-location-dot
+=======
+              = "#{new_end_time.strftime('%l:%M %P')} #{timezone_text(current_user || event)}"
+        %span.fa.fa-map-marker
+>>>>>>> master
           .label.label-info
             = event_schedule.room.name
       - if event.track
@@ -59,3 +67,11 @@
           %span.fa-solid.fa-road
           .label{ style: css_background_color(event.track.color) }
             = event.track.name
+      - if event.superevent && event.subevents.present?
+        %br
+        %br
+        - event.subevents.each do |subevent|
+          .col-12
+            - subevent_schedule = subevent.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
+            - cache [subevent_schedule, subevent, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+              = render 'schedules/event', event: subevent, event_schedule: subevent_schedule, is_brief: true

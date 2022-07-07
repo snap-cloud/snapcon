@@ -37,6 +37,7 @@ class ProposalsController < ApplicationController
   def edit
     @url = conference_program_proposal_path(@conference.short_title, params[:id])
     @languages = @program.languages_list
+    @superevents = @program.events.where(superevent: true)
   end
 
   def create
@@ -209,8 +210,8 @@ class ProposalsController < ApplicationController
     # TODO-SNAPCON: Restrict committee review to admins.
     params.require(:event).permit(:event_type_id, :track_id, :difficulty_level_id,
                                   :title, :subtitle, :abstract, :submission_text, :description,
-                                  :require_registration, :max_attendees, :language,
-                                  :committee_review, speaker_ids: [], volunteer_ids: [])
+                                  :superevent, :parent_id, :require_registration, :max_attendees,
+                                  :language, :committee_review, speaker_ids: [], volunteer_ids: [])
   end
 
   def user_params

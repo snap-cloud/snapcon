@@ -33,6 +33,19 @@
             = state_dropdown(@event, @conference.short_title, @conference.email_settings)
         %tr
           %td
+            %b Is Parent Event?
+          %td
+            = event_switch_checkbox(@event, :superevent, @conference.short_title)
+        %tr
+          %td
+            %b Parent Event
+          %td
+            - if @event.parent_event.present?
+              = link_to(@event.parent_event.title, admin_conference_program_event_path(@conference, @event.parent_event))
+            - else
+              = '(None)'
+        %tr
+          %td
             %b Track
           %td
             = track_dropdown(@event, @tracks, @conference.short_title)
@@ -125,7 +138,7 @@
 
         %tr
           %td
-            %b Committee Review
+            %b Committee Feedback
           %td= markdown(@event.committee_review)
 
         - if @conference.program.rating_enabled?

@@ -15,6 +15,7 @@
     %span.help-block
       The people responsible for the event. You can only select existing users.
 
+  -# A proxy for conference organizer.
   - if current_user.manages_volunteers?(@conference)
     .form-group
       = f.label :volunteer_ids, 'Volunteers'
@@ -22,6 +23,21 @@
       %span.help-block
         Assign volunteers to help run this session.
 
+    .form-group
+      = f.label 'Is this a Parent Event?', for :superevent
+      = f.checkbox :superevent
+      .help-block
+        A parent event can contain subevents. Enable this for the primary lightning talk
+        session, poster sessions, etc.
+
+    .form-group
+      = f.label :parent_event
+      = f.select :parent_id, collection: @superevents.map { |e| [e.title, e.id] },
+        include_blank: "Select a Parent Event",
+        class: 'select-help-toggle'
+      .help-block
+        Designate a parent event so that this event appears scheduled "inside"
+        the parent event on the schedule.
 
   - if @program.tracks.confirmed.cfp_active.any?
     .form-group
@@ -57,6 +73,8 @@
       Use this feedback to improve your submission.
     .well
       = markdown(@event.committee_review)
+
+      = render 'proposals/submission_type_content_form', f: f, program: @program
 
   - if @program.cfp&.enable_registrations?
     %h4 Event Registration

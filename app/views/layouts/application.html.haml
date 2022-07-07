@@ -26,7 +26,8 @@
         = @conference.custom_css.html_safe
 
   %body{ class: ("conference-#{@conference.short_title}" if @conference) }
-    = render 'layouts/navigation', conference: @conference
+    - cache ['navigation', current_user, @conference, controller_name] do
+      = render 'layouts/navigation', conference: @conference
     -# Admin area
     - if controller.class.name.split("::").first=="Admin"
       = render 'layouts/admin'

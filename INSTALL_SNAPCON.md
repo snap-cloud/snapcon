@@ -1,5 +1,5 @@
 # Install Snap!Con
-Snap!Con runs Ruby 2.6.6 with Rails 5.2. The backend is provided by PostgreSQL. It is recommended to use RVM to manage the gems for this project. Some JavaScript dependencies are used, which need to be installed via NPM or Yarn.
+Snap!Con runs Ruby 2.7.6 with Rails 5.2. The backend is provided by PostgreSQL. It is recommended to use RVM to manage the gems for this project. Some JavaScript dependencies are used, which need to be installed via NPM or Yarn.
 
 ## Setup
 The recommended setup steps are as follows:

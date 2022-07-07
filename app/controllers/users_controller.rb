@@ -18,7 +18,7 @@ class UsersController < ApplicationController
     if @user.update(user_params)
       redirect_to @user, notice: 'User was successfully updated.'
     else
-      flash.now[:error] = "An error prohibited your Profile from being saved: #{@user.errors.full_messages.join('. ')}."
+      flash.now[:error] = "An error prohibited your profile from being saved: #{@user.errors.full_messages.join('. ')}."
       render :edit
     end
   end
@@ -40,8 +40,9 @@ class UsersController < ApplicationController
   private
 
   def user_params
+    params[:user][:timezone] = params[:user][:timezone].presence || nil
     params.require(:user).permit(:name, :biography, :nickname, :affiliation,
-                                 :picture, :picture_cache)
+                                 :picture, :picture_cache, :timezone)
   end
 
   # Somewhat of a hack: users/current/edit

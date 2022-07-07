@@ -12,7 +12,7 @@ class RoomsController < ApplicationController
     user_registered = @conference.user_registered?(current_user)
     can_view = user_registered || current_user.roles.where(id: @conference.roles).any?
 
-    if true || @room.url.present? && can_view
+    if @room.url.present? && can_view
       current_user.mark_attendance_for_conference(@conference)
     else
       redirect_to conference_schedule_path(@conference),

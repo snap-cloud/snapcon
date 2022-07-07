@@ -197,6 +197,47 @@ GEM
     crass (1.0.6)
     daemons (1.4.1)
     dalli (3.2.1)
+    cucumber (4.1.0)
+      builder (~> 3.2, >= 3.2.3)
+      cucumber-core (~> 7.1, >= 7.1.0)
+      cucumber-create-meta (~> 1.0.0, >= 1.0.0)
+      cucumber-cucumber-expressions (~> 10.1, >= 10.1.0)
+      cucumber-gherkin (~> 14.0, >= 14.0.1)
+      cucumber-html-formatter (~> 7.0, >= 7.0.0)
+      cucumber-messages (~> 12.2, >= 12.2.0)
+      cucumber-wire (~> 3.1, >= 3.1.0)
+      diff-lcs (~> 1.3, >= 1.3, < 1.4)
+      multi_test (~> 0.1, >= 0.1.2)
+      sys-uname (~> 1.0, >= 1.0.2)
+    cucumber-core (7.1.0)
+      cucumber-gherkin (~> 14.0, >= 14.0.1)
+      cucumber-messages (~> 12.2, >= 12.2.0)
+      cucumber-tag-expressions (~> 2.0, >= 2.0.4)
+    cucumber-create-meta (1.0.0)
+      cucumber-messages (~> 12.2, >= 12.2.0)
+      sys-uname (~> 1.2, >= 1.2.1)
+    cucumber-cucumber-expressions (10.3.0)
+    cucumber-gherkin (14.2.0)
+      cucumber-messages (~> 12.4, >= 12.4.0)
+    cucumber-html-formatter (7.2.0)
+      cucumber-messages (~> 12.4, >= 12.4.0)
+    cucumber-messages (12.4.0)
+      protobuf-cucumber (~> 3.10, >= 3.10.8)
+    cucumber-rails (2.5.1)
+      capybara (>= 2.18, < 4)
+      cucumber (>= 3.2, < 8)
+      mime-types (~> 3.3)
+      nokogiri (~> 1.10)
+      railties (>= 5.0, < 8)
+      rexml (~> 3.0)
+      webrick (~> 1.7)
+    cucumber-rails-training-wheels (1.0.0)
+      cucumber-rails (>= 1.1.1)
+    cucumber-tag-expressions (2.0.4)
+    cucumber-wire (3.1.0)
+      cucumber-core (~> 7.1, >= 7.1.0)
+      cucumber-cucumber-expressions (~> 10.1, >= 10.1.0)
+      cucumber-messages (~> 12.2, >= 12.2.0)
     dante (0.2.0)
     database_cleaner (2.0.1)
       database_cleaner-active_record (~> 2.0.0)
@@ -209,11 +250,6 @@ GEM
     delayed_job_active_record (4.1.7)
       activerecord (>= 3.0, < 8.0)
       delayed_job (>= 3.0, < 5)
-    delayed_job_web (1.4.4)
-      activerecord (> 3.0.0)
-      delayed_job (> 2.0.3)
-      rack-protection (>= 1.5.5)
-      sinatra (>= 1.4.4)
     devise (4.8.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -377,10 +413,9 @@ GEM
       money (~> 6.13)
       railties (>= 3.0)
     multi_json (1.15.0)
+    multi_test (0.1.2)
     multi_xml (0.6.0)
     multipart-post (2.1.1)
-    mustermann (1.1.1)
-      ruby2_keywords (~> 0.0.1)
     nenv (0.3.0)
     mysql2 (0.5.4)
     net-imap (0.2.3)
@@ -456,8 +491,6 @@ GEM
       ruby-rc4
       ttfunk
     pg (1.3.5)
-    pghero (2.8.2)
-      activerecord (>= 5)
     prawn (2.4.0)
       pdf-core (~> 0.9.0)
       ttfunk (~> 1.7)
@@ -657,11 +690,6 @@ GEM
       simplecov (~> 0.19)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    sinatra (2.2.0)
-      mustermann (~> 1.0)
-      rack (~> 2.2)
-      rack-protection (= 2.2.0)
-      tilt (~> 2.0)
     sixarm_ruby_unaccent (1.2.0)
     skylight (5.3.2)
       activesupport (>= 5.2.0)
@@ -723,6 +751,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     websocket (1.2.9)
+    webrick (1.7.0)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -759,11 +788,12 @@ DEPENDENCIES
   cocoon
   countable-rails
   country_select
+  cucumber-rails
+  cucumber-rails-training-wheels
   daemons
   dalli
   database_cleaner
   delayed_job_active_record
-  delayed_job_web
   devise
   devise_ichain_authenticatable
   dotenv-rails
@@ -803,7 +833,6 @@ DEPENDENCIES
   paper_trail
   pdf-inspector
   pg
-  pghero
   prawn-qrcode
   prawn-rails
   pronto

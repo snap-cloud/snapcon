@@ -51,7 +51,7 @@ module Admin
           @event_schedules += t.selected_schedule.event_schedules if t.selected_schedule
         end
         self_organized_tracks_events = Event.eager_load(event_users: :user).confirmed.where(track: @program.tracks.self_organized.confirmed)
-        @unscheduled_events = @program.events.confirmed - @schedule.events - self_organized_tracks_events
+        @unscheduled_events = (@program.events.confirmed + @program.events.unconfirmed) - @schedule.events - self_organized_tracks_events
         @dates = @conference.start_date..@conference.end_date
         @rooms = @conference.venue.rooms if @conference.venue
       end
