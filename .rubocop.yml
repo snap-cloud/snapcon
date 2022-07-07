@@ -12,6 +12,9 @@ AllCops:
   MaxFilesInCache: 4000
   Exclude:
     - db/schema.rb
+    - features/step_definitions/web_steps.rb
+    - features/support/selectors.rb
+    - lib/tasks/cucumber.rake
 
 #################### Style ###########################
 
@@ -22,6 +25,13 @@ Style/CommentAnnotation:
     - OPTIMIZE
     - HACK
     - REVIEW
+
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+Lint/AmbiguousRegexpLiteral:
+  Exclude:
+    - features/step_definitions/*
 
 ##################### Metrics ##################################
 

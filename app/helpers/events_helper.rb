@@ -203,12 +203,35 @@ module EventsHelper
     event.favourite_users.exists?(current_user.id)
   end
 
-  def timezone_offset(conference)
-    Time.now.in_time_zone(conference.timezone).utc_offset / 1.hour
+  # TODO-SNAPCON: These need to be refactored.
+  # It's not clear which should be an object vs when to use a tz string.
+  def display_timezone(user, conference)
+    return conference.timezone unless user
+
+    user.timezone.presence || conference.timezone
+  end
+
+  def timezone_offset(object)
+    Time.now.in_time_zone(object.timezone).utc_offset / 1.hour
   end
 
   def timezone_text(object)
     Time.now.in_time_zone(object.timezone).strftime('%Z')
+  end
+
+  # timezone: Eastern Time (US & Canada) (UTC -5)
+  def timezone_mapping(timezone)
+    return unless timezone
+
+    offset = Time.now.in_time_zone(timezone).utc_offset / 1.hour
+    text = Time.now.in_time_zone(timezone).strftime('%Z')
+    "#{text} (UTC #{offset})"
+  end
+
+  def convert_timezone(date, old_timezone, new_timezone)
+    if date && old_timezone && new_timezone
+      date.strftime('%Y-%m-%dT%H:%M:%S').in_time_zone(old_timezone).in_time_zone(new_timezone)
+    end
   end
 
   def join_event_link(event, event_schedule, current_user)

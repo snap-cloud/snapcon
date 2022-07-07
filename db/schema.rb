@@ -607,6 +607,7 @@ ActiveRecord::Schema.define(version: 2022_04_26_082022) do
     t.string "username"
     t.boolean "is_disabled", default: false
     t.string "picture"
+    t.string "timezone"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

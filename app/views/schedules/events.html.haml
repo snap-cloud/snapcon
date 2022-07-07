@@ -3,7 +3,6 @@
   %li
     = link_to('Schedule', events_conference_schedule_path(@conference))
 
-
 .container#program
   = render partial: 'schedule_tabs', locals: { active: 'program' }
 
@@ -13,13 +12,7 @@
     - else
       Program for #{@conference.title}
 
-  %p.text-center
-    All Events are currently scheduled in #{@conference.timezone}.
-  - if current_user && !@favourites
-    %p.text-center
-      Click the star next to each event to add it to #{link_to 'your personal schedule', events_conference_schedule_path(@conference.short_title, favourites: true)}.
-
-  = render 'event_types_key', event_types: @program.event_types
+  = render 'date_event_types', conference: @conference, favourites: @favourites
 
   .dropdown.program-dropdown
     %button.btn.btn-default.dropdown-toggle{ type: "button", 'data-toggle': "dropdown" }
@@ -28,37 +21,43 @@
     %ul.dropdown-menu
       - @dates.each do |date|
         %li.li-dropdown-program
-          = link_to date, "##{date}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
+          - new_date = current_user ? convert_timezone(date.to_datetime.change(hour: @conference.start_hour), @conference.timezone, current_user.timezone) || date : date
+          = link_to new_date.strftime('%Y-%m-%d'), "##{new_date.strftime('%Y-%m-%d')}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
       - if @unscheduled_events.any?
         %li.li-dropdown-program
           = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
 
-  - if @favourites && current_user &&  @events_schedules.empty?
+  - if @favourites && current_user && @events_schedules.empty?
     .row
       %strong
         You have no events on your agenda.
       %br
       %strong
         #{link_to 'View the full program', events_conference_schedule_path(@conference.short_title, favourites: false)} and add events to your schedule?
+
   .row
     / scheduled events
-    - date = nil
-    - time = nil
+    :ruby
+      date = nil
+      time = nil
+      timezone = current_user&.timezone.presence || @conference.timezone
     - @events_schedules.each do |event_schedule|
-      - start_ymd = event_schedule.start_time.strftime('%Y-%m-%d')
+      - new_start_time = current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) || event_schedule.start_time : event_schedule.start_time
+      - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
           .date-content
             %span.date-title{ id: start_ymd }
-              = inyourtz(event_schedule.start_time, @conference.timezone) do
+              = inyourtz(event_schedule.start_time, timezone) do
                 = date = start_ymd
             %a.pull-right{ title: "Go up", href: "#program" }
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
       .col-xs-12.col-md-1
         - if !event_schedule.start_time.strftime('%H:%M').eql?(time) || !start_ymd.eql?(date)
-          - time = event_schedule.start_time.strftime('%H:%M')
-          = inyourtz(event_schedule.start_time, @conference.timezone) do
-            = time + ' ' + timezone_text(@conference)
+          - time = new_start_time.strftime('%H:%M')
+          - tz_object = current_user&.timezone ? current_user : @conference
+          = inyourtz(event_schedule.start_time, timezone) do
+            = time + ' ' + timezone_text(tz_object)
       .col-xs-12.col-md-11
         - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
           = render 'event', event: event_schedule.event, event_schedule: event_schedule
