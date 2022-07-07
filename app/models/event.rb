@@ -74,6 +74,8 @@ class Event < ApplicationRecord
   belongs_to :difficulty_level
   belongs_to :program, touch: true
   belongs_to :room
+  # Multiple events can be contained within a larger parent event.
+  belongs_to :parent_event, class_name: 'Event', foreign_key: :parent_id
   delegate :url, to: :room, allow_nil: true
   has_one :conference, through: :program
   delegate :timezone, to: :conference

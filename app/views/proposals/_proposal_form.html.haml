@@ -6,18 +6,25 @@
 
     = speaker_selector_input f
 
+    -# A proxy for conference organizer.
     - if current_user.manages_volunteers?(@conference)
       = volunteer_selector_input f
 
+      = f.input :superevent, label: 'Is this a Parent Event?'
+      .help-block
+        A parent event can contain subevents. Enable this for the primary lightning talk
+        session, poster sessions, etc.
+
+      = f.input :parent_id, as: :select,
+        collection: @superevents.map { |e| [e.title, e.id] },
+        include_blank: "Select a Parent Event",
+        label: 'Parent Event',
+        input_html: { class: 'select-help-toggle' }
+      .help-block
+        Designate a parent event so that this event appears scheduled "inside"
+        the parent event on the schedule.
+
     = track_selector_input f
-
-    = f.input :superevent, label: 'Is this a Parent Event?'
-
-    = f.input :parent_id, as: :select,
-      collection: @superevents.map { |e| [e.title, e.id] },
-      include_blank: "Select a Parent Event",
-      label: 'Parent Event',
-      input_html: { class: 'select-help-toggle' }
 
     - if @program.languages.present?
       = f.input :language, as: :select,
