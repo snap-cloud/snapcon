@@ -69,6 +69,7 @@ class Event < ApplicationRecord
   has_many :events_registrations
   has_many :registrations, through: :events_registrations
   has_many :event_schedules, dependent: :destroy
+  has_many :subevents, class_name: 'Event', foreign_key: :parent_id
 
   belongs_to :track
   belongs_to :difficulty_level

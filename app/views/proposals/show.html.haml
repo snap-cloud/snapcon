@@ -83,13 +83,14 @@
         .row
           .col-md-12
             = markdown(@event.abstract)
-          - if @event.superevent && @event_schedule.present?
+          - if @event.superevent && @event.subevents.present?
             .col-md-12
-              - @event_schedule.each do |subevent_schedule|
-                - if subevent_schedule.event.parent_id.eql?(event.id)
-                  .col-xs-12.col-md-11
-                    - cache [subevent_schedule, subevent_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
-                      = render 'event', event: subevent_schedule.event, event_schedule: subevent_schedule, is_brief: true
+              %h3 This session will feature:
+              - @event.subevents.each do |subevent|
+                .col-xs-12.col-md-10
+                  - subevent_schedule = subevent.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
+                  - cache [subevent_schedule, subevent, current_user, @event_schedule.happening_now?, '#scheduled#full#panel'] do
+                    = render 'schedules/event', event: subevent, event_schedule: subevent_schedule, is_brief: true
           %dl#proposal-info
             .col-md-12
               %dt Date:
