@@ -20,8 +20,6 @@ gem 'responders', '~> 2.0'
 
 # as supported databases
 gem 'pg'
-gem 'pghero'
-# gem 'pg_query', '>= 0.9.0'
 
 # for tracking data changes
 gem 'paper_trail'
@@ -166,12 +164,8 @@ gem 'font-awesome-rails'
 # for markdown
 gem 'redcarpet'
 
-# for visitor tracking
-gem 'piwik_analytics', '~> 1.0.1'
-
 # for recurring jobs
 gem 'delayed_job_active_record'
-gem 'delayed_job_web'
 gem 'whenever', :require => false
 
 # to run scripts
