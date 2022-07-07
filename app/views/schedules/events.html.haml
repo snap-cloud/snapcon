@@ -40,23 +40,24 @@
     :ruby
       date = nil
       time = nil
-      timezone = current_user&.timezone.presence || @conference.timezone
+      tz_object = current_user&.timezone ? current_user : @conference
+
     - @events_schedules.each do |event_schedule|
-      - new_start_time = current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) || event_schedule.start_time : event_schedule.start_time
+      - next if event_schedule.event.parent_id.present?
+      - new_start_time = convert_timezone(event_schedule.start_time, @conference.timezone, tz_object.timezone)
       - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
           .date-content
             %span.date-title{ id: start_ymd }
-              = inyourtz(event_schedule.start_time, timezone) do
+              = inyourtz(event_schedule.start_time, @conference.timezone) do
                 = date = start_ymd
             %a.pull-right{ title: "Go up", href: "#program" }
               %i.fa.fa-angle-double-up.fa-lg{ 'aria-hidden': true }
       .col-xs-12.col-md-1
         - if !event_schedule.start_time.strftime('%H:%M').eql?(time) || !start_ymd.eql?(date)
           - time = new_start_time.strftime('%H:%M')
-          - tz_object = current_user&.timezone ? current_user : @conference
-          = inyourtz(event_schedule.start_time, timezone) do
+          = inyourtz(event_schedule.start_time, @conference.timezone) do
             = time + ' ' + timezone_text(tz_object)
       .col-xs-12.col-md-11
         - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
