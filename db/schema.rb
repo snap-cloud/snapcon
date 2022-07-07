@@ -262,6 +262,8 @@ ActiveRecord::Schema.define(version: 2022_04_26_082022) do
     t.integer "comments_count", default: 0, null: false
     t.text "submission_text"
     t.text "committee_review"
+    t.boolean "superevent"
+    t.integer "parent_id"
   end
 
   create_table "events_registrations", force: :cascade do |t|
@@ -681,4 +683,5 @@ ActiveRecord::Schema.define(version: 2022_04_26_082022) do
     t.datetime "updated_at"
   end
 
+  add_foreign_key "events", "events", column: "parent_id"
 end

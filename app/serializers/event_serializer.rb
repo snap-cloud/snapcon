@@ -21,15 +21,21 @@
 #  state                        :string           default("new"), not null
 #  submission_text              :text
 #  subtitle                     :string
+#  superevent                   :boolean
 #  title                        :string           not null
 #  week                         :integer
 #  created_at                   :datetime
 #  updated_at                   :datetime
 #  difficulty_level_id          :integer
 #  event_type_id                :integer
+#  parent_id                    :integer
 #  program_id                   :integer
 #  room_id                      :integer
 #  track_id                     :integer
+#
+# Foreign Keys
+#
+#  fk_rails_...  (parent_id => events.id)
 #
 class EventSerializer < ActiveModel::Serializer
   include ActionView::Helpers::TextHelper

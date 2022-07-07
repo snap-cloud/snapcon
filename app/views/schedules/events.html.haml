@@ -42,6 +42,7 @@
       time = nil
       timezone = current_user&.timezone.presence || @conference.timezone
     - @events_schedules.each do |event_schedule|
+      - next if event_schedule.event.parent_id.present?
       - new_start_time = current_user ? convert_timezone(event_schedule.start_time, @conference.timezone, current_user.timezone) || event_schedule.start_time : event_schedule.start_time
       - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
