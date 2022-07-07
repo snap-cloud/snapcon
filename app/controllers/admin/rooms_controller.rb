@@ -48,7 +48,7 @@ module Admin
     private
 
     def room_params
-      params.require(:room).permit(:name, :size, :url, :order)
+      params.require(:room).permit(:name, :size, :url, :order, :discussion_url)
     end
   end
 end

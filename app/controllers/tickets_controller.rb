@@ -8,6 +8,7 @@ class TicketsController < ApplicationController
   authorize_resource :conference_registrations, class: Registration
   before_action :check_load_resource, only: :index
 
+  # TODO: Remove Unpaid tickets when visiting this page.
   def index; end
 
   def check_load_resource
