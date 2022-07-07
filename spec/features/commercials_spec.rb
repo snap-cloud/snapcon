@@ -22,7 +22,6 @@ feature Commercial do
     end
 
     scenario 'adds, updates, deletes of a conference', feature: true, js: true do
-      # Create valid commercial
       fill_in 'commercial_title', with: 'My Cool Talk!'
       fill_in 'commercial_url', with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
       click_button 'Save Materials'
@@ -76,8 +75,7 @@ feature Commercial do
     end
 
     scenario 'does not add an invalid commercial of an event', feature: true, js: true do
-      # TODO-SNAPCON
-      skip('Snap!Con allows all materials to be saved.')
+      skip('TODO-SNAPCON allows all materials to be saved.')
       visit edit_conference_program_proposal_path(conference.short_title, event.id)
       click_link 'Materials'
       fill_in 'commercial_url', with: 'invalid_commercial_url'
