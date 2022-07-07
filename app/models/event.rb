@@ -222,9 +222,9 @@ class Event < ApplicationRecord
     if program.conference.email_settings.send_on_confirmed_without_registration? &&
         program.conference.email_settings.confirmed_without_registration_body &&
         program.conference.email_settings.confirmed_without_registration_subject
-      if program.conference.registrations.where(user_id: submitter.id).first.nil?
-        Mailbot.confirm_reminder_mail(self).deliver_later
-      end
+      users = [submitter] + speakers
+      users.reject! { |user| user.registrations.for_conference(program.conference).present? }
+      users.each { |user| Mailbot.confirm_reminder_mail(self, user: user).deliver_later }
     end
   end
 

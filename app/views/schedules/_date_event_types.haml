@@ -2,7 +2,7 @@
   - selected_timezone = current_user&.timezone.presence || conference.timezone
   All events are currently displayed in #{timezone_mapping(selected_timezone)}.
   - if selected_timezone != conference.timezone
-    The conference timezone is #{timezone_mapping(conference)}.
+    The conference timezone is #{timezone_mapping(conference.timezone)}.
   - if current_user
     Visit your #{link_to('user profile page', edit_user_path(current_user.id))} to set your timezone.
 - if current_user
