@@ -61,7 +61,7 @@
     <% end %>
       <div class="row">
         <div class="col-md-2">
-          <% if defined?(@conference) && @conferencer.picture.present? %>
+          <% if defined?(@conference) && @conference.picture.present? %>
             <%- image_url = @conference.picture.url %>
           <% else %>
             <%- image_url = 'assets/images/snapcon_logo.png' %>
