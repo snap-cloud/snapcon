@@ -173,10 +173,10 @@
     %p Information for event authors only:
     .panel.panel-info
       .panel-heading
-        Committee Review
+        Committee Feedback
         %button.btn.btn-primary.btn-xs{ type: "button", 'data-toggle': "collapse", 'data-target': "#committee-panel", 'aria-expanded': "false", 'aria-controls': "committee-panel" }
           Toggle
-      .panel-body.collapse#committee-panel
+      .panel-body#committee-panel{ class: @event.committee_review.present? ? 'collapse' : '' }
         = markdown(@event.committee_review)
 
     .panel.panel-info
