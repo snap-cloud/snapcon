@@ -40,6 +40,7 @@ module Admin
           event_users: :user
         ]
       )
+      @event_types = @program.event_types || []
 
       if @schedule.track
         track = @schedule.track
