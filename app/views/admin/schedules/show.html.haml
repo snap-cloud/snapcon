@@ -3,9 +3,10 @@
 .row
   .col-md-12
     .page-header
-      %h1 Schedule
+      %h1= "#{@conference.title} Schedule"
       %p.text-muted
         Create the schedules for the conference
+      = render 'schedules/event_types_key', event_types: @event_types, favourites: false
 
 - if @rooms.present?
   .row
