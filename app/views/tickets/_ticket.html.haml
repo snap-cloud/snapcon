@@ -20,7 +20,7 @@
     = text_field_tag("tickets[][#{ticket.id}]", 0, options)
     - if ticket.registration_ticket? && user_has_reg_ticket
       %em
-        You already have a registraction.
+        You currently have a registraction ticket.
 
   %td.col-sm-1.col-md-1.text-center
     = ticket.price.symbol
