@@ -237,7 +237,7 @@ describe User do
 
     describe '.supports?' do
       context 'user has bought tickets' do
-        before { create(:ticket_purchase, user: user, conference: conference) }
+        before { create(:ticket_purchase, user: user, conference: conference, paid: true) }
 
         it 'returns true' do
           expect(user.supports?(conference)).to be true
