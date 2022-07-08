@@ -40,6 +40,7 @@ module Admin
           event_users: :user
         ]
       )
+      @event_types = @program.event_types || []
 
       if @schedule.track
         track = @schedule.track
@@ -54,7 +55,6 @@ module Admin
         @unscheduled_events = (@program.events.confirmed + @program.events.unconfirmed) - @schedule.events - self_organized_tracks_events
         @dates = @conference.start_date..@conference.end_date
         @rooms = @conference.venue.rooms if @conference.venue
-        @event_types = @program.event_types || []
       end
     end
 
