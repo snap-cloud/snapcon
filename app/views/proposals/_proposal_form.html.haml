@@ -41,9 +41,17 @@
           = difficulty_level.description
 
     = render 'proposals/submission_type_content_form', f: f, program: @program
+    - if @event.committee_review.present?
+      %br
+      %strong.control-label Committee Feedback
+      %small
+        Use this feedback to improve your submission.
+      .well
+        = markdown(@event.committee_review)
+
 
     = committee_only_actions(current_user, @conference) do
-      = f.input :committee_review,
+      = f.input :committee_review, label: 'Committee Feedback'
                 input_html: { rows: 5, data: { provide: 'markdown' } },
                 hint: markdown_hint('This field is shared with the submission authors.')
       = f.label :is_highlight
