@@ -6,11 +6,11 @@
 
     = speaker_selector_input f
 
-    -# A proxy for conference organizer.
-    - if current_user.manages_volunteers?(@conference)
+    = committee_only_actions(current_user, @conference) do
       = volunteer_selector_input f
 
-      = f.input :superevent, label: 'Is this a Parent Event?'
+      = f.label "Is this is parent event?", for: :superevent
+      = f.check_box :superevent, class: 'switch-checkbox'
       .help-block
         A parent event can contain subevents. Enable this for the primary lightning talk
         session, poster sessions, etc.
@@ -42,19 +42,14 @@
 
     = render 'proposals/submission_type_content_form', f: f, program: @program
 
-    -# TODO-SNAPCON: Extract this to be a `conference_committee_role?`
-    - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
-      %br
+    = committee_only_actions(current_user, @conference) do
       = f.input :committee_review,
                 input_html: { rows: 5, data: { provide: 'markdown' } },
                 hint: markdown_hint('This field is shared with the submission authors.')
-    - elsif @event.committee_review.present?
-      %br
-      %strong.control-label Committee Feedback
-      %small
-        Use this feedback to improve your submission.
-      .well
-        = markdown(@event.committee_review)
+      = f.label :is_highlight
+      = f.check_box :is_highlight, class: 'switch-checkbox'
+      %span.help-block
+        This shows the event on the conference homepage.
 
     - if @program.cfp&.enable_registrations?
       = f.inputs 'Enable pre-registration' do
@@ -67,10 +62,6 @@
         Do you require something special?
     #description{ class: "collapse #{ 'in' if @event.description.present? }" }
       = f.input :description, input_html: { rows: 5 }, label: 'Requirements', placeholder: 'Eg. Whiteboard, printer, or something like that.'
-
-    - if current_user.has_any_role? :admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference }
-      %p (Admin Only)
-      = f.input :is_highlight
 
   %p.text-right
     - if @event.new_record?

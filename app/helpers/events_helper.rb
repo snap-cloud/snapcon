@@ -288,6 +288,16 @@ module EventsHelper
     "background-color: #{color}; color: #{contrast_color(color)};"
   end
 
+  def committee_only_actions(user, conference, roles: [:organizer, :cfp], &block)
+    role_map = roles.map { |role| { name: role, resource: conference } }
+    return unless user.has_any_role?(:admin, *role_map)
+
+    content_tag(:div, class: 'panel panel-info') do
+      content_tag(:div, class: 'panel-heading') { 'Conference Organizers'} +
+      content_tag(:div, class: 'panel-body') { capture(&block) }
+    end
+  end
+
   private
 
   def calendar_event_text(event, event_schedule, conference)
