@@ -294,7 +294,7 @@ module EventsHelper
 
     content_tag(:div, class: 'panel panel-info') do
       concat content_tag(:div, 'Conference Organizers', class: 'panel-heading')
-      concat content_tag(:div, capture(&block) , class: 'panel-body')
+      concat content_tag(:div, capture(&block), class: 'panel-body')
     end
   end
 
