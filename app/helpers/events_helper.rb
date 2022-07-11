@@ -293,8 +293,8 @@ module EventsHelper
     return unless user.has_any_role?(:admin, *role_map)
 
     content_tag(:div, class: 'panel panel-info') do
-      content_tag(:div, class: 'panel-heading') { 'Conference Organizers'} +
-      content_tag(:div, class: 'panel-body') { capture(&block) }
+      concat content_tag(:div, 'Conference Organizers', class: 'panel-heading')
+      concat content_tag(:div, capture(&block) , class: 'panel-body')
     end
   end
 
