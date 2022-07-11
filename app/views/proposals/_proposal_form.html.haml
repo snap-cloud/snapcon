@@ -51,7 +51,7 @@
 
 
     = committee_only_actions(current_user, @conference) do
-      = f.input :committee_review, label: 'Committee Feedback'
+      = f.input :committee_review, label: 'Committee Feedback',
                 input_html: { rows: 5, data: { provide: 'markdown' } },
                 hint: markdown_hint('This field is shared with the submission authors.')
       = f.label :is_highlight
