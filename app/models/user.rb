@@ -225,7 +225,7 @@ class User < ApplicationRecord
   end
 
   def supports? conference
-    ticket_purchases.find_by(conference_id: conference.id).present?
+    ticket_purchases.find_by(conference_id: conference.id, paid: true).present?
   end
 
   ##

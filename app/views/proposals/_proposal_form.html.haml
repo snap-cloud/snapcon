@@ -15,17 +15,12 @@
     %span.help-block
       The people responsible for the event. You can only select existing users.
 
-  -# A proxy for conference organizer.
-  - if current_user.manages_volunteers?(@conference)
-    .form-group
-      = f.label :volunteer_ids, 'Volunteers'
-      = f.select :volunteer_ids, user_options_for_dropdown(@event, :volunteers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select volunteers..." }
-      %span.help-block
-        Assign volunteers to help run this session.
+  = committee_only_actions(current_user, @conference) do
+    = volunteer_selector_input f
 
     .form-group
-      = f.label 'Is this a Parent Event?', for :superevent
-      = f.checkbox :superevent
+      = f.label "Is this is parent event?", for: :superevent
+      = f.check_box :superevent, class: 'switch-checkbox'
       .help-block
         A parent event can contain subevents. Enable this for the primary lightning talk
         session, poster sessions, etc.
@@ -66,7 +61,7 @@
     = f.label :committee_review
     = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }, class: 'form-control md-input'
     %span.help-block= markdown_hint('This field is shared with the submission authors.')
-  - elsif @event.committee_review.present?
+  - if @event.committee_review.present?
     %br
     %strong.control-label Committee Review
     %small
@@ -75,6 +70,23 @@
       = markdown(@event.committee_review)
 
       = render 'proposals/submission_type_content_form', f: f, program: @program
+       - if @event.committee_review.present?
+      %br
+      %strong.control-label Committee Feedback
+      %small
+        Use this feedback to improve your submission.
+      .well
+        = markdown(@event.committee_review)
+
+
+    = committee_only_actions(current_user, @conference) do
+      = f.input :committee_review, label: 'Committee Feedback',
+                input_html: { rows: 5, data: { provide: 'markdown' } },
+                hint: markdown_hint('This field is shared with the submission authors.')
+      = f.label :is_highlight
+      = f.check_box :is_highlight, class: 'switch-checkbox'
+      %span.help-block
+        This shows the event on the conference homepage.
 
   - if @program.cfp&.enable_registrations?
     %h4 Event Registration
@@ -95,7 +107,6 @@
         = f.check_box :is_highlight
         Is a highlight?
 
-  %p.text-right
     = link_to '#description', 'data-toggle' => 'collapse' do
       Do you require something special for your event?
   #description{ class: "collapse #{ 'in' if @event.description.present? }" }
@@ -106,6 +117,4 @@
         Eg. Whiteboard, printer, or something like that.
 
   %p.text-right
-    = f.submit 'Update Proposal', class: 'btn btn-success'
-
 = render partial: 'shared/user_selectize'

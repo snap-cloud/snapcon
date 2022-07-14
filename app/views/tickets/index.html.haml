@@ -18,8 +18,9 @@
               %th Price
               %th Total
           %tbody
+          - user_has_reg_ticket = current_user.tickets.for_registration(@conference).present?
           - @conference.tickets.visible.each do |ticket|
-            = render 'ticket', f: f, ticket: ticket
+            = render 'ticket', f: f, ticket: ticket, user_has_reg_ticket: user_has_reg_ticket
           %tr
             %td
             %td
@@ -46,5 +47,5 @@
       .col-md-13
         %p.text-muted.text-center
           %small
-            Getting a registration ticket is mandatory. Your participation
+            Getting a registration ticket is required. Your participation
             will not be valid until you get a registration ticket.

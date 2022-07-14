@@ -60,7 +60,7 @@ class SchedulesController < ApplicationController
       @events_schedules.select! { |event_schedule| event_schedule.event.event_type.title == event_type }
     end
 
-    event_ids = @events_schedules.map { |es| es.event.id } + @unscheduled_events.map(&:id)
+    event_ids = @events_schedules.map(&:event_id) + @unscheduled_events.map(&:id)
     favourited_events(event_ids)
 
     if current_user && @favourites
