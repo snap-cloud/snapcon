@@ -174,4 +174,9 @@
   margin: auto 3px;
   flex: 1;
   line-height: 1.4;
+
+  // Override some bootstrap
+  small {
+    line-height: 1.6;
+  }
 }
