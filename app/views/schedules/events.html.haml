@@ -42,6 +42,7 @@
       time = nil
       tz_object = current_user&.timezone ? current_user : @conference
 
+    / TODO-SNAPCON: Explore caching this.
     - @events_schedules.each do |event_schedule|
       - next if event_schedule.event.parent_id.present?
       - new_start_time = convert_timezone(event_schedule.start_time, @conference.timezone, tz_object.timezone)
@@ -60,7 +61,7 @@
           = inyourtz(event_schedule.start_time, @conference.timezone) do
             = time + ' ' + timezone_text(tz_object)
       .col-xs-12.col-md-11
-        - cache [event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+        - cache [@program, event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
           = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
     / confirmed events that are not scheduled
@@ -74,7 +75,7 @@
       - @unscheduled_events.each do |event|
         .col-xs-12.col-md-12
           .unscheduled-event
-            - cache [event, current_user, '#unscheduled#full#panel'] do
+            - cache [@program, event, current_user, '#unscheduled#full#panel'] do
               = render 'event', event: event, event_schedule: nil
 
 :javascript
