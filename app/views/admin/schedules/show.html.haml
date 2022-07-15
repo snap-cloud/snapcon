@@ -26,17 +26,16 @@
         Unscheduled events
       .unscheduled-events
         - @unscheduled_events.each do |e|
-          = render partial: 'event', locals: { event: e, event_schedule_id: nil }
+          = render 'event', event: e, event_schedule_id: nil
     .col-md-10
       %ul.nav.nav-tabs
         - @dates.each do |date|
-          %li{ class: "#{ (@dates.first == date) ? 'active' : '' }"}
-            %a{ href: "##{date}" }
-              = date
+          %li{ class: ('active' if @dates.first == date) }
+            %a{ href: date }= "#{date.strftime('%a')} #{date}"
       .tab-content
         - @dates.each do |date|
-          .tab-pane{ class: "#{ (@dates.first == date) ? 'active' : '' }", id: "#{date}" }
-            = render partial: 'day_tab', locals: { date: date }
+          .tab-pane{ class: ('active' if @dates.first == date), id: date }
+            = render 'day_tab', date: date
 - else
   - if @venue.try(:rooms).present?
     .text-right
