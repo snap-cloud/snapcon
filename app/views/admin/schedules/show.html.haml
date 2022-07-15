@@ -31,7 +31,7 @@
       %ul.nav.nav-tabs
         - @dates.each do |date|
           %li{ class: ('active' if @dates.first == date) }
-            %a{ href: date }= "#{date.strftime('%a')} #{date}"
+            %a{ href: "##{date}" }= "#{date.strftime('%a')} #{date}"
       .tab-content
         - @dates.each do |date|
           .tab-pane{ class: ('active' if @dates.first == date), id: date }
