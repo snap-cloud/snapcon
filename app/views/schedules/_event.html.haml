@@ -3,6 +3,7 @@
   color_style = css_background_color(header_color)
   condensed_view = defined?(is_brief) && is_brief
   abstract_length = condensed_view ? 250 : 400
+  program = event.conference.program
 
 .panel.panel-default
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
@@ -68,6 +69,7 @@
         %br
         - event.subevents.each do |subevent|
           .col-12
-            - subevent_schedule = subevent.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
-            - cache [subevent_schedule, subevent, current_user, subevent_schedule&.happening_now?, '#scheduled#full#panel'] do
+            / TODO-SNAPCON: REDUCE THE QUERIES
+            - subevent_schedule = subevent.event_schedules.find_by(schedule_id: program.selected_schedule_id)
+            - cache [program, subevent_schedule, subevent, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
               = render 'schedules/event', event: subevent, event_schedule: subevent_schedule, is_brief: true
