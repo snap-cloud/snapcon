@@ -81,7 +81,7 @@ module Admin
           render js: 'index'
         else
           flash[:notice] = "Successfully updated event with ID #{@event.id}."
-          redirect_back_or_to(admin_conference_program_event_path(@conference.short_title, @event))
+          redirect_to admin_conference_program_event_path(@conference.short_title, @event)
         end
       else
         @url = admin_conference_program_event_path(@conference.short_title, @event)
