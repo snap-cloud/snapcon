@@ -14,7 +14,7 @@
       %li.dropdown-header
         = org.name
       - conferences.sort_by(&:start_date).each do |conf|
-        - if conf.id != conference.id
+        - if conf.id != conference.try(:id)
           %li
             = link_to conf.title, conference_path(conf.short_title)
       %li.divider
