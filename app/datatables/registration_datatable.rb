@@ -10,6 +10,7 @@ class RegistrationDatatable < AjaxDatatablesRails::Base
       roles:                    { source: 'Role.name' },
       email:                    { source: 'User.email' },
       accepted_code_of_conduct: { source: 'Registration.accepted_code_of_conduct', searchable: false },
+      ticket_type:              { source: 'test' },
       actions:                  { source: 'Registration.id', searchable: false, orderable: false }
     }
   end
@@ -34,6 +35,7 @@ class RegistrationDatatable < AjaxDatatablesRails::Base
         roles:                    conference_role_titles(record.user),
         email:                    record.email,
         accepted_code_of_conduct: !!record.accepted_code_of_conduct, # rubocop:disable Style/DoubleNegation
+        ticket_type:              record.user.tickets.where(conference: conference).pluck(:title),
         questions:                {},
         edit_url:                 edit_admin_conference_registration_path(conference, record),
         DT_RowId:                 record.id
@@ -42,7 +44,7 @@ class RegistrationDatatable < AjaxDatatablesRails::Base
   end
 
   def get_raw_records # rubocop:disable Naming/AccessorMethodName
-    conference.registrations.includes(user: :roles).references(:users, :roles).distinct
+    conference.registrations.includes(user: [:roles, :tickets]).references(:users, :roles).distinct
   end
 
   # override upstream santitation, which converts everything to strings
