@@ -55,7 +55,8 @@ describe FullCalendarFormatter do
           backgroundColor: event1.event_type.color,
           textColor:       'black',
           className:       'fc-event-track-none',
-          display:         'auto'
+          display:         'auto',
+          has_parent:      false
         },
         {
           id:              event_schedule2.event.guid,
@@ -68,7 +69,8 @@ describe FullCalendarFormatter do
           backgroundColor: event2.event_type.color,
           textColor:       'white',
           className:       'fc-event-track-none',
-          display:         'auto'
+          display:         'auto',
+          has_parent:      false
         }
       ].to_json
 
