@@ -44,7 +44,7 @@
 
     / TODO-SNAPCON: Explore caching this.
     - @events_schedules.each do |event_schedule|
-      - next if event_schedule.event.parent_id.present?
+      - next if event_schedule.event.parent_event.present?
       - new_start_time = convert_timezone(event_schedule.start_time, @conference.timezone, tz_object.timezone)
       - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
