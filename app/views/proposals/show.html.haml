@@ -83,13 +83,23 @@
         .row
           .col-md-12
             = markdown(@event.abstract)
+          - if @event.superevent && @event.subevents.present?
+            .col-md-12
+              %h3 This session will feature:
+              - @event.subevents.each do |subevent|
+                .col-xs-12.col-md-10
+                  - subevent_schedule = subevent.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
+                  - cache [subevent_schedule, subevent, current_user, @event_schedule.happening_now?, '#scheduled#full#panel'] do
+                    = render 'schedules/event', event: subevent, event_schedule: subevent_schedule, is_brief: true
           %dl#proposal-info
             .col-md-12
               %dt Date:
               %dd
                 - if @event_schedule.present?
+                  - tz_object = current_user&.timezone ? current_user : @conference
+                  - start_time = convert_timezone(@event_schedule.start_time, @conference.timezone, tz_object.timezone)
                   = inyourtz(@event_schedule.start_time, @conference.timezone) do
-                    = @event_schedule.start_time.strftime('%Y %B %e - %H:%M') + ' ' + timezone_text(@event)
+                    = start_time.strftime('%Y %B %e - %H:%M') + ' ' + timezone_text(tz_object)
                 - else
                   Unscheduled
             .col-md-12
@@ -171,10 +181,10 @@
     %p Information for event authors only:
     .panel.panel-info
       .panel-heading
-        Committee Review
+        Committee Feedback
         %button.btn.btn-primary.btn-xs{ type: "button", 'data-toggle': "collapse", 'data-target': "#committee-panel", 'aria-expanded': "false", 'aria-controls': "committee-panel" }
           Toggle
-      .panel-body.collapse#committee-panel
+      .panel-body#committee-panel{ class: @event.committee_review.present? ? 'collapse' : '' }
         = markdown(@event.committee_review)
 
     .panel.panel-info

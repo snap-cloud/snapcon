@@ -60,6 +60,7 @@ module Admin
       @user = @event.submitter
       @url = admin_conference_program_event_path(@conference.short_title, @event)
       @languages = @program.languages_list
+      @superevents = @program.events.where(superevent: true)
     end
 
     def comment
@@ -80,7 +81,7 @@ module Admin
           render js: 'index'
         else
           flash[:notice] = "Successfully updated event with ID #{@event.id}."
-          redirect_back_or_to(admin_conference_program_event_path(@conference.short_title, @event))
+          redirect_to admin_conference_program_event_path(@conference.short_title, @event)
         end
       else
         @url = admin_conference_program_event_path(@conference.short_title, @event)
@@ -105,6 +106,7 @@ module Admin
     def new
       @url = admin_conference_program_events_path(@conference.short_title, @event)
       @languages = @program.languages_list
+      @superevents = @program.events.where(superevent: true)
     end
 
     def accept
@@ -178,6 +180,7 @@ module Admin
       params.require(:event).permit(
                                     # Set also in proposals controller
                                     :title, :subtitle, :event_type_id, :abstract, :submission_text, :description, :require_registration, :difficulty_level_id,
+                                    :committee_review, :superevent, :parent_id,
                                     # Set only in admin/events controller
                                     :track_id, :state, :language, :is_highlight, :max_attendees,
                                     # Not used anymore?

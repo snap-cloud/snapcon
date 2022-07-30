@@ -41,7 +41,8 @@ class FullCalendarFormatter
         backgroundColor: event_type_color,
         textColor:       contrast_color(event_type_color),
         className:       "fc-event-track-#{event.track&.short_name || 'none'}",
-        display:         background_event ? 'background' : 'auto'
+        display:         background_event ? 'background' : 'auto',
+        has_parent:      event.parent_event.present?
       }
     end
   end

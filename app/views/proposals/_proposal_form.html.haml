@@ -15,13 +15,24 @@
     %span.help-block
       The people responsible for the event. You can only select existing users.
 
-  - if current_user.manages_volunteers?(@conference)
+  = committee_only_actions(current_user, @conference) do
     .form-group
       = f.label :volunteer_ids, 'Volunteers'
       = f.select :volunteer_ids, user_options_for_dropdown(@event, :volunteers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select volunteers..." }
       %span.help-block
         Assign volunteers to help run this session.
-
+    .form-group
+      = f.label "Is this is parent event?", for: :superevent
+      = f.check_box :superevent, class: 'switch-checkbox'
+      .help-block
+        A parent event can contain subevents. Enable this for the primary lightning talk
+        session, poster sessions, etc.
+      .form-group
+        = f.label :parent_id, 'Selet a Parent Event'
+        = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, { include_blank: "Select a Parent Event" }, { class: 'select-help-toggle' }
+        .help-block
+          Designate a parent event so that this event appears scheduled "inside"
+          the parent event on the schedule.
 
   - if @program.tracks.confirmed.cfp_active.any?
     .form-group
@@ -42,21 +53,14 @@
       %span{ class: 'help-block select-help-text collapse event_difficulty_level_id', id: "#{difficulty_level.id}-help" }
         = difficulty_level.description
 
-  = render 'proposals/submission_type_content_form', f: f, program: @program
-
-  -# TODO-SNAPCON: Extract this to be a `conference_committee_role?`
-  - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
+  - if @event.committee_review.present?
     %br
-    = f.label :committee_review
-    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }, class: 'form-control md-input'
-    %span.help-block= markdown_hint('This field is shared with the submission authors.')
-  - elsif @event.committee_review.present?
-    %br
-    %strong.control-label Committee Review
+    %strong.control-label Committee Feedback
     %small
       Use this feedback to improve your submission.
     .well
       = markdown(@event.committee_review)
+  = render 'proposals/submission_type_content_form', f: f, program: @program
 
   - if @program.cfp&.enable_registrations?
     %h4 Event Registration
@@ -71,11 +75,16 @@
         - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
         = 'The maximum number of participants. ' + message
 
-  - if current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
-    .checkbox
-      %label
-        = f.check_box :is_highlight
-        Is a highlight?
+  = committee_only_actions(current_user, @conference) do
+    .form-group
+      = f.label :committee_review, 'Committee Feedback'
+      = f.text_field :committee_review,{ rows: 5, data: { provide: 'markdown' } },
+      .help-block= markdown_hint('This field is shared with the submission authors.')
+    .form-group
+      = f.label :is_highlight
+      = f.check_box :is_highlight, class: 'switch-checkbox'
+    .help-block
+      This shows the event on the conference homepage.
 
   %p.text-right
     = link_to '#description', 'data-toggle' => 'collapse' do

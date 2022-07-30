@@ -134,3 +134,4 @@ build-iPhoneSimulator/
 latest.dump*
 .ackrc
 spec/support/deprecation_shitlist.json
+.vs/*

@@ -194,12 +194,35 @@ module EventsHelper
     event.favourite_users.exists?(current_user.id)
   end
 
-  def timezone_offset(conference)
-    Time.now.in_time_zone(conference.timezone).utc_offset / 1.hour
+  # TODO-SNAPCON: These need to be refactored.
+  # It's not clear which should be an object vs when to use a tz string.
+  def display_timezone(user, conference)
+    return conference.timezone unless user
+
+    user.timezone.presence || conference.timezone
+  end
+
+  def timezone_offset(object)
+    Time.now.in_time_zone(object.timezone).utc_offset / 1.hour
   end
 
   def timezone_text(object)
     Time.now.in_time_zone(object.timezone).strftime('%Z')
+  end
+
+  # timezone: Eastern Time (US & Canada) (UTC -5)
+  def timezone_mapping(timezone)
+    return unless timezone
+
+    offset = Time.now.in_time_zone(timezone).utc_offset / 1.hour
+    text = Time.now.in_time_zone(timezone).strftime('%Z')
+    "#{text} (UTC #{offset})"
+  end
+
+  def convert_timezone(date, old_timezone, new_timezone)
+    if date && old_timezone && new_timezone
+      date.strftime('%Y-%m-%dT%H:%M:%S').in_time_zone(old_timezone).in_time_zone(new_timezone)
+    end
   end
 
   def join_event_link(event, event_schedule, current_user)
@@ -259,6 +282,16 @@ module EventsHelper
   def user_options_for_dropdown(event, column)
     users = event.send(column).pluck(:id, :name, :username, :email)
     options_for_select(users.map{ |u| ["#{u[1]} (#{u[2]} #{u[3]})", u[0]] }, users.map(&:first))
+  end
+
+  def committee_only_actions(user, conference, roles: [:organizer, :cfp], &block)
+    role_map = roles.map { |role| { name: role, resource: conference } }
+    return unless user.has_any_role?(:admin, *role_map)
+
+    content_tag(:div, class: 'panel panel-info') do
+      concat content_tag(:div, 'Conference Organizers', class: 'panel-heading')
+      concat content_tag(:div, capture(&block), class: 'panel-body')
+    end
   end
 
   private

@@ -42,6 +42,7 @@ feature Commercial do
       page.execute_script("$('#commercial_submit_action').prop('disabled', false)")
       click_button 'Update Materials'
     end
+
     page.find('#flash')
     expect(flash).to eq('Materials were successfully updated.')
     expect(event.commercials.count).to eq(1)

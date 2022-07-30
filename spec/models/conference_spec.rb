@@ -36,7 +36,6 @@
 #
 #  index_conferences_on_organization_id  (organization_id)
 #
-# !/bin/env ruby
 require 'spec_helper'
 
 context 'Delegation' do

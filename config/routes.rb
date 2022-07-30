@@ -19,11 +19,6 @@ Osem::Application.routes.draw do
   end
 
   namespace :admin do
-    authenticate :user, ->(user) { user.is_admin? } do
-      mount PgHero::Engine, at: 'pghero'
-      mount DelayedJobWeb, at: 'delayed_job'
-    end
-
     resources :organizations do
       member do
         get :admins

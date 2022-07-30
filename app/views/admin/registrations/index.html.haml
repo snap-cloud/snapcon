@@ -27,6 +27,7 @@
             %th{ width: '0' } ID#
             %th{ width: '25%' } Name
             %th{ width: '0' } E-Mail
+            %th{ width: '0' } Ticket Type
             %th{ width: '0' }
               %abbr{ title: 'Code of Conduct' } CoC
             %th{ width: '0' } Actions
@@ -34,7 +35,7 @@
 
 :javascript
   $(function () {
-    var codeOfConductPresent = #{@code_of_conduct ? 'true' : 'false'};
+    var codeOfConductPresent = #{@code_of_conduct ? true : false};
     var registrationsDataTable = $('#registrations.datatable').DataTable({
       "processing": true,
       "serverSide": true,
@@ -66,9 +67,12 @@
           "data": "email"
         },
         {
+          "data": "ticket_type"
+        },
+        {
           "data": "accepted_code_of_conduct",
           "className": "code-of-conduct text-center",
-          "searchable": false
+          "searchable": false,
         },
         {
           "data": "actions",
@@ -84,5 +88,5 @@
       ]
     });
 
-    registrationsDataTable.columns(3).visible(codeOfConductPresent);
+    registrationsDataTable.columns(4).visible(true);
   });

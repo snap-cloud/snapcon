@@ -21,15 +21,21 @@
 #  state                        :string           default("new"), not null
 #  submission_text              :text
 #  subtitle                     :string
+#  superevent                   :boolean
 #  title                        :string           not null
 #  week                         :integer
 #  created_at                   :datetime
 #  updated_at                   :datetime
 #  difficulty_level_id          :integer
 #  event_type_id                :integer
+#  parent_id                    :integer
 #  program_id                   :integer
 #  room_id                      :integer
 #  track_id                     :integer
+#
+# Foreign Keys
+#
+#  fk_rails_...  (parent_id => events.id)
 #
 class Event < ApplicationRecord
   include ActionView::Helpers::NumberHelper # for number_with_precision
@@ -65,12 +71,17 @@ class Event < ApplicationRecord
   has_many :events_registrations
   has_many :registrations, through: :events_registrations
   has_many :event_schedules, dependent: :destroy
+  has_many :subevents, class_name: 'Event', foreign_key: :parent_id
 
   belongs_to :track
   belongs_to :difficulty_level
   belongs_to :program, touch: true
   belongs_to :room
   delegate :url, to: :room, allow_nil: true
+
+  # Multiple events can be contained within a larger parent event.
+  belongs_to :parent_event, class_name: 'Event', foreign_key: :parent_id
+
   has_one :conference, through: :program
   delegate :timezone, to: :conference
 
@@ -97,6 +108,7 @@ class Event < ApplicationRecord
   validate :valid_track
 
   scope :confirmed, -> { where(state: 'confirmed') }
+  scope :unconfirmed, -> { where(state: 'unconfirmed') }
   scope :canceled, -> { where(state: 'canceled') }
   scope :withdrawn, -> { where(state: 'withdrawn') }
   scope :highlighted, -> { where(is_highlight: true) }
@@ -212,9 +224,9 @@ class Event < ApplicationRecord
     if program.conference.email_settings.send_on_confirmed_without_registration? &&
         program.conference.email_settings.confirmed_without_registration_body &&
         program.conference.email_settings.confirmed_without_registration_subject
-      if program.conference.registrations.where(user_id: submitter.id).first.nil?
-        Mailbot.confirm_reminder_mail(self).deliver_later
-      end
+      users = [submitter] + speakers
+      users.reject! { |user| user.registrations.for_conference(program.conference).present? }
+      users.each { |user| Mailbot.confirm_reminder_mail(self, user: user).deliver_later }
     end
   end
 

@@ -1,8 +1,14 @@
 .row.text-center
   - event_types.each_with_index do |type, index|
-    - if (index % 5).zero? && index != 0
+    - if (index % 6).zero? && index != 0
       %br
-    .label{ style: "#{css_background_color(type.color)} display: inline-block;" }
-      = "#{type.title} (#{type.length} minutes)"
+    = link_to url_for(controller: controller_name, action: action_name, favourites: favourites, event_type: type.title),
+      class: 'btn btn-xs', style: css_background_color(type.color) do
+      - if params[:event_type] == type.title
+        = fa_icon('check')
+      #{type.title} (#{type.length} minutes)
     &nbsp;
-%br
+  - if params[:event_type]
+    = link_to url_for(controller: controller_name, action: action_name, favourites: favourites), class: 'btn btn-xs btn-primary' do
+      = fa_icon('close')
+      Show all events

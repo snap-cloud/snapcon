@@ -1,4 +1,4 @@
-.room-name{
+.room-name {
   font-weight: bold;
   padding:10px;
   margin-top: 30px;
@@ -14,7 +14,7 @@
   overflow: hidden;
 }
 
-.schedule-room-slot{
+.schedule-room-slot {
   padding: 2px 3px;
   border: 1px solid #848484;
   height: 58px;
@@ -27,13 +27,35 @@
   border: 2px solid #151515;
   position:relative;
   z-index:1;
-  cursor:move;
+  cursor: move;
+
+  a {
+    color: black;
+  }
 }
 
+.schedule-room-slot.compact {
+  line-height: 12px;
+  font-size: 10px;
+  padding: 1px;
+}
+
+// When an event is in a room.
 .schedule-room-slot .schedule-event.compact {
-  margin-top: -23px;
-  margin-left: 20%;
-  width: 80%;
+  margin-top: -14px;
+  width: 85%;
+  margin-left: 15%;
+}
+
+.schedule-event.compact {
+  font-size: 75%;
+  padding: 0;
+  border-width: 1px;
+
+  .schedule-event-text {
+    line-height: 12px;
+    overflow: hidden;
+  }
 }
 
 .schedule-event-text {
@@ -44,12 +66,19 @@
   overflow: hidden;
 }
 
+.schedule-event.compact {
+  .schedule-event-delete-button {
+    padding: 1px;
+    margin-right: 3px;
+  }
+}
+
 .schedule-event-delete-button {
-    font-weight:bold;
+    font-weight: bold;
     cursor: pointer;
-    padding: 0px 3px;
-    border: 1px solid grey;
+    padding: 0 3px;
     margin-right: 5px;
+    color: black;
 }
 
 
@@ -145,6 +174,11 @@
   margin: auto 3px;
   flex: 1;
   line-height: 1.4;
+
+  // Override some bootstrap
+  small {
+    line-height: 1.6;
+  }
 }
 
 // Override Boostrap setting.

@@ -1,4 +1,10 @@
-%div{style: 'display: flex; flex: 1 1 auto; height: 100%'}
-  %iframe{src: @room.url, with: '67%', style: 'flex-grow: 1'}
+= content_for :splash_nav do
+  %li
+    = link_to('< Back', :back)
+  %li
+    = link_to('Schedule', events_conference_schedule_path(@conference))
+
+%div{ style: 'display: flex; flex: 1 1 auto; height: 100%' }
+  %iframe{ src: @room.url, with: '67%', style: 'flex-grow: 1' }
   - if @room.discussion_url.present?
-    %iframe{src: @room.discussion_url, width: '33%'}
+    %iframe{ src: @room.discussion_url, width: '33%' }

@@ -1,7 +1,7 @@
 - compact_grid = @program.schedule_interval < 15
 - cells_per_hour = 60 / @program.schedule_interval
 / use smaller cell heights for more compact grids
-- cell_height = compact_grid ? (@program.schedule_interval < 10 ? 16 : 32) : 58
+- cell_height = compact_grid ? (@program.schedule_interval < 8 ? 16 : 32) : 58
 - date_event_schedules = @event_schedules.select{ |e| e.start_time.to_date.eql? date }
 / Dynamically set the column width, but no narrower than 2 (on a BS grid of 12)
 - col_size = [2, (12 / @rooms.count).to_i ].max
@@ -21,6 +21,7 @@
                              room_id: room.id, |
                              hour: time, |
                              date: date, |
+                             class: "#{'compact' if compact_grid}", |
                              style: "height: #{cell_height}px"}
           .div
             = time

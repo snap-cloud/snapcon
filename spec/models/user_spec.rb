@@ -32,6 +32,7 @@
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
 #  sign_in_count          :integer          default(0)
+#  timezone               :string
 #  tshirt                 :string
 #  unconfirmed_email      :string
 #  username               :string
@@ -232,7 +233,7 @@ describe User do
 
     describe '.supports?' do
       context 'user has bought tickets' do
-        before { create(:ticket_purchase, user: user, conference: conference) }
+        before { create(:ticket_purchase, user: user, conference: conference, paid: true) }
 
         it 'returns true' do
           expect(user.supports?(conference)).to be true

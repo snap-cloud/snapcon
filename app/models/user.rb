@@ -32,6 +32,7 @@
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
 #  sign_in_count          :integer          default(0)
+#  timezone               :string
 #  tshirt                 :string
 #  unconfirmed_email      :string
 #  username               :string
@@ -224,7 +225,7 @@ class User < ApplicationRecord
   end
 
   def supports? conference
-    ticket_purchases.find_by(conference_id: conference.id).present?
+    ticket_purchases.find_by(conference_id: conference.id, paid: true).present?
   end
 
   ##

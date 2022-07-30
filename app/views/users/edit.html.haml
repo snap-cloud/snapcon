@@ -15,6 +15,13 @@
           = f.label :nickname
           = f.text_field :nickname, class: 'form-control'
         .form-group
+          = f.label :timezone
+          = f.select :timezone, time_zone_options_for_select(selected: @user.timezone), include_blank: true
+          %span.help-block
+            The timezone setting will update the event schedules to show using the time you selected.
+            Your browser is current set to
+            %span.js-localTimezone
+        .form-group
           = f.label :avatar
           %br
           = image_tag(@user.gravatar_url(size: '48'), title: "Yo #{@user.name}!", alt: '', class: 'img-rounded')
@@ -46,3 +53,13 @@
         .form-group
           .text-right
             = f.submit nil,  class: 'btn btn-primary'
+
+:javascript
+  $(document).ready(function() {
+    $('#user_timezone').selectize({})
+  });
+
+  let localOffset = (new Date()).getTimezoneOffset()/60;
+  // UTC JS offsets are "-1 *" of how they're displayed.
+  let operator = localOffset < 0 ? '+' : '-';
+  $('.js-localTimezone').text(`(GMT ${operator}${Math.abs(localOffset)}).`);
