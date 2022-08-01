@@ -27,12 +27,12 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.json do
         render json: { users:
-          User.active.where(
+                              User.active.where(
             'username ILIKE :search OR email ILIKE :search OR name ILIKE :search',
             search: "%#{params[:query]}%"
           ).as_json(only:
             [:username, :id, :name, :email], methods: :dropdwon_display
-        )}
+          ) }
       end
     end
   end
