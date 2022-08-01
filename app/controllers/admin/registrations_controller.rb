@@ -44,7 +44,7 @@ module Admin
         redirect_to admin_conference_registrations_path(@conference.short_title),
                     notice: "Successfully updated registration for #{@registration.user.email}!"
       else
-        flash.now[:error] = "An error prohibited the Registration for #{@registration.user.email}: "\
+        flash.now[:error] = "An error prohibited the Registration for #{@registration.user.email}: " \
                         "#{@registration.errors.full_messages.join('. ')}."
         render :edit
       end

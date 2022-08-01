@@ -21,6 +21,6 @@ Sentry.init do |config|
   # version_file = File.expand_path('../../tmp/restart.txt', __dir__)
   # osem_version_from_file = File.new(version_file).atime.to_i if File.file?(version_file)
   # osem_version = ENV.fetch('OSEM_SENTRY_RELEASE', osem_version_from_file)
-  osem_version = ENV['HEROKU_RELEASE_VERSION']
+  osem_version = ENV.fetch('HEROKU_RELEASE_VERSION', nil)
   config.release = osem_version if osem_version
 end

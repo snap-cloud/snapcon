@@ -17,7 +17,7 @@ feature Registration, feature: true, js: true do
     stripe_iframe = all('iframe[name=stripe_checkout_app]').last
     sleep(5)
     Capybara.within_frame stripe_iframe do
-      expect(page).to have_content(:all, "#{ENV['OSEM_NAME']} tickets")
+      expect(page).to have_content(:all, "#{ENV.fetch('OSEM_NAME', nil)} tickets")
       fill_in 'Card number', with: card_number
       fill_in 'Expiry', with: '08/22'
       fill_in 'CVC', with: '123'

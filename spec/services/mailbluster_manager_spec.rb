@@ -40,7 +40,7 @@ describe MailblusterManager, type: :model do
           \"email\": \"#{user.email}\",
           \"subscribed\": true,
           \"tags\": [
-            #{ENV['OSEM_NAME'] || 'snapcon'}
+            #{ENV.fetch('OSEM_NAME', 'snapcon')}
           ],
         }
       }"
@@ -53,7 +53,7 @@ describe MailblusterManager, type: :model do
         firstName:        user.name,
         overrideExisting: true,
         subscribed:       true,
-        tags:             [ENV['OSEM_NAME'] || 'snapcon']
+        tags:             [ENV.fetch('OSEM_NAME', 'snapcon')]
       }.to_json)
       expect(response).to eq(response_body)
     end
@@ -71,7 +71,7 @@ describe MailblusterManager, type: :model do
           \"email\": \"#{user.email}\",
           \"subscribed\": true,
           \"tags\": [
-            #{ENV['OSEM_NAME'] || 'snapcon'}
+            #{ENV.fetch('OSEM_NAME', 'snapcon')}
           ],
         }
       }"
@@ -102,7 +102,7 @@ describe MailblusterManager, type: :model do
           \"email\": \"#{user.email}\",
           \"subscribed\": true,
           \"tags\": [
-            #{ENV['OSEM_NAME'] || 'snapcon'}, '2021'
+            #{ENV.fetch('OSEM_NAME', 'snapcon')}, '2021'
           ],
         }
       }"

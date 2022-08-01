@@ -43,7 +43,7 @@ module Admin
                     notice: 'Difficulty level successfully deleted.'
       else
         redirect_to admin_conference_program_difficulty_levels_path(conference_id: @conference.short_title),
-                    error: 'Deleting difficulty level type failed! '\
+                    error: 'Deleting difficulty level type failed! ' \
                     "#{@difficulty_level.errors.full_messages.join('. ')}."
       end
     end

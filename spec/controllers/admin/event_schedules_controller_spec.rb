@@ -54,7 +54,7 @@ describe Admin::EventSchedulesController do
 
         it 'has 422 status code' do
           create_action
-          expect(response.status).to eq(422)
+          expect(response).to have_http_status(:unprocessable_entity)
         end
       end
     end
@@ -99,7 +99,7 @@ describe Admin::EventSchedulesController do
 
         it 'has 422 status code' do
           update_action
-          expect(response.status).to eq(422)
+          expect(response).to have_http_status(:unprocessable_entity)
         end
       end
     end

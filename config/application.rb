@@ -49,13 +49,13 @@ module Osem
     config.active_job.queue_adapter = :delayed_job
 
     config.conference = {
-      events_per_page:       (ENV['EVENTS_PER_PAGE'] || 3),
-      default_logo_filename: (ENV['DEFAULT_LOGO_FILENAME'] || 'snapcon_logo.png'),
-      default_color:         (ENV['DEFAULT_COLOR'] || '#0B3559')
+      events_per_page:       ENV.fetch('EVENTS_PER_PAGE', 3),
+      default_logo_filename: ENV.fetch('DEFAULT_LOGO_FILENAME', 'snapcon_logo.png'),
+      default_color:         ENV.fetch('DEFAULT_COLOR', '#0B3559')
     }
 
     config.fullcalendar = {
-      license_key: ENV['FULL_CALENDAR_LICENSE_KEY']
+      license_key: ENV.fetch('FULL_CALENDAR_LICENSE_KEY', nil)
     }
 
     # Don't generate system test files.

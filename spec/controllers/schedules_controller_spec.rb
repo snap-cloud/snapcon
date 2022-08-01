@@ -34,7 +34,7 @@ describe SchedulesController do
         end
 
         it 'returns a successful response' do
-          expect(response.status).to eq(200)
+          expect(response).to have_http_status(:ok)
         end
       end
     end
@@ -94,7 +94,7 @@ describe SchedulesController do
       end
 
       it 'returns a redirect response' do
-        expect(response.status).to eq(302)
+        expect(response).to have_http_status(:found)
       end
     end
   end
