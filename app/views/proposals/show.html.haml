@@ -2,7 +2,7 @@
   %meta{ property: "og:title", content: @event.title }
   %meta{ property: "og:url", content: conference_program_proposal_url(@conference.short_title, @event) }
   %meta{ property: "og:description", content: @event.abstract }
-  %meta{ property: "og:site_name", content: (ENV['OSEM_NAME'] || 'OSEM') }
+  %meta{ property: "og:site_name", content: ENV.fetch('OSEM_NAME', 'OSEM') }
   - if @speakers_ordered.any?
     %meta{ property: "og:image", content: @speakers_ordered.first.profile_picture }
     %meta{ property: "og:image:secure_url", content: @speakers_ordered.first.profile_picture }
@@ -139,7 +139,7 @@
                 %dd
                   = link_to "Yes (#{registered_text(@event)})", new_conference_conference_registration_path(@conference.short_title), class: 'btn btn-xs btn-danger', disabled: !@event.registration_possible?
 
-          -# TODO-SNAPCON: This is current disabled due to performance.
+          -# TODO-SNAPCON: This is currently disabled due to performance.
           - concurrent = [] # concurrent_events(@event)
           - if concurrent.present?
             .col-md-12

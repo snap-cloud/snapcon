@@ -1,5 +1,6 @@
 - content_for :head do
   %meta{ property: "og:title", content: @conference.title }
+  %meta{ property: "og:site_name", content: ENV.fetch('OSEM_NAME', 'OSEM') }
   %meta{ property: "og:description", content: plain_text(@conference.description) }
   %meta{ property: "og:url", content: conference_url(@conference.short_title) }
   %meta{ property: "twitter:title", content: (@conference.title) }
@@ -88,4 +89,4 @@
   -# footer
   - if @conference.splashpage.include_social_media? && @conference.contact.has_social_media?
     = render 'social_media', contact: @conference.contact, cached: true
-  = render 'footer', cached: true
+  -# = render 'footer', cached: true

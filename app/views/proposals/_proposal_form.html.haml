@@ -27,12 +27,14 @@
       .help-block
         A parent event can contain subevents. Enable this for the primary lightning talk
         session, poster sessions, etc.
-      .form-group
-        = f.label :parent_id, 'Selet a Parent Event'
-        = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, { include_blank: "Select a Parent Event" }, { class: 'select-help-toggle' }
-        .help-block
-          Designate a parent event so that this event appears scheduled "inside"
-          the parent event on the schedule.
+    .form-group
+      = f.label :parent_id, 'Selet a Parent Event'
+      = f.select :parent_id, @superevents.map { |e| [e.title, e.id] },
+        include_blank: 'Select a Parent Event',
+        class: 'select-help-toggle'
+      .help-block
+        Designate a parent event so that this event appears scheduled "inside"
+        the parent event on the schedule.
 
   - if @program.tracks.confirmed.cfp_active.any?
     .form-group
@@ -97,6 +99,4 @@
         Eg. Whiteboard, printer, or something like that.
 
   %p.text-right
-    = f.submit 'Update Proposal', class: 'btn btn-success'
-
 = render partial: 'shared/user_selectize'

@@ -58,12 +58,12 @@ class EmailSettings < ApplicationRecord
       'conference_start_date'  => conference.start_date,
       'conference_end_date'    => conference.end_date,
       'registrationlink'       => Rails.application.routes.url_helpers.conference_conference_registration_url(
-                            conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000')),
+                            conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')),
       'conference_splash_link' => Rails.application.routes.url_helpers.conference_url(
-                                  conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000')),
+                                  conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')),
 
       'schedule_link'          => Rails.application.routes.url_helpers.conference_schedule_url(
-                         conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000'))
+                         conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000'))
     }
 
     if conference.program.cfp
@@ -90,7 +90,7 @@ class EmailSettings < ApplicationRecord
     if event
       h['eventtitle'] = event.title
       h['proposalslink'] = Rails.application.routes.url_helpers.conference_program_proposals_url(
-                           conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000'))
+                           conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000'))
       h['committee_review'] = event.committee_review
       h['committee_review_html'] = ApplicationController.helpers.markdown(event.committee_review)
     end

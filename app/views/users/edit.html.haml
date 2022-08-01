@@ -14,6 +14,13 @@
         .form-group
           = f.label :nickname
           = f.text_field :nickname, class: 'form-control'
+          = f.label :timezone
+          %br
+          = f.select :timezone, time_zone_options_for_select(selected: @user.timezone), include_blank: true
+          %span.help-block
+            The timezone setting will update the event schedules to show using the time you selected.
+            Your browser is current set to
+            %span.js-localTimezone
         .form-group
           = f.label :timezone
           = f.select :timezone, time_zone_options_for_select(selected: @user.timezone), include_blank: true
@@ -52,7 +59,7 @@
             = markdown_hint
         .form-group
           .text-right
-            = f.submit nil,  class: 'btn btn-primary'
+            = f.submit nil, class: 'btn btn-primary'
 
 :javascript
   $(document).ready(function() {

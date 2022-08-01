@@ -43,12 +43,6 @@ module Osem
     # parameters by using an attr_accessible or attr_protected declaration.
     # config.active_record.whitelist_attributes = true
 
-    # Enable the asset pipeline
-    config.assets.enabled = true
-
-    # Version of your assets, change this if you want to expire all your assets
-    config.assets.version = '1.0'
-
     # Set cache headers
     config.public_file_server.headers = { 'Cache-Control' => 'public, max-age=31536000' }
 
@@ -59,17 +53,6 @@ module Osem
       default_logo_filename: (ENV['DEFAULT_LOGO_FILENAME'] || 'snapcon_logo.png'),
       default_color:         (ENV['DEFAULT_COLOR'] || '#0B3559')
     }
-
-    config.before_configuration do
-      env_file = File.join(Rails.root, 'config', 'local_env.yml')
-      if File.exist?(env_file)
-        YAML.safe_load(File.open(env_file)).each do |key, value|
-          ENV[key.to_s] = value
-        end
-      end
-    end
-
-    config.assets.paths << Rails.root.join('node_modules')
 
     config.fullcalendar = {
       license_key: ENV['FULL_CALENDAR_LICENSE_KEY']

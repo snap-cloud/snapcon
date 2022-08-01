@@ -68,12 +68,6 @@ describe ApplicationHelper, type: :helper do
         expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: 'OSEM')
       end
 
-      it 'should use the environment variable' do
-        ENV['OSEM_NAME'] = Faker::Company.name + "'"
-        expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: ENV['OSEM_NAME'])
-      end
-
-      # TODO-SNAPCON: This is an indicator in a conference it should be the conference name.
       it 'should use the conference organization name' do
         expect(nav_root_link_for(conference)).to include image_tag(conference.picture.thumb.url, alt: conference.organization.name)
       end
