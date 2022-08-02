@@ -10,7 +10,7 @@ class RegistrationDatatable < AjaxDatatablesRails::Base
       roles:                    { source: 'Role.name' },
       email:                    { source: 'User.email' },
       accepted_code_of_conduct: { source: 'Registration.accepted_code_of_conduct', searchable: false },
-      ticket_type:              { source: 'ticket_type' },
+      ticket_type:              { source: 'Ticket.title' },
       actions:                  { source: 'Registration.id', searchable: false, orderable: false }
     }
   end
@@ -50,5 +50,9 @@ class RegistrationDatatable < AjaxDatatablesRails::Base
   # override upstream santitation, which converts everything to strings
   def sanitize(records)
     records
+  end
+
+  def filter_registratio_tickets
+    -> (column, value) { puts "CALLBACK #{column} #{value}"; true }
   end
 end
