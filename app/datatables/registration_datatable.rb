@@ -51,8 +51,4 @@ class RegistrationDatatable < AjaxDatatablesRails::Base
   def sanitize(records)
     records
   end
-
-  def filter_registratio_tickets
-    -> (column, value) { puts "CALLBACK #{column} #{value}"; true }
-  end
 end
