@@ -67,7 +67,7 @@
       - if event.superevent && event.subevents.present?
         %br
         %br
-        - event.subevents.each do |subevent|
+        - event.subevents.confirmed.each do |subevent|
           .col-12
             / TODO-SNAPCON: REDUCE THE QUERIES
             - subevent_schedule = subevent.event_schedules.find_by(schedule_id: program.selected_schedule_id)
