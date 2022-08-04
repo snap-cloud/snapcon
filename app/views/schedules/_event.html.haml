@@ -38,7 +38,10 @@
       - if event.speakers.any?
         %h4
           = event.speaker_names
+      - if !event.parent_event.present? && event_schedule.present?
         = join_event_link(event, event_schedule, current_user, small: condensed_view)
+        - new_start_time = current_user ? convert_timezone(event_schedule.start_time, event.timezone, current_user.timezone) || event_schedule.start_time : event_schedule.start_time
+        %span= " at #{new_start_time.strftime('%l:%M %P')}"
       %p
         = truncate(markdown(event.abstract), length: abstract_length, escape: false) do
           - if !condensed_view
