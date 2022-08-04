@@ -21,7 +21,7 @@
         = link_to conference_program_proposal_path(@conference.short_title, event.id),
                   style: color_style do
           = event.title
-          - if event.subtitle.present?
+          - if !condensed_view && event.subtitle.present?
             %br
             %small{ style: color_style }
               = event.subtitle
