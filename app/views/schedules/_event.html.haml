@@ -38,12 +38,12 @@
       - if event.speakers.any?
         %h4
           = event.speaker_names
-      - if !condensed_view
-        = join_event_link(event, event_schedule, current_user)
+        = join_event_link(event, event_schedule, current_user, small: condensed_view)
       %p
         = truncate(markdown(event.abstract), length: abstract_length, escape: false) do
-          %br
-          = link_to 'read more', conference_program_proposal_path(@conference.short_title, event.id)
+          - if !condensed_view
+            %br
+          = link_to 'view more', conference_program_proposal_path(@conference.short_title, event.id)
         -# TODO: More informative text or aria-label.
 
     - if !condensed_view
