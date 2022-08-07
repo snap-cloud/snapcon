@@ -348,6 +348,13 @@ class Event < ApplicationRecord
   end
 
   ##
+  # Returns the list of subevents that can be displayed in the program
+  #
+  def program_subevents
+    subevents.confirmed.sort_by { |event| event.try(:time) || event.parent_event.try(:time) }
+  end
+
+  ##
   # Returns true or false, if the event is already over or not
   #
   # ====Returns

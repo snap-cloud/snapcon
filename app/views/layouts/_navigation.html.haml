@@ -19,7 +19,7 @@
       %ul.nav.navbar-nav#splash-nav
         - if content_for :splash_nav
           = content_for :splash_nav
-        = render 'layouts/snapcon_nav', conference: conference
+        = render 'layouts/snapcon_nav'
       -if user_signed_in?
         .btn-group.pull-right
           %ul.nav.navbar-nav.navbar-right
