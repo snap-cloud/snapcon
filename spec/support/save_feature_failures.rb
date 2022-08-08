@@ -12,8 +12,8 @@ RSpec.configure do |config|
       save_screenshot(example_screenshotname) # rubocop:disable Lint/Debugger
     # remove the file if the test starts working again
     else
-      File.unlink(example_filename) if File.exist?(example_filename)
-      File.unlink(example_screenshotname) if File.exist?(example_screenshotname)
+      FileUtils.rm_rf(example_filename)
+      FileUtils.rm_rf(example_screenshotname)
     end
   end
 end

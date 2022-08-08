@@ -7,6 +7,7 @@ inherit_mode:
     - Exclude
 
 AllCops:
+  SuggestExtensions: false
   UseCache: true
   CacheRootDirectory: tmp/rubocop_cache_rails_dir
   MaxFilesInCache: 4000
