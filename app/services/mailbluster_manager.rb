@@ -4,7 +4,7 @@ class MailblusterManager
   @auth_headers = {
     headers: {
       'Content-Type'  => 'application/json',
-      'Authorization' => ENV['MAILBLUSTER_API_KEY']
+      'Authorization' => ENV.fetch('MAILBLUSTER_API_KEY', nil)
     }
   }
 

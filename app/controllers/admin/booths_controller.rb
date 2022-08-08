@@ -59,7 +59,7 @@ module Admin
         redirect_to admin_conference_booths_path,
                     notice: "Successfully updated #{t 'booth'} for #{@booth.title}."
       else
-        flash.now[:error] = "An error prohibited the #{t'booth'} for #{@booth.title} "\
+        flash.now[:error] = "An error prohibited the #{t'booth'} for #{@booth.title} " \
                     "#{@booth.errors.full_messages.join('. ')}."
         render :edit
       end

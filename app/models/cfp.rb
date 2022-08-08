@@ -42,10 +42,10 @@ class Cfp < ApplicationRecord
   # * +True+ -> If cfp dates is updated and all other parameters are set
   # * +False+ -> Either cfp date is not updated or one or more parameter is not set
   def notify_on_cfp_date_update?
-    !end_date.blank? && !start_date.blank?\
-    && (start_date_changed? || end_date_changed?)\
-    && program.conference.email_settings.send_on_cfp_dates_updated\
-    && !program.conference.email_settings.cfp_dates_updated_subject.blank?\
+    !end_date.blank? && !start_date.blank? \
+    && (start_date_changed? || end_date_changed?) \
+    && program.conference.email_settings.send_on_cfp_dates_updated \
+    && !program.conference.email_settings.cfp_dates_updated_subject.blank? \
     && !program.conference.email_settings.cfp_dates_updated_body.blank?
   end
 

@@ -20,7 +20,7 @@ module Admin
                     notice: 'Materials were successfully created.'
       else
         redirect_to admin_conference_commercials_path,
-                    error: 'An error prohibited materials from being saved: '\
+                    error: 'An error prohibited materials from being saved: ' \
                     "#{@commercial.errors.full_messages.join('. ')}."
 
       end
@@ -32,7 +32,7 @@ module Admin
                     notice: 'Materials were successfully updated.'
       else
         redirect_to admin_conference_commercials_path,
-                    error: 'An error prohibited materials from being saved: '\
+                    error: 'An error prohibited materials from being saved: ' \
                     "#{@commercial.errors.full_messages.join('. ')}."
       end
     end

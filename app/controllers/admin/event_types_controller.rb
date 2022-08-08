@@ -41,7 +41,7 @@ module Admin
                     notice: 'Event type successfully deleted.'
       else
         redirect_to admin_conference_program_event_types_path(conference_id: @conference.short_title),
-                    error: 'Destroying event type failed! '\
+                    error: 'Destroying event type failed! ' \
                     "#{@event_type.errors.full_messages.join('. ')}."
       end
     end
