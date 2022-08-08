@@ -17,6 +17,7 @@ class ConferencesController < ApplicationController
     end
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity
   def show
     # load conference with header content
     @conference = Conference.unscoped.eager_load(
@@ -77,6 +78,7 @@ class ConferencesController < ApplicationController
       @sponsors = @conference.sponsors
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def calendar
     respond_to do |format|
