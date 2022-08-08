@@ -238,11 +238,10 @@ gem 'httparty'
 # pagination
 gem 'pagy', '<4.0'
 
-# Use guard and spring for testing in development
+# Use guard for testing in development
 group :development do
   # to launch specs when files are modified
   gem 'guard-rspec'
-  gem 'spring-commands-rspec'
   # to open mails
   gem 'letter_opener'
   # view mail at /letter_opener/
