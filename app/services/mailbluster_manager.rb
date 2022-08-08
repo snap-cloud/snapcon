@@ -19,7 +19,7 @@ class MailblusterManager
                 'firstName'        => user.name,
                 'overrideExisting' => true,
                 'subscribed'       => true,
-                'tags'             => [ENV['OSEM_NAME'] || 'snapcon']
+                'tags'             => [ENV.fetch('OSEM_NAME', 'snapcon')]
               })
   end
 

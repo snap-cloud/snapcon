@@ -65,7 +65,7 @@ class ApplicationController < ActionController::Base
 
   skip_authorization_check only: :apple_pay
   def apple_pay
-    render plain: ENV['OSEM_APPLE_PAY_ID']
+    render plain: ENV.fetch('OSEM_APPLE_PAY_ID', '')
   end
 
   def set_sentry_user
