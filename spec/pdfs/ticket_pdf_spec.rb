@@ -17,13 +17,13 @@ describe TicketPdf do
     create(
       :ticket_purchase,
       user:       participant,
-      conference: conference,
+      conference:,
       ticket:     registration_ticket,
       quantity:   1
     )
   end
   let(:physical_ticket) do
-    create(:physical_ticket, ticket_purchase: ticket_purchase)
+    create(:physical_ticket, ticket_purchase:)
   end
   let(:layout) { conference.ticket_layout.to_sym }
   let(:file_name) { "ticket_for_#{conference.short_title}.pdf" }
@@ -46,10 +46,11 @@ describe TicketPdf do
           'Accept'          => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'User-Agent'      => 'Ruby'
-        })
+        }
+      )
       .to_return(status: 404, body: '', headers: {})
 
     pdf = described_class.new(conference, participant, physical_ticket, layout, file_name)
-    expect{ PDF::Inspector::Page.analyze(pdf.render) }.to_not raise_error
+    expect { PDF::Inspector::Page.analyze(pdf.render) }.not_to raise_error
   end
 end

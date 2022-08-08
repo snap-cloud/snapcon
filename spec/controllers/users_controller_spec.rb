@@ -7,7 +7,7 @@ describe UsersController do
   let!(:user) { create(:user, name: 'My Name') }
 
   describe 'GET #show' do
-    before :each do
+    before do
       get :show, params: { id: user.id }
     end
 
@@ -26,7 +26,7 @@ describe UsersController do
     it 'assigns the correct value to @events, when the user has submissions' do
       conference = create(:conference)
       event = create(:event, state: 'confirmed', program: conference.program)
-      event.event_users << create(:event_user, user: user, event_role: 'submitter')
+      event.event_users << create(:event_user, user:, event_role: 'submitter')
 
       expect(assigns(:events)).to eq [event]
     end
@@ -42,7 +42,7 @@ describe UsersController do
 
   describe 'PATCH #update' do
     context 'with valid attributes' do
-      before :each do
+      before do
         sign_in user
         patch :update, params: { id: user.id, user: attributes_for(:user, name: 'My Test Name') }
         user.reload

@@ -6,14 +6,22 @@ describe SurveysController do
   let(:admin) { create(:admin) }
   let(:user) { create(:user) }
 
-  let!(:conference) { create(:conference, start_date: Date.current - 1.day, end_date: Date.current + 1.day, timezone: Time.current.zone) }
-  let!(:survey_future) { create(:survey, surveyable: conference, start_date: Date.current + 2.days, end_date: Date.current + 3.days) }
-  let!(:survey_past) { create(:survey, surveyable: conference, start_date: Date.current - 1.day, end_date: Date.current - 1.day) }
-  let!(:survey_present) { create(:survey, surveyable: conference, start_date: Date.current - 1.day, end_date: Date.current + 1.day) }
+  let!(:conference) do
+    create(:conference, start_date: Date.current - 1.day, end_date: Date.current + 1.day, timezone: Time.current.zone)
+  end
+  let!(:survey_future) do
+    create(:survey, surveyable: conference, start_date: Date.current + 2.days, end_date: Date.current + 3.days)
+  end
+  let!(:survey_past) do
+    create(:survey, surveyable: conference, start_date: Date.current - 1.day, end_date: Date.current - 1.day)
+  end
+  let!(:survey_present) do
+    create(:survey, surveyable: conference, start_date: Date.current - 1.day, end_date: Date.current + 1.day)
+  end
 
   describe 'GET #index' do
     context 'guest' do
-      before :each do
+      before do
         get :index, params: { conference_id: conference.short_title }
       end
 
@@ -23,7 +31,7 @@ describe SurveysController do
     end
 
     context 'signed in user' do
-      before :each do
+      before do
         sign_in user
         get :index, params: { conference_id: conference.short_title }
       end

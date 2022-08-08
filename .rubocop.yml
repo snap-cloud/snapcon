@@ -1,6 +1,6 @@
 require: rubocop-rspec
 
-inherit_from: .rubocop_todo.yml
+# inherit_from: .rubocop_todo.yml
 
 inherit_mode:
   merge:
@@ -17,6 +17,8 @@ AllCops:
     - features/step_definitions/web_steps.rb
     - features/support/selectors.rb
     - lib/tasks/cucumber.rake
+    - db/migrate/*.rb
+    - bin/*
 
 #################### Style ###########################
 

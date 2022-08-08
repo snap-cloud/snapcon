@@ -8,17 +8,17 @@ describe FullCalendarFormatter do
   let!(:rooms) { [room1, room2] }
   let!(:conference) { create(:full_conference) }
   let!(:program) { conference.program }
-  let!(:selected_schedule) { create(:schedule, program: program) }
+  let!(:selected_schedule) { create(:schedule, program:) }
   let!(:event_type1) { create(:event_type, color: '#ffffff') }
   let!(:event1) do
-    program.update!(selected_schedule: selected_schedule)
-    create(:event, program: program, event_type: event_type1)
+    program.update!(selected_schedule:)
+    create(:event, program:, event_type: event_type1)
   end
   let!(:event_schedule1) { create(:event_schedule, event: event1, schedule: selected_schedule, room: room1) }
   let!(:event_type2) { create(:event_type, color: '#000000') }
   let!(:event2) do
-    program.update!(selected_schedule: selected_schedule)
-    create(:event, program: program, room: room2, event_type: event_type2)
+    program.update!(selected_schedule:)
+    create(:event, program:, room: room2, event_type: event_type2)
   end
   let!(:event_schedule2) { create(:event_schedule, event: event2, schedule: selected_schedule, room: room2) }
   let!(:event_schedules) { [event_schedule1, event_schedule2] }
@@ -50,7 +50,9 @@ describe FullCalendarFormatter do
           start:           event_schedule1.start_time_in_conference_timezone,
           end:             event_schedule1.end_time_in_conference_timezone,
           resourceIds:     [room1.guid],
-          url:             Rails.application.routes.url_helpers.conference_program_proposal_path(conference.short_title, event1.id),
+          url:             Rails.application.routes.url_helpers.conference_program_proposal_path(
+            conference.short_title, event1.id
+          ),
           borderColor:     event1.event_type.color,
           backgroundColor: event1.event_type.color,
           textColor:       'black',
@@ -64,7 +66,9 @@ describe FullCalendarFormatter do
           start:           event_schedule2.start_time_in_conference_timezone,
           end:             event_schedule2.end_time_in_conference_timezone,
           resourceIds:     [room2.guid],
-          url:             Rails.application.routes.url_helpers.conference_program_proposal_path(conference.short_title, event2.id),
+          url:             Rails.application.routes.url_helpers.conference_program_proposal_path(
+            conference.short_title, event2.id
+          ),
           borderColor:     event2.event_type.color,
           backgroundColor: event2.event_type.color,
           textColor:       'white',

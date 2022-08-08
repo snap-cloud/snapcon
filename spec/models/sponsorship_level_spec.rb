@@ -15,9 +15,8 @@ require 'spec_helper'
 
 describe SponsorshipLevel do
   describe 'validation' do
-
     it 'is not valid without a title' do
-      should validate_presence_of(:title)
+      expect(subject).to validate_presence_of(:title)
     end
   end
 
@@ -30,10 +29,10 @@ describe SponsorshipLevel do
     let(:conference) { create(:conference) }
 
     before do
-      @first_sponsorship_level = create(:sponsorship_level, conference: conference)
-      @second_sponsorship_level = create(:sponsorship_level, conference: conference)
+      @first_sponsorship_level = create(:sponsorship_level, conference:)
+      @second_sponsorship_level = create(:sponsorship_level, conference:)
       @second_sponsorship_level.move_higher
-      @third_sponsorship_level = create(:sponsorship_level, conference: conference)
+      @third_sponsorship_level = create(:sponsorship_level, conference:)
     end
 
     it 'is positions sponsorship_levels in order' do

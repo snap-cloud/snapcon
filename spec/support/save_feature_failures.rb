@@ -9,7 +9,7 @@ RSpec.configure do |config|
     example_filename += '.html'
     if RSpec.current_example.exception.present?
       save_page(example_filename)
-      save_screenshot(example_screenshotname) # rubocop:disable Lint/Debugger
+      save_screenshot(example_screenshotname)
     # remove the file if the test starts working again
     else
       FileUtils.rm_rf(example_filename)

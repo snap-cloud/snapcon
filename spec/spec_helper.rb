@@ -10,7 +10,7 @@ end
 SimpleCov.start 'rails'
 
 ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 
 require 'rspec/rails'
 require 'shoulda/matchers'
@@ -69,7 +69,7 @@ RSpec.configure do |config|
     options = Selenium::WebDriver::Firefox::Options.new
     options.args << '--headless'
     options.args << '--window-size=1920,1080'
-    Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
+    Capybara::Selenium::Driver.new(app, browser: :firefox, options:)
   end
 
   Capybara.register_driver :chrome_headless do |app|
@@ -78,7 +78,7 @@ RSpec.configure do |config|
     options.args << '--headless'
     options.args << '--no-sandbox'
     options.args << '--disable-gpu'
-    Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+    Capybara::Selenium::Driver.new(app, browser: :chrome, options:)
   end
 
   Capybara.default_max_wait_time = 10 # seconds

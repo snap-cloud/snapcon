@@ -5,11 +5,11 @@ require 'spec_helper'
 describe PhysicalTicketsController do
   let(:conference) { create(:conference) }
   let(:user) { create(:user) }
-  let(:paid_ticket_purchase) { create(:ticket_purchase, conference: conference, user: user) }
+  let(:paid_ticket_purchase) { create(:ticket_purchase, conference:, user:) }
   let(:physical_ticket) { create(:physical_ticket, ticket_purchase: paid_ticket_purchase) }
 
   describe 'GET #show' do
-    before :each do
+    before do
       sign_in user
       get :show, params: { id: physical_ticket.token, conference_id: conference.short_title }
     end

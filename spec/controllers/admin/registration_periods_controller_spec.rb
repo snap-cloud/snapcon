@@ -3,26 +3,24 @@
 require 'spec_helper'
 
 describe Admin::RegistrationPeriodsController do
-
   # It is necessary to use bang version of let to build roles before user
   let(:conference) { create(:conference) }
-  let!(:registration_ticket) { create(:registration_ticket, conference: conference) }
+  let!(:registration_ticket) { create(:registration_ticket, conference:) }
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:organizer2) { create(:organizer, email: 'organizer2@email.osem', resource: conference) }
   let(:participant) { create(:user) }
 
   shared_examples 'access as administration or organizer' do
-
     before do
       conference.registration_period = create(:registration_period)
     end
 
     describe 'PATCH #update' do
-
       context 'valid attributes' do
-
         it 'locates the requested registration period object' do
-          patch :update, params: { conference_id: conference.short_title, registration_period: attributes_for(:registration_period) }
+          patch :update,
+                params: { conference_id:       conference.short_title,
+                          registration_period: attributes_for(:registration_period) }
           expect(assigns(:registration_period)).to eq(conference.registration_period)
         end
 
@@ -40,7 +38,8 @@ describe Admin::RegistrationPeriodsController do
                          attributes_for(:registration_period) }
           conference.reload
           expect(response).to redirect_to admin_conference_registration_period_path(
-                                              conference.short_title)
+            conference.short_title
+          )
         end
 
         it 'sends email notification on conference registration date update' do
@@ -80,7 +79,8 @@ describe Admin::RegistrationPeriodsController do
           }
 
           expect(response).to redirect_to admin_conference_registration_period_path(
-                                              assigns[:conference].short_title)
+            assigns[:conference].short_title
+          )
         end
       end
 
@@ -94,7 +94,7 @@ describe Admin::RegistrationPeriodsController do
                                                   end_date:   nil)
             }
           end
-          expected.to_not change { Conference.count }
+          expected.not_to change { Conference.count }
         end
 
         it 're-renders the new template' do
@@ -146,9 +146,12 @@ describe Admin::RegistrationPeriodsController do
     end
 
     describe 'DELETE #destroy' do
-      it 'it deletes the registration period' do
-        expect { delete :destroy, params: { conference_id: conference.short_title } }.to change(RegistrationPeriod, :count).by(-1)
+      it 'deletes the registration period' do
+        expect do
+          delete :destroy, params: { conference_id: conference.short_title }
+        end.to change(RegistrationPeriod, :count).by(-1)
       end
+
       it 'redirects to users#show' do
         delete :destroy, params: { conference_id: conference.short_title }
         expect(response).to redirect_to admin_conference_registration_period_path
@@ -157,12 +160,10 @@ describe Admin::RegistrationPeriodsController do
   end
 
   describe 'organizer access' do
-
-    before(:each) do
+    before do
       sign_in(organizer)
     end
 
     it_behaves_like 'access as administration or organizer'
-
   end
 end

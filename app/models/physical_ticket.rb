@@ -32,7 +32,7 @@ class PhysicalTicket < ApplicationRecord
   def generate_token
     loop do
       token = SecureRandom.hex(10)
-      break token unless PhysicalTicket.exists?(token: token)
+      break token unless PhysicalTicket.exists?(token:)
     end
   end
 end

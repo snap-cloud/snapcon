@@ -26,7 +26,7 @@ class Registration < ApplicationRecord
   has_many :events_registrations
   has_many :events, through: :events_registrations, dependent: :destroy
 
-  has_paper_trail ignore: %i(updated_at week), meta: { conference_id: :conference_id }
+  has_paper_trail ignore: %i[updated_at week], meta: { conference_id: :conference_id }
 
   accepts_nested_attributes_for :user
   accepts_nested_attributes_for :qanswers
@@ -68,9 +68,7 @@ class Registration < ApplicationRecord
   end
 
   def send_registration_mail
-    if conference.email_settings.send_on_registration?
-      Mailbot.registration_mail(conference, user).deliver_later
-    end
+    Mailbot.registration_mail(conference, user).deliver_later if conference.email_settings.send_on_registration?
   end
 
   def set_week
@@ -85,10 +83,10 @@ class Registration < ApplicationRecord
 
   def user_has_registration_ticket
     return if conference.registration_ticket_required? &&
-              TicketPurchase.where(user: user, ticket: conference.registration_tickets).paid.any?
+              TicketPurchase.where(user:, ticket: conference.registration_tickets).paid.any?
 
     errors.add(:base, 'You must purchase a registration ticket before registering')
-    if TicketPurchase.where(user: user, ticket: conference.registration_tickets).unpaid.any?
+    if TicketPurchase.where(user:, ticket: conference.registration_tickets).unpaid.any?
       errors.add(:base, 'You currently have a ticket with an unfinished purchase')
     end
   end

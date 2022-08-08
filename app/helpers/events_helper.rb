@@ -37,16 +37,17 @@ module EventsHelper
       replaced_event = event_schedule.replaced_event_schedule.try(:event)
       content_tag :span do
         concat content_tag :span, 'Please note that this event replaces '
-        concat link_to replaced_event.title, conference_program_proposal_path(@conference.short_title, replaced_event.id), style: styles
+        concat link_to replaced_event.title,
+                       conference_program_proposal_path(@conference.short_title, replaced_event.id), style: styles
       end
     end
   end
 
   def canceled_replacement_event_label(event, event_schedule, *label_classes)
     if event.state == 'canceled' || event.state == 'withdrawn'
-      content_tag :span, 'CANCELED', class: (['label', 'label-danger'] + label_classes)
+      content_tag :span, 'CANCELED', class: (%w[label label-danger] + label_classes)
     elsif event_schedule.present? && event_schedule.replacement?(@withdrawn_event_schedules)
-      content_tag :span, 'REPLACEMENT', class: (['label', 'label-info'] + label_classes)
+      content_tag :span, 'REPLACEMENT', class: (%w[label label-info] + label_classes)
     end
   end
 
@@ -281,10 +282,10 @@ module EventsHelper
 
   def user_options_for_dropdown(event, column)
     users = event.send(column).pluck(:id, :name, :username, :email)
-    options_for_select(users.map{ |u| ["#{u[1]} (#{u[2]} #{u[3]})", u[0]] }, users.map(&:first))
+    options_for_select(users.map { |u| ["#{u[1]} (#{u[2]} #{u[3]})", u[0]] }, users.map(&:first))
   end
 
-  def committee_only_actions(user, conference, roles: [:organizer, :cfp], &block)
+  def committee_only_actions(user, conference, roles: %i[organizer cfp], &block)
     role_map = roles.map { |role| { name: role, resource: conference } }
     return unless user.has_any_role?(:admin, *role_map)
 

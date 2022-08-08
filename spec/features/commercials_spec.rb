@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-feature Commercial do
+describe Commercial do
   # It is necessary to use bang version of let to build roles before user
   let!(:conference) { create(:conference) }
   let!(:cfp) { create(:cfp, program: conference.program) }
@@ -10,14 +10,14 @@ feature Commercial do
   let!(:participant) { create(:user) }
   let!(:event) { create(:event, program: conference.program, title: 'Example Proposal') }
   let!(:event_user) do
-    create(:event_user, user: participant, event: event, event_role: 'submitter')
+    create(:event_user, user: participant, event:, event_role: 'submitter')
   end
 
-  before(:each) do
+  before do
     sign_in participant
   end
 
-  scenario 'adds a valid commercial of an event', feature: true, js: true do
+  it 'adds a valid commercial of an event', feature: true, js: true do
     visit edit_conference_program_proposal_path(conference.short_title, event.id)
     click_link 'Materials'
     fill_in 'commercial_url', with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
@@ -30,7 +30,7 @@ feature Commercial do
     expect(flash).to eq('Materials were successfully created.')
   end
 
-  scenario 'updates a commercial of an event', feature: true, js: true do
+  it 'updates a commercial of an event', feature: true, js: true do
     commercial = create(:commercial,
                         commercialable_id:   event.id,
                         commercialable_type: 'Event')
@@ -50,7 +50,7 @@ feature Commercial do
     expect(commercial.url).to eq('https://www.youtube.com/watch?v=M9bq_alk-sw')
   end
 
-  scenario 'deletes a commercial of an event', feature: true, js: true do
+  it 'deletes a commercial of an event', feature: true, js: true do
     create(:commercial,
            commercialable_id:   event.id,
            commercialable_type: 'Event')

@@ -50,9 +50,9 @@ class UserDatatable < AjaxDatatablesRails::ActiveRecord
   # rubocop:disable Naming/AccessorMethodName
   def get_raw_records
     User.left_outer_joins(:registrations, :roles)
-      .distinct
-      .select("users.*, COUNT(CASE WHEN registrations.attended = 't' THEN 1 END) AS attended_count")
-      .group('users.id')
+        .distinct
+        .select("users.*, COUNT(CASE WHEN registrations.attended = 't' THEN 1 END) AS attended_count")
+        .group('users.id')
   end
   # rubocop:enable Naming/AccessorMethodName
 

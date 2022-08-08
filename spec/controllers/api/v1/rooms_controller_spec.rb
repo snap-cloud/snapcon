@@ -4,14 +4,13 @@ require 'spec_helper'
 
 describe Api::V1::RoomsController do
   let!(:conference) { create(:conference) }
-  let!(:venue) { create(:venue, conference: conference) }
-  let!(:conference_room) { create(:room, name: 'Conference Room', venue: venue) }
+  let!(:venue) { create(:venue, conference:) }
+  let!(:conference_room) { create(:room, name: 'Conference Room', venue:) }
   let!(:room) { create(:room, name: 'Test Room') }
 
   describe 'GET #index' do
     context 'without conference scope' do
       it 'returns all rooms' do
-
         get :index, params: { format: :json }
         json = JSON.parse(response.body)['rooms']
 
@@ -23,7 +22,6 @@ describe Api::V1::RoomsController do
 
     context 'with conference scope' do
       it 'returns all rooms of conference' do
-
         get :index, params: { conference_id: conference.short_title, format: :json }
         json = JSON.parse(response.body)['rooms']
 

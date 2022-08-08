@@ -44,25 +44,24 @@ module FormatHelper
 
   def target_progress_color(progress)
     progress = progress.to_i
-    result = case
-             when progress >= 90 then 'green'
-             when progress < 90 && progress >= 80 then 'orange'
-             else 'red'
-             end
-
-    result
+    if progress >= 90
+      'green'
+    elsif progress < 90 && progress >= 80
+      'orange'
+    else
+      'red'
+    end
   end
 
   def days_left_color(days_left)
     days_left = days_left.to_i
     if days_left > 30
-      result = 'green'
+      'green'
     elsif days_left < 30 && days_left > 10
-      result = 'orange'
+      'orange'
     else
-      result = 'red'
+      'red'
     end
-    result
   end
 
   def bootstrap_class_for(flash_type)
@@ -112,13 +111,11 @@ module FormatHelper
   end
 
   def word_pluralize(count, singular, plural = nil)
-    word = if (count == 1 || count =~ /^1(\.0+)?$/)
-             singular
-           else
-             plural || singular.pluralize
-           end
-
-    word
+    if count == 1 || count =~ /^1(\.0+)?$/
+      singular
+    else
+      plural || singular.pluralize
+    end
   end
 
   # Returns black or white deppending on what of them contrast more with the
@@ -130,7 +127,7 @@ module FormatHelper
     g = hexcolor[3..4].to_i(16)
     b = hexcolor[5..6].to_i(16)
     yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
-    (yiq >= 128) ? 'black' : 'white'
+    yiq >= 128 ? 'black' : 'white'
   end
 
   def td_height(rooms)
@@ -171,10 +168,10 @@ module FormatHelper
   end
 
   def selected_scheduled?(schedule)
-    (schedule == @selected_schedule) ? 'Yes' : 'No'
+    schedule == @selected_schedule ? 'Yes' : 'No'
   end
 
-  def markdown(text, escape_html=true)
+  def markdown(text, escape_html = true)
     return '' if text.nil?
 
     markdown_options = {
@@ -189,15 +186,18 @@ module FormatHelper
       superscript:                  true # SNAPCON
     }
     render_options = {
-      escape_html:     escape_html,
+      escape_html:,
       safe_links_only: true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(render_options), markdown_options)
     sanitize(markdown.render(text))
   end
 
-  def markdown_hint(text='')
-    markdown("#{text} Please look at #{link_to '**Markdown Syntax**', 'https://daringfireball.net/projects/markdown/syntax', target: '_blank'} to format your text", false)
+  def markdown_hint(text = '')
+    markdown(
+      "#{text} Please look at #{link_to '**Markdown Syntax**', 'https://daringfireball.net/projects/markdown/syntax',
+                                        target: '_blank'} to format your text", false
+    )
   end
 
   # Return a plain text markdown stripped of formatting.

@@ -60,9 +60,7 @@ FactoryBot.define do
         event.commercials << build(:event_commercial, commercialable: event)
         event.difficulty_level = build(:difficulty_level, program: event.program)
         event.track = build(:track, program: event.program)
-        unless event.program.conference.venue
-          create(:venue, conference: event.program.conference)
-        end
+        create(:venue, conference: event.program.conference) unless event.program.conference.venue
         event.comment_threads << build(:comment, commentable: event)
       end
 
@@ -73,7 +71,7 @@ FactoryBot.define do
 
         after(:build) do |event, evaluator|
           event.state = 'confirmed'
-          event.event_schedules << build(:event_schedule, event: event, start_time: evaluator.hour)
+          event.event_schedules << build(:event_schedule, event:, start_time: evaluator.hour)
         end
       end
     end

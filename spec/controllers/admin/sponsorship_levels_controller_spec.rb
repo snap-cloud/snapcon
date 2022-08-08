@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Admin::SponsorshipLevelsController do
   let(:admin) { create(:admin) }
   let(:conference) { create(:conference) }
-  let(:sponsorship_level) { create(:sponsorship_level, conference: conference) }
+  let(:sponsorship_level) { create(:sponsorship_level, conference:) }
 
   context 'admin is signed in' do
     before { sign_in admin }
@@ -66,7 +66,7 @@ describe Admin::SponsorshipLevelsController do
           expect do
             post :create, params: { sponsorship_level: attributes_for(:sponsorship_level),
                                     conference_id:     conference.short_title }
-          end.to change{ conference.sponsorship_levels.count }.from(0).to(1)
+          end.to change { conference.sponsorship_levels.count }.from(0).to(1)
         end
       end
 
@@ -154,7 +154,7 @@ describe Admin::SponsorshipLevelsController do
           sponsorship_level
           expect do
             delete :destroy, params: { conference_id: conference.short_title, id: sponsorship_level.id }
-          end.to change{ conference.sponsorship_levels.count }.from(1).to(0)
+          end.to change { conference.sponsorship_levels.count }.from(1).to(0)
         end
       end
 
@@ -181,7 +181,7 @@ describe Admin::SponsorshipLevelsController do
     describe 'PATCH #up' do
       before do
         sponsorship_level
-        @second_sponsorship_level = create(:sponsorship_level, conference: conference)
+        @second_sponsorship_level = create(:sponsorship_level, conference:)
         patch :up, params: { conference_id: conference.short_title, id: @second_sponsorship_level.id }
       end
 
@@ -196,7 +196,7 @@ describe Admin::SponsorshipLevelsController do
     describe 'PATCH #down' do
       before do
         sponsorship_level
-        @second_sponsorship_level = create(:sponsorship_level, conference: conference)
+        @second_sponsorship_level = create(:sponsorship_level, conference:)
         patch :down, params: { conference_id: conference.short_title, id: sponsorship_level.id }
       end
 

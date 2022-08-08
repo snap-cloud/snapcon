@@ -2,11 +2,12 @@
 
 require 'spec_helper'
 
-feature Conference do
+describe Conference do
   let!(:user) { create(:admin) }
   let!(:organization) { create(:organization) }
+
   shared_examples 'add and update conference' do
-    scenario 'adds a new conference', feature: true, js: true do
+    it 'adds a new conference', feature: true, js: true do
       expected_count = Conference.count + 1
       sign_in user
 
@@ -20,24 +21,24 @@ feature Conference do
 
       today = Time.zone.today - 1
       page
-      .execute_script("$('#conference-start-datepicker').val('" +
+        .execute_script("$('#conference-start-datepicker').val('" +
                          "#{today.strftime('%d/%m/%Y')}')")
       page
-      .execute_script("$('#conference-end-datepicker').val('" +
+        .execute_script("$('#conference-end-datepicker').val('" +
                          "#{(today + 7).strftime('%d/%m/%Y')}')")
 
       click_button 'Create Conference'
 
       page.find('#flash')
       expect(flash)
-          .to eq('Conference was successfully created.')
+        .to eq('Conference was successfully created.')
       expect(Conference.count).to eq(expected_count)
       expect(Conference.last.organization).to eq(organization)
       user.reload
-      expect(user.has_cached_role? :organizer, Conference.last).to be(true)
+      expect(user.has_cached_role?(:organizer, Conference.last)).to be(true)
     end
 
-    scenario 'update conference', feature: true, js: true do
+    it 'update conference', feature: true, js: true do
       conference = create(:conference)
       organizer = create(:organizer, resource: conference)
 
@@ -51,10 +52,10 @@ feature Conference do
 
       day = Time.zone.today + 10
       page
-          .execute_script("$('#conference-start-datepicker').val('" +
+        .execute_script("$('#conference-start-datepicker').val('" +
                              "#{day.strftime('%d/%m/%Y')}')")
       page
-          .execute_script("$('#conference-end-datepicker').val('" +
+        .execute_script("$('#conference-end-datepicker').val('" +
                              "#{(day + 7).strftime('%d/%m/%Y')}')")
 
       page.accept_alert do
@@ -74,7 +75,7 @@ feature Conference do
   describe 'admin' do
     let!(:conference) { create(:conference) }
 
-    scenario 'has organization name in menu bar for conference views', feature: true, js: true do
+    it 'has organization name in menu bar for conference views', feature: true, js: true do
       sign_in user
       visit admin_conference_path(conference.short_title)
 

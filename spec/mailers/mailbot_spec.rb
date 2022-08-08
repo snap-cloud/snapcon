@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Mailbot do
   let(:conference) { create(:conference) }
-  let!(:email_settings) { create(:email_settings, conference: conference) }
+  let!(:email_settings) { create(:email_settings, conference:) }
   let(:user) { create(:user, email: 'user@example.com') }
 
   before { conference.contact.update_attribute(:email, 'conf@domain.com') }

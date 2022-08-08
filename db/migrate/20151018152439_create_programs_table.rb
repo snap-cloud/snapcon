@@ -29,21 +29,21 @@ class CreateProgramsTable < ActiveRecord::Migration
     add_column :call_for_papers, :program_id, :integer
 
     TempConference.all.each do |conference|
-      unless TempProgram.find_by(conference_id: conference.id)
-        program = TempProgram.new
-        program.conference_id = conference.id
-        program.save!
+      next if TempProgram.find_by(conference_id: conference.id)
 
-        if (cfp = TempCallForPaper.find_by(conference_id: conference.id))
-          cfp.program_id = program.id
-          cfp.save!
+      program = TempProgram.new
+      program.conference_id = conference.id
+      program.save!
 
-          program.rating = cfp.rating
-          program.schedule_public = cfp.schedule_public
-          program.schedule_fluid = cfp.schedule_changes
-          program.save!
-        end
-      end
+      next unless (cfp = TempCallForPaper.find_by(conference_id: conference.id))
+
+      cfp.program_id = program.id
+      cfp.save!
+
+      program.rating = cfp.rating
+      program.schedule_public = cfp.schedule_public
+      program.schedule_fluid = cfp.schedule_changes
+      program.save!
     end
     remove_column :call_for_papers, :conference_id
     remove_column :call_for_papers, :rating
@@ -60,16 +60,16 @@ class CreateProgramsTable < ActiveRecord::Migration
     add_column :call_for_papers, :schedule_changes, :boolean, default: false
 
     TempConference.all.each do |conference|
-      if (program = TempProgram.find_by(conference_id: conference.id))
-        if (cfp = TempCallForPaper.find_by(program_id: program.id))
-          cfp.conference_id = program.conference_id
-          cfp.rating = program.rating
-          cfp.schedule_public = program.schedule_public
-          cfp.schedule_changes = program.schedule_fluid
-
-          cfp.save!
-        end
+      unless (program = TempProgram.find_by(conference_id: conference.id)) && (cfp = TempCallForPaper.find_by(program_id: program.id))
+        next
       end
+
+      cfp.conference_id = program.conference_id
+      cfp.rating = program.rating
+      cfp.schedule_public = program.schedule_public
+      cfp.schedule_changes = program.schedule_fluid
+
+      cfp.save!
     end
 
     remove_column :call_for_papers, :program_id

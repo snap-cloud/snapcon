@@ -2,19 +2,20 @@
 
 require 'spec_helper'
 
-feature Sponsor do
+describe Sponsor do
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'sponsors' do
-    scenario 'adds and updates sponsors', feature: true, js: true do
+    it 'adds and updates sponsors', feature: true, js: true do
       path = "#{Rails.root}/app/assets/images/rails.png"
 
-      conference.sponsorship_levels << create(:sponsorship_level, conference: conference)
+      conference.sponsorship_levels << create(:sponsorship_level, conference:)
       sign_in organizer
 
       visit admin_conference_sponsors_path(
-                conference_id: conference.short_title)
+        conference_id: conference.short_title
+      )
       # Add sponsors
       click_link 'Add Sponsor'
 
@@ -47,7 +48,7 @@ feature Sponsor do
       end
       page.find('#flash')
       expect(flash).to eq('Sponsor successfully deleted.')
-      expect(page).to_not have_table('#sponsors')
+      expect(page).not_to have_table('#sponsors')
     end
   end
 

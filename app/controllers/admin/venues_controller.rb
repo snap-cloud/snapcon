@@ -39,14 +39,15 @@ module Admin
         redirect_to admin_conference_venue_path, notice: 'Venue was successfully deleted.'
       else
         redirect_to admin_conference_venue_path, error: 'An error prohibited this Venue from being destroyed: ' \
-        "#{@venue.errors.full_messages.join('. ')}."
+                                                        "#{@venue.errors.full_messages.join('. ')}."
       end
     end
 
     private
 
     def venue_params
-      params.require(:venue).permit(:name, :street, :postalcode, :city, :country, :longitude, :latitude, :description, :website, :picture, :picture_cache, :lodgings_attributes, :conference_id)
+      params.require(:venue).permit(:name, :street, :postalcode, :city, :country, :longitude, :latitude, :description,
+                                    :website, :picture, :picture_cache, :lodgings_attributes, :conference_id)
     end
   end
 end
