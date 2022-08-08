@@ -80,7 +80,7 @@ class Event < ApplicationRecord
   delegate :url, to: :room, allow_nil: true
 
   # Multiple events can be contained within a larger parent event.
-  belongs_to :parent_event, class_name: 'Event', foreign_key: :parent_id
+  belongs_to :parent_event, class_name: 'Event', foreign_key: :parent_id, touch: true
 
   has_one :conference, through: :program
   delegate :timezone, to: :conference
@@ -350,16 +350,20 @@ class Event < ApplicationRecord
   end
 
   ##
+  # Returns the list of subevents that can be displayed in the program
+  #
+  def program_subevents
+    subevents.confirmed.sort_by { |event| event.try(:time) || event.parent_event.try(:time) }
+  end
+
+  ##
   # Returns true or false, if the event is already over or not
   #
   # ====Returns
   # * +true+ -> If the event is over
   # * +false+ -> If the event is not over yet
   def ended?
-    event_schedule = event_schedules.find_by(schedule_id: selected_schedule_id)
-    return false unless event_schedule
-
-    event_schedule.end_time < Time.current
+    event_schedules.find_by(schedule_id: selected_schedule_id).try(:ended?)
   end
 
   def conference

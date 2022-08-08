@@ -225,9 +225,9 @@ module EventsHelper
     end
   end
 
-  def join_event_link(event, event_schedule, current_user)
-    # TODO-SNAPCON: renable ended? check
+  def join_event_link(event, event_schedule, current_user, small: false)
     return unless current_user && event_schedule && event_schedule.room_url.present?
+    return if event.ended?
 
     conference = event.conference
     is_now = event_schedule.happening_now? # 30 minute threshold.
@@ -238,7 +238,7 @@ module EventsHelper
     if admin || (is_now && is_registered)
       link_to("Join Event Now #{'(Early)' unless is_now}",
               join_conference_program_proposal_path(conference, event),
-              target: '_blank', class: 'btn btn-primary',
+              target: '_blank', class: "btn btn-primary #{'btn-xs' if small}",
               'aria-label': "Join #{event.title}")
     elsif is_registered
       content_tag :span, class: 'btn btn-default btn-xs disabled' do

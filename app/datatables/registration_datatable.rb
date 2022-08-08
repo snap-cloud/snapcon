@@ -16,7 +16,7 @@ class RegistrationDatatable < AjaxDatatablesRails::ActiveRecord
       name:                     { source: 'User.name' },
       email:                    { source: 'User.email' },
       accepted_code_of_conduct: { source: 'Registration.accepted_code_of_conduct', searchable: false },
-      ticket_type:              { source: 'test' },
+      ticket_type:              { source: 'Ticket.title' },
       actions:                  { source: 'Registration.id', searchable: false, orderable: false }
     }
   end

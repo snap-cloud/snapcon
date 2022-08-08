@@ -94,6 +94,7 @@ module Admin
       @url = admin_conference_program_events_path(@conference.short_title, @event)
       @languages = @program.languages_list
       @event.submitter = current_user
+      @superevents = @program.events.where(superevent: true)
 
       if @event.save
         redirect_to admin_conference_program_events_path(@conference.short_title), notice: 'Event was successfully submitted.'
