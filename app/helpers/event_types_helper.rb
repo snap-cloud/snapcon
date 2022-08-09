@@ -18,5 +18,6 @@ module EventTypesHelper
           instructions: type.submission_instructions
         } }
       ]
+    end
   end
 end
