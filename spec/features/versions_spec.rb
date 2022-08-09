@@ -186,7 +186,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     fill_in 'event_title', with: 'ABC'
     fill_in 'event_abstract', with: 'Lorem ipsum abstract'
     select('Talk - 30 min', from: 'event[event_type_id]')
-    click_button 'Submit Proposal'
+    click_button 'Create Proposal'
 
     click_link 'Edit'
     fill_in 'event_subtitle', with: 'My event subtitle'

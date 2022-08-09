@@ -84,7 +84,7 @@ describe Event do
       @event.accept!(@options)
     end
 
-    it 'not signed_in user submits proposal' do
+    it 'not signed_in user submits proposal', :focus do
       expected_count_event = Event.count + 1
       expected_count_user = User.count + 1
 
@@ -100,7 +100,7 @@ describe Event do
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'
       fill_in 'event_submission_text', with: 'Lorem ipsum submission'
 
-      click_button 'Submit Proposal'
+      click_button 'Create Proposal'
       page.find('#flash')
       expect(page).to have_content 'Proposal was successfully submitted.'
 
@@ -160,7 +160,7 @@ describe Event do
       click_link 'Do you require something special for your event?'
       fill_in 'event_description', with: 'Lorem ipsum description'
 
-      click_button 'Submit Proposal'
+      click_button 'Create Proposal'
 
       page.find('#flash')
       expect(page).to have_content 'Proposal was successfully submitted.'

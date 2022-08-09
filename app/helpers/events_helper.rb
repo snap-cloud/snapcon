@@ -273,7 +273,7 @@ module EventsHelper
 
   def committee_only_actions(user, conference, roles: %i[organizer cfp], &block)
     role_map = roles.map { |role| { name: role, resource: conference } }
-    return unless user.has_any_role?(:admin, *role_map)
+    return unless user && user.has_any_role?(:admin, *role_map)
 
     content_tag(:div, class: 'panel panel-info') do
       concat content_tag(:div, 'Conference Organizers', class: 'panel-heading')
