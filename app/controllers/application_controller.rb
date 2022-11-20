@@ -16,18 +16,18 @@ class ApplicationController < ActionController::Base
                                  # store last url - this is needed for post-login redirect to whatever the user last visited.
                                  return unless request.get? && !request.xhr?
 
-                                 if (!request.path.starts_with?('/accounts') &&
-                                     request.path != '/users/ichain_registration/ichain_sign_up' &&
-                                     !request.path.starts_with?(Devise.ichain_base_url))
+                                 if !request.path.starts_with?('/accounts') &&
+                                    request.path != '/users/ichain_registration/ichain_sign_up' &&
+                                    !request.path.starts_with?(Devise.ichain_base_url)
                                    session[:return_to] = request.fullpath
                                  end
                                end
 
   def after_sign_in_path_for(_resource)
     if (can? :view, Conference) &&
-      (!session[:return_to] ||
-      session[:return_to] &&
-      session[:return_to] == root_path)
+       (!session[:return_to] ||
+       (session[:return_to] &&
+       session[:return_to] == root_path))
       admin_conferences_path
     else
       session[:return_to] || root_path
@@ -56,16 +56,16 @@ class ApplicationController < ActionController::Base
     Rails.logger.debug('User is disabled!')
     sign_out(current_user)
     mail = User.admin.first ? User.admin.first.email : 'the admin!'
-    redirect_to User.ichain_logout_url, error:  "This User is disabled. Please contact #{mail}!"
+    redirect_to User.ichain_logout_url, error: "This User is disabled. Please contact #{mail}!"
   end
 
   def not_found
-    raise ActionController::RoutingError.new('Not Found')
+    raise ActionController::RoutingError, 'Not Found'
   end
 
   skip_authorization_check only: :apple_pay
   def apple_pay
-    render plain: ENV.fetch('OSEM_APPLE_PAY_ID', nil)
+    render plain: ENV.fetch('OSEM_APPLE_PAY_ID', '')
   end
 
   def set_sentry_user

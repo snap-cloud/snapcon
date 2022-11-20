@@ -19,5 +19,5 @@ class EventUser < ApplicationRecord
   belongs_to :event, touch: true
   belongs_to :user
 
-  has_paper_trail on: [:create, :update], ignore: [:updated_at]
+  has_paper_trail on: %i[create update], ignore: [:updated_at]
 end

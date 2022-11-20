@@ -6,7 +6,7 @@ require 'webmock/rspec'
 describe MailblusterManager, type: :model do
   let!(:user) { create(:user) }
 
-  before(:each) do
+  before do
     WebMock.reset_executed_requests!
   end
 
@@ -80,7 +80,7 @@ describe MailblusterManager, type: :model do
       user.save
       stub_request(:put, url + Digest::MD5.hexdigest(old_email))
         .to_return(body: response_body, status: 200)
-      response = described_class.edit_lead(user, old_email: old_email)
+      response = described_class.edit_lead(user, old_email:)
 
       expect(WebMock).to have_requested(:put, url + Digest::MD5.hexdigest(old_email)).with(body: {
         email:      user.email,
@@ -109,7 +109,7 @@ describe MailblusterManager, type: :model do
       stub_request(:put, url + Digest::MD5.hexdigest(user.email))
         .to_return(body: response_body, status: 200)
       add_tags = ['2021']
-      response = described_class.edit_lead(user, add_tags: add_tags)
+      response = described_class.edit_lead(user, add_tags:)
 
       expect(WebMock).to have_requested(:put, url + Digest::MD5.hexdigest(user.email)).with(body: {
         email:      user.email,

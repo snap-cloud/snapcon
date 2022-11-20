@@ -30,7 +30,7 @@ FactoryBot.define do
     conference
 
     trait :with_cfp do
-      after(:create) { |program| create(:cfp, program: program) }
+      after(:create) { |program| create(:cfp, program:) }
     end
   end
 end

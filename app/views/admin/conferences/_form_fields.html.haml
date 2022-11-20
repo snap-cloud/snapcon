@@ -6,13 +6,13 @@
     = f.label :organization, "Organization"
     = f.select :organization_id, Organization.accessible_by(current_ability, :update).pluck(:name, :id)
 .form-group
-  = f.label :title, "Title"
+  = f.label :title
   %abbr{title: 'This field is required'} *
   = f.text_field :title, required: true, class: 'form-control', placeholder: 'Title'
   %span.help-block
     The name of your conference as it shall appear throughout the site. Example: 'openSUSE Conference 2013'
 .form-group
-  = f.label :title, "Short Title"
+  = f.label :short_title
   %abbr{title: 'This field is required'} *
   = f.text_field :short_title, required: true, pattern: '[a-zA-Z0-9_-]+', title: 'Only letters, numbers, underscores, and dashes.', prepend: conferences_url + '/', class: 'form-control', placeholder: 'Short Title'
   %span.help-block
@@ -37,23 +37,27 @@
       This will be shown in the navigation bar and emails.
 
   .form-group
-    = f.label :custom_css
-    = f.text_area :custom_css, rows: 10, html: { rows: 10, style: 'font-family: monospace' }
+    = f.label :custom_css, "Custom CSS"
+    = f.text_area :custom_css, rows: 10, class: 'form-control', html: { style: 'font-family: monospace' }
     %span.help-block
       Add custon CSS to all pages within the conference. The class
       %code .conference-#{@conference.short_title}
       is included on the body element.
 
-  = f.select :ticket_layout, Conference.ticket_layouts.keys, {}, class: 'form-control'
-  %span.help-block
-    Layout type for tickets of the conference.
+  .form-group
+    = f.label :ticket_layout
+    = f.select :ticket_layout, Conference.ticket_layouts.keys, {}, class: 'form-control'
+    %span.help-block
+      Layout type for tickets of the conference.
 
 %h4
   Scheduling
 %hr
-= f.time_zone_select :timezone, nil, { default: 'UTC' }, { class: 'form-control' }
-%span.help-block
-  Please select in what time zone your conference will take place.
+.form-group
+  = f.label :timezone
+  = f.time_zone_select :timezone, nil, { default: 'UTC' }, { class: 'form-control' }
+  %span.help-block
+    Please select in what time zone your conference will take place.
 .form-group
   = f.label :start_date, "Start Date"
   %abbr{title: 'This field is required'} *
@@ -61,13 +65,15 @@
 .form-group
   = f.label :end_date, "End Date"
   %abbr{title: 'This field is required'} *
-  = f.text_field :end_date,  id: 'conference-end-datepicker', required: true, class: 'form-control'
+  = f.text_field :end_date, id: 'conference-end-datepicker', required: true, class: 'form-control'
 - unless f.object.new_record? # We are showing more fields on the edit form
   .form-group
+    = f.label :start_hour
     = f.number_field :start_hour, size: 2, min: 0, max: 23, class: 'form-control'
     %span.help-block
       = rescheduling_hint(@affected_event_count)
   .form-group
+    = f.label :end_hour
     = f.number_field :end_hour, size: 2, min: 1, max: 24, class: 'form-control'
     %span.help-block
       = rescheduling_hint(@affected_event_count)
@@ -75,6 +81,7 @@
     Registrations
   %hr
   .form-group
+    = f.label :registration_limit
     = f.number_field :registration_limit, in: 0..9999, class: 'form-control'
     %span.help-block
       Limit the number of registrations to the conference (0 no limit). Please note that the registration limit
@@ -85,6 +92,7 @@
     Booths
   %hr
   .form-group
+    = f.label :booth_limit
     = f.number_field :booth_limit, in: 0..9999, class: 'form-control'
     %span.help-block
       = (t'booth').capitalize

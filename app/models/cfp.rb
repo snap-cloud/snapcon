@@ -16,7 +16,7 @@
 #
 
 class Cfp < ApplicationRecord
-  TYPES = %w(events booths tracks).freeze
+  TYPES = %w[events booths tracks].freeze
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
   belongs_to :program
@@ -137,8 +137,10 @@ class Cfp < ApplicationRecord
   end
 
   def start_after_end_date
-    errors
-    .add(:start_date, "can't be after the end date") if start_date && end_date && start_date > end_date
+    if start_date && end_date && start_date > end_date
+      errors
+        .add(:start_date, "can't be after the end date")
+    end
   end
 
   def conference_id

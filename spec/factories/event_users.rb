@@ -17,7 +17,7 @@ FactoryBot.define do
   factory :event_user do
     user
 
-    Hash[EventUser::ROLES].each_value do |role|
+    EventUser::ROLES.to_h.each_value do |role|
       factory role do
         event_role { role }
       end

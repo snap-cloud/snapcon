@@ -2,11 +2,9 @@
 
 module ChartHelper
   def chart_values(distribution_hash)
-    Hash[
-      distribution_hash.collect do |key, data|
-        [key, data['value']]
-      end
-    ]
+    distribution_hash.collect do |key, data|
+      [key, data['value']]
+    end.to_h
   end
 
   def chart_colors(distribution_hash)

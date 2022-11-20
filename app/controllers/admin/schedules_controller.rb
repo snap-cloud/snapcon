@@ -6,7 +6,7 @@ module Admin
     # the schedule of a conference, which should not be accessed in the first place
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :program, through: :conference, singleton: true
-    load_and_authorize_resource :schedule, through: :program, except: [:new, :create]
+    load_and_authorize_resource :schedule, through: :program, except: %i[new create]
     load_resource :event_schedules, through: :schedule
     load_resource :selected_schedule, through: :program, singleton: true
     load_resource :venue, through: :conference, singleton: true
@@ -37,7 +37,7 @@ module Admin
           :difficulty_level,
           :track,
           :event_type,
-          event_users: :user
+          { event_users: :user }
         ]
       )
       @event_types = @program.event_types || []

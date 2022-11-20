@@ -3,7 +3,7 @@
 module Admin
   class CommercialsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
-    load_and_authorize_resource through: :conference, except: [:new, :create]
+    load_and_authorize_resource through: :conference, except: %i[new create]
 
     def index
       @commercials = @conference.commercials
@@ -21,7 +21,7 @@ module Admin
       else
         redirect_to admin_conference_commercials_path,
                     error: 'An error prohibited materials from being saved: ' \
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                           "#{@commercial.errors.full_messages.join('. ')}."
 
       end
     end
@@ -33,7 +33,7 @@ module Admin
       else
         redirect_to admin_conference_commercials_path,
                     error: 'An error prohibited materials from being saved: ' \
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                           "#{@commercial.errors.full_messages.join('. ')}."
       end
     end
 
@@ -66,7 +66,9 @@ module Admin
       else
         errors_text = ''
         errors_text += 'Unable to find event with ID: ' + errors[:no_event].join(', ') + '. ' if errors[:no_event].any?
-        errors_text += 'There were some errors: ' + errors[:validation_errors].join('. ') if errors[:validation_errors].any?
+        if errors[:validation_errors].any?
+          errors_text += 'There were some errors: ' + errors[:validation_errors].join('. ')
+        end
 
         flash[:error] = errors_text
       end

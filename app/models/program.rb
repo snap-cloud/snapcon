@@ -65,7 +65,7 @@ class Program < ApplicationRecord
   has_many :event_schedules, through: :events
 
   has_many :event_users, through: :events
-  has_many :program_events_speakers, -> {where(event_role: 'speaker')}, through: :events, source: :event_users
+  has_many :program_events_speakers, -> { where(event_role: 'speaker') }, through: :events, source: :event_users
   has_many :speakers, -> { distinct }, through: :program_events_speakers, source: :user do
     def confirmed
       joins(:events).where(events: { state: :confirmed })
@@ -100,9 +100,7 @@ class Program < ApplicationRecord
   # Returns all event_schedules for the selected schedule ordered by start_time
   def selected_event_schedules(includes: [:event])
     event_schedules = []
-    if selected_schedule
-      event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc)
-    end
+    event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc) if selected_schedule
 
     tracks.self_organized.confirmed.includes(selected_schedule: { event_schedules: includes }).order(start_date: :asc).each do |track|
       next unless track.selected_schedule
@@ -138,9 +136,15 @@ class Program < ApplicationRecord
   # ====Returns
   # Errors when the condition is not true
   def voting_dates_exist
-    errors.add(:voting_start_date, 'must be set, when blind voting is enabled') if blind_voting && !voting_start_date && !voting_end_date
+    if blind_voting && !voting_start_date && !voting_end_date
+      errors.add(:voting_start_date,
+                 'must be set, when blind voting is enabled')
+    end
 
-    errors.add(:voting_end_date, 'must be set, when blind voting is enabled') if blind_voting && !voting_start_date && !voting_end_date
+    if blind_voting && !voting_start_date && !voting_end_date
+      errors.add(:voting_end_date,
+                 'must be set, when blind voting is enabled')
+    end
 
     errors.add(:voting_end_date, 'must be set, when voting_start_date is set') if voting_start_date && !voting_end_date
 
@@ -152,7 +156,10 @@ class Program < ApplicationRecord
   # ====Returns
   # Errors when the condition is not true
   def voting_start_date_before_end_date
-    errors.add(:voting_start_date, 'must be before voting end date') if voting_start_date && voting_end_date && voting_start_date > voting_end_date
+    if voting_start_date && voting_end_date && voting_start_date > voting_end_date
+      errors.add(:voting_start_date,
+                 'must be before voting end date')
+    end
   end
 
   ##
@@ -187,7 +194,7 @@ class Program < ApplicationRecord
   end
 
   def languages_list
-    languages.split(',').map {|l| ISO_639.find(l).english_name} if languages.present?
+    languages.split(',').map { |l| ISO_639.find(l).english_name } if languages.present?
   end
 
   ##
@@ -226,16 +233,16 @@ class Program < ApplicationRecord
   def event_schedule_for_fullcalendar
     Rails.cache.fetch("#{cache_key_for_schedule}}/fullcalendar=X") do
       selected_event_schedules(includes: [:event, :room,
-                                          { event: [:event_type, :track, :program, :parent_event] }])
+                                          { event: %i[event_type track program parent_event] }])
     end
   end
 
   def event_schedule_program_view
     Rails.cache.fetch("#{cache_key_for_schedule}}/program") do
       selected_event_schedules(includes: [:event, :room,
-                                          { event: [:event_type, :speakers, :speaker_event_users,
-                                                    :submitter, :submitter_event_user,
-                                                    :track, :program] }])
+                                          { event: %i[event_type speakers speaker_event_users
+                                                      submitter submitter_event_user
+                                                      track program] }])
     end
   end
 
@@ -282,11 +289,15 @@ class Program < ApplicationRecord
     self.languages = languages.delete(' ').downcase
     errors.add(:languages, 'must be two letters separated by commas') && return unless
     languages.match(/^$|(\A[a-z][a-z](,[a-z][a-z])*\z)/).present?
+
     languages_array = languages.split(',')
     # We check that languages are not repeated
     errors.add(:languages, "can't be repeated") && return unless languages_array.uniq!.nil?
+
     # We check if every language is a valid ISO 639-1 language
-    errors.add(:languages, 'must be ISO 639-1 valid codes') unless languages_array.select{ |x| ISO_639.find(x).nil? }.empty?
+    errors.add(:languages, 'must be ISO 639-1 valid codes') unless languages_array.select do |x|
+                                                                     ISO_639.find(x).nil?
+                                                                   end.empty?
   end
 
   ##

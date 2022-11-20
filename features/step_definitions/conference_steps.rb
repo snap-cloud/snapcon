@@ -10,9 +10,7 @@ Given /^I sign in with username "(.*)" and password "(.*)"/ do |username, passwo
   step 'I should see "Signed in successfully."'
 end
 When /^I click on the "(.*)" link of.*"(.*)"/ do |button, data|
-  if button == 'Schedule'
-    click_link(button, href: vertical_schedule_conference_schedule_path(data))
-  end
+  click_link(button, href: vertical_schedule_conference_schedule_path(data)) if button == 'Schedule'
 end
 When /^I click on the "(.*)" button/ do |button|
   click_on(class: 'fc-' + button + '-button')

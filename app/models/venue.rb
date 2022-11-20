@@ -27,7 +27,7 @@ class Venue < ApplicationRecord
   has_many :rooms, dependent: :destroy
   before_create :generate_guid
 
-  has_paper_trail ignore: [:updated_at, :guid], meta: { conference_id: :conference_id }
+  has_paper_trail ignore: %i[updated_at guid], meta: { conference_id: :conference_id }
 
   accepts_nested_attributes_for :commercial, allow_destroy: true
   validates :name, :street, :city, :country, presence: true
@@ -58,7 +58,9 @@ class Venue < ApplicationRecord
   def notify_on_venue_changed?
     return false unless conference.try(:email_settings).try(:send_on_venue_updated)
     # do not notify unless the address changed
-    return false unless saved_change_to_name? || saved_change_to_street? || saved_change_to_city? || saved_change_to_country?
+    unless saved_change_to_name? || saved_change_to_street? || saved_change_to_city? || saved_change_to_country?
+      return false
+    end
 
     # do not notify unless the mail content is set up
     (!conference.email_settings.venue_updated_subject.blank? && !conference.email_settings.venue_updated_body.blank?)
@@ -70,7 +72,7 @@ class Venue < ApplicationRecord
   def generate_guid
     loop do
       @guid = SecureRandom.urlsafe_base64
-      break unless Venue.where(guid: guid).any?
+      break unless Venue.where(guid:).any?
     end
     self.guid = @guid
   end

@@ -35,8 +35,7 @@ module ApplicationHelper
       endstr = end_date.strftime('%B %d, %Y')
     end
 
-    result = startstr + endstr
-    result
+    startstr + endstr
   end
 
   # Returns time with conference timezone
@@ -50,15 +49,18 @@ module ApplicationHelper
   end
 
   def add_association_link(association_name, form_builder, div_class, html_options = {})
-    link_to_add_association 'Add ' + association_name.to_s.singularize, form_builder, div_class, html_options.merge(class: 'assoc btn btn-success')
+    link_to_add_association 'Add ' + association_name.to_s.singularize, form_builder, div_class,
+                            html_options.merge(class: 'assoc btn btn-success')
   end
 
   def remove_association_link(association_name, form_builder)
-    link_to_remove_association('Remove ' + association_name.to_s.singularize, form_builder, class: 'assoc btn btn-danger') + tag(:hr)
+    link_to_remove_association('Remove ' + association_name.to_s.singularize, form_builder,
+                               class: 'assoc btn btn-danger') + tag(:hr)
   end
 
   def dynamic_association(association_name, title, form_builder, options = {})
-    render 'shared/dynamic_association', association_name: association_name, title: title, f: form_builder, hint: options[:hint]
+    render 'shared/dynamic_association', association_name:, title:, f: form_builder,
+hint: options[:hint]
   end
 
   def tracks(conference)
@@ -79,16 +81,14 @@ module ApplicationHelper
   # Output will be 'title, description and conference'
   def updated_attributes(version)
     version.changeset
-      .reject{ |_, values| values[0].blank? && values[1].blank? }
-      .keys.map{ |key| key.gsub('_id', '').tr('_', ' ')}.join(', ')
-      .reverse.sub(',', ' dna ').reverse
+           .reject { |_, values| values[0].blank? && values[1].blank? }
+           .keys.map { |key| key.gsub('_id', '').tr('_', ' ') }.join(', ')
+           .reverse.sub(',', ' dna ').reverse
   end
 
   def normalize_array_length(hashmap, length)
     hashmap.each_value do |value|
-      if value.length < length
-        value.fill(value[-1], value.length...length)
-      end
+      value.fill(value[-1], value.length...length) if value.length < length
     end
   end
 
@@ -97,7 +97,9 @@ module ApplicationHelper
     return nil unless event.scheduled? && event.program.selected_event_schedules
 
     event_schedule = event.program.selected_event_schedules.find { |es| es.event == event }
-    other_event_schedules = event.program.selected_event_schedules.reject { |other_event_schedule| other_event_schedule == event_schedule }
+    other_event_schedules = event.program.selected_event_schedules.reject do |other_event_schedule|
+      other_event_schedule == event_schedule
+    end
     concurrent_events = []
 
     event_time_range = (event_schedule.start_time.strftime '%Y-%m-%d %H:%M')...(event_schedule.end_time.strftime '%Y-%m-%d %H:%M')
@@ -105,15 +107,13 @@ module ApplicationHelper
       next unless other_event_schedule.event.confirmed?
 
       other_event_time_range = (other_event_schedule.start_time.strftime '%Y-%m-%d %H:%M')...(other_event_schedule.end_time.strftime '%Y-%m-%d %H:%M')
-      if (event_time_range.to_a & other_event_time_range.to_a).present?
-        concurrent_events << other_event_schedule.event
-      end
+      concurrent_events << other_event_schedule.event if (event_time_range.to_a & other_event_time_range.to_a).present?
     end
     concurrent_events.sort_by { |schedule| schedule.room&.order }
   end
 
   def speaker_links(event)
-    safe_join(event.speakers.map{ |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
+    safe_join(event.speakers.map { |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
   end
 
   def volunteer_links(event)

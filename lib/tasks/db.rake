@@ -22,15 +22,15 @@ namespace :db do
     case connection_config.adapter
     when 'postgresql'
       system("PGPASSWORD=#{config[:password]} pg_restore " \
-        '--verbose --clean --no-acl --no-owner ' \
-        "--username=#{config[:username]} " \
-        "-d #{config[:database]} #{dump_path}")
+             '--verbose --clean --no-acl --no-owner ' \
+             "--username=#{config[:username]} " \
+             "-d #{config[:database]} #{dump_path}")
     when 'mysql', 'mysql2'
       system("mysql -u #{config[:username]} " \
-        "-p#{config[:password]} #{config[:database]} < #{dump_path}")
+             "-p#{config[:password]} #{config[:database]} < #{dump_path}")
     else
-      raise NotImplementedError.new("An importer hasn't been implemented for: " \
-        "#{connection_config.adapter}")
+      raise NotImplementedError, "An importer hasn't been implemented for: " \
+                                 "#{connection_config.adapter}"
     end
   end
 end

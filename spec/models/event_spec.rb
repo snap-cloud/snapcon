@@ -41,6 +41,7 @@ require 'spec_helper'
 
 describe Event do
   subject { create(:event) }
+
   let(:conference) { create(:conference) }
   let(:event) { create(:event, program: conference.program) }
   let(:new_event) { create(:event) }
@@ -61,22 +62,22 @@ describe Event do
     it { is_expected.to validate_presence_of(:event_type) }
 
     describe 'max_attendees_no_more_than_room_size' do
-      before :each do
+      before do
         unless (venue = event.program.conference.venue)
           venue = create(:venue, conference: event.program.conference)
         end
-        create(:event_schedule, event: event, room: create(:room, venue: venue, size: 3))
+        create(:event_schedule, event:, room: create(:room, venue:, size: 3))
         event.require_registration = true
       end
 
-      it 'it is valid, if max_attendees is less than room size' do
+      it 'is valid, if max_attendees is less than room size' do
         event.max_attendees = 2
 
         expect(event.valid?).to be true
         expect(event.errors.full_messages).to eq []
       end
 
-      it 'it is not valid, if max_attendees attribute is bigger than size of room' do
+      it 'is not valid, if max_attendees attribute is bigger than size of room' do
         event.max_attendees = 4
 
         expect(event.valid?).to be false
@@ -85,7 +86,7 @@ describe Event do
     end
 
     describe '#abstract_limit' do
-      before :each do
+      before do
         event.event_type.maximum_abstract_length = 2
         event.event_type.minimum_abstract_length = 2
       end
@@ -114,7 +115,7 @@ describe Event do
     end
 
     describe '#submission_limit' do
-      before :each do
+      before do
         event.event_type.maximum_abstract_length = 3
         event.event_type.minimum_abstract_length = 2
       end
@@ -151,7 +152,7 @@ describe Event do
       context 'is valid' do
         it 'when the track belongs to the same program and is confirmed' do
           track = create(:track, state: 'confirmed', program: conference.program)
-          event = build(:event, program: conference.program, track: track)
+          event = build(:event, program: conference.program, track:)
           expect(event.valid?).to be true
         end
       end
@@ -159,7 +160,7 @@ describe Event do
       context 'is invalid' do
         it 'when the track doesn\'t have the same program' do
           track = create(:track, state: 'confirmed')
-          event = build(:event, program: conference.program, track: track)
+          event = build(:event, program: conference.program, track:)
           expect(event.valid?).to be false
           expect(event.errors[:track]).to eq ['is invalid']
         end
@@ -167,7 +168,7 @@ describe Event do
         it 'when the track is unconfirmed' do
           track = create(:track, program: conference.program)
           allow(track).to receive(:confirmed?).and_return(false)
-          event = build(:event, program: conference.program, track: track)
+          event = build(:event, program: conference.program, track:)
           expect(event.valid?).to be false
           expect(event.errors[:track]).to eq ['is invalid']
         end
@@ -218,15 +219,16 @@ describe Event do
 
   describe '#scheduled?' do
     it { expect(event.scheduled?).to be false }
+
     it 'returns true if the event is scheduled' do
-      create(:event_schedule, event: event)
+      create(:event_schedule, event:)
       expect(event.scheduled?).to be true
     end
   end
 
   describe '#registration_possible?' do
     describe 'when the event requires registration' do
-      before :each do
+      before do
         event.state = 'confirmed'
         event.require_registration = true
         event.max_attendees = 3
@@ -275,13 +277,13 @@ describe Event do
     end
 
     it 'returns 0 if the event has no votes from that user' do
-      create(:vote, user: another_user, event: event)
+      create(:vote, user: another_user, event:)
       expect(event.user_rating(user)).to eq 0
     end
 
     it 'returns the rating if the event has votes from that user' do
-      create(:vote, user: another_user, event: event, rating: 3)
-      create(:vote, user: user, event: event, rating: 2)
+      create(:vote, user: another_user, event:, rating: 3)
+      create(:vote, user:, event:, rating: 2)
       expect(event.user_rating(user)).to eq 2
     end
   end
@@ -292,17 +294,17 @@ describe Event do
     end
 
     it 'returns false if the event has no votes by that user' do
-      create(:vote, user: another_user, event: event)
+      create(:vote, user: another_user, event:)
       expect(event.voted?(user)).to be false
     end
 
     it 'returns true when the event has votes' do
-      create(:vote, user: another_user, event: event)
+      create(:vote, user: another_user, event:)
       expect(event.voted?).to be true
     end
 
     it 'returns true when the event has votes by that user' do
-      create(:vote, user: user, event: event)
+      create(:vote, user:, event:)
       expect(event.voted?(user)).to be true
     end
   end
@@ -315,10 +317,10 @@ describe Event do
     end
 
     context 'returns the average voting' do
-      before :each do
+      before do
         another_user = create(:user)
-        create(:vote, user: user, event: event, rating: 1)
-        create(:vote, user: another_user, event: event, rating: 3)
+        create(:vote, user:, event:, rating: 1)
+        create(:vote, user: another_user, event:, rating: 3)
       end
 
       it 'when there are votes and the average is integer' do
@@ -327,7 +329,7 @@ describe Event do
 
       it 'when there are votes and the average is float' do
         new_user = create(:user)
-        create(:vote, user: new_user, event: event, rating: 3)
+        create(:vote, user: new_user, event:, rating: 3)
         expect(event.average_rating).to eq '2.33'
       end
     end
@@ -336,7 +338,7 @@ describe Event do
   describe '#submitter' do
     it 'returns the user that submitted the event' do
       submitter = create(:user)
-      submitted_event = create(:event, submitter: submitter)
+      submitted_event = create(:event, submitter:)
       expect(submitted_event.submitter).to eq submitter
     end
   end
@@ -344,25 +346,30 @@ describe Event do
   describe '#transition_possible?(transition)' do
     shared_examples 'transition_possible?(transition)' do |state, transition, expected|
       it "returns #{expected} for #{transition} transition, when the event is #{state}}" do
-        my_event = create(:event, state: state)
+        my_event = create(:event, state:)
         expect(my_event.transition_possible?(transition.to_sym)).to eq expected
       end
     end
 
-    states = [:new, :withdrawn, :unconfirmed, :confirmed, :canceled, :rejected]
-    transitions = [:restart, :withdraw, :accept, :confirm, :cancel, :reject]
+    states = %i[new withdrawn unconfirmed confirmed canceled rejected]
+    transitions = %i[restart withdraw accept confirm cancel reject]
 
-    states_transitions = { new:         { restart: false, withdraw: true, accept: true, confirm: false, cancel: false, reject: true},
-                           withdrawn:   { restart: true, withdraw: false, accept: false, confirm: false, cancel: false, reject: false},
-                           unconfirmed: { restart: false, withdraw: true, accept: false, confirm: true, cancel: true, reject: false},
-                           confirmed:   { restart: false, withdraw: true, accept: false, confirm: false, cancel: true, reject: false},
-                           canceled:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false, reject: false},
-                           rejected:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false, reject: false}
-                         }
+    states_transitions = { new:         { restart: false, withdraw: true, accept: true, confirm: false, cancel: false, reject: true },
+                           withdrawn:   { restart: true, withdraw: false, accept: false, confirm: false, cancel: false,
+reject: false },
+                           unconfirmed: { restart: false, withdraw: true, accept: false, confirm: true, cancel: true,
+reject: false },
+                           confirmed:   { restart: false, withdraw: true, accept: false, confirm: false, cancel: true,
+reject: false },
+                           canceled:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false,
+reject: false },
+                           rejected:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false,
+reject: false } }
 
     states.each do |state|
       transitions.each do |transition|
-        it_behaves_like 'transition_possible?(transition)', state, transition, states_transitions[state.to_sym][transition.to_sym]
+        it_behaves_like 'transition_possible?(transition)', state, transition,
+                        states_transitions[state.to_sym][transition.to_sym]
       end
     end
   end
@@ -411,13 +418,13 @@ describe Event do
   end
 
   describe '#selected_schedule_id' do
-    before :each do
+    before do
       conference.program.selected_schedule = create(:schedule, program: conference.program)
     end
 
     context 'returns the program\'s selected_schedule_id' do
       it 'when it doesn\'t have a track' do
-        create(:event_schedule, event: event, schedule: conference.program.selected_schedule)
+        create(:event_schedule, event:, schedule: conference.program.selected_schedule)
         expect(event.send(:selected_schedule_id)).to eq conference.program.selected_schedule_id
       end
 

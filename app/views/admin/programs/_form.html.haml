@@ -26,6 +26,7 @@
   .form-group
     = f.label :voting_start_date
     = f.text_field :voting_start_date, id: 'datetimepicker-voting_start_date', value: (f.object.voting_start_date.to_formatted_s(:db_without_seconds) unless f.object.voting_start_date.nil?), class: 'form-control'
+  .form-group
     = f.label :voting_end_date
     = f.text_field :voting_end_date, id: 'datetimepicker-voting_end_date', value: (f.object.voting_end_date.to_formatted_s(:db_without_seconds) unless f.object.voting_end_date.nil?), class: 'form-control'
   %h4
@@ -42,7 +43,9 @@
     = f.select :languages, I18nData.languages.invert, { include_blank: 'Any Language', include_hidden: false }, { multiple: true, class: 'form-control' }
     %span.help-block
       The languages allowed for events.
+  %hr
   .form-group
+    = f.label :schedule_interval
     = f.number_field :schedule_interval, autofocus: true, class: 'form-control'
     %span.help-block
       It is the minimal time interval of your schedule. The value should be 5, 6, 10, 12, 15, 20, 30 or 60.

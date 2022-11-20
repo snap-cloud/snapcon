@@ -8,12 +8,12 @@ describe Admin::OrganizationsController do
   let!(:user) { create(:user) }
 
   context 'logged in as user with no role' do
-    before :each do
+    before do
       sign_in user
     end
 
     describe 'GET #new' do
-      before :each do
+      before do
         get :new
       end
 
@@ -24,7 +24,7 @@ describe Admin::OrganizationsController do
     end
 
     describe 'GET #index' do
-      before :each do
+      before do
         get :index
       end
 
@@ -39,7 +39,7 @@ describe Admin::OrganizationsController do
         expected = expect do
           post :create, params: { organization: attributes_for(:organization) }
         end
-        expected.to_not change(Organization, :count)
+        expected.not_to change(Organization, :count)
       end
 
       it 'redirects to root' do
@@ -68,7 +68,7 @@ describe Admin::OrganizationsController do
           expected = expect do
             delete :destroy, params: { id: organization.id }
           end
-          expected.to_not change(Organization, :count)
+          expected.not_to change(Organization, :count)
         end
 
         it 'redirects to root' do
@@ -82,7 +82,7 @@ describe Admin::OrganizationsController do
   end
 
   context 'logged in as admin' do
-    before :each do
+    before do
       sign_in admin
     end
 
@@ -90,6 +90,7 @@ describe Admin::OrganizationsController do
       before do
         get :new
       end
+
       it { expect(response).to render_template('new') }
     end
 
@@ -97,6 +98,7 @@ describe Admin::OrganizationsController do
       before do
         get :index
       end
+
       it { expect(response).to render_template('index') }
     end
 
@@ -122,7 +124,7 @@ describe Admin::OrganizationsController do
           expected = expect do
             post :create, params: { organization: attributes_for(:organization, name: '') }
           end
-          expected.to_not change(Organization, :count)
+          expected.not_to change(Organization, :count)
         end
 
         it 'redirects to new' do
@@ -136,7 +138,8 @@ describe Admin::OrganizationsController do
 
     describe 'PATCH #update' do
       it 'saves and redirects to index when the attributes are valid' do
-        patch :update, params: { id: organization.id, organization: attributes_for(:organization, name: 'changed name') }
+        patch :update,
+              params: { id: organization.id, organization: attributes_for(:organization, name: 'changed name') }
 
         organization.reload
         expect(organization.name).to eq('changed name')
@@ -154,7 +157,7 @@ describe Admin::OrganizationsController do
 
     describe 'DELETE #destroy' do
       context 'for a valid organization' do
-        it 'should successfully destroy a resource' do
+        it 'successfullies destroy a resource' do
           expected = expect do
             delete :destroy, params: { id: organization.id }
           end

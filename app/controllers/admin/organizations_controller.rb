@@ -3,7 +3,7 @@
 module Admin
   class OrganizationsController < Admin::BaseController
     load_and_authorize_resource :organization
-    before_action :verify_user, only: [:assign_org_admins, :unassign_org_admins]
+    before_action :verify_user, only: %i[assign_org_admins unassign_org_admins]
 
     def index
       @organizations = Organization.all
@@ -85,7 +85,7 @@ module Admin
       unless @user
         redirect_to admins_admin_organization_path(@organization),
                     error: 'Could not find user. Please provide a valid email!'
-        return
+        nil
       end
     end
 

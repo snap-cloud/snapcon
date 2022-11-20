@@ -2,17 +2,17 @@
 
 require 'spec_helper'
 
-feature Survey do
+describe Survey do
   let(:conference) { create(:conference) }
 
   context 'as an organizer' do
     let(:organizer) { create(:organizer, resource: conference) }
 
-    before :each do
+    before do
       sign_in organizer
     end
 
-    scenario 'create a survey', feature: true, js: true do
+    it 'create a survey', feature: true, js: true do
       visit admin_conference_path(conference)
       click_link 'Surveys'
       click_link 'New'
@@ -30,11 +30,11 @@ feature Survey do
   context 'as an attendee' do
     let(:attendee) { create(:user) }
 
-    before :each do
+    before do
       sign_in attendee
     end
 
-    scenario 'respond to a survey during registration', feature: true, js: true do
+    it 'respond to a survey during registration', feature: true, js: true do
       create :registration_period, conference: conference
       create :registration, conference: conference, user: attendee
       survey = create(:survey, surveyable: conference, target: :during_registration)

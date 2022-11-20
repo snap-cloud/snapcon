@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Admin::VersionsController do
-
   let!(:conference) { create(:conference, short_title: 'exampletitle', description: 'Example Description') }
   let(:admin) { create(:admin) }
   let(:role_organizer) { conference.roles.find_by(name: 'organizer') }
@@ -12,7 +11,7 @@ describe Admin::VersionsController do
 
   with_versioning do
     describe 'GET #revert' do
-      before :each do
+      before do
         sign_in admin
       end
 
@@ -42,7 +41,7 @@ describe Admin::VersionsController do
       end
 
       it 'reverting creation of object deletes it' do
-        lodging = create(:lodging, conference: conference)
+        lodging = create(:lodging, conference:)
         get :revert_object, params: { id: lodging.versions.last.id }
         expect(lodging.versions.last.event).to eq 'destroy'
         expect(Lodging.count).to eq 0
@@ -57,7 +56,7 @@ describe Admin::VersionsController do
     end
 
     describe 'GET #revert_attribute' do
-      before :each do
+      before do
         sign_in admin
       end
 
@@ -87,7 +86,7 @@ describe Admin::VersionsController do
       end
 
       it 'fails on trying to revert creation event' do
-        lodging = create(:lodging, conference: conference)
+        lodging = create(:lodging, conference:)
         get :revert_attribute, params: { id: lodging.versions.last.id, attribute: 'name' }
         expect(flash[:alert]).to eq 'You are not authorized to access this page.'
       end
@@ -114,14 +113,14 @@ describe Admin::VersionsController do
       end
 
       context 'with conference' do
-        before :each do
+        before do
           @user = create(:user)
 
           conference.update(short_title: 'testtitle', description: 'Some random text')
           @version_organizer = conference.versions.last
           cfp = create(:cfp, program: conference.program)
           @version_cfp = cfp.versions.last
-          registration = create(:registration, conference: conference)
+          registration = create(:registration, conference:)
           registration.update_attribute(:attended, true)
           @version_info_desk = registration.versions.last
         end

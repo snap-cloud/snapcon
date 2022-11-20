@@ -2,14 +2,13 @@
 
 require 'spec_helper'
 
-feature Track do
+describe Track do
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
   let(:user) { create(:user) }
 
   shared_examples 'admin tracks' do
-    scenario 'adds a track', feature: true, js: true do
-
+    it 'adds a track', feature: true, js: true do
       sign_in organizer
 
       expected = expect do
@@ -29,7 +28,7 @@ feature Track do
       end
     end
 
-    scenario 'deletes a track', feature: true, js: true do
+    it 'deletes a track', feature: true, js: true do
       track = create(:track, program_id: conference.program.id)
       sign_in organizer
 
@@ -45,7 +44,7 @@ feature Track do
       expect(Track.count).to eq(0)
     end
 
-    scenario 'updates a track', feature: true, js: true do
+    it 'updates a track', feature: true, js: true do
       create(:track, program_id: conference.program.id)
       sign_in organizer
 
@@ -61,7 +60,7 @@ feature Track do
         click_button 'Update Track'
         page.find('#flash')
       end
-      expected.to_not(change { Track.count })
+      expected.not_to(change { Track.count })
       expect(flash).to eq('Track successfully updated.')
       within('table#tracks') do
         expect(page.has_content?('Distribution')).to be true
@@ -71,8 +70,7 @@ feature Track do
   end
 
   shared_examples 'non admin tracks' do
-    scenario 'adds a track', feature: true, js: true do
-
+    it 'adds a track', feature: true, js: true do
       sign_in user
 
       expected = expect do
@@ -95,7 +93,7 @@ feature Track do
       end
     end
 
-    scenario 'withdraws a track', feature: true, js: true do
+    it 'withdraws a track', feature: true, js: true do
       track = create(:track, :self_organized, program_id: conference.program.id, submitter: user)
       sign_in user
 
@@ -108,7 +106,7 @@ feature Track do
         page.find('#flash')
       end
 
-      expected.to_not(change { Track.count })
+      expected.not_to(change { Track.count })
       expect(flash).to eq("Track #{track.name} withdrawn.")
       within('table#tracks') do
         expect(page.has_content?(track.name)).to be true
@@ -116,7 +114,7 @@ feature Track do
       end
     end
 
-    scenario 'updates a track', feature: true, js: true do
+    it 'updates a track', feature: true, js: true do
       create(:track, :self_organized, program_id: conference.program.id, submitter: user)
       sign_in user
 
@@ -131,7 +129,7 @@ feature Track do
         page.find('#flash')
       end
 
-      expected.to_not(change { Track.count })
+      expected.not_to(change { Track.count })
       expect(flash).to eq('Track request successfully updated.')
       within('table#tracks') do
         expect(page.has_content?('Distribution')).to be true
@@ -145,7 +143,7 @@ feature Track do
   end
 
   describe 'signed in user' do
-    before :each do
+    before do
       create(:cfp, cfp_type: 'tracks', program: conference.program)
     end
 

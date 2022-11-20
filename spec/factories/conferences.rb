@@ -51,10 +51,13 @@ FactoryBot.define do
     organization
     color { '#FFFFFF' }
     after(:create) do |conference|
-      Role.where(name: 'organizer', resource: conference).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
+      Role.where(name:     'organizer',
+                 resource: conference).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
       Role.where(name: 'cfp', resource: conference).first_or_create(description: 'For the members of the CfP team')
-      Role.where(name: 'info_desk', resource: conference).first_or_create(description: 'For the members of the Info Desk team')
-      Role.where(name: 'volunteers_coordinator', resource: conference).first_or_create(description: 'For the people in charge of volunteers')
+      Role.where(name:     'info_desk',
+                 resource: conference).first_or_create(description: 'For the members of the Info Desk team')
+      Role.where(name:     'volunteers_coordinator',
+                 resource: conference).first_or_create(description: 'For the people in charge of volunteers')
     end
 
     trait :with_splashpage do
@@ -71,19 +74,19 @@ FactoryBot.define do
 
         # Contact/Program is created by Conference callbacks
         conference.contact.destroy
-        conference.contact = create(:contact, conference: conference)
+        conference.contact = create(:contact, conference:)
         conference.program.update_attribute(:schedule_public, true)
 
         create(:cfp, program: conference.program)
         create_list(:track, 2, program: conference.program)
-        create_list(:ticket, 3, conference: conference)
+        create_list(:ticket, 3, conference:)
         create_list(:room, 3, venue: conference.venue)
-        create_list(:lodging, 4, conference: conference)
+        create_list(:lodging, 4, conference:)
 
-        create_list(:sponsorship_level, 3, conference: conference)
-        create(:sponsor, sponsorship_level: conference.sponsorship_levels.first, conference: conference)
-        create_list(:sponsor, 2, sponsorship_level: conference.sponsorship_levels.second, conference: conference)
-        create_list(:sponsor, 3, sponsorship_level: conference.sponsorship_levels.third, conference: conference)
+        create_list(:sponsorship_level, 3, conference:)
+        create(:sponsor, sponsorship_level: conference.sponsorship_levels.first, conference:)
+        create_list(:sponsor, 2, sponsorship_level: conference.sponsorship_levels.second, conference:)
+        create_list(:sponsor, 3, sponsorship_level: conference.sponsorship_levels.third, conference:)
 
         create(:question, conferences: [conference])
 

@@ -16,7 +16,7 @@ module Admin
       else
         redirect_to admin_conference_venue_path,
                     error: 'An error prohibited materials from being saved: ' \
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                           "#{@commercial.errors.full_messages.join('. ')}."
 
       end
     end
@@ -28,7 +28,7 @@ module Admin
       else
         redirect_to admin_conference_venue_path,
                     error: 'An error prohibited materials from being saved: ' \
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                           "#{@commercial.errors.full_messages.join('. ')}."
       end
     end
 

@@ -59,8 +59,8 @@ module Admin
         redirect_to admin_conference_booths_path,
                     notice: "Successfully updated #{t 'booth'} for #{@booth.title}."
       else
-        flash.now[:error] = "An error prohibited the #{t'booth'} for #{@booth.title} " \
-                    "#{@booth.errors.full_messages.join('. ')}."
+        flash.now[:error] = "An error prohibited the #{t 'booth'} for #{@booth.title} " \
+                            "#{@booth.errors.full_messages.join('. ')}."
         render :edit
       end
     end
@@ -73,7 +73,7 @@ module Admin
           Mailbot.conference_booths_acceptance_mail(@booth).deliver_later
         end
         redirect_to admin_conference_booths_path(conference_id: @conference.short_title),
-                    notice: "#{(t'booth').capitalize} successfully accepted!"
+                    notice: "#{(t 'booth').capitalize} successfully accepted!"
       else
         redirect_to admin_conference_booths_path(conference_id: @conference.short_title)
         flash[:error] = "#{(t 'booth').capitalize} could not be accepted. #{@booth.errors.full_messages.to_sentence}."
@@ -81,11 +81,11 @@ module Admin
     end
 
     def to_accept
-      update_state(:to_accept, "#{(t'booth').capitalize} to accept")
+      update_state(:to_accept, "#{(t 'booth').capitalize} to accept")
     end
 
     def to_reject
-      update_state(:to_reject, "#{(t'booth').capitalize} to reject")
+      update_state(:to_reject, "#{(t 'booth').capitalize} to reject")
     end
 
     def reject
@@ -96,7 +96,7 @@ module Admin
           Mailbot.conference_booths_rejection_mail(@booth).deliver_later
         end
         redirect_to admin_conference_booths_path(conference_id: @conference.short_title),
-                    notice: "#{(t'booth').capitalize} successfully rejected."
+                    notice: "#{(t 'booth').capitalize} successfully rejected."
       else
         redirect_to admin_conference_booths_path(conference_id: @conference.short_title)
         flash[:error] = "#{(t 'booth').capitalize} could not be rejected. #{@booth.errors.full_messages.to_sentence}."
@@ -125,7 +125,7 @@ module Admin
         redirect_back_or_to(admin_conference_booths_path(conference_id: @conference.short_title)) && return
       else
         flash[:error] = alert
-        return redirect_back_or_to(admin_conference_booths_path(conference_id: @conference.short_title)) && return
+        redirect_back_or_to(admin_conference_booths_path(conference_id: @conference.short_title)) && return
       end
     end
 

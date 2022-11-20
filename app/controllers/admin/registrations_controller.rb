@@ -20,7 +20,7 @@ module Admin
       respond_to do |format|
         format.html
         format.json do
-          render json: RegistrationDatatable.new(params, conference: @conference, view_context: view_context)
+          render json: RegistrationDatatable.new(params, conference: @conference, view_context:)
         end
         format.pdf { render 'index', layout: false }
         format.xlsx do
@@ -45,7 +45,7 @@ module Admin
                     notice: "Successfully updated registration for #{@registration.user.email}!"
       else
         flash.now[:error] = "An error prohibited the Registration for #{@registration.user.email}: " \
-                        "#{@registration.errors.full_messages.join('. ')}."
+                            "#{@registration.errors.full_messages.join('. ')}."
         render :edit
       end
     end

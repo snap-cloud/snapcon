@@ -2,18 +2,17 @@
 
 require 'spec_helper'
 
-feature Program do
-
+describe Program do
   let!(:conference) { create(:conference) }
   let!(:program) { conference.program }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   describe 'edit program' do
-    before :each do
+    before do
       sign_in organizer
     end
 
-    scenario 'changes rating', feature: true, js: true do
+    it 'changes rating', feature: true, js: true do
       visit admin_conference_program_path(conference.short_title)
 
       click_link 'Edit'
@@ -24,7 +23,7 @@ feature Program do
       page.find('#flash')
       # Validations
       expect(flash)
-          .to eq('The program was successfully updated.')
+        .to eq('The program was successfully updated.')
       expect(find('#rating').text).to eq('4')
     end
   end

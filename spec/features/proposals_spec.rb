@@ -2,15 +2,15 @@
 
 require 'spec_helper'
 
-feature Event do
+describe Event do
   let!(:conference) { create(:conference, :with_splashpage) }
-  let!(:registration_period) { create(:registration_period, conference: conference, start_date: Date.current) }
+  let!(:registration_period) { create(:registration_period, conference:, start_date: Date.current) }
   let!(:cfp) { create(:cfp, program_id: conference.program.id) }
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:participant) { create(:user) }
   let!(:participant_without_bio) { create(:user, biography: '') }
 
-  before(:each) do
+  before do
     @options = {}
     @options[:send_mail] = 'false'
     @event = create(:event, program: conference.program, title: 'Example Proposal')
@@ -18,31 +18,32 @@ feature Event do
     @event.event_users.create(user: participant, event_role: 'speaker')
   end
 
-  after(:each) do
+  after do
     sign_out
   end
 
   context 'as an conference organizer' do
-    before(:each) do
+    before do
       sign_in organizer
     end
 
-    scenario 'can preview a proposal if it is public', feature: true, js: true do
+    it 'can preview a proposal if it is public', feature: true, js: true do
       visit admin_conference_program_event_path(conference.short_title, @event)
       expect(page).to have_selector(:link_or_button, 'Preview')
       click_link 'Preview'
-      expect(current_path).to eq(conference_program_proposal_path(conference.short_title, @event.id))
+      expect(page).to have_current_path(conference_program_proposal_path(conference.short_title, @event.id),
+                                        ignore_query: true)
     end
 
-    scenario 'cannot preview a proposal if it is not public', feature: true, js: true do
+    it 'cannot preview a proposal if it is not public', feature: true, js: true do
       event = create(:event, program: conference.program, title: 'Example Proposal')
       event.public = false
       event.save!
       visit admin_conference_program_event_path(conference.short_title, event)
-      expect(page).to_not have_selector(:link_or_button, 'Preview')
+      expect(page).not_to have_selector(:link_or_button, 'Preview')
     end
 
-    scenario 'rejects a proposal', feature: true, js: true do
+    it 'rejects a proposal', feature: true, js: true do
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
 
@@ -53,7 +54,7 @@ feature Event do
       expect(@event.state).to eq('rejected')
     end
 
-    scenario 'accepts a proposal', feature: true, js: true do
+    it 'accepts a proposal', feature: true, js: true do
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
 
@@ -65,7 +66,7 @@ feature Event do
       expect(@event.state).to eq('unconfirmed')
     end
 
-    scenario 'restarts review of a proposal', feature: true, js: true do
+    it 'restarts review of a proposal', feature: true, js: true do
       @event.reject!(@options)
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
@@ -79,11 +80,11 @@ feature Event do
   end
 
   context 'as a participant' do
-    before(:each) do
+    before do
       @event.accept!(@options)
     end
 
-    scenario 'not signed_in user submits proposal' do
+    it 'not signed_in user submits proposal', :focus do
       expected_count_event = Event.count + 1
       expected_count_user = User.count + 1
 
@@ -99,7 +100,7 @@ feature Event do
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'
       fill_in 'event_submission_text', with: 'Lorem ipsum submission'
 
-      click_button 'Submit Proposal'
+      click_button 'Create Proposal'
       page.find('#flash')
       expect(page).to have_content 'Proposal was successfully submitted.'
 
@@ -107,7 +108,7 @@ feature Event do
       expect(User.count).to eq(expected_count_user)
     end
 
-    scenario 'edit proposal without cfp' do
+    it 'edit proposal without cfp' do
       conference = create(:conference)
       proposal = create(:event, program: conference.program)
 
@@ -118,7 +119,7 @@ feature Event do
       expect(page).to have_content 'Proposal Information'
     end
 
-    scenario 'update a proposal' do
+    it 'update a proposal' do
       conference = create(:conference)
       create(:cfp, program: conference.program)
       proposal = create(:event, program: conference.program)
@@ -135,7 +136,7 @@ feature Event do
       expect(page).to have_content 'Proposal was successfully updated.'
     end
 
-    scenario 'signed_in user submits a valid proposal', feature: true, js: true do
+    it 'signed_in user submits a valid proposal', feature: true, js: true do
       sign_in participant_without_bio
       expected_count = Event.count + 1
 
@@ -159,27 +160,28 @@ feature Event do
       click_link 'Do you require something special for your event?'
       fill_in 'event_description', with: 'Lorem ipsum description'
 
-      click_button 'Submit Proposal'
+      click_button 'Create Proposal'
 
       page.find('#flash')
       expect(page).to have_content 'Proposal was successfully submitted.'
-      expect(current_path).to eq(conference_program_proposals_path(conference.short_title))
+      expect(page).to have_current_path(conference_program_proposals_path(conference.short_title), ignore_query: true)
       expect(Event.count).to eq(expected_count)
     end
 
-    scenario 'confirms a proposal', feature: true, js: true do
+    it 'confirms a proposal', feature: true, js: true do
       sign_in participant
       visit conference_program_proposals_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
       expect(@event.state).to eq('unconfirmed')
       click_link "confirm_proposal_#{@event.id}"
       expect(page).to have_content 'The proposal was confirmed. Please register to attend the conference.'
-      expect(current_path).to eq(new_conference_conference_registration_path(conference.short_title))
+      expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
+                                        ignore_query: true)
       @event.reload
       expect(@event.state).to eq('confirmed')
     end
 
-    scenario 'withdraw a proposal', feature: true, js: true do
+    it 'withdraw a proposal', feature: true, js: true do
       sign_in participant
       @event.confirm!
       visit conference_program_proposals_path(conference.short_title)
@@ -192,7 +194,7 @@ feature Event do
       expect(@event.state).to eq('withdrawn')
     end
 
-    scenario 'can reset to text template', feature: true, js: true do
+    it 'can reset to text template', feature: true, js: true do
       event_type = conference.program.event_types[-1]
       event_type.description = 'Example event description'
       event_type.submission_instructions = '## Fill Me In!'
@@ -214,23 +216,23 @@ feature Event do
   end
 
   context 'as a user, looking at a conference with scheduled events' do
-    before(:each) do
+    before do
       @program = conference.program
       @selected_schedule = create(:schedule, program: @program)
       @program.update!(selected_schedule: @selected_schedule)
       @scheduled_event1 = create(:event, program: @program, state: 'confirmed', abstract: '`markdown`')
-      @event_schedule1 = create(:event_schedule, event: @scheduled_event1, schedule: @selected_schedule, start_time: conference.start_hour + 1.hour)
+      @event_schedule1 = create(:event_schedule, event: @scheduled_event1, schedule: @selected_schedule,
+start_time: conference.start_hour + 1.hour)
       @registration = conference.register_user(participant)
-
     end
 
-    scenario 'for a scheduled event, can add an event to google calendar if signed in', feature: true do
+    it 'for a scheduled event, can add an event to google calendar if signed in', feature: true do
       sign_in participant
       visit conference_program_proposal_path(conference.short_title, @scheduled_event1.id)
       expect(page).to have_content('Google Calendar')
     end
 
-    scenario 'for a scheduled event, cannot add an event to google calendar if not signed on', feature: true do
+    it 'for a scheduled event, cannot add an event to google calendar if not signed on', feature: true do
       visit conference_program_proposal_path(conference.short_title, @scheduled_event1.id)
       expect(page).not_to have_content('Google Calendar')
     end
@@ -243,12 +245,13 @@ feature Event do
       # TODO-SNAPCON: Add test for unregistered user...
       it 'redirects to the event page with no URL' do
         visit join_conference_program_proposal_path(conference, @scheduled_event1)
-        expect(current_path).to eq conference_program_proposal_path(conference, @scheduled_event1)
+        expect(page).to have_current_path conference_program_proposal_path(conference, @scheduled_event1),
+                                          ignore_query: true
       end
 
       context 'with a fully setup event' do
-        let(:venue) { create(:venue, conference: conference) }
-        let(:room) { create(:room, venue: venue) }
+        let(:venue) { create(:venue, conference:) }
+        let(:room) { create(:room, venue:) }
 
         before do
           room.update(url: 'https://www.example.com')
@@ -275,40 +278,41 @@ feature Event do
         end
       end
     end
-
   end
 
   context 'happening now or next section' do
-    let!(:conference1) { create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24) }
+    let!(:conference1) do
+      create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
+    end
     let!(:program) { conference1.program }
-    let!(:selected_schedule) { create(:schedule, program: program) }
+    let!(:selected_schedule) { create(:schedule, program:) }
     let!(:splashpage) { create(:full_splashpage, conference: conference1, public: true) }
 
     let!(:scheduled_event1) do
-      program.update!(selected_schedule: selected_schedule)
-      create(:event, program: program, state: 'confirmed')
+      program.update!(selected_schedule:)
+      create(:event, program:, state: 'confirmed')
     end
     let!(:scheduled_event2) do
-      program.update!(selected_schedule: selected_schedule)
-      create(:event, program: program, state: 'confirmed')
+      program.update!(selected_schedule:)
+      create(:event, program:, state: 'confirmed')
     end
     let!(:scheduled_event3) do
-      program.update!(selected_schedule: selected_schedule)
-      create(:event, program: program, state: 'confirmed')
+      program.update!(selected_schedule:)
+      create(:event, program:, state: 'confirmed')
     end
     let!(:scheduled_event4) do
-      program.update!(selected_schedule: selected_schedule)
-      create(:event, program: program, state: 'confirmed')
+      program.update!(selected_schedule:)
+      create(:event, program:, state: 'confirmed')
     end
     let!(:current_time) { Time.now.in_time_zone(conference1.timezone) }
 
     let!(:events_list) { [scheduled_event1, scheduled_event2, scheduled_event3, scheduled_event4] }
 
-    before :each do
+    before do
       sign_in participant
     end
 
-    scenario 'No events happening now or next' do
+    it 'No events happening now or next' do
       events_list.each do |event|
         visit conference_program_proposal_path(conference1.short_title, event.id)
         happening_now = page.find('#happening-now')
@@ -316,9 +320,11 @@ feature Event do
       end
     end
 
-    scenario 'shows all events happening next if nothing is happening now' do
-      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+    it 'shows all events happening next if nothing is happening now' do
+      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
+start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
+start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
 
       events_list.each do |event|
         visit conference_program_proposal_path(conference1.short_title, event.id)
@@ -330,10 +336,13 @@ feature Event do
       end
     end
 
-    scenario 'only shows all events happening now if something is happening now and next' do
-      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule3 = create(:event_schedule, event: scheduled_event3, schedule: selected_schedule, start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+    it 'only shows all events happening now if something is happening now and next' do
+      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
+start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
+start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule3 = create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
+start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
       events_list.each do |event|
         visit conference_program_proposal_path(conference1.short_title, event.id)
         happening_now = page.find('#happening-now')
@@ -344,10 +353,13 @@ feature Event do
       end
     end
 
-    scenario 'only shows events happening at the earliest time, not at a later time in the future' do
-      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule, start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule3 = create(:event_schedule, event: scheduled_event3, schedule: selected_schedule, start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
+    it 'only shows events happening at the earliest time, not at a later time in the future' do
+      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
+start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
+start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule3 = create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
+start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
       events_list.each do |event|
         visit conference_program_proposal_path(conference1.short_title, event.id)
         happening_now = page.find('#happening-now')
@@ -358,11 +370,15 @@ feature Event do
       end
     end
 
-    scenario 'only shows 3 events happening now because of pagination' do
-      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule, start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule, start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule3 = create(:event_schedule, event: scheduled_event3, schedule: selected_schedule, start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule4 = create(:event_schedule, event: scheduled_event4, schedule: selected_schedule, start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+    it 'only shows 3 events happening now because of pagination' do
+      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
+start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
+start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule3 = create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
+start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule4 = create(:event_schedule, event: scheduled_event4, schedule: selected_schedule,
+start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
 
       events_list.each do |event|
         visit conference_program_proposal_path(conference1.short_title, event.id)

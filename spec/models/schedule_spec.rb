@@ -18,11 +18,10 @@
 require 'spec_helper'
 
 describe Schedule do
-
   describe 'association' do
-    it { should belong_to(:program) }
-    it { should belong_to(:track) }
-    it { should have_many(:event_schedules).dependent(:destroy) }
-    it { should have_many(:events).through(:event_schedules) }
+    it { is_expected.to belong_to(:program) }
+    it { is_expected.to belong_to(:track) }
+    it { is_expected.to have_many(:event_schedules).dependent(:destroy) }
+    it { is_expected.to have_many(:events).through(:event_schedules) }
   end
 end

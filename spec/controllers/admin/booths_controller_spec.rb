@@ -3,14 +3,12 @@
 require 'spec_helper'
 
 describe Admin::BoothsController do
-
   let(:admin) { create(:admin) }
   let(:conference) { create(:conference) }
-  let(:booth) { create(:booth, title: 'Title', conference: conference) }
+  let(:booth) { create(:booth, title: 'Title', conference:) }
   let(:admin) { create(:admin) }
 
   context 'not logged in user' do
-
     describe 'GET index' do
       it 'does not render admin/booths#index' do
         get :index, params: { conference_id: conference.short_title }
@@ -27,7 +25,7 @@ describe Admin::BoothsController do
   end
 
   context 'user is admin' do
-    before :each do
+    before do
       sign_in admin
     end
 
@@ -71,7 +69,7 @@ describe Admin::BoothsController do
         end
 
         it 'has responsibles' do
-          expect(booth.responsibles.count).to_not eq(0)
+          expect(booth.responsibles.count).not_to eq(0)
         end
 
         it 'shows success message' do
@@ -80,13 +78,15 @@ describe Admin::BoothsController do
       end
 
       context 'create action fails' do
-        before { post :create, params: { booth: attributes_for(:booth, title: ''), conference_id: conference.short_title } }
+        before do
+          post :create, params: { booth: attributes_for(:booth, title: ''), conference_id: conference.short_title }
+        end
 
         it 'does not create any record' do
           expected = expect do
             post :create, params: { booth: attributes_for(:booth, title: ''), conference_id: conference.short_title }
           end
-          expected.to_not change(Booth, :count)
+          expected.not_to change(Booth, :count)
         end
 
         it 'redirects to new' do
@@ -113,7 +113,12 @@ describe Admin::BoothsController do
 
     describe 'PATCH #update' do
       context 'updates suchessfully' do
-        before { patch :update, params: { id: booth.id, booth: attributes_for(:booth, title: 'different'), conference_id: conference.short_title } }
+        before do
+          patch :update,
+                params: { id: booth.id, booth: attributes_for(:booth, title: 'different'),
+conference_id: conference.short_title }
+        end
+
         it 'redirects to admin booth index path' do
           expect(response).to redirect_to admin_conference_booths_path
         end

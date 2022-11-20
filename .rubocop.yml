@@ -1,12 +1,13 @@
-require: rubocop-rspec
-
 inherit_from: .rubocop_todo.yml
+
+require: rubocop-rspec
 
 inherit_mode:
   merge:
     - Exclude
 
 AllCops:
+  SuggestExtensions: false
   UseCache: true
   CacheRootDirectory: tmp/rubocop_cache_rails_dir
   MaxFilesInCache: 4000
@@ -15,7 +16,9 @@ AllCops:
     - db/schema.rb
     - features/step_definitions/web_steps.rb
     - features/support/selectors.rb
-    - lib/tasks/cucumber.rake
+    - lib/tasks/*.rake
+    - db/migrate/*.rb
+    - bin/*
 
 #################### Style ###########################
 

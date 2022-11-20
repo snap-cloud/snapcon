@@ -1,86 +1,106 @@
 - action_is_edit = @event.persisted?
-- display_registration = current_user&.is_admin? || @program.cfp&.enable_registrations?
+- display_registration = @program.cfp&.enable_registrations?
 
 %h4
   Proposal Information
 %hr
+
 .form-group
   = f.label :title
   %abbr{title: 'This field is required'} *
   = f.text_field :title, autofocus: true, required: true, class: 'form-control'
-- if action_is_edit
-  .form-group
-    = f.label :subtitle
-    = f.text_field :subtitle, class: 'form-control'
-  .form-group
-    = f.select :speaker_ids, f.object.speakers.pluck(:username, :id), {}, {  multiple: true, class: "form-control", id: "users_selectize", placeholder: "Speakers" }
-    %span.help-block
-      The people responsible for the event, beside you. You can only select existing users.
-  - if @program.tracks.confirmed.cfp_active.any?
-    .form-group
-      = f.label :track_id, 'Track'
-      = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), { include_blank: '(Please select)' }, { class: 'form-control' }
 .form-group
-  = f.label :event_type_id, 'Type'
-  = f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
+  = f.label :subtitle
+  = f.text_field :subtitle, class: 'form-control'
+
+.form-group
+  = f.label :speaker_ids, 'Speakers'
+  = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
+  %span.help-block
+    The people responsible for the event. You can only select existing users.
+
+= committee_only_actions(current_user, @conference) do
+  .form-group
+    = f.label :volunteer_ids, 'Volunteers'
+    = f.select :volunteer_ids, user_options_for_dropdown(@event, :volunteers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select volunteers..." }
+    .help-block
+      Assign volunteers to help run this session.
+  .form-group
+    = f.label "Is this is parent event?", for: :superevent
+    = f.check_box :superevent, class: 'switch-checkbox'
+    .help-block
+      A parent event can contain subevents. Enable this for the primary lightning talk
+      session, poster sessions, etc.
+  .form-group
+    = f.label :parent_id, 'Selet a Parent Event'
+    = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, {}, include_blank: 'Select a Parent Event', class: 'select-help-toggle form-control'
+    .help-block
+      Designate a parent event so that this event appears scheduled "inside"
+      the parent event on the schedule.
+
+- if @program.tracks.confirmed.cfp_active.any?
+  .form-group
+    = f.label :track_id, 'Track'
+    = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), { include_blank: '(Please select)' }, { class: 'form-control' }
+
 - if @program.languages.present?
   .form-group
   = f.label :language
   = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
-- @conference.program.event_types.each do |event_type|
-  %span{ class: 'help-block select-help-text event_event_type_id collapse', id: "#{event_type.id}-help" }
-    = event_type.description
-- if action_is_edit
-  - if @conference.program.difficulty_levels.any?
-    = f.label :difficulty_level
-    = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
-    - @conference.program.difficulty_levels.each do |difficulty_level|
-      %span{ class: 'help-block select-help-text collapse event_difficulty_level_id', id: "#{difficulty_level.id}-help" }
-        = difficulty_level.description
-.form-group
-  = f.label :abstract
-  = f.text_area :abstract, required: true, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
-  %span.help-block
-    = markdown_hint('[Tips to improve your presentations.](http://blog.hubspot.com/blog/tabid/6307/bid/5975/10-Rules-to-Instantly-Improve-Your-Presentations.aspx)')
-  %p
-    You have used
-    %span#abstract-count = @event.abstract_word_count
-    words.  Abstracts must be between
-    %span#abstract-minimum-word-count
-      0
-    and
-    %span#abstract-maximum-word-count
-      250
-    words.
-  - if display_registration && action_is_edit
-    %h4
-      Event Registration
-    %hr
-  - if display_registration
-    .checkbox
-      %label
-        = f.check_box :require_registration
-        Require participants to register to your event
-  - if display_registration && action_is_edit
-    .form-group
-      = f.number_field :max_attendees
-      %span.help-block
-        - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
-        = 'The maximum number of participants. ' + message
-  - if action_is_edit && current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
-    .checkbox
-      %label
-        = f.check_box :is_highlight
-        Is a highlight?
-  %p.text-right
-    = link_to '#description', 'data-toggle' => 'collapse' do
-      Do you require something special for your event?
-  #description{ class: "collapse #{ 'in' if @event.description.present? }" }
-    .form-group
-      = f.label :description, 'Requirements'
-      = f.text_area :description, rows: 5
-      %span.help-block
-        Eg. Whiteboard, printer, or something like that.
+
+- if @conference.program.difficulty_levels.any?
+  = f.label :difficulty_level
+  = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
+  - @conference.program.difficulty_levels.each do |difficulty_level|
+    %span{ class: 'help-block select-help-text collapse event_difficulty_level_id', id: "#{difficulty_level.id}-help" }
+      = difficulty_level.description
+
+- if @event.committee_review.present?
+  %br
+  %strong.control-label Committee Feedback
+  %small
+    Use this feedback to improve your submission.
+  .well
+    = markdown(@event.committee_review)
+
+= render 'proposals/submission_type_content_form', f: f, program: @program
+
+- if display_registration
+  %h4
+    Event Registration
+  %hr
+  .checkbox
+    %label
+      = f.check_box :require_registration
+      Require participants to register to your event
+  .form-group
+    = f.number_field :max_attendees
+    %span.help-block
+      - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
+      = 'The maximum number of participants. ' + message
+
+= committee_only_actions(current_user, @conference) do
+  .form-group
+    = f.label :committee_review, 'Committee Feedback'
+    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }
+    .help-block= markdown_hint('This field is shared with the submission authors.')
+  .form-group
+    = f.label :is_highlight
+    = f.check_box :is_highlight, class: 'switch-checkbox'
+  .help-block
+    This shows the event on the conference homepage.
+
+
+%p.text-right
+  = link_to '#description', 'data-toggle' => 'collapse' do
+    Do you require something special for your event?
+#description{ class: "collapse #{ 'in' if @event.description.present? }" }
+  .form-group
+    = f.label :description, 'Requirements'
+    = f.text_area :description, rows: 5
+    %span.help-block
+      Eg. Whiteboard, printer, or something like that.
+
   %p.text-right
     - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
     = f.submit submit_copy, class: 'btn btn-success'
