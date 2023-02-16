@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/jquery": "^3.2.7",
     "fullcalendar": "^6.1.4",
     "fullcalendar-scheduler": "^5.6.0"
   }
