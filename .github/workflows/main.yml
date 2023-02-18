@@ -27,10 +27,6 @@ jobs:
       run: bundle install
     - name: Set up test database
       run: bundle exec rake db:setup      
-    - name: run RSpec tests and capture coverage
-      run: |
-        bundle exec rspec
-        ./cc-test-reporter format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
     - name: run Cucumber tests and capture coverage
       run: |
         bundle exec cucumber

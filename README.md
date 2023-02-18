@@ -16,6 +16,9 @@
 
 ## Spring 2023 CS169L:
 [![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
+[![CodeQL](https://github.com/cs169/snapcon/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/codeql-analysis.yml)
+[![build](https://github.com/cs169/snapcon/actions/workflows/main.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/main.yml)
+[![Specs](https://github.com/cs169/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/spec.yml)
 
 # [Snap!Con](https://snapcon.org)
 forked from:
