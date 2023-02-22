@@ -15,7 +15,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6b5dc427c6d2ae2b810e/test_coverage)](https://codeclimate.com/github/cs169L-spring2022-snapcon/snapcon/test_coverage)
 
 # [Snap!Con](https://snapcon.org)
-forked from:
+Forked From:
 ## Open Source Event Manager - [osem.io](https://osem.io)
 
 ![OSEM Logo](doc/osem-logo.png)
