@@ -14,6 +14,12 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/6b5dc427c6d2ae2b810e/maintainability)](https://codeclimate.com/github/cs169L-spring2022-snapcon/snapcon/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6b5dc427c6d2ae2b810e/test_coverage)](https://codeclimate.com/github/cs169L-spring2022-snapcon/snapcon/test_coverage)
 
+## Spring 2023 CS169L:
+[![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
+[![CodeQL](https://github.com/cs169/snapcon/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/codeql-analysis.yml)
+[![build](https://github.com/cs169/snapcon/actions/workflows/main.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/main.yml)
+[![Specs](https://github.com/cs169/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/spec.yml)
+
 # [Snap!Con](https://snapcon.org)
 Forked From:
 ## Open Source Event Manager - [osem.io](https://osem.io)

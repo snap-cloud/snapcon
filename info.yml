@@ -1,0 +1,32 @@
+project:
+  name: 'snapcon' # Your project name, e.g. Cue-to-cue
+  owner: 'CS169L-23' # Do not change
+  teamId: '02' # Your team number, e.g. 02
+  identities:
+    pivotal: 'https://www.pivotaltracker.com/n/projects/2487653' # Your Pivotal project URL
+    heroku: 'https://sp23-02-snapcon.herokuapp.com' # Your Heroku app URL
+  members:
+    member1: # Add all project members
+      name: 'Adam' # Member 1 name
+      surname: 'Salguero' # Member 1 last name
+      githubUsername: 'adamsalguero' # Member 1 GitHub username
+      pivotalUsername: 'adamsalguero' # Member 1 Pivotal username
+      herokuEmail: 'adam.a.salguero@berkeley.edu' # Member 1 Heroku username
+    member2:
+      name: 'Monis'
+      surname: 'Mohiuddin'
+      githubUsername: 'killamonis'
+      pivotalUsername: 'monis24'
+      herokuEmail: 'monmohiuddin@berkeley.edu'
+    member3:
+      name: 'Justin'
+      surname: 'Pau'
+      githubUsername: 'Juapu'
+      pivotalUsername: 'Jupau'
+      herokuEmail: 'jupau@berkeley.edu '
+    member4:
+      name: 'Shiv'
+      surname: 'Sethi'
+      githubUsername: 'Shiv-Sethi'
+      pivotalUsername: 'shiv_sethi'
+      herokuEmail: 'shiv_sethi@berkeley.edu'
