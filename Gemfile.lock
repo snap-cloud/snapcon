@@ -505,7 +505,7 @@ GEM
       rails-assets-jquery (>= 1.9.1, < 4)
     rails-assets-date.format (1.2.3)
     rails-assets-holderjs (2.9.6)
-    rails-assets-jquery (2.2.4)
+    rails-assets-jquery (>= 1.7.0)
     rails-assets-jquery-smooth-scroll (2.2.0)
       rails-assets-jquery (>= 1.7.0)
     rails-assets-markdown (0.5.0)
