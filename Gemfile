@@ -90,6 +90,9 @@ gem 'iso-639'
 
 # frontend javascripts
 source 'https://rails-assets.org' do
+  # transient dependencies, included here to reduce warnings.
+  gem 'rails-assets-jquery'
+  gem 'rails-assets-bootstrap'
   # for placeholder images
   gem 'rails-assets-holderjs'
   # for formating dates
