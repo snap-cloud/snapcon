@@ -248,7 +248,7 @@ GEM
     gitlab (4.17.0)
       httparty (~> 0.18)
       terminal-table (~> 1.5, >= 1.5.1)
-    globalid (1.0.0)
+    globalid (1.1.0)
       activesupport (>= 5.0)
     gravtastic (3.2.6)
     guard (2.14.1)
