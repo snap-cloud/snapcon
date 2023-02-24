@@ -140,7 +140,7 @@ gem 'leaflet-rails'
 gem 'gravtastic'
 
 # for country selects
-gem 'country_select', "~> 6"
+gem 'country_select', '< 8'
 
 # as PDF generator
 gem 'prawn-qrcode'

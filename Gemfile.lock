@@ -185,11 +185,10 @@ GEM
     concurrent-ruby (1.2.0)
     countable-rails (0.0.1)
       railties (>= 3.1)
-    countries (4.2.3)
-      i18n_data (~> 0.16.0)
-      sixarm_ruby_unaccent (~> 1.1)
-    country_select (6.1.1)
-      countries (~> 4.2)
+    countries (5.3.1)
+      unaccent (~> 0.3)
+    country_select (7.0.0)
+      countries (~> 5.0)
       sort_alphabetical (~> 1.1)
     crack (0.4.5)
       rexml
@@ -346,8 +345,6 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
-    i18n_data (0.16.0)
-      simple_po_parser (~> 1.1)
     icalendar (2.7.1)
       ice_cube (~> 0.16)
     ice_cube (0.16.4)
@@ -684,7 +681,6 @@ GEM
     shellany (0.0.1)
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
-    simple_po_parser (1.1.6)
     simplecov (0.21.2)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -694,7 +690,6 @@ GEM
       simplecov (~> 0.19)
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
-    sixarm_ruby_unaccent (1.2.0)
     skylight (5.3.3)
       activesupport (>= 5.2.0)
     sort_alphabetical (1.1.0)
@@ -733,6 +728,7 @@ GEM
       concurrent-ruby (~> 1.0)
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
+    unaccent (0.4.0)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
@@ -794,7 +790,7 @@ DEPENDENCIES
   cloudinary
   cocoon
   countable-rails
-  country_select (~> 6)
+  country_select (< 8)
   cucumber-rails
   cucumber-rails-training-wheels
   daemons

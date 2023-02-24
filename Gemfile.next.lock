@@ -810,7 +810,7 @@ DEPENDENCIES
   cloudinary
   cocoon
   countable-rails
-  country_select (~> 6)
+  country_select (< 8)
   cucumber-rails
   cucumber-rails-training-wheels
   daemons
@@ -920,4 +920,4 @@ RUBY VERSION
    ruby 3.1.3p185
 
 BUNDLED WITH
-   2.3.3
+   2.3.26
