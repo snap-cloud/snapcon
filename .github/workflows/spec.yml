@@ -41,6 +41,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+      - run: sudo apt-get install xvfb
       - name: Install JavaScript libraries via npm
         run: npm install
       - name: Prepare spec
@@ -49,8 +50,9 @@ jobs:
           bundle exec rake db:setup --trace
           bundle exec bin/rails webdrivers:chromedriver:update
           bundle exec rake factory_bot:lint RAILS_ENV=test
+        # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}
-        run: bundle exec rake spec:${{ matrix.suite }}
+        run: xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
       - name: coverage upload ${{ matrix.suite }}
         uses: codacy/codacy-coverage-reporter-action@v1
         if: github.ref == 'refs/heads/master'
