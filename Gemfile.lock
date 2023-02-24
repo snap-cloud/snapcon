@@ -847,6 +847,7 @@ DEPENDENCIES
   pry-byebug
   puma
   rails (~> 7.0)
+  rails-assets-bootstrap!
   rails-assets-bootstrap-markdown!
   rails-assets-bootstrap-select!
   rails-assets-date.format!
