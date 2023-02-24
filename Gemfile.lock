@@ -885,7 +885,7 @@ DEPENDENCIES
   sentry-ruby
   shoulda-matchers
   simplecov-cobertura
-  skylight
+  skylight (~> 5)
   sprockets-rails
   sqlite3
   stripe

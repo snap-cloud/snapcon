@@ -13,7 +13,7 @@ abort 'Bundler version >= 1.8.4 is required' if Gem::Version.new(Bundler::VERSIO
 
 # as web framework
 if next?
-  gem 'rails', '~> 7.1'
+  gem 'rails', '~> 7.0'
 else
   gem 'rails', '~> 7.0'
 end
@@ -223,7 +223,7 @@ gem 'selectize-rails'
 # n+1 query logging
 gem 'bullet'
 # For collecting performance data
-gem 'skylight'
+gem 'skylight', '~> 5'
 
 gem 'nokogiri'
 
