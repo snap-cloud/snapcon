@@ -109,7 +109,7 @@ module VersionsHelper
     if version.event == 'create'
       version.previous.nil? ? 'commented on' : "re-added #{user.name}'s comment on"
     else
-      "deleted #{user.name}'s comment on"
+      "deleted #{user&.name}'s comment on"
     end
   end
 
@@ -118,9 +118,9 @@ module VersionsHelper
     if version.event == 'create'
       version.previous.nil? ? 'voted on' : "re-added #{user.name}'s vote on"
     elsif version.event == 'update'
-      "updated #{user.name}'s vote on"
+      "updated #{user&.name}'s vote on"
     else
-      "deleted #{user.name}'s vote on"
+      "deleted #{user&.name}'s vote on"
     end
   end
 
