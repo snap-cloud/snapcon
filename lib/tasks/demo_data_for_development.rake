@@ -95,7 +95,7 @@ start_date: 2.days.from_now, end_date: 6.days.from_now, start_hour: 8, end_hour:
 start_date: 7.days.ago, end_date: 6.days.from_now, start_hour: 15, end_hour: 20, description: 'This is a full conference demo instance happened in the past. It contains open cfp, venue/rooms, submitted talks by multiple speakers, partly confirmed talks and multiple schedules.')
     generate_program conference
     conference.program.cfp.update!(start_date: 4.days.ago, end_date: 2.days.ago)
-    conference.update_attribute!(:end_date, 1.day.ago)
+    conference.update_attribute(:end_date, 1.day.ago)
     conference.registration_period.update!(start_date: 9.days.ago, end_date: 8.days.ago)
 
     # This is a conference that will happen in the future
