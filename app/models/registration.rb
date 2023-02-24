@@ -83,10 +83,10 @@ class Registration < ApplicationRecord
 
   def user_has_registration_ticket
     return if conference.registration_ticket_required? &&
-              TicketPurchase.where(user:, ticket: conference.registration_tickets).paid.any?
+              TicketPurchase.where(user: user, ticket: conference.registration_tickets).paid.any?
 
     errors.add(:base, 'You must purchase a registration ticket before registering')
-    if TicketPurchase.where(user:, ticket: conference.registration_tickets).unpaid.any?
+    if TicketPurchase.where(user: user, ticket: conference.registration_tickets).unpaid.any?
       errors.add(:base, 'You currently have a ticket with an unfinished purchase')
     end
   end

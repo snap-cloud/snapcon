@@ -5,8 +5,8 @@ require 'spec_helper'
 describe Admin::RoomsController do
   let!(:admin) { create(:admin) }
   let(:conference) { create(:conference) }
-  let!(:venue) { create(:venue, conference:) }
-  let(:room) { create(:room, venue:, size: 4) }
+  let!(:venue) { create(:venue, conference: conference) }
+  let(:room) { create(:room, venue: venue, size: 4) }
 
   context 'admin is signed in' do
     before { sign_in admin }

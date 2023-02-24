@@ -15,9 +15,9 @@ require 'spec_helper'
 
 describe RegistrationPeriod do
   let!(:conference) { create(:conference, start_date: Date.today, end_date: Date.today + 6) }
-  let!(:registration_ticket) { create(:registration_ticket, conference:) }
+  let!(:registration_ticket) { create(:registration_ticket, conference: conference) }
   let!(:registration_period) do
-    create(:registration_period, start_date: Date.today - 2, end_date: Date.today - 1, conference:)
+    create(:registration_period, start_date: Date.today - 2, end_date: Date.today - 1, conference: conference)
   end
 
   describe 'validations' do

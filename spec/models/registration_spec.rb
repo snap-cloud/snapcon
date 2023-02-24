@@ -22,7 +22,7 @@ describe Registration do
 
   let!(:user) { create(:user) }
   let!(:conference) { create(:conference) }
-  let!(:registration) { create(:registration, conference:, user:) }
+  let!(:registration) { create(:registration, conference: conference, user: user) }
 
   describe 'validation' do
     it { is_expected.to validate_presence_of(:user) }
@@ -35,8 +35,8 @@ describe Registration do
       it 'is not valid when limit exceeded' do
         conference.registration_limit = 1
         expect do
-          create(:registration, conference:,
-                                user:)
+          create(:registration, conference: conference,
+                                user:       user)
         end.to raise_error('Validation failed: User already Registered!, Registration limit exceeded')
         expect(user.registrations.size).to be 1
       end

@@ -67,7 +67,7 @@ class User < ApplicationRecord
   end
   has_many :tickets, through: :ticket_purchases, source: :ticket do
     def for_registration(conference)
-      where(conference:, registration_ticket: true).first
+      where(conference: conference, registration_ticket: true).first
     end
   end
 
@@ -139,7 +139,7 @@ class User < ApplicationRecord
                               }, through: :event_users, source: :event
   has_many :registrations, dependent: :destroy do
     def for_conference(conference)
-      where(conference:).first
+      where(conference: conference).first
     end
   end
   has_many :events_registrations, through: :registrations
@@ -253,7 +253,7 @@ class User < ApplicationRecord
   end
 
   def self.for_ichain_username(username, attributes)
-    user = find_by(username:)
+    user = find_by(username: username)
 
     raise UserDisabled if user&.is_disabled
 
@@ -263,7 +263,7 @@ class User < ApplicationRecord
                   current_sign_in_at: Time.current)
     else
       begin
-        user = create!(username:, email: attributes[:email])
+        user = create!(username: username, email: attributes[:email])
       rescue ActiveRecord::RecordNotUnique
         raise IChainRecordNotFound
       end

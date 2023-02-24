@@ -7,12 +7,12 @@ describe Admin::ReportsController do
   let!(:admin) { create(:admin) }
   let!(:user1) { create(:user) }
   let!(:user2) { create(:user) }
-  let!(:venue) { create(:venue, conference:) }
-  let!(:room) { create(:room, venue:) }
+  let!(:venue) { create(:venue, conference: conference) }
+  let!(:room) { create(:room, venue: venue) }
   let!(:track_submitter) { create(:user) }
   let!(:self_organized_track) do
     create(:track, :self_organized, submitter_id: track_submitter.id, program: conference.program,
-   name: 'My awesome track', start_date: Date.current, end_date: Date.current, room:, state: 'confirmed')
+   name: 'My awesome track', start_date: Date.current, end_date: Date.current, room: room, state: 'confirmed')
   end
   let!(:track) { create(:track, program: conference.program, color: '#800080') }
 
@@ -21,7 +21,7 @@ describe Admin::ReportsController do
    state: 'confirmed')
   end
   let!(:event2) do
-    create(:event, id: 2, program: conference.program, track:, speakers: [user2], state: 'confirmed')
+    create(:event, id: 2, program: conference.program, track: track, speakers: [user2], state: 'confirmed')
   end
 
   context 'track organizer is signed in' do

@@ -19,7 +19,7 @@ require 'spec_helper'
 
 describe Ticket do
   let(:conference) { create(:conference) }
-  let(:ticket) { create(:ticket, price: 50, price_currency: 'USD', conference:) }
+  let(:ticket) { create(:ticket, price: 50, price_currency: 'USD', conference: conference) }
   let(:user) { create(:user) }
 
   describe 'validation' do
@@ -67,8 +67,8 @@ describe Ticket do
   describe '#bought?' do
     it 'returns true if the user has bought this ticket' do
       create(:ticket_purchase,
-             user:,
-             ticket:)
+             user:   user,
+             ticket: ticket)
       expect(ticket.bought?(user)).to be(true)
     end
 
@@ -81,13 +81,13 @@ describe Ticket do
     subject { ticket.tickets_turnover_total ticket.id }
 
     let!(:purchase1) do
-      create :ticket_purchase, ticket:, amount_paid: 5_000, quantity: 1, paid: true, user:
+      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 1, paid: true, user: user
     end
     let!(:purchase2) do
-      create :ticket_purchase, ticket:, amount_paid: 5_000, quantity: 2, paid: true, user:
+      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 2, paid: true, user: user
     end
     let!(:purchase3) do
-      create :ticket_purchase, ticket:, amount_paid: 5_000, quantity: 10, paid: false, user:
+      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 10, paid: false, user: user
     end
 
     it 'returns turnover as Money with ticket\'s currency' do
@@ -96,7 +96,7 @@ describe Ticket do
   end
 
   describe '#unpaid?' do
-    let!(:ticket_purchase) { create(:ticket_purchase, user:, ticket:) }
+    let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket) }
 
     context 'user has not paid' do
       it 'returns true' do
@@ -115,8 +115,8 @@ describe Ticket do
 
   describe '#tickets_paid' do
     before do
-      create(:ticket_purchase, user:, ticket:)
-      create(:ticket_purchase, user:, ticket:, paid: true)
+      create(:ticket_purchase, user: user, ticket: ticket)
+      create(:ticket_purchase, user: user, ticket: ticket, paid: true)
     end
 
     it 'returns correct number of paid/total tickets' do
@@ -128,8 +128,8 @@ describe Ticket do
     context 'user has not paid' do
       it 'returns the correct value if the user has bought this ticket' do
         create(:ticket_purchase,
-               user:,
-               ticket:,
+               user:     user,
+               ticket:   ticket,
                quantity: 20)
         expect(ticket.quantity_bought_by(user, paid: false)).to eq(20)
       end
@@ -140,7 +140,7 @@ describe Ticket do
     end
 
     context 'user has paid' do
-      let!(:ticket_purchase) { create(:ticket_purchase, user:, ticket:, quantity: 20) }
+      let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket, quantity: 20) }
 
       before { ticket_purchase.update_attribute(:paid, true) }
 
@@ -154,8 +154,8 @@ describe Ticket do
     context 'user has not paid' do
       it 'returns the correct value if the user has bought this ticket' do
         create(:ticket_purchase,
-               user:,
-               ticket:,
+               user:     user,
+               ticket:   ticket,
                quantity: 20)
         expect(ticket.total_price(user, paid: false)).to eq(Money.new(100_000, 'USD'))
       end
@@ -166,7 +166,7 @@ describe Ticket do
     end
 
     context 'user has paid' do
-      let!(:ticket_purchase) { create(:ticket_purchase, user:, ticket:, quantity: 20) }
+      let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket, quantity: 20) }
 
       before { ticket_purchase.update_attribute(:paid, true) }
 
@@ -177,7 +177,7 @@ describe Ticket do
   end
 
   describe 'self.total_price' do
-    let(:diversity_supporter_ticket) { create(:ticket, conference:, price: 500) }
+    let(:diversity_supporter_ticket) { create(:ticket, conference: conference, price: 500) }
 
     describe 'user has bought' do
       context 'no tickets' do
@@ -188,7 +188,7 @@ describe Ticket do
 
       context 'one type of ticket' do
         before do
-          create(:ticket_purchase, ticket:, user:, quantity: 20)
+          create(:ticket_purchase, ticket: ticket, user: user, quantity: 20)
         end
 
         it 'returns the correct total price' do
@@ -198,8 +198,8 @@ describe Ticket do
 
       context 'multiple types of tickets' do
         before do
-          create(:ticket_purchase, ticket:, user:, quantity: 20)
-          create(:ticket_purchase, ticket: diversity_supporter_ticket, user:, quantity: 2)
+          create(:ticket_purchase, ticket: ticket, user: user, quantity: 20)
+          create(:ticket_purchase, ticket: diversity_supporter_ticket, user: user, quantity: 2)
         end
 
         it 'returns the correct total price' do

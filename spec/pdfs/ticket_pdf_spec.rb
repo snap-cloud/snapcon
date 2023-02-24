@@ -17,13 +17,13 @@ describe TicketPdf do
     create(
       :ticket_purchase,
       user:       participant,
-      conference:,
+      conference: conference,
       ticket:     registration_ticket,
       quantity:   1
     )
   end
   let(:physical_ticket) do
-    create(:physical_ticket, ticket_purchase:)
+    create(:physical_ticket, ticket_purchase: ticket_purchase)
   end
   let(:layout) { conference.ticket_layout.to_sym }
   let(:file_name) { "ticket_for_#{conference.short_title}.pdf" }

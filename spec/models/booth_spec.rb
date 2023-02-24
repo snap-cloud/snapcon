@@ -43,7 +43,7 @@ describe Booth do
   describe '#transition_possible?(transition)' do
     shared_examples 'transition_possible?(transition)' do |state, transition, expected|
       it "returns #{expected} for #{transition} transition, when the booth is #{state}}" do
-        my_booth = create(:booth, state:)
+        my_booth = create(:booth, state: state)
         expect(my_booth.transition_possible?(transition.to_sym)).to eq expected
       end
     end

@@ -137,13 +137,13 @@ start_time: Date.current + 1.day - 10.minutes)
         @room = create(:room, venue: conference.venue)
         track = create(:track, :self_organized, program: conference.program, room: @room, state: 'confirmed',
 name: 'My awesome track')
-        @event = create(:event, program: conference.program, track:)
+        @event = create(:event, program: conference.program, track: track)
       end
 
       context 'is valid' do
         it 'when the event belongs to a self-organized track and is scheduled in one of its track\'s schedules' do
           schedule = create(:schedule, program: conference.program, track: @event.track)
-          event_schedule = build(:event_schedule, event: @event, room: @room, schedule:)
+          event_schedule = build(:event_schedule, event: @event, room: @room, schedule: schedule)
           expect(event_schedule.valid?).to be true
           expect(event_schedule.errors[:schedule]).to eq []
         end
@@ -172,26 +172,26 @@ name: 'My awesome track')
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
     end
     let!(:program) { conference2.program }
-    let!(:selected_schedule) { create(:schedule, program:) }
+    let!(:selected_schedule) { create(:schedule, program: program) }
     let!(:scheduled_event1) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed', abstract: '`markdown`')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
     end
     let!(:event_schedule1) do
       create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
      start_time: (Time.now.in_time_zone(conference2.timezone) + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
     end
     let!(:scheduled_event2) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule2) do
       create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
      start_time: (Time.now.in_time_zone(conference2.timezone) + 2.hour).strftime('%a, %d %b %Y %H:%M:%S'))
     end
     let!(:scheduled_event3) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule3) do
       create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,

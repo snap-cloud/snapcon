@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Admin::BoothsController do
   let(:admin) { create(:admin) }
   let(:conference) { create(:conference) }
-  let(:booth) { create(:booth, title: 'Title', conference:) }
+  let(:booth) { create(:booth, title: 'Title', conference: conference) }
   let(:admin) { create(:admin) }
 
   context 'not logged in user' do

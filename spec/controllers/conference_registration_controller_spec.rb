@@ -7,7 +7,7 @@ describe ConferenceRegistrationsController, type: :controller do
   let(:user) { create(:user) }
   let(:not_registered_user) { create(:user) }
   let(:registered_user) { create(:user) }
-  let!(:registration) { create(:registration, conference:, user: registered_user, created_at: 1.day.ago) }
+  let!(:registration) { create(:registration, conference: conference, user: registered_user, created_at: 1.day.ago) }
 
   shared_examples 'access #new action' do |user, ichain, path, message|
     before do
@@ -50,7 +50,7 @@ describe ConferenceRegistrationsController, type: :controller do
       let(:not_registered_confirmed_speaker) { create(:user) }
       let(:registered_confirmed_speaker) { create(:user) }
       let!(:speaker_registration) do
-        create(:registration, conference:, user: registered_confirmed_speaker, created_at: 1.day.ago)
+        create(:registration, conference: conference, user: registered_confirmed_speaker, created_at: 1.day.ago)
       end
       let!(:confirmed_event) do
         create(:event, program: conference.program,
@@ -59,7 +59,7 @@ describe ConferenceRegistrationsController, type: :controller do
 
       context 'registration period open' do
         before do
-          create(:registration_period, conference:, start_date: 3.days.ago, end_date: 1.day.from_now)
+          create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.from_now)
         end
 
         context 'registration limit not exceeded' do
@@ -149,7 +149,7 @@ describe ConferenceRegistrationsController, type: :controller do
 
       context 'registration period not open' do
         before do
-          create(:registration_period, conference:, start_date: 3.days.ago, end_date: 1.day.ago)
+          create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.ago)
         end
 
         context 'registration limit not exceeded' do
@@ -242,7 +242,7 @@ describe ConferenceRegistrationsController, type: :controller do
 
     describe 'GET #show' do
       before do
-        @registration = create(:registration, conference:, user:)
+        @registration = create(:registration, conference: conference, user: user)
         @event_with_registration = create(:event, program: conference.program, require_registration: true,
 max_attendees: 5, state: 'confirmed')
         @event_without_registration = create(:event, program: conference.program, require_registration: true,
@@ -267,9 +267,9 @@ max_attendees: 5, state: 'confirmed')
 
       context 'user has purchased a ticket' do
         before do
-          @ticket = create(:ticket, conference:)
-          @purchased_ticket = create(:ticket_purchase, conference:,
-                                                       user:,
+          @ticket = create(:ticket, conference: conference)
+          @purchased_ticket = create(:ticket_purchase, conference: conference,
+                                                       user:       user,
                                                        ticket:     @ticket)
           get :show, params: { conference_id: conference.short_title }
         end
@@ -293,7 +293,7 @@ max_attendees: 5, state: 'confirmed')
 
     describe 'GET #edit' do
       before do
-        @registration = create(:registration, conference:, user:)
+        @registration = create(:registration, conference: conference, user: user)
         get :edit, params: { conference_id: conference.short_title }
       end
 
@@ -310,8 +310,8 @@ max_attendees: 5, state: 'confirmed')
     describe 'PATCH #update' do
       before do
         @registration = create(:registration,
-                               conference:,
-                               user:)
+                               conference: conference,
+                               user:       user)
       end
 
       context 'updates successfully' do
@@ -361,7 +361,7 @@ max_attendees: 5, state: 'confirmed')
 
     describe 'DELETE #destroy' do
       before do
-        @registration = create(:registration, conference:, user:)
+        @registration = create(:registration, conference: conference, user: user)
       end
 
       context 'deletes successfully' do
@@ -409,7 +409,7 @@ max_attendees: 5, state: 'confirmed')
     describe 'GET #new' do
       context 'registration period open' do
         before do
-          create(:registration_period, conference:, start_date: 3.days.ago, end_date: 1.day.from_now)
+          create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.from_now)
         end
 
         context 'registration limit not exceeded' do
@@ -448,7 +448,7 @@ max_attendees: 5, state: 'confirmed')
 
       context 'registration period not open' do
         before do
-          create(:registration_period, conference:, start_date: 3.days.ago, end_date: 1.day.ago)
+          create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.ago)
         end
 
         context 'registration limit not exceeded' do

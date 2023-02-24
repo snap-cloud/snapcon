@@ -10,7 +10,7 @@ describe Sponsor do
     it 'adds and updates sponsors', feature: true, js: true do
       path = "#{Rails.root}/app/assets/images/rails.png"
 
-      conference.sponsorship_levels << create(:sponsorship_level, conference:)
+      conference.sponsorship_levels << create(:sponsorship_level, conference: conference)
       sign_in organizer
 
       visit admin_conference_sponsors_path(

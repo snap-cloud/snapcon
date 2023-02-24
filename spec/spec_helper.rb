@@ -69,7 +69,7 @@ RSpec.configure do |config|
     options = Selenium::WebDriver::Firefox::Options.new
     options.args << '--headless'
     options.args << '--window-size=1920,1080'
-    Capybara::Selenium::Driver.new(app, browser: :firefox, options:)
+    Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
   end
 
   Capybara.register_driver :chrome_headless do |app|
@@ -78,7 +78,7 @@ RSpec.configure do |config|
     options.args << '--headless'
     options.args << '--no-sandbox'
     options.args << '--disable-gpu'
-    Capybara::Selenium::Driver.new(app, browser: :chrome, options:)
+    Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
   end
 
   Capybara.default_max_wait_time = 10 # seconds

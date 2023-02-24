@@ -48,7 +48,7 @@ class Ticket < ApplicationRecord
   end
 
   def quantity_bought_by(user, paid: false)
-    ticket_purchases.by_user(user).where(paid:).sum(:quantity)
+    ticket_purchases.by_user(user).where(paid: paid).sum(:quantity)
   end
 
   def unpaid?(user)
@@ -56,7 +56,7 @@ class Ticket < ApplicationRecord
   end
 
   def total_price(user, paid: false)
-    quantity_bought_by(user, paid:) * price
+    quantity_bought_by(user, paid: paid) * price
   end
 
   def self.total_price(conference, user, paid: false)
@@ -64,7 +64,7 @@ class Ticket < ApplicationRecord
     result = nil
     begin
       tickets.each do |ticket|
-        price = ticket.total_price(user, paid:)
+        price = ticket.total_price(user, paid: paid)
         if result
           result += price unless price.zero?
         else
@@ -78,7 +78,7 @@ class Ticket < ApplicationRecord
   end
 
   def self.total_price_user(conference, user, paid: false)
-    tickets = TicketPurchase.where(conference:, user:, paid:)
+    tickets = TicketPurchase.where(conference: conference, user: user, paid: paid)
     tickets.inject(0) { |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
   end
 
@@ -97,7 +97,7 @@ class Ticket < ApplicationRecord
   private
 
   def tickets_of_conference_have_same_currency
-    tickets = Ticket.where(conference_id:)
+    tickets = Ticket.where(conference_id: conference_id)
     return if tickets.count.zero? || (tickets.count == 1 && self == tickets.first)
 
     unless tickets.all? { |t| t.price_currency == price_currency }

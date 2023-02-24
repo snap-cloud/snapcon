@@ -70,7 +70,7 @@ Rails.application.configure do
         Raven.capture_exception(
           exception,
           level: 'warning',
-          tags:  { method:, returning: }
+          tags:  { method: method, returning: returning }
         )
       end
     }

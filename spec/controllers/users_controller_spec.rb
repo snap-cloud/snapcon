@@ -26,7 +26,7 @@ describe UsersController do
     it 'assigns the correct value to @events, when the user has submissions' do
       conference = create(:conference)
       event = create(:event, state: 'confirmed', program: conference.program)
-      event.event_users << create(:event_user, user:, event_role: 'submitter')
+      event.event_users << create(:event_user, user: user, event_role: 'submitter')
 
       expect(assigns(:events)).to eq [event]
     end

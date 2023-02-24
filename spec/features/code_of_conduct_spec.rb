@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe 'Code of Conduct:' do
   let!(:organization) { create(:organization) }
-  let!(:conference) { create(:full_conference, organization:) }
+  let!(:conference) { create(:full_conference, organization: organization) }
   let(:admin) { create(:admin) }
   let(:sample_text) { Faker::Lorem.paragraph }
 

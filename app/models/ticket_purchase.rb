@@ -67,7 +67,7 @@ class TicketPurchase < ApplicationRecord
       purchase = new(ticket_id:     ticket.id,
                      conference_id: conference.id,
                      user_id:       user.id,
-                     quantity:,
+                     quantity:      quantity,
                      amount_paid:   ticket.price)
       purchase.pay(nil) if ticket.price_cents.zero?
     end
@@ -90,7 +90,7 @@ class TicketPurchase < ApplicationRecord
   end
 
   def pay(payment)
-    update(paid: true, payment:)
+    update(paid: true, payment: payment)
     PhysicalTicket.transaction do
       quantity.times { physical_tickets.create }
     end

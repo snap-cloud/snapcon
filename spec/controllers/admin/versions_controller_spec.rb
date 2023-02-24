@@ -41,7 +41,7 @@ describe Admin::VersionsController do
       end
 
       it 'reverting creation of object deletes it' do
-        lodging = create(:lodging, conference:)
+        lodging = create(:lodging, conference: conference)
         get :revert_object, params: { id: lodging.versions.last.id }
         expect(lodging.versions.last.event).to eq 'destroy'
         expect(Lodging.count).to eq 0
@@ -86,7 +86,7 @@ describe Admin::VersionsController do
       end
 
       it 'fails on trying to revert creation event' do
-        lodging = create(:lodging, conference:)
+        lodging = create(:lodging, conference: conference)
         get :revert_attribute, params: { id: lodging.versions.last.id, attribute: 'name' }
         expect(flash[:alert]).to eq 'You are not authorized to access this page.'
       end
@@ -120,7 +120,7 @@ describe Admin::VersionsController do
           @version_organizer = conference.versions.last
           cfp = create(:cfp, program: conference.program)
           @version_cfp = cfp.versions.last
-          registration = create(:registration, conference:)
+          registration = create(:registration, conference: conference)
           registration.update_attribute(:attended, true)
           @version_info_desk = registration.versions.last
         end

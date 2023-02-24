@@ -16,7 +16,7 @@ describe Registration do
     end
 
     context 'who is already registered' do
-      let!(:registration) { create(:registration, user: participant, conference:) }
+      let!(:registration) { create(:registration, user: participant, conference: conference) }
 
       it 'updates conference registration', feature: true, js: true do
         visit root_path

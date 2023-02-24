@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Admin::RegistrationPeriodsController do
   # It is necessary to use bang version of let to build roles before user
   let(:conference) { create(:conference) }
-  let!(:registration_ticket) { create(:registration_ticket, conference:) }
+  let!(:registration_ticket) { create(:registration_ticket, conference: conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:organizer2) { create(:organizer, email: 'organizer2@email.osem', resource: conference) }
   let(:participant) { create(:user) }

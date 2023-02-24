@@ -186,7 +186,7 @@ module FormatHelper
       superscript:                  true # SNAPCON
     }
     render_options = {
-      escape_html:,
+      escape_html:     escape_html,
       safe_links_only: true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(render_options), markdown_options)

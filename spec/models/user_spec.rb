@@ -63,8 +63,8 @@ describe User do
   let(:event1) { create(:event, program: conference.program) }
   let(:another_conference) { create(:conference) }
   let(:event2) { create(:event, program: another_conference.program) }
-  let(:registration) { create(:registration, user:, conference:) }
-  let(:events_registration) { create(:events_registration, event: event1, registration:) }
+  let(:registration) { create(:registration, user: user, conference: conference) }
+  let(:events_registration) { create(:events_registration, event: event1, registration: registration) }
 
   describe 'validation' do
     it { is_expected.to validate_presence_of(:email) }
@@ -216,7 +216,7 @@ describe User do
 
     describe '#subscribed?' do
       context 'user has subscribed to conference' do
-        before { create(:subscription, user:, conference:) }
+        before { create(:subscription, user: user, conference: conference) }
 
         it 'returns true' do
           expect(user.subscribed?(conference)).to be true
@@ -232,7 +232,7 @@ describe User do
 
     describe '.supports?' do
       context 'user has bought tickets' do
-        before { create(:ticket_purchase, user:, conference:, paid: true) }
+        before { create(:ticket_purchase, user: user, conference: conference, paid: true) }
 
         it 'returns true' do
           expect(user.supports?(conference)).to be true
@@ -359,8 +359,8 @@ describe User do
 
       context 'user has registered to conferences' do
         before do
-          create(:registration, user:, conference:)
-          create(:registration, user:, conference: conference2)
+          create(:registration, user: user, conference: conference)
+          create(:registration, user: user, conference: conference2)
         end
 
         it 'returns registered conferences title' do
@@ -378,8 +378,8 @@ describe User do
 
       context 'user has attended conferences' do
         before do
-          create(:registration, user:, conference:, attended: true)
-          create(:registration, user:, conference: conference2, attended: true)
+          create(:registration, user: user, conference: conference, attended: true)
+          create(:registration, user: user, conference: conference2, attended: true)
         end
 
         it 'returns attended conferences title' do
@@ -443,7 +443,7 @@ describe User do
         create(:conference, short_title: 'oSC17', title: 'openSUSE Conference 2017', tickets: [registration_ticket])
       end
       let(:ticket_purchase) do
-        create(:ticket_purchase, user:, conference: conference3, ticket: registration_ticket, quantity: 1)
+        create(:ticket_purchase, user: user, conference: conference3, ticket: registration_ticket, quantity: 1)
       end
 
       it 'counts the number of registration tickets of a conference held by user' do
@@ -513,8 +513,8 @@ describe User do
 
   describe 'has_many events_registrations' do
     before do
-      registration1 = create(:registration, user:, conference:)
-      registration2 = create(:registration, user:, conference: another_conference)
+      registration1 = create(:registration, user: user, conference: conference)
+      registration2 = create(:registration, user: user, conference: another_conference)
       @events_registration1 = create(:events_registration, registration: registration1, event: event1)
       @events_registration2 = create(:events_registration, registration: registration2, event: event2)
     end

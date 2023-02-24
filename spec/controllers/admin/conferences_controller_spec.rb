@@ -6,7 +6,7 @@ describe Admin::ConferencesController do
   # It is necessary to use bang version of let to build roles before user
   let!(:organization) { create(:organization, name: 'organization') }
   let!(:conference) do
-    create(:conference, organization:, start_date: Date.new(2014, 0o5, 26), end_date: Date.new(2014, 0o5, 26) + 15)
+    create(:conference, organization: organization, start_date: Date.new(2014, 0o5, 26), end_date: Date.new(2014, 0o5, 26) + 15)
   end
   let!(:organization_admin_role) { Role.find_by(name: 'organization_admin', resource: organization) }
   let(:organization_admin) { create(:user, role_ids: organization_admin_role.id) }

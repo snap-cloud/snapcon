@@ -21,7 +21,7 @@ describe Splashpage do
   end
 
   context 'splashpage already created' do
-    let!(:splashpage) { create(:splashpage, conference:, public: false) }
+    let!(:splashpage) { create(:splashpage, conference: conference, public: false) }
 
     it 'update a valid splashpage', js: true do
       sign_in organizer
@@ -66,7 +66,7 @@ describe Splashpage do
   end
 
   context 'navigation' do
-    let!(:splashpage) { create(:splashpage, conference:, public: true) }
+    let!(:splashpage) { create(:splashpage, conference: conference, public: true) }
 
     context 'multiple organizations' do
       let!(:additional_organization) { create(:organization) }
@@ -85,24 +85,24 @@ describe Splashpage do
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
     end
     let!(:program) { conference2.program }
-    let!(:selected_schedule) { create(:schedule, program:) }
+    let!(:selected_schedule) { create(:schedule, program: program) }
     let!(:splashpage) { create(:full_splashpage, conference: conference2, public: true) }
 
     let!(:scheduled_event1) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed', abstract: '`markdown`')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
     end
     let!(:scheduled_event2) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event3) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event4) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:current_time) { Time.now.in_time_zone(conference2.timezone) }
 
@@ -179,8 +179,8 @@ start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
   end
 
   context 'clarify registration status' do
-    let!(:splashpage) { create(:splashpage, conference:, public: true) }
-    let!(:reg_ticket) { create(:ticket, registration_ticket: true, conference:) }
+    let!(:splashpage) { create(:splashpage, conference: conference, public: true) }
+    let!(:reg_ticket) { create(:ticket, registration_ticket: true, conference: conference) }
     let!(:free_ticket) { create(:ticket, price_cents: 0) }
 
     it 'user signed in with no tickets', feature: true do
@@ -191,7 +191,7 @@ start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
 
     it 'user signed in with 1 free ticket', feature: true do
       sign_in participant
-      create(:ticket_purchase, conference:, user: participant, ticket: free_ticket, quantity: 1)
+      create(:ticket_purchase, conference: conference, user: participant, ticket: free_ticket, quantity: 1)
       visit conference_path(conference.short_title)
       expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end
@@ -199,15 +199,15 @@ start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
     # TODO-SNAPCON: This should check for reg tickets, not just any ticket.
     it 'user signed in with 1 paid ticket', feature: true do
       sign_in participant
-      create(:ticket_purchase, conference:, user: participant, ticket: reg_ticket, quantity: 1)
+      create(:ticket_purchase, conference: conference, user: participant, ticket: reg_ticket, quantity: 1)
       visit conference_path(conference.short_title)
       expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end
 
     it 'user signed in with multiple ticket', feature: true do
       sign_in participant
-      create(:ticket_purchase, conference:, user: participant, ticket: reg_ticket, quantity: 1)
-      create(:ticket_purchase, conference:, user: participant, ticket: free_ticket, quantity: 1)
+      create(:ticket_purchase, conference: conference, user: participant, ticket: reg_ticket, quantity: 1)
+      create(:ticket_purchase, conference: conference, user: participant, ticket: free_ticket, quantity: 1)
       visit conference_path(conference.short_title)
       expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end

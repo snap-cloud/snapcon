@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Admin::TicketsController do
   let(:admin) { create(:admin) }
   let(:conference) { create(:conference) }
-  let!(:ticket) { create(:ticket, conference:) }
+  let!(:ticket) { create(:ticket, conference: conference) }
   let(:new_title) { Faker::Hipster.sentence }
 
   context 'admin is signed in' do

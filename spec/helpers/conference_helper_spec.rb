@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe ConferenceHelper, type: :helper do
   let!(:conference) { create(:conference) }
-  let!(:contact) { create(:contact, conference:) }
+  let!(:contact) { create(:contact, conference: conference) }
 
   describe '#one_call_open' do
     it 'is falsey if neither call is open' do
@@ -84,10 +84,10 @@ describe ConferenceHelper, type: :helper do
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
     end
     let!(:program) { conference2.program }
-    let!(:selected_schedule) { create(:schedule, program:) }
+    let!(:selected_schedule) { create(:schedule, program: program) }
     let!(:scheduled_event1) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed', abstract: '`markdown`')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
     end
     let!(:current_time) { Time.now.in_time_zone(conference2.timezone) }
     let!(:event_schedule1) do
@@ -95,24 +95,24 @@ describe ConferenceHelper, type: :helper do
      start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
     end
     let!(:scheduled_event2) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule2) do
       create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
      start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
     end
     let!(:scheduled_event3) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule3) do
       create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
      start_time: (current_time - 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
     end
     let!(:scheduled_event4) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule4) do
       create(:event_schedule, event: scheduled_event4, schedule: selected_schedule,

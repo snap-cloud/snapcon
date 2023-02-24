@@ -107,7 +107,7 @@ describe 'Has correct abilities' do
       visit new_admin_conference_lodging_path(conference.short_title)
       expect(page).to have_current_path(new_admin_conference_lodging_path(conference.short_title), ignore_query: true)
 
-      create(:lodging, conference:)
+      create(:lodging, conference: conference)
       visit edit_admin_conference_lodging_path(conference.short_title, conference.lodgings.first)
       expect(page).to have_current_path(
         edit_admin_conference_lodging_path(conference.short_title, conference.lodgings.first), ignore_query: true
@@ -232,8 +232,8 @@ describe 'Has correct abilities' do
       other_user = create(:user)
       ticket = conference.registration_tickets.first
       create(:paid_ticket_purchase,
-             user: other_user, ticket:, quantity: 1, conference:)
-      create(:registration, user: other_user, conference:)
+             user: other_user, ticket: ticket, quantity: 1, conference: conference)
+      create(:registration, user: other_user, conference: conference)
       visit edit_admin_conference_registration_path(conference.short_title, conference.registrations.first)
       expect(page).to have_current_path(edit_admin_conference_registration_path(conference.short_title,
                                                                                 conference.registrations.first), ignore_query: true)
@@ -242,7 +242,7 @@ describe 'Has correct abilities' do
       expect(page).to have_current_path(new_admin_conference_registration_period_path(conference.short_title),
                                         ignore_query: true)
 
-      create(:registration_period, conference:)
+      create(:registration_period, conference: conference)
       visit edit_admin_conference_registration_period_path(conference.short_title)
       expect(page).to have_current_path(edit_admin_conference_registration_period_path(conference.short_title),
                                         ignore_query: true)
@@ -258,7 +258,7 @@ describe 'Has correct abilities' do
       expect(page).to have_current_path(new_admin_conference_sponsorship_level_path(conference.short_title),
                                         ignore_query: true)
 
-      create(:sponsorship_level, conference:)
+      create(:sponsorship_level, conference: conference)
       visit edit_admin_conference_sponsorship_level_path(conference.short_title, conference.sponsorship_levels.first)
       expect(page).to have_current_path(edit_admin_conference_sponsorship_level_path(conference.short_title,
                                                                                      conference.sponsorship_levels.first), ignore_query: true)
@@ -269,7 +269,7 @@ describe 'Has correct abilities' do
       visit new_admin_conference_sponsor_path(conference.short_title)
       expect(page).to have_current_path(new_admin_conference_sponsor_path(conference.short_title), ignore_query: true)
 
-      create(:sponsor, conference:, sponsorship_level: conference.sponsorship_levels.first)
+      create(:sponsor, conference: conference, sponsorship_level: conference.sponsorship_levels.first)
       visit edit_admin_conference_sponsor_path(conference.short_title, conference.sponsors.first)
       expect(page).to have_current_path(
         edit_admin_conference_sponsor_path(conference.short_title, conference.sponsors.first), ignore_query: true
@@ -281,7 +281,7 @@ describe 'Has correct abilities' do
       visit new_admin_conference_ticket_path(conference.short_title)
       expect(page).to have_current_path(new_admin_conference_ticket_path(conference.short_title), ignore_query: true)
 
-      create(:ticket, conference:)
+      create(:ticket, conference: conference)
       visit edit_admin_conference_ticket_path(conference.short_title, conference.tickets.first)
       expect(page).to have_current_path(
         edit_admin_conference_ticket_path(conference.short_title, conference.tickets.first), ignore_query: true
@@ -293,7 +293,7 @@ describe 'Has correct abilities' do
       visit new_admin_conference_booth_path(conference.short_title)
       expect(page).to have_current_path(new_admin_conference_booth_path(conference.short_title), ignore_query: true)
 
-      create(:booth, conference:)
+      create(:booth, conference: conference)
       visit edit_admin_conference_booth_path(conference.short_title, conference.booths.first)
       expect(page).to have_current_path(
         edit_admin_conference_booth_path(conference.short_title, conference.booths.first), ignore_query: true
@@ -315,7 +315,7 @@ describe 'Has correct abilities' do
       visit new_admin_conference_resource_path(conference.short_title)
       expect(page).to have_current_path(new_admin_conference_resource_path(conference.short_title), ignore_query: true)
 
-      create(:resource, conference:)
+      create(:resource, conference: conference)
       visit edit_admin_conference_resource_path(conference.short_title, conference.resources.first)
       expect(page).to have_current_path(edit_admin_conference_resource_path(conference.short_title,
                                                                             conference.resources.first), ignore_query: true)

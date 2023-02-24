@@ -411,7 +411,7 @@ class Conference < ApplicationRecord
 
     result.update(
       process:     calculate_setup_progress(result),
-      short_title:
+      short_title: short_title
     ).with_indifferent_access
   end
 

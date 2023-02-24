@@ -42,7 +42,7 @@ class RegistrationDatatable < AjaxDatatablesRails::ActiveRecord
         roles:                    conference_role_titles(record.user),
         email:                    record.email,
         accepted_code_of_conduct: !!record.accepted_code_of_conduct, # rubocop:disable Style/DoubleNegation
-        ticket_type:              record.user.tickets.where(conference:).pluck(:title),
+        ticket_type:              record.user.tickets.where(conference: conference).pluck(:title),
         edit_url:                 edit_admin_conference_registration_path(conference, record),
         DT_RowId:                 dom_id(record)
       }

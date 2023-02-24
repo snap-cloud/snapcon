@@ -205,9 +205,9 @@ describe Program do
   describe 'excecutes after_save functions' do
     it 'and unschedule unfit events if schedule interval was changed' do
       start_date = program.conference.start_date.to_datetime.change(hour: program.conference.start_hour)
-      create(:event_schedule, event:      create(:event, program:),
+      create(:event_schedule, event:      create(:event, program: program),
                               start_time: start_date.change(min: program.schedule_interval))
-      create(:event_schedule, event: create(:event, program:), start_time: start_date)
+      create(:event_schedule, event: create(:event, program: program), start_time: start_date)
       expect(program.event_schedules.count).to eq 2
 
       program.schedule_interval = 10
@@ -223,7 +223,7 @@ describe Program do
 
       program.event_types.first.update_attribute(:length, 5)
       program.event_types.last.update_attribute(:length, 25)
-      create(:event_type, program:, length: 30)
+      create(:event_type, program: program, length: 30)
 
       program.schedule_interval = 10
       program.save!
@@ -265,12 +265,12 @@ describe Program do
   end
 
   describe '#any_event_for_this_date?' do
-    let(:event) { create(:event, program:) }
+    let(:event) { create(:event, program: program) }
 
     context 'when no schedule is selected for the conference' do
-      let(:schedule) { create(:schedule, program:) }
+      let(:schedule) { create(:schedule, program: program) }
       let!(:event_schedule) do
-        create(:event_schedule, event:, schedule:, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc)
+        create(:event_schedule, event: event, schedule: schedule, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc)
       end
 
       it 'returns false irrespective of any date' do
@@ -287,9 +287,9 @@ describe Program do
     end
 
     context 'when schedule is selected for the conference' do
-      let(:schedule) { create(:schedule, program:) }
+      let(:schedule) { create(:schedule, program: program) }
       let!(:event_schedule) do
-        create(:event_schedule, event:, schedule:, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc)
+        create(:event_schedule, event: event, schedule: schedule, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc)
       end
 
       before do
@@ -317,7 +317,7 @@ describe Program do
 
   describe '#cfp' do
     it 'returns the cfp for events' do
-      create(:cfp, cfp_type: 'events', program:, end_date: Date.current + 1)
+      create(:cfp, cfp_type: 'events', program: program, end_date: Date.current + 1)
       expect(program.cfp).to be_a Cfp
       expect(program.cfp.cfp_type).to eq('events')
     end
@@ -329,27 +329,27 @@ describe Program do
 
   describe '#remaining_cfp_types' do
     it 'returns an array without the \'events\' type, when the cfp for events exists' do
-      create(:cfp, cfp_type: 'events', program:)
+      create(:cfp, cfp_type: 'events', program: program)
       expect(program.remaining_cfp_types).to be_a Array
       expect(program.remaining_cfp_types.include?('events')).to be false
     end
 
     it 'returns an array without the \'booths\' type, when the cfp for booths exists' do
-      create(:cfp, cfp_type: 'booths', program:)
+      create(:cfp, cfp_type: 'booths', program: program)
       expect(program.remaining_cfp_types).to be_a Array
       expect(program.remaining_cfp_types.include?('booths')).to be false
     end
 
     it 'returns an array without the \'tracks\' type, when the cfp for tracks exists' do
-      create(:cfp, cfp_type: 'tracks', program:)
+      create(:cfp, cfp_type: 'tracks', program: program)
       expect(program.remaining_cfp_types).to be_a Array
       expect(program.remaining_cfp_types.include?('tracks')).to be false
     end
 
     it 'returns an empty array when cfps for all the types exist' do
-      create(:cfp, cfp_type: 'events', program:)
-      create(:cfp, cfp_type: 'booths', program:)
-      create(:cfp, cfp_type: 'tracks', program:)
+      create(:cfp, cfp_type: 'events', program: program)
+      create(:cfp, cfp_type: 'booths', program: program)
+      create(:cfp, cfp_type: 'tracks', program: program)
       expect(program.remaining_cfp_types).to eq([])
     end
 

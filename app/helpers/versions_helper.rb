@@ -38,7 +38,7 @@ module VersionsHelper
       link_to user.name, admin_user_path(id: user_id)
     else
       name = current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset['name'].second if PaperTrail::Version.where(item_type: 'User', item_id: user_id).any?
-      "#{name ? name : 'Unknown user'} with ID #{user_id}"
+      "#{name || 'Unknown user'} with ID #{user_id}"
     end
   end
 
@@ -123,10 +123,10 @@ module VersionsHelper
   end
 
   def event_change_description(version)
-    case
-    when version.event == 'create' then 'submitted new'
+    if version.event == 'create'
+      'submitted new'
 
-    when version.changeset['state']
+    elsif version.changeset['state']
       case version.changeset['state'][1]
       when 'unconfirmed' then 'accepted'
       when 'withdrawn' then 'withdrew'

@@ -47,7 +47,7 @@ describe 'Version' do
   end
 
   it 'display changes in registration_period', feature: true, versioning: true, js: true do
-    registration_period = create(:registration_period, conference:)
+    registration_period = create(:registration_period, conference: conference)
     registration_period.update(start_date: (Time.zone.today + 1).strftime('%d/%m/%Y'),
                                end_date:   (Time.zone.today + 3).strftime('%d/%m/%Y'))
     registration_period_id = registration_period.id
@@ -85,7 +85,7 @@ describe 'Version' do
   end
 
   it 'display changes in lodging', feature: true, versioning: true, js: true do
-    lodging = create(:lodging, conference:, name: 'Hotel XYZ')
+    lodging = create(:lodging, conference: conference, name: 'Hotel XYZ')
     lodging.update(description: 'Nice view,close to venue', website_link: 'http://www.example.com')
     lodging_id = lodging.id
     lodging.destroy
@@ -106,8 +106,8 @@ describe 'Version' do
   end
 
   it 'display changes in room', feature: true, versioning: true, js: true do
-    venue = create(:venue, conference:)
-    room = create(:room, venue:, name: 'Auditorium')
+    venue = create(:venue, conference: conference)
+    room = create(:room, venue: venue, name: 'Auditorium')
     room.update_attribute(:size, 120)
     room_id = room.id
     room.destroy
@@ -119,8 +119,8 @@ describe 'Version' do
   end
 
   it 'display changes in sponsor', feature: true, versioning: true, js: true do
-    conference.sponsorship_levels << create_list(:sponsorship_level, 2, conference:)
-    sponsor = create(:sponsor, conference:, name: 'SUSE',
+    conference.sponsorship_levels << create_list(:sponsorship_level, 2, conference: conference)
+    sponsor = create(:sponsor, conference: conference, name: 'SUSE',
 sponsorship_level: conference.sponsorship_levels.first)
     sponsor.update(website_url:       'https://www.suse.com/company/history',
                    sponsorship_level: conference.sponsorship_levels.second)
@@ -134,7 +134,7 @@ sponsorship_level: conference.sponsorship_levels.first)
   end
 
   it 'display changes in sponsorship_level', feature: true, versioning: true, js: true do
-    sponsorship_level = create(:sponsorship_level, conference:)
+    sponsorship_level = create(:sponsorship_level, conference: conference)
     sponsorship_level.update_attribute(:title, 'Gold')
     sponsorship_level_id = sponsorship_level.id
     sponsorship_level.destroy
@@ -146,7 +146,7 @@ sponsorship_level: conference.sponsorship_levels.first)
   end
 
   it 'display changes in ticket', feature: true, versioning: true, js: true do
-    ticket = create(:ticket, conference:, title: 'Gold')
+    ticket = create(:ticket, conference: conference, title: 'Gold')
     ticket.update(price: 50, description: 'Premium Ticket')
     ticket_id = ticket.id
     ticket.destroy
@@ -170,7 +170,7 @@ sponsorship_level: conference.sponsorship_levels.first)
   end
 
   it 'display changes in venue', feature: true, versioning: true, js: true do
-    venue = create(:venue, conference:, name: 'Example University')
+    venue = create(:venue, conference: conference, name: 'Example University')
     venue.update(website: 'www.example.com new', description: 'Just another beautiful venue')
     venue_id = venue.id
     venue.destroy
@@ -367,7 +367,7 @@ sponsorship_level: conference.sponsorship_levels.first)
   end
 
   it 'display changes in conference registrations', feature: true, versioning: true, js: true do
-    Registration.create(user: organizer, conference:)
+    Registration.create(user: organizer, conference: conference)
     Registration.last.destroy
 
     visit admin_revision_history_path
@@ -377,9 +377,9 @@ sponsorship_level: conference.sponsorship_levels.first)
 
   it 'display changes in event registration', feature: true, versioning: true, js: true do
     create(:event, program: conference.program, title: 'My first event')
-    registration = Registration.create(user: organizer, conference:)
+    registration = Registration.create(user: organizer, conference: conference)
     event = create(:event, program: conference.program, title: 'My second event')
-    EventsRegistration.create(registration:, event:)
+    EventsRegistration.create(registration: registration, event: event)
     EventsRegistration.first.update_attribute(:attended, true)
     EventsRegistration.last.destroy
     # Here registration is deleted to ensure the event registration related change still displays the associated user's name
@@ -412,7 +412,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     conference.program.rating = 1
     create(:event, program: conference.program, title: 'My first event')
     event = create(:event, program: conference.program, title: 'My second event')
-    create(:vote, user: organizer, event:)
+    create(:vote, user: organizer, event: event)
     Vote.last.destroy
     PaperTrail::Version.last.reify.save
 

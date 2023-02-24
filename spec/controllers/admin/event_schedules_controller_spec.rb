@@ -4,10 +4,10 @@ require 'spec_helper'
 
 describe Admin::EventSchedulesController do
   let(:venue) { create(:venue) }
-  let(:conference) { create(:conference, venue:) }
-  let(:room) { create(:room, venue:) }
+  let(:conference) { create(:conference, venue: venue) }
+  let(:room) { create(:room, venue: venue) }
   let(:schedule) { create(:schedule, program: conference.program) }
-  let(:event_schedule) { create(:event_schedule, schedule:) }
+  let(:event_schedule) { create(:event_schedule, schedule: schedule) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   context 'logged in as an organizer' do
@@ -23,7 +23,7 @@ describe Admin::EventSchedulesController do
                attributes_for(:event_schedule,
                               schedule_id: schedule.id,
                               event_id:    create(:event, program: conference.program).id,
-                              room_id:     create(:room, venue:).id,
+                              room_id:     create(:room, venue: venue).id,
                               start_time:  conference.start_date + conference.start_hour.hours) }
         end
 

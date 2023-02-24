@@ -114,8 +114,8 @@ class EventSchedule < ApplicationRecord
   def intersecting_event_schedules
     EventSchedule
       .unscoped
-      .where(room_id:, start_time:, schedule_id:)
-      .where.not(id:)
+      .where(room_id: room_id, start_time: start_time, schedule_id: schedule_id)
+      .where.not(id: id)
   end
 
   # event_schedule_source is a cached enumerable object that helps

@@ -31,7 +31,7 @@ describe Lodging do
   it 'Update a lodging', feature: true, js: true do
     path = "#{Rails.root}/app/assets/images/rails.png"
 
-    lodging = create(:lodging, conference:)
+    lodging = create(:lodging, conference: conference)
 
     sign_in organizer
     visit admin_conference_lodgings_path(
@@ -60,7 +60,7 @@ describe Lodging do
   end
 
   it 'Delete a lodging', feature: true, js: true do
-    lodging = create(:lodging, conference:)
+    lodging = create(:lodging, conference: conference)
 
     sign_in organizer
     visit admin_conference_lodgings_path(

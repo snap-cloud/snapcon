@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Resource do
   let!(:conference) { create(:conference) }
   let!(:admin) { create(:admin) }
-  let!(:resource) { create(:resource, conference:) }
+  let!(:resource) { create(:resource, conference: conference) }
 
   context 'as an admin' do
     before do

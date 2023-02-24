@@ -456,7 +456,7 @@ describe ProposalsController do
 
         context 'user has registered for the conference' do
           before do
-            create(:registration, conference:, user: event.submitter)
+            create(:registration, conference: conference, user: event.submitter)
             patch :confirm, params: { conference_id: conference.short_title, id: event.id }
           end
 

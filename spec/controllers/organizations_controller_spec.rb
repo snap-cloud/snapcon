@@ -9,7 +9,7 @@ describe OrganizationsController do
       :conference,
       splashpage:   create(:splashpage, public: true),
       venue:        create(:venue),
-      organization:
+      organization: organization
     )
   end
   let!(:antiquated_conference) do
@@ -17,7 +17,7 @@ describe OrganizationsController do
       :conference,
       splashpage:   create(:splashpage, public: true),
       venue:        create(:venue),
-      organization:,
+      organization: organization,
       start_date:   2.weeks.ago,
       end_date:     1.week.ago
     )

@@ -6,12 +6,12 @@ describe Admin::TracksController do
   let(:admin) { create(:admin) }
 
   let(:conference) { create(:conference, start_date: Date.current - 1.day) }
-  let(:venue) { create(:venue, conference:) }
-  let(:room) { create(:room, venue:) }
+  let(:venue) { create(:venue, conference: conference) }
+  let(:room) { create(:room, venue: venue) }
   let!(:track) { create(:track, program: conference.program, color: '#800080') }
   let!(:self_organized_track) do
     create(:track, :self_organized, program: conference.program, name: 'My awesome track', start_date: Date.current,
-   end_date: Date.current, room:)
+   end_date: Date.current, room: room)
   end
 
   before do

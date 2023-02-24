@@ -29,7 +29,7 @@ describe RegistrationPeriod do
 
     context 'with tickets' do
       let!(:registration_ticket) do
-        create(:registration_ticket, conference:)
+        create(:registration_ticket, conference: conference)
       end
 
       it 'creates registration period', feature: true, js: true do

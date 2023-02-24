@@ -5,7 +5,7 @@ require 'spec_helper'
 describe BoothsController do
   let(:user) { create(:user) }
   let(:conference) { create(:conference) }
-  let(:booth) { create(:booth, title: 'Title', conference:) }
+  let(:booth) { create(:booth, title: 'Title', conference: conference) }
 
   context 'user is signed in with submitter role' do
     before do

@@ -32,7 +32,7 @@ class TicketPurchasesController < ApplicationController
     # User needs to pay for tickets if any of them is not free.
     if current_user.ticket_purchases.by_conference(@conference).unpaid.any?
       has_registration_ticket = count_registration_tickets_before.zero? && count_registration_tickets_after == 1
-      redirect_to new_conference_payment_path(has_registration_ticket:),
+      redirect_to new_conference_payment_path(has_registration_ticket: has_registration_ticket),
                   notice: 'Please pay here to get tickets.'
       return
     end

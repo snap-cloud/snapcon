@@ -71,7 +71,7 @@ FactoryBot.define do
 
         after(:build) do |event, evaluator|
           event.state = 'confirmed'
-          event.event_schedules << build(:event_schedule, event:, start_time: evaluator.hour)
+          event.event_schedules << build(:event_schedule, event: event, start_time: evaluator.hour)
         end
       end
     end

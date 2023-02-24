@@ -171,7 +171,7 @@ program: @conference.program)
       context 'is valid' do
         it 'when the track\'s room belongs to the venue of the conference' do
           room = create(:room, venue: @conference.venue)
-          track = build(:track, :self_organized, state: 'accepted', program: @conference.program, room:)
+          track = build(:track, :self_organized, state: 'accepted', program: @conference.program, room: room)
           expect(track.valid?).to be true
         end
       end
@@ -181,7 +181,7 @@ program: @conference.program)
           other_conference = create(:conference)
           other_conference.venue = create(:venue)
           room = create(:room, venue: other_conference.venue)
-          track = build(:track, :self_organized, state: 'accepted', program: @conference.program, room:)
+          track = build(:track, :self_organized, state: 'accepted', program: @conference.program, room: room)
           expect(track.valid?).to be false
           expect(track.errors[:room]).to eq ['must be a room of The venue']
         end
@@ -287,7 +287,7 @@ start_date: Date.current - 1.day, end_date: Date.current + 1.day)
       context 'excludes' do
         %w[new to_accept confirmed to_reject rejected canceled withdrawn].each do |state|
           it "when track is #{state.humanize}" do
-            not_accepted_track = create(:track, state:, program: @program)
+            not_accepted_track = create(:track, state: state, program: @program)
             expect(@program.tracks.accepted.include?(not_accepted_track)).to be false
           end
         end
@@ -309,7 +309,7 @@ start_date: Date.current - 1.day, end_date: Date.current + 1.day)
       context 'excludes' do
         %w[new to_accept accepted to_reject rejected canceled withdrawn].each do |state|
           it "tracks with state '#{state}'" do
-            unconfirmed_track = create(:track, state:, program: @program)
+            unconfirmed_track = create(:track, state: state, program: @program)
             expect(@program.tracks.confirmed.include?(unconfirmed_track)).to be false
           end
         end
@@ -366,7 +366,7 @@ start_date: Date.current - 1.day, end_date: Date.current + 1.day)
   describe '#transition_possible?' do
     shared_examples 'transition_possible?' do |state, transition, expected|
       it "returns #{expected} for #{transition} event, when the track's state is #{state}}" do
-        my_self_organized_track = create(:track, :self_organized, state:)
+        my_self_organized_track = create(:track, :self_organized, state: state)
         expect(my_self_organized_track.transition_possible?(transition.to_sym)).to eq expected
       end
     end

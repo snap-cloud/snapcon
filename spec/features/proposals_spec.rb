@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Event do
   let!(:conference) { create(:conference, :with_splashpage) }
-  let!(:registration_period) { create(:registration_period, conference:, start_date: Date.current) }
+  let!(:registration_period) { create(:registration_period, conference: conference, start_date: Date.current) }
   let!(:cfp) { create(:cfp, program_id: conference.program.id) }
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:participant) { create(:user) }
@@ -84,7 +84,7 @@ describe Event do
       @event.accept!(@options)
     end
 
-    it 'not signed_in user submits proposal', :focus do
+    it 'not signed_in user submits proposal' do
       expected_count_event = Event.count + 1
       expected_count_user = User.count + 1
 
@@ -250,8 +250,8 @@ start_time: conference.start_hour + 1.hour)
       end
 
       context 'with a fully setup event' do
-        let(:venue) { create(:venue, conference:) }
-        let(:room) { create(:room, venue:) }
+        let(:venue) { create(:venue, conference: conference) }
+        let(:room) { create(:room, venue: venue) }
 
         before do
           room.update(url: 'https://www.example.com')
@@ -285,24 +285,24 @@ start_time: conference.start_hour + 1.hour)
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
     end
     let!(:program) { conference1.program }
-    let!(:selected_schedule) { create(:schedule, program:) }
+    let!(:selected_schedule) { create(:schedule, program: program) }
     let!(:splashpage) { create(:full_splashpage, conference: conference1, public: true) }
 
     let!(:scheduled_event1) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event2) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event3) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:scheduled_event4) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:current_time) { Time.now.in_time_zone(conference1.timezone) }
 

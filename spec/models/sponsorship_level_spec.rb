@@ -29,10 +29,10 @@ describe SponsorshipLevel do
     let(:conference) { create(:conference) }
 
     before do
-      @first_sponsorship_level = create(:sponsorship_level, conference:)
-      @second_sponsorship_level = create(:sponsorship_level, conference:)
+      @first_sponsorship_level = create(:sponsorship_level, conference: conference)
+      @second_sponsorship_level = create(:sponsorship_level, conference: conference)
       @second_sponsorship_level.move_higher
-      @third_sponsorship_level = create(:sponsorship_level, conference:)
+      @third_sponsorship_level = create(:sponsorship_level, conference: conference)
     end
 
     it 'is positions sponsorship_levels in order' do

@@ -10,7 +10,7 @@ describe Commercial do
   let!(:participant) { create(:user) }
   let!(:event) { create(:event, program: conference.program, title: 'Example Proposal') }
   let!(:event_user) do
-    create(:event_user, user: participant, event:, event_role: 'submitter')
+    create(:event_user, user: participant, event: event, event_role: 'submitter')
   end
 
   before do

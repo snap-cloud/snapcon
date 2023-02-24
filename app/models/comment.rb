@@ -47,7 +47,7 @@ class Comment < ApplicationRecord
     new \
       commentable: obj,
       body:        comment,
-      user_id:
+      user_id:     user_id
   end
 
   # helper method to check if a comment has children
@@ -64,7 +64,7 @@ class Comment < ApplicationRecord
   # Helper class method to look up all comments for
   # commentable class name and commentable id.
   scope :find_comments_for_commentable, lambda { |commentable_str, commentable_id|
-    where(commentable_type: commentable_str.to_s, commentable_id:).order('created_at DESC')
+    where(commentable_type: commentable_str.to_s, commentable_id: commentable_id).order('created_at DESC')
   }
 
   scope :find_since_last_login, lambda { |user|

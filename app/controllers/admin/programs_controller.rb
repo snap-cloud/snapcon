@@ -28,7 +28,7 @@ module Admin
             if @program.event_schedules.count != event_schedules_count_was
               notice += ' You changed schedule interval and some events were unscheduled.'
             end
-            redirect_to admin_conference_program_path(@conference.short_title), notice:
+            redirect_to admin_conference_program_path(@conference.short_title), notice: notice
           end
           format.js { render json: {} }
         end

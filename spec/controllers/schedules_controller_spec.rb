@@ -45,18 +45,18 @@ describe SchedulesController do
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
     end
     let!(:program) { conference2.program }
-    let!(:selected_schedule) { create(:schedule, program:) }
+    let!(:selected_schedule) { create(:schedule, program: program) }
     let!(:scheduled_event1) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed', abstract: '`markdown`')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
     end
     let!(:event_schedule1) do
       create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
      start_time: Time.now.in_time_zone(conference2.timezone).strftime('%a, %d %b %Y %H:%M:%S'))
     end
     let!(:scheduled_event2) do
-      program.update!(selected_schedule:)
-      create(:event, program:, state: 'confirmed')
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
     end
     let!(:event_schedule2) do
       create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,

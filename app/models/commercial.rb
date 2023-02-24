@@ -51,12 +51,12 @@ class Commercial < ApplicationRecord
       id = line.match(/:/).pre_match.to_i
       # Get the commercial url (text after :)
       url = line.match(/:/).post_match
-      event = Event.find_by(id:)
+      event = Event.find_by(id: id)
 
       # Go to next event, if the event is not found
       (errors[:no_event] << id) && next unless event
 
-      commercial = event.commercials.new(url:)
+      commercial = event.commercials.new(url: url)
       unless commercial.save
         errors[:validation_errors] << ("Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')')
       end

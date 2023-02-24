@@ -180,7 +180,7 @@ class Event < ApplicationRecord
   # ====Returns
   # * +integer+ -> the rating of the user for the event
   def user_rating(user)
-    (vote = votes.find_by(user:)) ? vote.rating : 0
+    (vote = votes.find_by(user: user)) ? vote.rating : 0
   end
 
   ##
@@ -190,7 +190,7 @@ class Event < ApplicationRecord
   # * +true+ -> If the event has votes (optionally, by the user)
   # * +false+ -> If the event does not have any votes (optionally, by the user)
   def voted?(user = nil)
-    return votes.where(user:).any? if user
+    return votes.where(user: user).any? if user
 
     votes.any?
   end
@@ -229,7 +229,7 @@ class Event < ApplicationRecord
        program.conference.email_settings.confirmed_without_registration_subject
       users = [submitter] + speakers
       users.reject! { |user| user.registrations.for_conference(program.conference).present? }
-      users.each { |user| Mailbot.confirm_reminder_mail(self, user:).deliver_later }
+      users.each { |user| Mailbot.confirm_reminder_mail(self, user: user).deliver_later }
     end
   end
 
@@ -422,7 +422,7 @@ class Event < ApplicationRecord
   def generate_guid
     loop do
       @guid = SecureRandom.urlsafe_base64
-      break unless self.class.where(guid:).any?
+      break unless self.class.where(guid: guid).any?
     end
     self.guid = @guid
   end

@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Admin::SponsorshipLevelsController do
   let(:admin) { create(:admin) }
   let(:conference) { create(:conference) }
-  let(:sponsorship_level) { create(:sponsorship_level, conference:) }
+  let(:sponsorship_level) { create(:sponsorship_level, conference: conference) }
 
   context 'admin is signed in' do
     before { sign_in admin }
@@ -181,7 +181,7 @@ describe Admin::SponsorshipLevelsController do
     describe 'PATCH #up' do
       before do
         sponsorship_level
-        @second_sponsorship_level = create(:sponsorship_level, conference:)
+        @second_sponsorship_level = create(:sponsorship_level, conference: conference)
         patch :up, params: { conference_id: conference.short_title, id: @second_sponsorship_level.id }
       end
 
@@ -196,7 +196,7 @@ describe Admin::SponsorshipLevelsController do
     describe 'PATCH #down' do
       before do
         sponsorship_level
-        @second_sponsorship_level = create(:sponsorship_level, conference:)
+        @second_sponsorship_level = create(:sponsorship_level, conference: conference)
         patch :down, params: { conference_id: conference.short_title, id: sponsorship_level.id }
       end
 

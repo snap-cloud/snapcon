@@ -6,10 +6,10 @@ describe Admin::TicketScanningsController do
   let(:admin) { create(:admin) }
   let(:conference) { create(:conference) }
   let(:user) { create(:user) }
-  let!(:registration) { create(:registration, conference:, user:) }
-  let(:registration_ticket) { create(:registration_ticket, conference:) }
+  let!(:registration) { create(:registration, conference: conference, user: user) }
+  let(:registration_ticket) { create(:registration_ticket, conference: conference) }
   let(:paid_ticket_purchase) do
-    create(:ticket_purchase, conference:, user:, ticket: registration_ticket, quantity: 1)
+    create(:ticket_purchase, conference: conference, user: user, ticket: registration_ticket, quantity: 1)
   end
   let(:physical_ticket) { create(:physical_ticket, ticket_purchase: paid_ticket_purchase) }
 

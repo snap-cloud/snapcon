@@ -31,10 +31,10 @@ describe ApplicationHelper, type: :helper do
       @other_event = create(:event, program: conference.program, state: 'confirmed')
       schedule = create(:schedule, program: conference.program)
       conference.program.update_attribute(:selected_schedule, schedule)
-      @event_schedule = create(:event_schedule, event:,
-start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule:)
+      @event_schedule = create(:event_schedule, event: event,
+start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
       @other_event_schedule = create(:event_schedule, event: @other_event,
-start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule:)
+start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
     end
 
     describe 'does return correct concurrent events' do
@@ -137,7 +137,7 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
 
   describe '#conference_logo_url' do
     let(:organization) { create(:organization) }
-    let(:conference2) { create(:conference, organization:) }
+    let(:conference2) { create(:conference, organization: organization) }
 
     it 'gives the correct logo url' do
       expect(conference_logo_url(conference2)).to eq('snapcon_logo.png')

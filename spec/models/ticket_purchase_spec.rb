@@ -126,7 +126,7 @@ describe TicketPurchase do
 
     it 'updates the quantity if the user already bought this ticket' do
       purchase = create(:ticket_purchase,
-                        conference:,
+                        conference: conference,
                         user:       participant,
                         ticket:     ticket_1,
                         quantity:   5)

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe Room do
   let!(:conference) { create(:conference) }
-  let!(:venue) { create(:venue, conference:) }
+  let!(:venue) { create(:venue, conference: conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'rooms' do
@@ -33,7 +33,7 @@ describe Room do
     end
 
     it 'updates a room', feature: true, js: true do
-      room = create(:room, venue:)
+      room = create(:room, venue: venue)
       sign_in organizer
       visit edit_admin_conference_venue_room_path(
         conference_id: conference.short_title, id: room.id

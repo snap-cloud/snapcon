@@ -55,7 +55,7 @@ context 'Delegation' do
     context 'when venue has been set' do
       it 'delegates to venue' do
         venue = create(:venue)
-        subject.update(venue:)
+        subject.update(venue: venue)
         expect(subject.city).to eq(venue.city)
         expect(subject.country_name).to eq(venue.country_name)
         expect(subject.venue_name).to eq(venue.name)
@@ -1618,9 +1618,9 @@ describe Conference do
 
   describe '#revision' do
     let(:track) { create(:track, program: subject.program) }
-    let(:event) { create(:event, program: subject.program, track:) }
+    let(:event) { create(:event, program: subject.program, track: track) }
     let(:venue) { create(:venue, conference: subject) }
-    let(:room)  { create(:room, venue:) }
+    let(:room)  { create(:room, venue: venue) }
 
     it 'for change in conference' do
       subject.title = 'changed'

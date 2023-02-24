@@ -36,7 +36,7 @@ class FullCalendarFormatter
         start:           event_schedule.start_time_in_conference_timezone,
         end:             event_schedule.end_time_in_conference_timezone,
         resourceIds:     rooms,
-        url:,
+        url:             url,
         borderColor:     event_type_color,
         backgroundColor: event_type_color,
         textColor:       contrast_color(event_type_color),

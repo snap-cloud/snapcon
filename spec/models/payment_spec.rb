@@ -35,11 +35,11 @@ describe Payment do
   describe '#amount_to_pay' do
     let!(:user) { create(:user) }
     let!(:conference) { create(:conference) }
-    let(:ticket_1) { create(:ticket, price: 10, price_currency: 'USD', conference:) }
-    let(:payment) { create(:payment, user:, conference:) }
+    let(:ticket_1) { create(:ticket, price: 10, price_currency: 'USD', conference: conference) }
+    let(:payment) { create(:payment, user: user, conference: conference) }
 
     it 'returns correct unpaid amount' do
-      create(:ticket_purchase, ticket: ticket_1, user:, quantity: 8)
+      create(:ticket_purchase, ticket: ticket_1, user: user, quantity: 8)
       expect(payment.amount_to_pay).to eq(8000)
     end
   end
@@ -47,11 +47,11 @@ describe Payment do
   describe '#purchase' do
     let!(:user) { create(:user) }
     let(:payment) do
-      create(:payment, user:, conference:, stripe_customer_token: stripe_helper.generate_card_token,
+      create(:payment, user: user, conference: conference, stripe_customer_token: stripe_helper.generate_card_token,
      stripe_customer_email: user.email)
     end
     let!(:conference) { create(:conference) }
-    let!(:ticket_1) { create(:ticket, price: 10, price_currency: 'USD', conference:) }
+    let!(:ticket_1) { create(:ticket, price: 10, price_currency: 'USD', conference: conference) }
     let!(:tickets) { { ticket_1.id.to_s => '2' } }
     let(:stripe_helper) { StripeMock.create_test_helper }
 
@@ -83,7 +83,7 @@ describe Payment do
 
     context 'if the payment is not successful' do
       let(:payment) do
-        create(:payment, user:, conference:, stripe_customer_token: 'bogus_card_token',
+        create(:payment, user: user, conference: conference, stripe_customer_token: 'bogus_card_token',
 stripe_customer_email: user.email)
       end
 

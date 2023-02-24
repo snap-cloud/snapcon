@@ -75,7 +75,7 @@ class Venue < ApplicationRecord
   def generate_guid
     loop do
       @guid = SecureRandom.urlsafe_base64
-      break unless Venue.where(guid:).any?
+      break unless Venue.where(guid: guid).any?
     end
     self.guid = @guid
   end

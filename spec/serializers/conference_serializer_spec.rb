@@ -54,8 +54,8 @@ describe ConferenceSerializer, type: :serializer do
   end
 
   context 'when the conference has rooms and tracks' do
-    let(:venue) { create(:venue, conference:) }
-    let!(:room) { create(:room, venue:) }
+    let(:venue) { create(:venue, conference: conference) }
+    let!(:room) { create(:room, venue: venue) }
     let!(:track) { create(:track, program: conference.program) }
 
     it 'correctly serializes the conference' do
