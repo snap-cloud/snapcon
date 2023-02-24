@@ -29,7 +29,7 @@ gem 'responders', '~> 3.0'
 gem 'pg'
 
 # for tracking data changes
-gem 'paper_trail'
+gem 'paper_trail', '< 13'
 
 # for upload management
 gem 'carrierwave'

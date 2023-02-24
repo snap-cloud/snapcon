@@ -37,14 +37,8 @@ module VersionsHelper
     if user
       link_to user.name, admin_user_path(id: user_id)
     else
-      if PaperTrail::Version.where(
-        item_type: 'User', item_id: user_id
-      ).any?
-        name = current_or_last_object_state('User',
-                                            user_id).try(:name) || PaperTrail::Version.where(item_type: 'User',
-                                                                                             item_id:   user_id).last.changeset['name'].second
-      end
-      "#{name || 'Unknown user'} with ID #{user_id}"
+      name = current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset['name'].second if PaperTrail::Version.where(item_type: 'User', item_id: user_id).any?
+      "#{name ? name : 'Unknown user'} with ID #{user_id}"
     end
   end
 
@@ -56,7 +50,7 @@ module VersionsHelper
     return nil unless id.present? && model_name.present?
 
     begin
-      object = model_name.constantize.find_by(id:)
+      object = model_name.constantize.find_by(id: id)
     rescue NameError
       return nil
     end
@@ -70,24 +64,18 @@ module VersionsHelper
 
   def subscription_change_description(version)
     user_id = current_or_last_object_state(version.item_type, version.item_id).user_id
-    unless user_id.to_s == version.whodunnit
-      user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User',
-                                                                                       user_id).try(:name) || PaperTrail::Version.where(item_type: 'User',
-                                                                                                                                        item_id:   user_id).last.changeset[:name].second
-    end
+    user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset[:name].second unless user_id.to_s == version.whodunnit
     version.event == 'create' ? "subscribed #{user_name} to" : "unsubscribed #{user_name} from"
   end
 
   def registration_change_description(version)
     if version.item_type == 'Registration'
-      user_id = current_or_last_object_state(version.item_type, version.item_id)&.user_id
+      user_id = current_or_last_object_state(version.item_type, version.item_id).user_id
     elsif version.item_type == 'EventsRegistration'
       registration_id = current_or_last_object_state(version.item_type, version.item_id).registration_id
       user_id = current_or_last_object_state('Registration', registration_id).user_id
     end
-    user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User',
-                                                                                     user_id).try(:name) || (PaperTrail::Version.where(item_type: 'User',
-                                                                                                                                       item_id:   user_id).last&.changeset || {})[:name]&.second
+    user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset[:name].second
 
     if user_id.to_s == version.whodunnit
       case version.event
@@ -109,7 +97,7 @@ module VersionsHelper
     if version.event == 'create'
       version.previous.nil? ? 'commented on' : "re-added #{user.name}'s comment on"
     else
-      "deleted #{user&.name}'s comment on"
+      "deleted #{user.name}'s comment on"
     end
   end
 
@@ -118,9 +106,9 @@ module VersionsHelper
     if version.event == 'create'
       version.previous.nil? ? 'voted on' : "re-added #{user.name}'s vote on"
     elsif version.event == 'update'
-      "updated #{user&.name}'s vote on"
+      "updated #{user.name}'s vote on"
     else
-      "deleted #{user&.name}'s vote on"
+      "deleted #{user.name}'s vote on"
     end
   end
 
@@ -135,10 +123,10 @@ module VersionsHelper
   end
 
   def event_change_description(version)
-    if version.event == 'create'
-      'submitted new'
+    case
+    when version.event == 'create' then 'submitted new'
 
-    elsif version.changeset['state']
+    when version.changeset['state']
       case version.changeset['state'][1]
       when 'unconfirmed' then 'accepted'
       when 'withdrawn' then 'withdrew'
