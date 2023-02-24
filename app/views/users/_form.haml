@@ -6,15 +6,9 @@
 .form-group
   = f.label :nickname
   = f.text_field :nickname, class: 'form-control'
-  = f.label :timezone
-  %br
-  = f.select :timezone, time_zone_options_for_select(selected: @user.timezone), include_blank: true
-  %span.help-block
-    The timezone setting will update the event schedules to show using the time you selected.
-    Your browser is current set to
-    %span.js-localTimezone
 .form-group
   = f.label :timezone
+  %br
   = f.select :timezone, time_zone_options_for_select(selected: @user.timezone), include_blank: true
   %span.help-block
     The timezone setting will update the event schedules to show using the time you selected.
@@ -29,7 +23,7 @@
     = link_to 'gravatar.com', 'https://gravatar.com'
   %p
     Or upload a picture.
-  = f.input :picture, hint: 'If you upload a picture, it will be used in place of Gravatar.'
+  = f.file_field :picture, hint: 'If you upload a picture, it will be used in place of Gravatar.'
   - if @user.picture?
     %p
       Current Picture
