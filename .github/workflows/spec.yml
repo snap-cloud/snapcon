@@ -30,7 +30,7 @@ jobs:
       RAILS_ENV: test
     strategy:
       matrix:
-        suite: [models, features, controllers, ability, leftovers]
+        suite: [models, features, controllers, ability, leftovers, cucumber]
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
