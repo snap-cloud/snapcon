@@ -30,6 +30,9 @@ Style/CommentAnnotation:
     - HACK
     - REVIEW
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
