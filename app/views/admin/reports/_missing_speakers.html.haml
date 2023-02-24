@@ -2,7 +2,7 @@
   .col-md-12
     .page-header
       %h1
-        Missing Speakers
+        Speaker Registration
         = "(#{@missing_event_speakers.distinct(:user_id).length})"
       %p.text-muted
         All event speakers who haven't checked in
@@ -10,6 +10,7 @@
   %table.datatable
     %thead
       %th Speaker Name
+      %th E-Mail
       %th Registered?
       %th Event
       %th Room
@@ -21,6 +22,7 @@
         - event = event_user.event
         %tr
           %td= link_to speaker.name, admin_user_path(speaker)
+          %td= speaker.email
           %td
             - if @conference.user_registered?(speaker)
               = link_to 'Yes', admin_conference_registrations_path(@conference.short_title)

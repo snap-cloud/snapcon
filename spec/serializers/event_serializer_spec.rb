@@ -69,7 +69,7 @@ describe EventSerializer, type: :serializer do
     before do
       event.language = 'English'
       event.speakers = [speaker]
-      create(:event_schedule, event: event, room: room, start_time: Date.new(2014, 03, 04) + 9.hours)
+      create(:event_schedule, event: event, room: room, start_time: Date.new(2014, 3, 4) + 9.hours)
       event.track = track
     end
 

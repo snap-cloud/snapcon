@@ -20,18 +20,18 @@ class UndoWrongMigration20140801080705AddUsersToEvents < ActiveRecord::Migration
   end
 
   def up
-    if ActiveRecord::Migrator.get_all_versions.include? 20140801080705
+    if ActiveRecord::Migrator.get_all_versions.include? 20_140_801_080_705
       user_deleted = TempUser.find_by(email: 'deleted@localhost.osem')
 
       TempEvent.all.each do |event|
         whodunnit = Version.find_by(item_type: 'Event', item_id: event.id, event: 'create').whodunnit
         original_user = TempUser.find_by(id: whodunnit)
 
-        if original_user.blank?
-          original_submitter = user_deleted
-        else
-          original_submitter = original_user
-        end
+        original_submitter = if original_user.blank?
+                               user_deleted
+                             else
+                               original_user
+                             end
 
         # Substitute submitter record
         submitter = TempEventUser.find_by(event_id: event.id, event_role: 'submitter')
@@ -47,6 +47,6 @@ class UndoWrongMigration20140801080705AddUsersToEvents < ActiveRecord::Migration
   end
 
   def down
-    raise ActiveRecord::IrreversibleMigration.new('Cannot reverse migration.')
+    raise ActiveRecord::IrreversibleMigration, 'Cannot reverse migration.'
   end
 end

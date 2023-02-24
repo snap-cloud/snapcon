@@ -37,35 +37,22 @@ module EventsHelper
       replaced_event = event_schedule.replaced_event_schedule.try(:event)
       content_tag :span do
         concat content_tag :span, 'Please note that this event replaces '
-        concat link_to replaced_event.title, conference_program_proposal_path(@conference.short_title, replaced_event.id), style: styles
+        concat link_to replaced_event.title,
+                       conference_program_proposal_path(@conference.short_title, replaced_event.id), style: styles
       end
     end
   end
 
   def canceled_replacement_event_label(event, event_schedule, *label_classes)
     if event.state == 'canceled' || event.state == 'withdrawn'
-      content_tag :span, 'CANCELED', class: (['label', 'label-danger'] + label_classes)
+      content_tag :span, 'CANCELED', class: (%w[label label-danger] + label_classes)
     elsif event_schedule.present? && event_schedule.replacement?(@withdrawn_event_schedules)
-      content_tag :span, 'REPLACEMENT', class: (['label', 'label-info'] + label_classes)
+      content_tag :span, 'REPLACEMENT', class: (%w[label label-info] + label_classes)
     end
   end
 
   def rating_tooltip(event, max_rating)
     "#{event.average_rating}/#{max_rating}, #{pluralize(event.voters.length, 'vote')}"
-  end
-
-  def event_type_options(event_types)
-    event_types.map do |type|
-      [
-        "#{type.title} - #{show_time(type.length)}",
-        type.id,
-        { data: {
-          min_words:    type.minimum_abstract_length,
-          max_words:    type.maximum_abstract_length,
-          instructions: type.submission_instructions
-        } }
-      ]
-    end
   end
 
   # TODO-SNAPCON: Move to admin helper
@@ -225,9 +212,9 @@ module EventsHelper
     end
   end
 
-  def join_event_link(event, event_schedule, current_user)
-    # TODO-SNAPCON: renable ended? check
+  def join_event_link(event, event_schedule, current_user, small: false)
     return unless current_user && event_schedule && event_schedule.room_url.present?
+    return if event.ended?
 
     conference = event.conference
     is_now = event_schedule.happening_now? # 30 minute threshold.
@@ -238,7 +225,7 @@ module EventsHelper
     if admin || (is_now && is_registered)
       link_to("Join Event Now #{'(Early)' unless is_now}",
               join_conference_program_proposal_path(conference, event),
-              target: '_blank', class: 'btn btn-primary',
+              target: '_blank', class: "btn btn-primary #{'btn-xs' if small}",
               'aria-label': "Join #{event.title}")
     elsif is_registered
       content_tag :span, class: 'btn btn-default btn-xs disabled' do
@@ -281,12 +268,12 @@ module EventsHelper
 
   def user_options_for_dropdown(event, column)
     users = event.send(column).pluck(:id, :name, :username, :email)
-    options_for_select(users.map{ |u| ["#{u[1]} (#{u[2]} #{u[3]})", u[0]] }, users.map(&:first))
+    options_for_select(users.map { |u| ["#{u[1]} (#{u[2]} #{u[3]})", u[0]] }, users.map(&:first))
   end
 
-  def committee_only_actions(user, conference, roles: [:organizer, :cfp], &block)
+  def committee_only_actions(user, conference, roles: %i[organizer cfp], &block)
     role_map = roles.map { |role| { name: role, resource: conference } }
-    return unless user.has_any_role?(:admin, *role_map)
+    return unless user&.has_any_role?(:admin, *role_map)
 
     content_tag(:div, class: 'panel panel-info') do
       concat content_tag(:div, 'Conference Organizers', class: 'panel-heading')

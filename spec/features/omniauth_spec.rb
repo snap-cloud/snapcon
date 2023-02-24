@@ -2,16 +2,15 @@
 
 require 'spec_helper'
 
-feature Openid, type: :feature, js: true do
+describe Openid, type: :feature, js: true do
   shared_examples 'sign in with openid' do
-
-    scenario 'has option to log in with Google account' do
+    it 'has option to log in with Google account' do
       visit '/accounts/sign_in'
       expect(page.has_content?('or sign in using')).to be true
       expect(page.has_link?('omniauth-google')).to be true
     end
 
-    scenario 'signs in *new* user with Google account' do
+    it 'signs in *new* user with Google account' do
       expected_count_openid = Openid.count + 1
       expected_count_user = User.count + 1
       visit '/accounts/sign_in'
@@ -26,7 +25,7 @@ feature Openid, type: :feature, js: true do
       expect(User.count).to eq(expected_count_user)
     end
 
-    scenario 'signs in an existing user' do
+    it 'signs in an existing user' do
       create(:user, email: 'test-participant-1@example.com')
       expected_count_openid = Openid.count + 1
       expected_count_user = User.count
@@ -42,7 +41,7 @@ feature Openid, type: :feature, js: true do
       expect(User.count).to eq(expected_count_user)
     end
 
-    scenario 'can handle authentication error' do
+    it 'can handle authentication error' do
       OmniAuth.config.mock_auth[:google] = :invalid_credentials
       visit '/accounts/sign_in'
       expect(page.has_content?('or sign in using')).to be true
@@ -53,7 +52,7 @@ feature Openid, type: :feature, js: true do
       expect(flash).to eq('Could not authenticate you from Google because "Invalid credentials".')
     end
 
-    scenario 'adds openid to existing user' do
+    it 'adds openid to existing user' do
       # Sign in user
       user = create(:user, email: 'test-participant-1@example.com')
       sign_in user
@@ -74,7 +73,7 @@ feature Openid, type: :feature, js: true do
       expect(Openid.where(email: 'test-1@example.com').first.nil?).to be(false)
     end
 
-    scenario 'signs in with openID using the same email as another associated openid' do
+    it 'signs in with openID using the same email as another associated openid' do
       # Sign in user
       create(:user, email: 'test-participant-1@example.com')
       expected_count_openid = Openid.count + 1
@@ -129,13 +128,13 @@ feature Openid, type: :feature, js: true do
   end
 
   shared_examples 'sign up with openid' do |provider|
-    scenario "has option to sign in with #{provider}" do
+    it "has option to sign in with #{provider}" do
       visit '/accounts/sign_up'
       expect(page.has_content?('or sign in using')).to be true
       expect(page.has_link?("omniauth-#{provider}")).to be true
     end
 
-    scenario "sign up with #{provider}" do
+    it "sign up with #{provider}" do
       expected_count_openid = Openid.count + 1
       expected_count_user = User.count + 1
       visit '/accounts/sign_up'

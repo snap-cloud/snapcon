@@ -55,9 +55,7 @@ class TicketPurchase < ApplicationRecord
                      else
                        purchase_ticket(conference, quantity, ticket, user)
                      end
-          if purchase && !purchase.save
-            errors.push(purchase.errors.full_messages)
-          end
+          errors.push(purchase.errors.full_messages) if purchase && !purchase.save
         end
       end
     end

@@ -50,7 +50,7 @@ module Admin
         redirect_to admin_conference_program_cfps_path, notice: 'Call for Papers was successfully deleted.'
       else
         redirect_to admin_conference_program_cfps_path, error: 'An error prohibited this Call for Papers from being destroyed: ' \
-        "#{@cfp.errors.full_messages.join('. ')}."
+                                                               "#{@cfp.errors.full_messages.join('. ')}."
       end
     end
 

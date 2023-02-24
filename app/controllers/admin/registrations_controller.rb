@@ -45,7 +45,7 @@ module Admin
                     notice: "Successfully updated registration for #{@registration.user.email}!"
       else
         flash.now[:error] = "An error prohibited the Registration for #{@registration.user.email}: " \
-                        "#{@registration.errors.full_messages.join('. ')}."
+                            "#{@registration.errors.full_messages.join('. ')}."
         render :edit
       end
     end

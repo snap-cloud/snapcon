@@ -46,10 +46,11 @@ describe TicketPdf do
           'Accept'          => '*/*',
           'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
           'User-Agent'      => 'Ruby'
-        })
+        }
+      )
       .to_return(status: 404, body: '', headers: {})
 
     pdf = described_class.new(conference, participant, physical_ticket, layout, file_name)
-    expect{ PDF::Inspector::Page.analyze(pdf.render) }.to_not raise_error
+    expect { PDF::Inspector::Page.analyze(pdf.render) }.not_to raise_error
   end
 end

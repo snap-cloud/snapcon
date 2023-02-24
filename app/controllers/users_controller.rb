@@ -10,8 +10,7 @@ class UsersController < ApplicationController
   end
 
   # GET /users/1/edit
-  def edit
-  end
+  def edit; end
 
   # PATCH/PUT /users/1
   def update
@@ -28,11 +27,10 @@ class UsersController < ApplicationController
       format.json do
         render json: { users:
                               User.active.where(
-            'username ILIKE :search OR email ILIKE :search OR name ILIKE :search',
-            search: "%#{params[:query]}%"
-          ).as_json(only:
-            [:username, :id, :name, :email], methods: :dropdwon_display
-          ) }
+                                'username ILIKE :search OR email ILIKE :search OR name ILIKE :search',
+                                search: "%#{params[:query]}%"
+                              ).as_json(only:
+            %i[username id name email], methods: :dropdwon_display) }
       end
     end
   end

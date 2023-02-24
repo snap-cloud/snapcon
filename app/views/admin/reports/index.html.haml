@@ -15,7 +15,7 @@
 
     %li
       %a{href: '#missing-speakers', 'data-toggle' => 'tab'}
-        Missing Speakers
+        Speaker Registration
         %span.label.label-danger{style: 'border-radius: 1em;'}
           = @missing_event_speakers.distinct(:user_id).length
 

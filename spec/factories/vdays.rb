@@ -17,5 +17,4 @@ FactoryBot.define do
     description { 'Lorem Ipsum dolsum' }
     conference
   end
-
 end

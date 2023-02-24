@@ -11,7 +11,7 @@
         = link_to("user_#{provider}_omniauth_authorize".to_sym,
                   class: "btn btn-success btn-lg",
                   id: "omniauth-#{provider}",
-                  title: "Your #{provider} login") do
+                  title: "Your #{provider} login", method: :post) do
           %span
             Snap
             %em> !

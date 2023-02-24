@@ -1,4 +1,3 @@
-# encoding: utf-8
 # frozen_string_literal: true
 
 class PictureUploader < CarrierWave::Uploader::Base
@@ -89,11 +88,11 @@ class PictureUploader < CarrierWave::Uploader::Base
   end
 
   def extension_allowlist
-    %w(jpg jpeg gif png)
+    %w[jpg jpeg gif png]
   end
 
   def content_type_allowlist
-    /image\//
+    %r{image/}
   end
 
   private

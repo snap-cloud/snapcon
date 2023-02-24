@@ -19,12 +19,12 @@ class ChangeLodgingAssociationToConference < ActiveRecord::Migration
 
     # Change association from venue and conference
     TempConference.all.each do |conference|
-      if TempVenue.exists?(conference_id: conference.id)
-        venue = TempVenue.find_by(conference_id: conference.id)
-        lodgings = TempLodging.where(venue_id: venue.id)
-        lodgings.each do |lodging|
-          lodging.update_attributes(conference_id: conference.id)
-        end
+      next unless TempVenue.exists?(conference_id: conference.id)
+
+      venue = TempVenue.find_by(conference_id: conference.id)
+      lodgings = TempLodging.where(venue_id: venue.id)
+      lodgings.each do |lodging|
+        lodging.update_attributes(conference_id: conference.id)
       end
     end
 

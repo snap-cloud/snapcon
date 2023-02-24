@@ -6,7 +6,7 @@ require 'webmock/rspec'
 describe MailblusterManager, type: :model do
   let!(:user) { create(:user) }
 
-  before(:each) do
+  before do
     WebMock.reset_executed_requests!
   end
 

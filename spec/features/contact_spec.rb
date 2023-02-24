@@ -2,8 +2,7 @@
 
 require 'spec_helper'
 
-feature Contact do
-
+describe Contact do
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
@@ -17,7 +16,7 @@ feature Contact do
       click_button 'Update Contact'
       page.find('#flash')
       expect(flash)
-          .to eq('Contact details were successfully updated.')
+        .to eq('Contact details were successfully updated.')
       contact.reload
 
       expect(contact.send(field_name)).to eq(field_value)

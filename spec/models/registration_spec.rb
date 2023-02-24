@@ -19,6 +19,7 @@ require 'spec_helper'
 
 describe Registration do
   subject { create(:registration) }
+
   let!(:user) { create(:user) }
   let!(:conference) { create(:conference) }
   let!(:registration) { create(:registration, conference: conference, user: user) }
@@ -33,7 +34,10 @@ describe Registration do
     describe 'registration_limit_not_exceed' do
       it 'is not valid when limit exceeded' do
         conference.registration_limit = 1
-        expect { create(:registration, conference: conference, user: user) }.to raise_error('Validation failed: User already Registered!, Registration limit exceeded')
+        expect do
+          create(:registration, conference: conference,
+                                user:       user)
+        end.to raise_error('Validation failed: User already Registered!, Registration limit exceeded')
         expect(user.registrations.size).to be 1
       end
     end

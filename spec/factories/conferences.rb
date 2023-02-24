@@ -51,10 +51,13 @@ FactoryBot.define do
     organization
     color { '#FFFFFF' }
     after(:create) do |conference|
-      Role.where(name: 'organizer', resource: conference).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
+      Role.where(name:     'organizer',
+                 resource: conference).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
       Role.where(name: 'cfp', resource: conference).first_or_create(description: 'For the members of the CfP team')
-      Role.where(name: 'info_desk', resource: conference).first_or_create(description: 'For the members of the Info Desk team')
-      Role.where(name: 'volunteers_coordinator', resource: conference).first_or_create(description: 'For the people in charge of volunteers')
+      Role.where(name:     'info_desk',
+                 resource: conference).first_or_create(description: 'For the members of the Info Desk team')
+      Role.where(name:     'volunteers_coordinator',
+                 resource: conference).first_or_create(description: 'For the people in charge of volunteers')
     end
 
     trait :with_splashpage do

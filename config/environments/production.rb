@@ -1,4 +1,4 @@
-require "active_support/core_ext/integer/time"
+require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -61,9 +61,9 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  if ENV["OSEM_REDIS_CACHE_STORE"]
+  if ENV['OSEM_REDIS_CACHE_STORE']
     config.cache_store = :redis_cache_store, {
-      url:                ENV["OSEM_REDIS_CACHE_STORE"],
+      url:                ENV['OSEM_REDIS_CACHE_STORE'],
       reconnect_attempts: 1, # Defaults to 0
       error_handler:      lambda do |method:, returning:, exception:|
         # Report errors to Sentry as warnings
@@ -111,7 +111,7 @@ Rails.application.configure do
   }.compact
 
   # Use memcache cluster as cache store in production
-  if ENV["OSEM_MEMCACHED_SERVERS"]
+  if ENV['OSEM_MEMCACHED_SERVERS']
     config.cache_store = :mem_cache_store, ENV['OSEM_MEMCACHED_SERVERS'].split(','), {
       username: ENV.fetch('OSEM_MEMCACHED_USERNAME', nil),
       password: ENV.fetch('OSEM_MEMCACHED_PASSWORD', nil)

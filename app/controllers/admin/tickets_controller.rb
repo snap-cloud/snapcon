@@ -60,7 +60,9 @@ module Admin
         registration = @conference.register_user(recipient) if @ticket.registration_ticket?
         redirect_to(
           admin_conference_ticket_path(@conference.short_title, @ticket),
-          notice: "#{recipient.name} was given a #{@ticket.title} ticket #{'and registered' if registration}. #{message}"
+          notice: "#{recipient.name} was given a #{@ticket.title} ticket #{if registration
+                                                                             'and registered'
+                                                                           end}. #{message}"
         )
       else
         redirect_back(
@@ -78,7 +80,7 @@ module Admin
       else
         redirect_to admin_conference_tickets_path(conference_id: @conference.short_title),
                     error: 'Deleting ticket failed! ' \
-                    "#{@ticket.errors.full_messages.join('. ')}."
+                           "#{@ticket.errors.full_messages.join('. ')}."
       end
     end
 

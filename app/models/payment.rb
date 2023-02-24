@@ -19,8 +19,7 @@ class Payment < ApplicationRecord
   belongs_to :user
   belongs_to :conference
 
-  attr_accessor :stripe_customer_email
-  attr_accessor :stripe_customer_token
+  attr_accessor :stripe_customer_email, :stripe_customer_token
 
   validates :status, presence: true
   validates :user_id, presence: true
@@ -52,9 +51,8 @@ class Payment < ApplicationRecord
     self.authorization_code = gateway_response[:id]
     self.status = 'success'
     true
-
-  rescue Stripe::StripeError => error
-    errors.add(:base, error.message)
+  rescue Stripe::StripeError => e
+    errors.add(:base, e.message)
     self.status = 'failure'
     false
   end

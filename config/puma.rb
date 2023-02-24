@@ -16,7 +16,7 @@ port        ENV.fetch('PORT') { 3000 }
 environment ENV.fetch('RAILS_ENV') { 'development' }
 
 # Specifies the `pidfile` that Puma will use.
-pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
+pidfile ENV.fetch('PIDFILE') { 'tmp/pids/server.pid' }
 
 # Specifies the number of `workers` to boot in clustered mode.
 # Workers are forked webserver processes. If using threads and workers together
@@ -38,10 +38,11 @@ lowlevel_error_handler do |ex, env|
     ex,
     message:     ex.message,
     extra:       { puma: env },
-    transaction: "Puma"
+    transaction: 'Puma'
   )
   # note the below is just a Rack response
-  [500, {}, ["An error has occurred, and engineers have been informed. Please reload the page. If you continue to have problems, contact conference@snap.berkeley.edu\n"]]
+  [500, {},
+   ["An error has occurred, and engineers have been informed. Please reload the page. If you continue to have problems, contact conference@snap.berkeley.edu\n"]]
 end
 
 # Allow puma to be restarted by `rails restart` command.

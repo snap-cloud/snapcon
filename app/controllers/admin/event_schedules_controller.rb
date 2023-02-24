@@ -9,7 +9,8 @@ module Admin
       if @event_schedule.save
         render json: { event_schedule_id: @event_schedule.id }
       else
-        render json: { errors: "The event couldn't be scheduled. #{@event_schedule.errors.full_messages.join('. ')}" }, status: 422
+        render json:   { errors: "The event couldn't be scheduled. #{@event_schedule.errors.full_messages.join('. ')}" },
+               status: 422
       end
     end
 
@@ -17,7 +18,8 @@ module Admin
       if @event_schedule.update(event_schedule_params)
         render json: { event_schedule_id: @event_schedule.id }
       else
-        render json: { errors: "The event couldn't be scheduled. #{@event_schedule.errors.full_messages.join('. ')}" }, status: 422
+        render json:   { errors: "The event couldn't be scheduled. #{@event_schedule.errors.full_messages.join('. ')}" },
+               status: 422
       end
     end
 
@@ -25,7 +27,8 @@ module Admin
       if @event_schedule.destroy
         render json: {}
       else
-        render json: { errors: "The event couldn't be unscheduled. #{@event_schedule.errors.full_messages.join('. ')}" }, status: 422
+        render json:   { errors: "The event couldn't be unscheduled. #{@event_schedule.errors.full_messages.join('. ')}" },
+               status: 422
       end
     end
 

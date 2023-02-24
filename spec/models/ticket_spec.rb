@@ -24,27 +24,27 @@ describe Ticket do
 
   describe 'validation' do
     it 'is not valid without a title' do
-      should validate_presence_of(:title)
+      expect(subject).to validate_presence_of(:title)
     end
 
     it 'is not valid without a price_cents' do
-      should validate_presence_of(:price_cents)
+      expect(subject).to validate_presence_of(:price_cents)
     end
 
     it 'is not valid without a price_currency' do
-      should validate_presence_of(:price_currency)
+      expect(subject).to validate_presence_of(:price_currency)
     end
 
     it 'is not valid with a price_cents smaller than zero' do
-      should_not allow_value(-1).for(:price_cents)
+      expect(subject).not_to allow_value(-1).for(:price_cents)
     end
 
     it 'is valid with a price_cents equals zero' do
-      should allow_value(0).for(:price_cents)
+      expect(subject).to allow_value(0).for(:price_cents)
     end
 
     it 'is valid with a price_cents greater than zero' do
-      should allow_value(1).for(:price_cents)
+      expect(subject).to allow_value(1).for(:price_cents)
     end
 
     it 'is not valid if tickets of conference do not have same currency' do
@@ -59,9 +59,9 @@ describe Ticket do
   end
 
   describe 'association' do
-    it { should belong_to(:conference) }
-    it { should have_many(:ticket_purchases).dependent(:destroy) }
-    it { should have_many(:buyers).through(:ticket_purchases).source(:user) }
+    it { is_expected.to belong_to(:conference) }
+    it { is_expected.to have_many(:ticket_purchases).dependent(:destroy) }
+    it { is_expected.to have_many(:buyers).through(:ticket_purchases).source(:user) }
   end
 
   describe '#bought?' do
@@ -78,13 +78,20 @@ describe Ticket do
   end
 
   describe '#tickets_turnover_total' do
-    let!(:purchase1) { create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 1, paid: true, user: user }
-    let!(:purchase2) { create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 2, paid: true, user: user }
-    let!(:purchase3) { create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 10, paid: false, user: user }
     subject { ticket.tickets_turnover_total ticket.id }
 
+    let!(:purchase1) do
+      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 1, paid: true, user: user
+    end
+    let!(:purchase2) do
+      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 2, paid: true, user: user
+    end
+    let!(:purchase3) do
+      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 10, paid: false, user: user
+    end
+
     it 'returns turnover as Money with ticket\'s currency' do
-      is_expected.to eq Money.new(5_000 * 3, ticket.price_currency)
+      expect(subject).to eq Money.new(5_000 * 3, ticket.price_currency)
     end
   end
 
@@ -92,7 +99,6 @@ describe Ticket do
     let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket) }
 
     context 'user has not paid' do
-
       it 'returns true' do
         expect(ticket.unpaid?(user)).to be(true)
       end
@@ -135,6 +141,7 @@ describe Ticket do
 
     context 'user has paid' do
       let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket, quantity: 20) }
+
       before { ticket_purchase.update_attribute(:paid, true) }
 
       it 'returns the correct value if the user has bought and paid for this ticket' do
@@ -150,7 +157,7 @@ describe Ticket do
                user:     user,
                ticket:   ticket,
                quantity: 20)
-        expect(ticket.total_price(user, paid: false)).to eq(Money.new(100000, 'USD'))
+        expect(ticket.total_price(user, paid: false)).to eq(Money.new(100_000, 'USD'))
       end
 
       it 'returns zero if the user has not bought this ticket' do
@@ -160,10 +167,11 @@ describe Ticket do
 
     context 'user has paid' do
       let!(:ticket_purchase) { create(:ticket_purchase, user: user, ticket: ticket, quantity: 20) }
+
       before { ticket_purchase.update_attribute(:paid, true) }
 
       it 'returns the correct value if the user has bought this ticket' do
-        expect(ticket.total_price(user, paid: true)).to eq(Money.new(100000, 'USD'))
+        expect(ticket.total_price(user, paid: true)).to eq(Money.new(100_000, 'USD'))
       end
     end
   end
@@ -184,7 +192,7 @@ describe Ticket do
         end
 
         it 'returns the correct total price' do
-          expect(Ticket.total_price(conference, user, paid: false)).to eq(Money.new(100000, 'USD'))
+          expect(Ticket.total_price(conference, user, paid: false)).to eq(Money.new(100_000, 'USD'))
         end
       end
 
@@ -195,7 +203,7 @@ describe Ticket do
         end
 
         it 'returns the correct total price' do
-          total_price = Money.new(200000, 'USD')
+          total_price = Money.new(200_000, 'USD')
           expect(Ticket.total_price(conference, user, paid: false)).to eq(total_price)
         end
       end
@@ -204,7 +212,7 @@ describe Ticket do
 
   describe 'currency updation' do
     context 'when more than one ticket exist for a conference' do
-      it 'should not allow currency update' do
+      it 'does not allow currency update' do
         ticket.update(price_currency: 'INR')
         expected_error_message = 'Price currency is different from the existing tickets of this conference.'
         expect(ticket.errors.full_messages).to eq([expected_error_message])
@@ -216,9 +224,11 @@ describe Ticket do
         ticket.destroy
       end
 
-      it 'should allow currency update' do
+      it 'allows currency update' do
         free_ticket = Ticket.first
-        expect { free_ticket.update_attribute(:price_currency, 'INR') }.to change { free_ticket.reload.price_currency }.from('USD').to('INR')
+        expect { free_ticket.update_attribute(:price_currency, 'INR') }.to change {
+                                                                             free_ticket.reload.price_currency
+                                                                           }.from('USD').to('INR')
       end
     end
   end

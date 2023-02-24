@@ -1,6 +1,6 @@
 @import "breakpoints.scss";
 
-.dashbox span.fa-solid {
+.dashbox span {
   margin-bottom: 2px;
 
   @include breakpoint(xs) {

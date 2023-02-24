@@ -17,8 +17,7 @@
 require 'spec_helper'
 
 describe Commercial do
-
-  it { should validate_presence_of(:url) }
+  it { is_expected.to validate_presence_of(:url) }
 
   it 'validates url format' do
     commercial = build(:conference_commercial, url: 'ftp://example.com')

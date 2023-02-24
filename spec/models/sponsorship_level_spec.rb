@@ -15,9 +15,8 @@ require 'spec_helper'
 
 describe SponsorshipLevel do
   describe 'validation' do
-
     it 'is not valid without a title' do
-      should validate_presence_of(:title)
+      expect(subject).to validate_presence_of(:title)
     end
   end
 

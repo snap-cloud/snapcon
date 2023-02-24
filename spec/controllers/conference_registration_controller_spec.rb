@@ -10,7 +10,7 @@ describe ConferenceRegistrationsController, type: :controller do
   let!(:registration) { create(:registration, conference: conference, user: registered_user, created_at: 1.day.ago) }
 
   shared_examples 'access #new action' do |user, ichain, path, message|
-    before :each do
+    before do
       sign_in send(user) if user
       stub_const('ENV', ENV.to_hash.merge('OSEM_ICHAIN_ENABLED' => ichain))
       get :new, params: { conference_id: conference.short_title }
@@ -26,7 +26,7 @@ describe ConferenceRegistrationsController, type: :controller do
   end
 
   shared_examples 'can access #new action' do |user, ichain|
-    before :each do
+    before do
       sign_in send(user) if user
       stub_const('ENV', ENV.to_hash.merge('OSEM_ICHAIN_ENABLED' => ichain))
       get :new, params: { conference_id: conference.short_title }
@@ -42,23 +42,28 @@ describe ConferenceRegistrationsController, type: :controller do
   end
 
   context 'user is signed in' do
-    before :each do
+    before do
       sign_in user
     end
 
     describe 'GET #new' do
       let(:not_registered_confirmed_speaker) { create(:user) }
       let(:registered_confirmed_speaker) { create(:user) }
-      let!(:speaker_registration) { create(:registration, conference: conference, user: registered_confirmed_speaker, created_at: 1.day.ago) }
-      let!(:confirmed_event) { create(:event, program: conference.program, speakers: [not_registered_confirmed_speaker, registered_confirmed_speaker], state: 'confirmed') }
+      let!(:speaker_registration) do
+        create(:registration, conference: conference, user: registered_confirmed_speaker, created_at: 1.day.ago)
+      end
+      let!(:confirmed_event) do
+        create(:event, program: conference.program,
+       speakers: [not_registered_confirmed_speaker, registered_confirmed_speaker], state: 'confirmed')
+      end
 
       context 'registration period open' do
-        before :each do
+        before do
           create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.from_now)
         end
 
         context 'registration limit not exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 0
             conference.save!
           end
@@ -72,7 +77,8 @@ describe ConferenceRegistrationsController, type: :controller do
           end
 
           context 'OSEM_ICHAIN_ENABLED true, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true', '/conferences/myconf/register/edit', nil
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true',
+                            '/conferences/myconf/register/edit', nil
           end
 
           context 'OSEM_ICHAIN_ENABLED true, user not registered, confirmed speaker' do
@@ -88,91 +94,8 @@ describe ConferenceRegistrationsController, type: :controller do
           end
 
           context 'OSEM_ICHAIN_ENABLED false, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user not registered, confirmed speaker' do
-            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'false'
-          end
-        end
-
-        context 'registration limit exceeded' do
-          before :each do
-            conference.registration_limit = 1
-            conference.save!
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user registered' do
-            it_behaves_like 'access #new action', :registered_user, 'true', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user not registered' do
-            it_behaves_like 'access #new action', :not_registered_user, 'true', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user not registered, confirmed speaker' do
-            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'true'
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user registered' do
-            it_behaves_like 'access #new action', :registered_user, 'false', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user not registered' do
-            it_behaves_like 'access #new action', :not_registered_user, 'false', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user not registered, confirmed speaker' do
-            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'false'
-          end
-        end
-      end
-
-      context 'registration period not open' do
-        before :each do
-          create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.ago)
-        end
-
-        context 'registration limit not exceeded' do
-          before :each do
-            conference.registration_limit = 0
-            conference.save!
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user registered' do
-            it_behaves_like 'access #new action', :registered_user, 'true', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user not registered' do
-            it_behaves_like 'access #new action', :not_registered_user, 'true', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED true, user not registered, confirmed speaker' do
-            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'true'
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user registered' do
-            it_behaves_like 'access #new action', :registered_user, 'false', '/conferences/myconf/register/edit', nil
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user not registered' do
-            it_behaves_like 'access #new action', :not_registered_user, 'false', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
-          end
-
-          context 'OSEM_ICHAIN_ENABLED false, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false', '/conferences/myconf/register/edit', nil
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false',
+                            '/conferences/myconf/register/edit', nil
           end
 
           context 'OSEM_ICHAIN_ENABLED false, user not registered, confirmed speaker' do
@@ -191,11 +114,13 @@ describe ConferenceRegistrationsController, type: :controller do
           end
 
           context 'OSEM_ICHAIN_ENABLED true, user not registered' do
-            it_behaves_like 'access #new action', :not_registered_user, 'true', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', :not_registered_user, 'true', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
 
           context 'OSEM_ICHAIN_ENABLED true, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true', '/conferences/myconf/register/edit', nil
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true',
+                            '/conferences/myconf/register/edit', nil
           end
 
           context 'OSEM_ICHAIN_ENABLED true, user not registered, confirmed speaker' do
@@ -207,11 +132,105 @@ describe ConferenceRegistrationsController, type: :controller do
           end
 
           context 'OSEM_ICHAIN_ENABLED false, user not registered' do
-            it_behaves_like 'access #new action', :not_registered_user, 'false', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', :not_registered_user, 'false', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
 
           context 'OSEM_ICHAIN_ENABLED false, user registered, confirmed speaker' do
-            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false', '/conferences/myconf/register/edit', nil
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false',
+                            '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user not registered, confirmed speaker' do
+            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'false'
+          end
+        end
+      end
+
+      context 'registration period not open' do
+        before do
+          create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.ago)
+        end
+
+        context 'registration limit not exceeded' do
+          before do
+            conference.registration_limit = 0
+            conference.save!
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user registered' do
+            it_behaves_like 'access #new action', :registered_user, 'true', '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user not registered' do
+            it_behaves_like 'access #new action', :not_registered_user, 'true', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user registered, confirmed speaker' do
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true',
+                            '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user not registered, confirmed speaker' do
+            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'true'
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user registered' do
+            it_behaves_like 'access #new action', :registered_user, 'false', '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user not registered' do
+            it_behaves_like 'access #new action', :not_registered_user, 'false', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user registered, confirmed speaker' do
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false',
+                            '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user not registered, confirmed speaker' do
+            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'false'
+          end
+        end
+
+        context 'registration limit exceeded' do
+          before do
+            conference.registration_limit = 1
+            conference.save!
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user registered' do
+            it_behaves_like 'access #new action', :registered_user, 'true', '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user not registered' do
+            it_behaves_like 'access #new action', :not_registered_user, 'true', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user registered, confirmed speaker' do
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'true',
+                            '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED true, user not registered, confirmed speaker' do
+            it_behaves_like 'can access #new action', :not_registered_confirmed_speaker, 'true'
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user registered' do
+            it_behaves_like 'access #new action', :registered_user, 'false', '/conferences/myconf/register/edit', nil
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user not registered' do
+            it_behaves_like 'access #new action', :not_registered_user, 'false', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+          end
+
+          context 'OSEM_ICHAIN_ENABLED false, user registered, confirmed speaker' do
+            it_behaves_like 'access #new action', :registered_confirmed_speaker, 'false',
+                            '/conferences/myconf/register/edit', nil
           end
 
           context 'OSEM_ICHAIN_ENABLED false, user not registered, confirmed speaker' do
@@ -224,8 +243,10 @@ describe ConferenceRegistrationsController, type: :controller do
     describe 'GET #show' do
       before do
         @registration = create(:registration, conference: conference, user: user)
-        @event_with_registration = create(:event, program: conference.program, require_registration: true, max_attendees: 5, state: 'confirmed')
-        @event_without_registration = create(:event, program: conference.program, require_registration: true, max_attendees: 5, state: 'confirmed')
+        @event_with_registration = create(:event, program: conference.program, require_registration: true,
+max_attendees: 5, state: 'confirmed')
+        @event_without_registration = create(:event, program: conference.program, require_registration: true,
+max_attendees: 5, state: 'confirmed')
         @registration.events << @event_with_registration
       end
 
@@ -310,7 +331,7 @@ describe ConferenceRegistrationsController, type: :controller do
         end
 
         it 'updates the registration' do
-          expect{ @registration.reload }.to change(@registration, :updated_at)
+          expect { @registration.reload }.to change(@registration, :updated_at)
         end
       end
 
@@ -359,7 +380,7 @@ describe ConferenceRegistrationsController, type: :controller do
         it 'deletes the registration' do
           expect do
             delete :destroy, params: { conference_id: conference.short_title }
-          end.to change{ Registration.count }.from(2).to(1)
+          end.to change { Registration.count }.from(2).to(1)
         end
       end
 
@@ -387,18 +408,19 @@ describe ConferenceRegistrationsController, type: :controller do
   context 'user is not signed in' do
     describe 'GET #new' do
       context 'registration period open' do
-        before :each do
+        before do
           create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.from_now)
         end
 
         context 'registration limit not exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 0
             conference.save!
           end
 
           context 'OSEM_ICHAIN_ENABLED is true' do
-            it_behaves_like 'access #new action', nil, 'true', '/', 'You are not authorized to access this page. Maybe you need to sign in?'
+            it_behaves_like 'access #new action', nil, 'true', '/',
+                            'You are not authorized to access this page. Maybe you need to sign in?'
           end
 
           context 'OSEM_ICHAIN_ENABLED is false' do
@@ -407,53 +429,59 @@ describe ConferenceRegistrationsController, type: :controller do
         end
 
         context 'registration limit exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 1
             conference.save!
           end
 
           context 'OSEM_ICHAIN_ENABLED is true' do
-            it_behaves_like 'access #new action', nil, 'true', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', nil, 'true', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
 
           context 'OSEM_ICHAIN_ENABLED is false' do
-            it_behaves_like 'access #new action', nil, 'false', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', nil, 'false', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
         end
       end
 
       context 'registration period not open' do
-        before :each do
+        before do
           create(:registration_period, conference: conference, start_date: 3.days.ago, end_date: 1.day.ago)
         end
 
         context 'registration limit not exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 0
             conference.save!
           end
 
           context 'OSEM_ICHAIN_ENABLED is true' do
-            it_behaves_like 'access #new action', nil, 'true', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', nil, 'true', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
 
           context 'OSEM_ICHAIN_ENABLED is false' do
-            it_behaves_like 'access #new action', nil, 'false', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', nil, 'false', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
         end
 
         context 'registration limit exceeded' do
-          before :each do
+          before do
             conference.registration_limit = 1
             conference.save!
           end
 
           context 'OSEM_ICHAIN_ENABLED is true' do
-            it_behaves_like 'access #new action', nil, 'true', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', nil, 'true', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
 
           context 'OSEM_ICHAIN_ENABLED is false' do
-            it_behaves_like 'access #new action', nil, 'false', '/', 'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
+            it_behaves_like 'access #new action', nil, 'false', '/',
+                            'Sorry, you can not register for My Conference. Registration limit exceeded or the registration is not open.'
           end
         end
       end

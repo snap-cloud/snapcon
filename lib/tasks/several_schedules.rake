@@ -5,20 +5,20 @@ namespace :data do
 
   task move_events_attributes: :environment do
     Program.all.each do |program|
-      schedule = Schedule.create(program: program)
+      schedule = Schedule.create(program:)
       program.selected_schedule = schedule unless program.selected_schedule
       program.save!
       program.events.each do |event|
-        unless event.start_time.nil? && event.room_id.nil?
-          # we can not use .room as this relation has been removed
-          EventSchedule.create(event:      event,
-                               schedule:   schedule,
-                               start_time: event.start_time,
-                               room_id:    event.room_id)
-          event.start_time = nil
-          event.room_id = nil
-          event.save
-        end
+        next if event.start_time.nil? && event.room_id.nil?
+
+        # we can not use .room as this relation has been removed
+        EventSchedule.create(event:,
+                             schedule:,
+                             start_time: event.start_time,
+                             room_id:    event.room_id)
+        event.start_time = nil
+        event.room_id = nil
+        event.save
       end
     end
     puts 'The start_time and room attributes has been moved from Event to EventSchedule'

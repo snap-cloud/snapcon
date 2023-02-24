@@ -38,8 +38,10 @@
             = f.label :street
             %abbr{title: 'This field is required'} *
             = f.text_field :street, required: true, class: 'form-control'
+          .form-group
             = f.label :postalcode
             = f.text_field :postalcode, class: 'form-control'
+          .form-group
             = f.label :city
             %abbr{title: 'This field is required'} *
             = f.text_field :city, required: true, class: 'form-control'

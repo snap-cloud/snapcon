@@ -3,6 +3,7 @@
 class RegistrationDatatable < AjaxDatatablesRails::ActiveRecord
   extend Forwardable
 
+  def_delegator :@view, :dom_id
   def_delegator :@view, :edit_admin_conference_registration_path
 
   def initialize(params, opts = {})
@@ -16,7 +17,7 @@ class RegistrationDatatable < AjaxDatatablesRails::ActiveRecord
       name:                     { source: 'User.name' },
       email:                    { source: 'User.email' },
       accepted_code_of_conduct: { source: 'Registration.accepted_code_of_conduct', searchable: false },
-      ticket_type:              { source: 'test' },
+      ticket_type:              { source: 'Ticket.title' },
       actions:                  { source: 'Registration.id', searchable: false, orderable: false }
     }
   end
@@ -43,13 +44,13 @@ class RegistrationDatatable < AjaxDatatablesRails::ActiveRecord
         accepted_code_of_conduct: !!record.accepted_code_of_conduct, # rubocop:disable Style/DoubleNegation
         ticket_type:              record.user.tickets.where(conference: conference).pluck(:title),
         edit_url:                 edit_admin_conference_registration_path(conference, record),
-        DT_RowId:                 record.id
+        DT_RowId:                 dom_id(record)
       }
     end
   end
 
   def get_raw_records # rubocop:disable Naming/AccessorMethodName
-    conference.registrations.includes(user: [:roles, :tickets]).references(:users, :roles).distinct
+    conference.registrations.includes(user: %i[roles tickets]).references(:users, :roles).distinct
   end
 
   # override upstream santitation, which converts everything to strings

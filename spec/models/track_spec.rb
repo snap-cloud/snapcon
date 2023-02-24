@@ -32,6 +32,7 @@ require 'spec_helper'
 
 describe Track do
   subject { create(:track) }
+
   let(:track) { create(:track) }
   let(:self_organized_track) { create(:track, :self_organized) }
 
@@ -50,15 +51,20 @@ describe Track do
     it { is_expected.to allow_value('#124689').for(:color) }
     it { is_expected.to validate_presence_of(:short_name) }
     it { is_expected.to allow_value('My_track_name').for(:short_name) }
-    it { is_expected.to_not allow_value('My track name').for(:short_name) }
+    it { is_expected.not_to allow_value('My track name').for(:short_name) }
     # there is a bug: https://github.com/thoughtbot/shoulda-matchers/issues/814
     # it { is_expected.to validate_uniqueness_of(:short_name).ignoring_case_sensitivity.scoped_to(:program) }
     it { is_expected.to validate_presence_of(:state) }
-    it { is_expected.to validate_inclusion_of(:state).in_array(%w[new to_accept accepted confirmed to_reject rejected canceled withdrawn]) }
+
+    it {
+      expect(subject).to validate_inclusion_of(:state).in_array(%w[new to_accept accepted confirmed to_reject rejected canceled
+                                                                   withdrawn])
+    }
+
     it { is_expected.to validate_inclusion_of(:cfp_active).in_array([true, false]) }
 
     context 'when self_organized_and_accepted_or_confirmed? returns true' do
-      before :each do
+      before do
         allow(subject).to receive(:self_organized_and_accepted_or_confirmed?).and_return(true)
       end
 
@@ -68,17 +74,17 @@ describe Track do
     end
 
     context 'when self_organized_and_accepted_or_confirmed? returns false' do
-      before :each do
+      before do
         allow(subject).to receive(:self_organized_and_accepted_or_confirmed?).and_return(false)
       end
 
-      it { is_expected.to_not validate_presence_of(:start_date) }
-      it { is_expected.to_not validate_presence_of(:end_date) }
-      it { is_expected.to_not validate_presence_of(:room) }
+      it { is_expected.not_to validate_presence_of(:start_date) }
+      it { is_expected.not_to validate_presence_of(:end_date) }
+      it { is_expected.not_to validate_presence_of(:room) }
     end
 
     context 'when self_organized? returns true' do
-      before :each do
+      before do
         allow(subject).to receive(:self_organized?).and_return(true)
       end
 
@@ -87,22 +93,23 @@ describe Track do
     end
 
     context 'when self_organized? returns false' do
-      before :each do
+      before do
         allow(subject).to receive(:self_organized?).and_return(false)
       end
 
-      it { is_expected.to_not validate_presence_of(:relevance) }
-      it { is_expected.to_not validate_presence_of(:description) }
+      it { is_expected.not_to validate_presence_of(:relevance) }
+      it { is_expected.not_to validate_presence_of(:description) }
     end
 
     describe '#dates_within_conference_dates' do
-      before :each do
+      before do
         @conference = create(:conference, start_date: 1.day.ago, end_date: 2.days.from_now)
       end
 
       context 'is valid' do
         it 'when the track\'s dates are between the conference\'s dates' do
-          track = build(:track, start_date: @conference.start_date, end_date: @conference.end_date, program: @conference.program)
+          track = build(:track, start_date: @conference.start_date, end_date: @conference.end_date,
+program: @conference.program)
           expect(track.valid?).to be true
         end
       end
@@ -135,7 +142,7 @@ describe Track do
     end
 
     describe '#start_date_before_end_date' do
-      before :each do
+      before do
         @conference = create(:conference, start_date: 1.day.ago, end_date: 2.days.from_now)
       end
 
@@ -156,7 +163,7 @@ describe Track do
     end
 
     describe '#valid_room' do
-      before :each do
+      before do
         @conference = create(:conference)
         @conference.venue = create(:venue, name: 'The venue')
       end
@@ -182,7 +189,7 @@ describe Track do
     end
 
     describe '#overlapping' do
-      before :each do
+      before do
         @conference = create(:conference, start_date: Date.current - 1.day, end_date: Date.current + 2.days)
         @conference.venue = create(:venue)
         @room = create(:room, venue: @conference.venue)
@@ -191,56 +198,72 @@ describe Track do
       context 'is valid' do
         it 'when the tracks are in different rooms at the same time' do
           other_room = create(:room, venue: @conference.venue)
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: other_room, start_date: Date.current, end_date: Date.current)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: other_room,
+start_date: Date.current, end_date: Date.current)
+          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current,
+end_date: Date.current)
           expect(track.valid?).to be true
         end
 
         it 'when it ends before the other tracks in the same room' do
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current - 1.day, end_date: Date.current - 1.day)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room,
+start_date: Date.current, end_date: Date.current)
+          track = build(:track, :self_organized, program: @conference.program, room: @room,
+start_date: Date.current - 1.day, end_date: Date.current - 1.day)
           expect(track.valid?).to be true
         end
 
         it 'when it starts after the other tracks in the same room' do
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current + 1.day, end_date: Date.current + 1.day)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room,
+start_date: Date.current, end_date: Date.current)
+          track = build(:track, :self_organized, program: @conference.program, room: @room,
+start_date: Date.current + 1.day, end_date: Date.current + 1.day)
           expect(track.valid?).to be true
         end
       end
 
       context 'is invalid' do
         it 'when it starts and/or ends with another track in the same room' do
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room,
+start_date: Date.current, end_date: Date.current)
+          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current,
+end_date: Date.current)
           expect(track.valid?).to be false
           expect(track.errors[:track]).to eq ['has overlapping dates with a confirmed or accepted track in the same room']
         end
 
         it 'when it starts before another track and ends after the other starts and before it ends' do
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current + 2.days)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current - 1.day, end_date: Date.current + 1.day)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room,
+start_date: Date.current, end_date: Date.current + 2.days)
+          track = build(:track, :self_organized, program: @conference.program, room: @room,
+start_date: Date.current - 1.day, end_date: Date.current + 1.day)
           expect(track.valid?).to be false
           expect(track.errors[:track]).to eq ['has overlapping dates with a confirmed or accepted track in the same room']
         end
 
         it 'when it starts after another track and before it ends and ends after the other' do
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current + 2.days)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current + 1.day, end_date: Date.current + 3.days)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room,
+start_date: Date.current, end_date: Date.current + 2.days)
+          track = build(:track, :self_organized, program: @conference.program, room: @room,
+start_date: Date.current + 1.day, end_date: Date.current + 3.days)
           expect(track.valid?).to be false
           expect(track.errors[:track]).to eq ['has overlapping dates with a confirmed or accepted track in the same room']
         end
 
         it 'when it starts after another track and ends before the other' do
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current + 2.days)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current + 1.day, end_date: Date.current + 1.day)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room,
+start_date: Date.current, end_date: Date.current + 2.days)
+          track = build(:track, :self_organized, program: @conference.program, room: @room,
+start_date: Date.current + 1.day, end_date: Date.current + 1.day)
           expect(track.valid?).to be false
           expect(track.errors[:track]).to eq ['has overlapping dates with a confirmed or accepted track in the same room']
         end
 
         it 'when it starts before another track and ends after the other' do
-          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room, start_date: Date.current, end_date: Date.current)
-          track = build(:track, :self_organized, program: @conference.program, room: @room, start_date: Date.current - 1.day, end_date: Date.current + 1.day)
+          create(:track, :self_organized, state: 'confirmed', program: @conference.program, room: @room,
+start_date: Date.current, end_date: Date.current)
+          track = build(:track, :self_organized, program: @conference.program, room: @room,
+start_date: Date.current - 1.day, end_date: Date.current + 1.day)
           expect(track.valid?).to be false
           expect(track.errors[:track]).to eq ['has overlapping dates with a confirmed or accepted track in the same room']
         end
@@ -250,7 +273,7 @@ describe Track do
 
   describe 'scope' do
     describe '#accepted' do
-      before :each do
+      before do
         @program = create(:program)
       end
 
@@ -272,7 +295,7 @@ describe Track do
     end
 
     describe '#confirmed' do
-      before :each do
+      before do
         @program = create(:program)
       end
 
@@ -294,7 +317,7 @@ describe Track do
     end
 
     describe '#cfp_active' do
-      before :each do
+      before do
         @program = create(:program)
         @cfp_active_track = create(:track, cfp_active: true, program: @program)
         @non_cfp_active_track = create(:track, cfp_active: false, program: @program)
@@ -310,7 +333,7 @@ describe Track do
     end
 
     describe '#self_organized' do
-      before :each do
+      before do
         @program = create(:program)
         track.program = @program
         track.save!
@@ -348,17 +371,24 @@ describe Track do
       end
     end
 
-    states = [:new, :to_accept, :accepted, :confirmed, :to_reject, :rejected, :canceled, :withdrawn]
-    transitions = [:restart, :to_accept, :accept, :confirm, :to_reject, :reject, :cancel, :withdraw]
+    states = %i[new to_accept accepted confirmed to_reject rejected canceled withdrawn]
+    transitions = %i[restart to_accept accept confirm to_reject reject cancel withdraw]
 
     states_transitions = { new:       { restart: false, to_accept: true, accept: true, confirm: false, to_reject: true, reject: true, cancel: false, withdraw: true },
-                           to_accept: { restart: false, to_accept: false, accept: true, confirm: false, to_reject: true, reject: false, cancel: true, withdraw: true },
-                           accepted:  { restart: false, to_accept: false, accept: false, confirm: true, to_reject: false, reject: false, cancel: true, withdraw: true },
-                           confirmed: { restart: false, to_accept: false, accept: false, confirm: false, to_reject: false, reject: false, cancel: true, withdraw: true },
-                           to_reject: { restart: false, to_accept: true, accept: false, confirm: false, to_reject: false, reject: true, cancel: true, withdraw: true },
-                           rejected:  { restart: true, to_accept: false, accept: false, confirm: false, to_reject: false, reject: false, cancel: false, withdraw: false },
-                           canceled:  { restart: true, to_accept: false, accept: false, confirm: false, to_reject: false, reject: false, cancel: false, withdraw: false },
-                           withdrawn: { restart: true, to_accept: false, accept: false, confirm: false, to_reject: false, reject: false, cancel: false, withdraw: false } }
+                           to_accept: { restart: false, to_accept: false, accept: true, confirm: false,
+to_reject: true, reject: false, cancel: true, withdraw: true },
+                           accepted:  { restart: false, to_accept: false, accept: false, confirm: true,
+to_reject: false, reject: false, cancel: true, withdraw: true },
+                           confirmed: { restart: false, to_accept: false, accept: false, confirm: false,
+to_reject: false, reject: false, cancel: true, withdraw: true },
+                           to_reject: { restart: false, to_accept: true, accept: false, confirm: false,
+to_reject: false, reject: true, cancel: true, withdraw: true },
+                           rejected:  { restart: true, to_accept: false, accept: false, confirm: false,
+to_reject: false, reject: false, cancel: false, withdraw: false },
+                           canceled:  { restart: true, to_accept: false, accept: false, confirm: false,
+to_reject: false, reject: false, cancel: false, withdraw: false },
+                           withdrawn: { restart: true, to_accept: false, accept: false, confirm: false,
+to_reject: false, reject: false, cancel: false, withdraw: false } }
 
     states.each do |state|
       transitions.each do |transition|
@@ -368,7 +398,7 @@ describe Track do
   end
 
   describe '#assign_role_to_submitter' do
-    before :each do
+    before do
       Role.where(name: 'track_organizer', resource: self_organized_track).first_or_create
       @submitter = self_organized_track.submitter
     end
@@ -389,15 +419,17 @@ describe Track do
   end
 
   describe '#revoke_role_and_cleanup' do
-    before :each do
+    before do
       Role.where(name: 'track_organizer', resource: self_organized_track).first_or_create
       @a_track_organizer = create(:user)
       self_organized_track.state = 'confirmed'
       self_organized_track.cfp_active = true
       self_organized_track.save!
       @a_track_organizer.add_role 'track_organizer', self_organized_track
-      @event_of_self_organized_track = create(:event, program: self_organized_track.program, track: self_organized_track, state: 'confirmed')
-      @schedule_of_self_organized_track = create(:schedule, program: self_organized_track.program, track: self_organized_track)
+      @event_of_self_organized_track = create(:event, program: self_organized_track.program,
+track: self_organized_track, state: 'confirmed')
+      @schedule_of_self_organized_track = create(:schedule, program: self_organized_track.program,
+                                                            track:   self_organized_track)
     end
 
     it 'revokes the role of the track organizer' do
@@ -490,12 +522,12 @@ describe Track do
   describe '#self_organized_and_accepted_or_confirmed?' do
     context 'returns true' do
       context 'when self_organized? returns true' do
-        before :each do
+        before do
           allow(track).to receive(:self_organized?).and_return(true)
         end
 
         context 'accepted? returns true and confirmed? returns false' do
-          before :each do
+          before do
             allow(track).to receive(:accepted?).and_return(true)
             allow(track).to receive(:confirmed?).and_return(false)
           end
@@ -504,7 +536,7 @@ describe Track do
         end
 
         context 'accepted? returns false and confirmed? returns true' do
-          before :each do
+          before do
             allow(track).to receive(:accepted?).and_return(false)
             allow(track).to receive(:confirmed?).and_return(true)
           end
@@ -516,12 +548,12 @@ describe Track do
 
     context 'returns false' do
       context 'when self_organized? returns true' do
-        before :each do
+        before do
           allow(track).to receive(:self_organized?).and_return(true)
         end
 
         context 'accepted? returns false and confirmed? returns false' do
-          before :each do
+          before do
             allow(track).to receive(:accepted?).and_return(false)
             allow(track).to receive(:confirmed?).and_return(false)
           end
@@ -531,12 +563,12 @@ describe Track do
       end
 
       context 'when self_organized? returns false' do
-        before :each do
+        before do
           allow(track).to receive(:self_organized?).and_return(false)
         end
 
         context 'accepted? returns false and confirmed? returns false' do
-          before :each do
+          before do
             allow(track).to receive(:accepted?).and_return(false)
             allow(track).to receive(:confirmed?).and_return(false)
           end
@@ -545,7 +577,7 @@ describe Track do
         end
 
         context 'accepted? returns true and confirmed? returns false' do
-          before :each do
+          before do
             allow(track).to receive(:accepted?).and_return(true)
             allow(track).to receive(:confirmed?).and_return(false)
           end
@@ -554,7 +586,7 @@ describe Track do
         end
 
         context 'accepted? returns false and confirmed? returns true' do
-          before :each do
+          before do
             allow(track).to receive(:accepted?).and_return(false)
             allow(track).to receive(:confirmed?).and_return(true)
           end
@@ -569,13 +601,15 @@ describe Track do
     it 'creates the role of the track organizer' do
       expect(Role.find_by(name: 'track_organizer', resource: self_organized_track)).to be_nil
       self_organized_track.send(:create_organizer_role)
-      expect(Role.find_by(name: 'track_organizer', resource: self_organized_track).description).to eq 'For the organizers of the Track'
+      expect(Role.find_by(name:     'track_organizer',
+                          resource: self_organized_track).description).to eq 'For the organizers of the Track'
     end
 
     it 'is executed when the track is accepted' do
       expect(Role.find_by(name: 'track_organizer', resource: self_organized_track)).to be_nil
       self_organized_track.accept
-      expect(Role.find_by(name: 'track_organizer', resource: self_organized_track).description).to eq 'For the organizers of the Track'
+      expect(Role.find_by(name:     'track_organizer',
+                          resource: self_organized_track).description).to eq 'For the organizers of the Track'
     end
   end
 end

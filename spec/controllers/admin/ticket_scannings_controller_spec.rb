@@ -8,19 +8,22 @@ describe Admin::TicketScanningsController do
   let(:user) { create(:user) }
   let!(:registration) { create(:registration, conference: conference, user: user) }
   let(:registration_ticket) { create(:registration_ticket, conference: conference) }
-  let(:paid_ticket_purchase) { create(:ticket_purchase, conference: conference, user: user, ticket: registration_ticket, quantity: 1) }
+  let(:paid_ticket_purchase) do
+    create(:ticket_purchase, conference: conference, user: user, ticket: registration_ticket, quantity: 1)
+  end
   let(:physical_ticket) { create(:physical_ticket, ticket_purchase: paid_ticket_purchase) }
 
   context 'logged in as user with no role' do
-    before :each do
+    before do
       sign_in user
     end
+
     describe 'POST #create' do
       it 'does not create new ticket scanning' do
         expected = expect do
           post :create, params: { physical_ticket_id: physical_ticket.token }
         end
-        expected.to_not change(TicketScanning, :count)
+        expected.not_to change(TicketScanning, :count)
       end
 
       it 'redirects to root' do
@@ -32,9 +35,10 @@ describe Admin::TicketScanningsController do
   end
 
   context 'logged in as admin' do
-    before :each do
+    before do
       sign_in admin
     end
+
     describe 'POST #create' do
       context 'with valid physical_ticket' do
         it 'creates new ticket scanning' do

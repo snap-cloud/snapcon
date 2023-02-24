@@ -2,16 +2,16 @@
 
 require 'spec_helper'
 
-feature DifficultyLevel do
+describe DifficultyLevel do
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'difficulty levels' do
-    scenario 'adds difficulty level', feature: true, js: true do
-
+    it 'adds difficulty level', feature: true, js: true do
       sign_in organizer
       visit admin_conference_program_difficulty_levels_path(
-                conference_id: conference.short_title)
+        conference_id: conference.short_title
+      )
 
       # Add difficulty level
       click_link 'Add Difficulty Level'
@@ -31,12 +31,12 @@ feature DifficultyLevel do
       end
     end
 
-    scenario 'updates difficulty level', feature: true, js: true do
-
+    it 'updates difficulty level', feature: true, js: true do
       conference.program.difficulty_levels << create(:difficulty_level)
       sign_in organizer
       visit admin_conference_program_difficulty_levels_path(
-                conference_id: conference.short_title)
+        conference_id: conference.short_title
+      )
 
       # Remove difficulty level
       page.accept_alert do
@@ -55,7 +55,6 @@ feature DifficultyLevel do
         expect(page.has_content?('Hard Events')).to be true
       end
     end
-
   end
 
   describe 'organizer' do

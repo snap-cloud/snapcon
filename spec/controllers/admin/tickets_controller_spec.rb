@@ -72,7 +72,7 @@ describe Admin::TicketsController do
               ticket:        attributes_for(:ticket),
               conference_id: conference
             }
-          end.to change{ conference.tickets.count }.from(ticket_count).to(ticket_count + 1)
+          end.to change { conference.tickets.count }.from(ticket_count).to(ticket_count + 1)
         end
       end
 
@@ -168,7 +168,7 @@ describe Admin::TicketsController do
         it 'deletes the ticket' do
           expect do
             delete :destroy, params: { conference_id: conference, id: ticket }
-          end.to change{ conference.tickets.count }.from(ticket_count).to(ticket_count - 1)
+          end.to change { conference.tickets.count }.from(ticket_count).to(ticket_count - 1)
         end
       end
 
@@ -248,8 +248,8 @@ describe Admin::TicketsController do
 
         it 'shows error in flash message' do
           expect(flash[:error]).to match(
-             "Unable to give #{admin.name} a #{ticket.title} ticket: "
-           )
+            "Unable to give #{admin.name} a #{ticket.title} ticket: "
+          )
         end
 
         it 'does not create a ticket purchase' do
