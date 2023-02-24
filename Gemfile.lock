@@ -851,6 +851,7 @@ DEPENDENCIES
   rails-assets-bootstrap-select!
   rails-assets-date.format!
   rails-assets-holderjs!
+  rails-assets-jquery!
   rails-assets-jquery-smooth-scroll!
   rails-assets-markdown!
   rails-assets-momentjs!
