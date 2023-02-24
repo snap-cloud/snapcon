@@ -2,6 +2,6 @@
   .col-md-12
     .page-header
       %h1
-        Edit User
-      = form_for(:admin, @user) do |f|
-        = render partial: 'users/form', f: f
+        Edit User #{@user.nickname}
+    = form_for(@user) do |f|
+      = render 'users/form', f: f

@@ -1,3 +1,17 @@
+- if !@user.new_record? && can?(:toggle_confirmation, @user)
+  .pull-right
+    %b
+      Confirmed?
+      = check_box_tag @user.id, @user.id, @user.confirmed?,
+        url: "#{toggle_confirmation_admin_user_path(@user.id)}?user[to_confirm]=",
+        class: 'switch-checkbox'
+= f.label :is_admin
+= f.check_box :is_admin, class: 'switch-checkbox'
+%span.help-block
+  An admin can create a new conference, manage users and make other users admins.
+
+%h2 Basic Information
+
 .form-group
   = f.label :name
   = f.text_field :name, class: 'form-control'
