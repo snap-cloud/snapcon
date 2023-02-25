@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
+ENV['RAILS_ENV'] ||= 'test'
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'simplecov'
 
-if ENV['GITHUB_ACTIONS'] || ENV['TRAVIS']
+if ENV['CI']
   require 'simplecov-cobertura'
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 SimpleCov.start 'rails'
 
-ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../config/environment', __dir__)
 
 require 'rspec/rails'
@@ -23,10 +24,6 @@ ActiveRecord::Migration.maintain_test_schema!
 # Adds rspec helper provided by paper_trail
 # makes it easier to control when PaperTrail is enabled during testing.
 require 'paper_trail/frameworks/rspec'
-
-# Make htmlescape() available
-require 'erb'
-include ERB::Util
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are

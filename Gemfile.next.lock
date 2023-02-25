@@ -865,7 +865,7 @@ DEPENDENCIES
   pry
   pry-byebug
   puma
-  rails (~> 7.0)
+  rails (~> 7)
   rails-assets-bootstrap!
   rails-assets-bootstrap-markdown!
   rails-assets-bootstrap-select!
