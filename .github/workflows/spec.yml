@@ -18,8 +18,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.3
-          # bundler-cache: true
-      - rum: bundle install
+          bundler-cache: true
       - run: bundle exec rubocop
       - run: bundle exec haml-lint app/views
   spec:
@@ -37,7 +36,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.3
-          # bundler-cache: true
+          bundler-cache: true
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
@@ -47,7 +46,6 @@ jobs:
         run: npm install
       - name: Prepare spec
         run: |
-          bundle install
           rm -f osem_test osem_development
           bundle exec rake db:setup --trace
           bundle exec bin/rails webdrivers:chromedriver:update
