@@ -37,7 +37,7 @@ class Ability
 
     # can view Commercials of confirmed Events
     can :show, Commercial, commercialable: Event.where(state: 'confirmed')
-    can %i[show create], User
+    can [:show, :create], User
 
     can %i[index show], Survey, surveyable_type: 'Conference'
 

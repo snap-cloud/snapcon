@@ -33,6 +33,9 @@ Style/CommentAnnotation:
 Style/HashSyntax:
   EnforcedShorthandSyntax: never
 
+Style/SymbolArray:
+  Enabled: false
+
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
@@ -47,6 +50,8 @@ Lint/AmbiguousRegexpLiteral:
 ##################### Metrics ##################################
 
 ##################### Rails ##################################
+Rails:
+  Enabled: true
 
 ##################### RSpec ##################################
 

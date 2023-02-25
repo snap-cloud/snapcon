@@ -800,7 +800,7 @@ DEPENDENCIES
   bootstrap3-datetimepicker-rails (~> 4.17.47)
   bullet
   byebug
-  cancancan
+  cancancan (= 3.3)
   capybara
   carrierwave
   carrierwave-bombshelter
