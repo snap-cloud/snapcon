@@ -37,9 +37,7 @@ class Room < ApplicationRecord
     event_schedules.update_all(updated_at: Time.now)
   }
 
-  def conference
-    venue.conference
-  end
+  delegate :conference, to: :venue
 
   private
 

@@ -118,17 +118,17 @@ class RemoveSocialEventsTable < ActiveRecord::Migration
     qtype = TempQuestionType.find_by(title: 'Multiple Choice')
 
     TempConference.all.each do |conference|
-      if qtype && (question = TempQuestion.find_by(title: 'Which of the following social events are you going to attend?',
-                                                   conference_id: conference.id, question_type_id: qtype.id))
-        TempQanswer.where(question_id: question.id).each do |qa|
-          TempQanswerRegistration.where(qanswer_id: qa.id).each do |qa_registration|
-            answer = TempAnswer.find(qa.answer_id)
-            registration = TempRegistration.find(qa_registration.registration_id)
-            social_event = TempSocialEvent.find_or_create_by!(title:         answer.title,
-                                                              conference_id: conference.id)
-            TempRegistrationsSocialEvent.find_or_create_by!(registration_id: registration.id,
-                                                            social_event_id: social_event.id)
-          end
+      next unless qtype && (question = TempQuestion.find_by(title: 'Which of the following social events are you going to attend?',
+                                                            conference_id: conference.id, question_type_id: qtype.id))
+
+      TempQanswer.where(question_id: question.id).each do |qa|
+        TempQanswerRegistration.where(qanswer_id: qa.id).each do |qa_registration|
+          answer = TempAnswer.find(qa.answer_id)
+          registration = TempRegistration.find(qa_registration.registration_id)
+          social_event = TempSocialEvent.find_or_create_by!(title:         answer.title,
+                                                            conference_id: conference.id)
+          TempRegistrationsSocialEvent.find_or_create_by!(registration_id: registration.id,
+                                                          social_event_id: social_event.id)
         end
       end
     end

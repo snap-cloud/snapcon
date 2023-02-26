@@ -3,7 +3,7 @@
 module Admin
   class ResourcesController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
-    load_and_authorize_resource :resource, only: [:show, :edit, :update, :destroy]
+    load_and_authorize_resource :resource, only: %i[show edit update destroy]
 
     def index; end
 
@@ -25,7 +25,7 @@ module Admin
     end
 
     def update
-      if @resource.update_attributes(resource_params)
+      if @resource.update(resource_params)
         redirect_to admin_conference_resources_path(conference_id: @conference.short_title),
                     notice: 'Resource successfully updated.'
       else
@@ -41,7 +41,7 @@ module Admin
       else
         redirect_to admin_conference_resources_path(conference_id: @conference.short_title),
                     error: 'Resource was successfully destroyed.' \
-  	                "#{@resource.errors.full_messages.join('. ')}."
+                           "#{@resource.errors.full_messages.join('. ')}."
       end
     end
 

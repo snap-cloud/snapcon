@@ -9,28 +9,28 @@ Devise.setup do |config|
   config.omniauth :open_id, name: 'suse', identifier: 'http://www.opensuse.org/openid/user'
 
   config.omniauth :google_oauth2,
-                  (ENV['OSEM_GOOGLE_KEY'] || Rails.application.secrets.google_key),
-                  (ENV['OSEM_GOOGLE_SECRET'] || Rails.application.secrets.google_secret),
+                  ENV.fetch('OSEM_GOOGLE_KEY', Rails.application.secrets.google_key),
+                  ENV.fetch('OSEM_GOOGLE_SECRET', Rails.application.secrets.google_secret),
                   name:  'google',
-                  scope: ['email', 'profile']
+                  scope: %w[email profile]
 
   # TODO-SNAPCON: This ought to be configurable. Use OSEM_DISCOURSE_KEY?
   config.omniauth :discourse,
                   sso_url:    'https://forum.snap.berkeley.edu/session/sso_provider',
-                  sso_secret: ENV['OSEM_DISCOURSE_SECRET']
+                  sso_secret: ENV.fetch('OSEM_DISCOURSE_SECRET', nil)
 
   config.omniauth :facebook,
-                  (ENV['OSEM_FACEBOOK_KEY'] || Rails.application.secrets.facebook_key),
-                  (ENV['OSEM_FACEBOOK_SECRET'] || Rails.application.secrets.facebook_secret)
+                  ENV.fetch('OSEM_FACEBOOK_KEY', Rails.application.secrets.facebook_key),
+                  ENV.fetch('OSEM_FACEBOOK_SECRET', Rails.application.secrets.facebook_secret)
 
   config.omniauth :github,
-                  (ENV['OSEM_GITHUB_KEY'] || Rails.application.secrets.github_key),
-                  (ENV['OSEM_GITHUB_SECRET'] || Rails.application.secrets.github_secret)
+                  ENV.fetch('OSEM_GITHUB_KEY', Rails.application.secrets.github_key),
+                  ENV.fetch('OSEM_GITHUB_SECRET', Rails.application.secrets.github_secret)
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
-  config.mailer_sender = ENV['OSEM_EMAIL_ADDRESS'] || 'no-reply@localhost'
+  config.mailer_sender = ENV.fetch('OSEM_EMAIL_ADDRESS', 'no-reply@localhost')
 
   # Configure the class responsible to send e-mails.
   # config.mailer = "Devise::Mailer"
@@ -49,7 +49,7 @@ Devise.setup do |config|
   # session. If you need permissions, you should implement that in a before filter.
   # You can also supply a hash where the value is a boolean determining whether
   # or not authentication should be aborted when the value is not present.
-  config.authentication_keys = [ :login ]
+  config.authentication_keys = [:login]
 
   # Configure parameters from the request object used for authentication. Each entry
   # given should be a request method and it will automatically be passed to the
@@ -61,12 +61,12 @@ Devise.setup do |config|
   # Configure which authentication keys should be case-insensitive.
   # These keys will be downcased upon creating or modifying a user and when used
   # to authenticate or find a user. Default is :email.
-  config.case_insensitive_keys = [ :email ]
+  config.case_insensitive_keys = [:email]
 
   # Configure which authentication keys should have whitespace stripped.
   # These keys will have whitespace before and after removed upon creating or
   # modifying a user and when used to authenticate or find a user. Default is :email.
-  config.strip_whitespace_keys = [ :email ]
+  config.strip_whitespace_keys = [:email]
 
   # Tell if authentication through request.params is enabled. True by default.
   # It can be set to an array that will enable params authentication only for the

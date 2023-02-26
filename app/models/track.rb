@@ -43,6 +43,7 @@ class Track < ApplicationRecord
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
+  before_validation :capitalize_color
   before_create :generate_guid
   validates :name, presence: true
   validates :color, format: /\A#[0-9A-F]{6}\z/
@@ -54,7 +55,7 @@ class Track < ApplicationRecord
             }
   validates :state,
             presence:  true,
-            inclusion: { in: %w(new to_accept accepted confirmed to_reject rejected canceled withdrawn) }
+            inclusion: { in: %w[new to_accept accepted confirmed to_reject rejected canceled withdrawn] }
   validates :cfp_active, inclusion: { in: [true, false] }
   validates :start_date, presence: true, if: :self_organized_and_accepted_or_confirmed?
   validates :end_date, presence: true, if: :self_organized_and_accepted_or_confirmed?
@@ -65,8 +66,6 @@ class Track < ApplicationRecord
   validate :start_date_before_end_date
   validate :valid_room
   validate :overlapping
-
-  before_validation :capitalize_color
 
   scope :accepted, -> { where(state: 'accepted') }
   scope :confirmed, -> { where(state: 'confirmed') }
@@ -84,34 +83,34 @@ class Track < ApplicationRecord
     state :withdrawn
 
     event :restart do
-      transitions to: :new, from: [:rejected, :withdrawn, :canceled]
+      transitions to: :new, from: %i[rejected withdrawn canceled]
     end
     event :to_accept do
-      transitions to: :to_accept, from: [:new, :to_reject]
+      transitions to: :to_accept, from: %i[new to_reject]
     end
     event :accept do
-      transitions to: :accepted, from: [:new, :to_accept], on_transition: :create_organizer_role
+      transitions to: :accepted, from: %i[new to_accept], on_transition: :create_organizer_role
     end
     event :confirm do
       transitions to: :confirmed, from: [:accepted], on_transition: :assign_role_to_submitter
     end
     event :to_reject do
-      transitions to: :to_reject, from: [:new, :to_accept]
+      transitions to: :to_reject, from: %i[new to_accept]
     end
     event :reject do
-      transitions to: :rejected, from: [:new, :to_reject]
+      transitions to: :rejected, from: %i[new to_reject]
     end
     event :cancel do
-      transitions to: :canceled, from: [:to_accept, :to_reject, :accepted, :confirmed], on_transition: :revoke_role_and_cleanup
+      transitions to: :canceled, from: %i[to_accept to_reject accepted confirmed],
+                  on_transition: :revoke_role_and_cleanup
     end
     event :withdraw do
-      transitions to: :withdrawn, from: [:new, :to_accept, :to_reject, :accepted, :confirmed], on_transition: :revoke_role_and_cleanup
+      transitions to: :withdrawn, from: %i[new to_accept to_reject accepted confirmed],
+                  on_transition: :revoke_role_and_cleanup
     end
   end
 
-  def conference
-    program.conference
-  end
+  delegate :conference, to: :program
 
   ##
   # Checks if the track is self-organized
@@ -204,9 +203,9 @@ class Track < ApplicationRecord
 
   def generate_guid
     guid = SecureRandom.urlsafe_base64
-#     begin
-#       guid = SecureRandom.urlsafe_base64
-#     end while Person.where(:guid => guid).exists?
+    #     begin
+    #       guid = SecureRandom.urlsafe_base64
+    #     end while Person.where(:guid => guid).exists?
     self.guid = guid
   end
 
@@ -228,10 +227,18 @@ class Track < ApplicationRecord
   # Verify that the track's dates are between the conference's dates
   #
   def dates_within_conference_dates
-    return unless start_date && end_date && program.try(:conference).try(:start_date) && program.try(:conference).try(:end_date)
+    unless start_date && end_date && program.try(:conference).try(:start_date) && program.try(:conference).try(:end_date)
+      return
+    end
 
-    errors.add(:start_date, "can't be outside of the conference's dates (#{program.conference.start_date}-#{program.conference.end_date})") unless (program.conference.start_date..program.conference.end_date).cover?(start_date)
-    errors.add(:end_date, "can't be outside of the conference's dates (#{program.conference.start_date}-#{program.conference.end_date})") unless (program.conference.start_date..program.conference.end_date).cover?(end_date)
+    unless (program.conference.start_date..program.conference.end_date).cover?(start_date)
+      errors.add(:start_date,
+                 "can't be outside of the conference's dates (#{program.conference.start_date}-#{program.conference.end_date})")
+    end
+    unless (program.conference.start_date..program.conference.end_date).cover?(end_date)
+      errors.add(:end_date,
+                 "can't be outside of the conference's dates (#{program.conference.start_date}-#{program.conference.end_date})")
+    end
   end
 
   ##
@@ -249,7 +256,10 @@ class Track < ApplicationRecord
   def valid_room
     return unless room.try(:venue).try(:conference) && program.try(:conference)
 
-    errors.add(:room, "must be a room of #{program.conference.venue.name}") unless room.venue.conference == program.conference
+    unless room.venue.conference == program.conference
+      errors.add(:room,
+                 "must be a room of #{program.conference.venue.name}")
+    end
   end
 
   ##
@@ -261,12 +271,12 @@ class Track < ApplicationRecord
     (program.tracks.accepted + program.tracks.confirmed - [self]).each do |existing_track|
       next unless existing_track.room == room && existing_track.start_date && existing_track.end_date
 
-      if start_date >= existing_track.start_date && start_date <= existing_track.end_date ||
-         end_date >= existing_track.start_date && end_date <= existing_track.end_date ||
-         start_date <= existing_track.start_date && end_date >= existing_track.end_date
-        errors.add(:track, 'has overlapping dates with a confirmed or accepted track in the same room')
-        break
-      end
+      next unless (start_date >= existing_track.start_date && start_date <= existing_track.end_date) ||
+                  (end_date >= existing_track.start_date && end_date <= existing_track.end_date) ||
+                  (start_date <= existing_track.start_date && end_date >= existing_track.end_date)
+
+      errors.add(:track, 'has overlapping dates with a confirmed or accepted track in the same room')
+      break
     end
   end
 end

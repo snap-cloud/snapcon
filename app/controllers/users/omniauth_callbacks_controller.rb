@@ -29,14 +29,12 @@ module Users
 
       begin
         user.save!
-        if openid.user != user
-          openid.user = user
-        end
+        openid.user = user if openid.user != user
         openid.save!
 
         sign_in user
         redirect_to session[:return_to] || root_path, notice: "#{user.email} signed in successfully with #{provider}"
-      rescue => e
+      rescue StandardError => e
         flash[:error] = e.message
         redirect_back_or_to new_user_registration_path
       end

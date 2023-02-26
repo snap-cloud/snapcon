@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
-  before_action :load_user
+  before_action :authenticate_user!, only: :search
   load_and_authorize_resource
 
   # GET /users/1
@@ -10,8 +10,7 @@ class UsersController < ApplicationController
   end
 
   # GET /users/1/edit
-  def edit
-  end
+  def edit; end
 
   # PATCH/PUT /users/1
   def update
@@ -20,6 +19,19 @@ class UsersController < ApplicationController
     else
       flash.now[:error] = "An error prohibited your profile from being saved: #{@user.errors.full_messages.join('. ')}."
       render :edit
+    end
+  end
+
+  def search
+    respond_to do |format|
+      format.json do
+        render json: { users:
+                              User.active.where(
+                                'username ILIKE :search OR email ILIKE :search OR name ILIKE :search',
+                                search: "%#{params[:query]}%"
+                              ).as_json(only:
+            %i[username id name email], methods: :dropdwon_display) }
+      end
     end
   end
 
@@ -34,7 +46,7 @@ class UsersController < ApplicationController
   # Somewhat of a hack: users/current/edit
   # rubocop:disable Naming/MemoizedInstanceVariableName
   def load_user
-    @user ||= (params[:id] && params[:id] != 'current' && User.find(params[:id]) || current_user)
+    @user ||= ((params[:id] && params[:id] != 'current' && User.find(params[:id])) || current_user)
   end
   # rubocop:enable Naming/MemoizedInstanceVariableName
 end

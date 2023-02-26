@@ -17,7 +17,7 @@ module Admin
 
     def create
       @ticket = @conference.tickets.new(ticket_params)
-      if @ticket.save(ticket_params)
+      if @ticket.save
         redirect_to admin_conference_tickets_path(conference_id: @conference.short_title),
                     notice: 'Ticket successfully created.'
       else
@@ -29,7 +29,7 @@ module Admin
     def edit; end
 
     def update
-      if @ticket.update_attributes(ticket_params)
+      if @ticket.update(ticket_params)
         redirect_to admin_conference_tickets_path(conference_id: @conference.short_title),
                     notice: 'Ticket successfully updated.'
       else
@@ -60,7 +60,9 @@ module Admin
         registration = @conference.register_user(recipient) if @ticket.registration_ticket?
         redirect_to(
           admin_conference_ticket_path(@conference.short_title, @ticket),
-          notice: "#{recipient.name} was given a #{@ticket.title} ticket #{'and registered' if registration}. #{message}"
+          notice: "#{recipient.name} was given a #{@ticket.title} ticket #{if registration
+                                                                             'and registered'
+                                                                           end}. #{message}"
         )
       else
         redirect_back(
@@ -78,7 +80,7 @@ module Admin
       else
         redirect_to admin_conference_tickets_path(conference_id: @conference.short_title),
                     error: 'Deleting ticket failed! ' \
-                    "#{@ticket.errors.full_messages.join('. ')}."
+                           "#{@ticket.errors.full_messages.join('. ')}."
       end
     end
 

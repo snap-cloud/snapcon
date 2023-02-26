@@ -21,5 +21,4 @@ FactoryBot.define do
       vposition.vdays << build(:vday, conference: vposition.conference)
     end
   end
-
 end

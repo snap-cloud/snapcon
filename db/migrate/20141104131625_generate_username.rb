@@ -7,11 +7,11 @@ class GenerateUsername < ActiveRecord::Migration
 
   def change
     TempUser.all.each do |user|
-      if user.username.blank?
-        username = user.email.split('@')[0]
-        username += user.id.to_s if TempUser.find_by(username: username)
-        user.update_attributes(username: username)
-      end
+      next unless user.username.blank?
+
+      username = user.email.split('@')[0]
+      username += user.id.to_s if TempUser.find_by(username:)
+      user.update_attributes(username:)
     end
   end
 end

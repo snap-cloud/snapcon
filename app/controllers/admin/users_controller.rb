@@ -23,7 +23,7 @@ module Admin
       respond_to do |format|
         format.html
         format.json do
-          render json: UserDatatable.new(view_context)
+          render json: UserDatatable.new(params, view_context: view_context)
         end
       end
     end
@@ -43,24 +43,23 @@ module Admin
       # Variable @show_attributes holds the attributes that are visible for the 'show' action
       # If you want to change the attributes that are shown in the 'show' action of users
       # add/remove the attributes in the following string array
-      @show_attributes = %w(name email username nickname affiliation biography
+      @show_attributes = %w[name email username nickname affiliation biography
                             profile_picture registered attended roles created_at
                             updated_at sign_in_count current_sign_in_at last_sign_in_at
-                            current_sign_in_ip last_sign_in_ip)
+                            current_sign_in_ip last_sign_in_ip]
     end
 
     def update
       message = ''
-      if params[:user] && !params[:user][:email].nil?
-        if (new_email = params[:user][:email]) != @user.email
-          message = " Confirmation email sent to #{new_email}. The new email needs to be confirmed before it can be used."
-        end
+      if params[:user] && !params[:user][:email].nil? && ((new_email = params[:user][:email]) != @user.email)
+        message = " Confirmation email sent to #{new_email}. The new email needs to be confirmed before it can be used."
       end
 
-      if @user.update_attributes(user_params)
+      if @user.update(user_params)
         redirect_to admin_users_path, notice: "Updated #{@user.name} (#{@user.email})!" + message
       else
-        redirect_to admin_users_path, error: "Could not update #{@user.name} (#{@user.email}). #{@user.errors.full_messages.join('. ')}."
+        redirect_to admin_users_path,
+                    error: "Could not update #{@user.name} (#{@user.email}). #{@user.errors.full_messages.join('. ')}."
       end
     end
 

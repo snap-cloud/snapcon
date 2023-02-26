@@ -3,7 +3,6 @@
 namespace :registrations do
   desc 'Create missing registrations for those how have a registration ticket.'
   task :create_missing, [:conference] => :environment do |_t, args|
-
     raise 'Please supply a conference short name.' unless args.conference
 
     conf = Conference.find_by(short_title: args.conference)
@@ -24,7 +23,6 @@ namespace :registrations do
 
   desc 'Show User emails who have not paid, but did register'
   task :list_unpaid, [:conference] => :environment do |_t, args|
-
     raise 'Please supply a conference short name.' unless args.conference
 
     conf = Conference.find_by(short_title: args.conference)
@@ -33,7 +31,7 @@ namespace :registrations do
 
     registered = conf.participants
     unpaid = registered.select do |user|
-      TicketPurchase.where(conference: conf, paid: true, user: user).empty?
+      TicketPurchase.where(conference: conf, paid: true, user:).empty?
     end
     puts "Found #{registered.count} registered users and #{unpaid.count} unpaid attendees."
     puts

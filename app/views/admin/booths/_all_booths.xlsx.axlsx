@@ -2,7 +2,7 @@
 
 wb.add_worksheet(name: "all #{(t 'booth').pluralize}") do |sheet|
   bold_style = wb.styles.add_style(b: true)
-  wrap_text = wb.styles.add_style alignment: {wrap_text: true}
+  wrap_text = wb.styles.add_style alignment: { wrap_text: true }
   row = ["#{(t 'booth').capitalize} ID",
          'Title',
          'Description',
@@ -23,7 +23,7 @@ wb.add_worksheet(name: "all #{(t 'booth').pluralize}") do |sheet|
     row << booth.submitter_relationship
     row << booth.website_url
     row << booth.state
-    sheet.add_row row , style: wrap_text
-    sheet.column_widths 10,20,35,35,20,30,35,10
+    sheet.add_row row, style: wrap_text
+    sheet.column_widths 10, 20, 35, 35, 20, 30, 35, 10
   end
 end

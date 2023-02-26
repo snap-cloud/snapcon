@@ -6,12 +6,12 @@ describe Admin::EventSchedulesController do
   let(:venue) { create(:venue) }
   let(:conference) { create(:conference, venue: venue) }
   let(:room) { create(:room, venue: venue) }
-  let(:schedule) { create(:schedule, program: conference.program)}
-  let(:event_schedule) { create(:event_schedule, schedule: schedule)}
+  let(:schedule) { create(:schedule, program: conference.program) }
+  let(:event_schedule) { create(:event_schedule, schedule: schedule) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   context 'logged in as an organizer' do
-    before :each do
+    before do
       sign_in(organizer)
       event_schedule
     end
@@ -28,17 +28,16 @@ describe Admin::EventSchedulesController do
         end
 
         it 'saves the event schedule to the database' do
-          expect{ create_action }.to change { EventSchedule.count }.by 1
+          expect { create_action }.to change { EventSchedule.count }.by 1
         end
 
         it 'has 200 status code' do
           create_action
-          expect(response).to be_success
+          expect(response).to be_successful
         end
       end
 
       context 'with invalid attributes' do
-
         let(:create_action) do
           post :create, params: { conference_id: conference.short_title, event_schedule:
                attributes_for(:event_schedule,
@@ -49,19 +48,19 @@ describe Admin::EventSchedulesController do
         end
 
         it 'does not save the event schedule to the database' do
-          expect{ create_action }.to_not change { EventSchedule.count }
+          expect { create_action }.not_to change { EventSchedule.count }
         end
 
         it 'has 422 status code' do
           create_action
-          expect(response.status).to eq(422)
+          expect(response).to have_http_status(:unprocessable_entity)
         end
       end
     end
 
     describe 'POST #update' do
       context 'with valid attributes' do
-        before :each do
+        before do
           patch :update, params: { id: event_schedule.id, conference_id: conference.short_title, event_schedule:
                  attributes_for(:event_schedule,
                                 schedule_id: schedule.id,
@@ -80,7 +79,7 @@ describe Admin::EventSchedulesController do
         end
 
         it 'has 200 status code' do
-          expect(response).to be_success
+          expect(response).to be_successful
         end
       end
 
@@ -93,13 +92,14 @@ describe Admin::EventSchedulesController do
                               room_id:     nil,
                               start_time:  nil) }
         end
+
         it 'does not save the event schedule to the database' do
-          expect{ update_action }.to_not change { event_schedule }
+          expect { update_action }.not_to change { event_schedule }
         end
 
         it 'has 422 status code' do
           update_action
-          expect(response.status).to eq(422)
+          expect(response).to have_http_status(:unprocessable_entity)
         end
       end
     end
@@ -110,12 +110,12 @@ describe Admin::EventSchedulesController do
       end
 
       it 'deletes the event schedule' do
-        expect{ destroy_action }.to change { EventSchedule.count }.by(-1)
+        expect { destroy_action }.to change { EventSchedule.count }.by(-1)
       end
 
       it 'has 200 status code' do
         destroy_action
-        expect(response).to be_success
+        expect(response).to be_successful
       end
     end
   end

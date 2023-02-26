@@ -56,7 +56,7 @@ module Admin
     def edit; end
 
     def update
-      if @track.update_attributes(track_params)
+      if @track.update(track_params)
         redirect_to admin_conference_program_tracks_path(conference_id: @conference.short_title),
                     notice: 'Track successfully updated.'
       else
@@ -122,13 +122,16 @@ module Admin
     end
 
     def update_selected_schedule
-      if @track.update_attributes(params.require(:track).permit(:selected_schedule_id))
+      if @track.update(params.require(:track).permit(:selected_schedule_id))
         respond_to do |format|
           format.js { render json: {} }
         end
       else
         respond_to do |format|
-          format.js { render json: { errors: "The selected schedule couldn't be updated #{@track.errors.to_a.join('. ')}" }, status: 422 }
+          format.js do
+            render json:   { errors: "The selected schedule couldn't be updated #{@track.errors.to_a.join('. ')}" },
+                   status: :unprocessable_entity
+          end
         end
       end
     end
@@ -136,7 +139,8 @@ module Admin
     private
 
     def track_params
-      params.require(:track).permit(:name, :description, :color, :short_name, :cfp_active, :start_date, :end_date, :room_id)
+      params.require(:track).permit(:name, :description, :color, :short_name, :cfp_active, :start_date, :end_date,
+                                    :room_id)
     end
 
     def update_state(transition, notice)

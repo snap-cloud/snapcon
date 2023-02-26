@@ -10,7 +10,7 @@ module ConferenceHelper
   # Return true if exactly two of those calls are open: call_for_papers , call_for_tracks , call_for_booths
 
   def two_calls_open(*calls)
-    calls.count{ |call| call.try(:open?) } == 2
+    calls.count { |call| call.try(:open?) } == 2
   end
 
   # URL for sponsorship emails
@@ -31,11 +31,7 @@ module ConferenceHelper
   end
 
   def conference_color(conference)
-    if conference.color.present?
-      conference.color
-    else
-      DEFAULT_COLOR
-    end
+    conference.color.presence || DEFAULT_COLOR
   end
 
   # adds events to icalendar for proposals in a conference
@@ -43,7 +39,7 @@ module ConferenceHelper
     proposals.each do |proposal|
       calendar.event do |e|
         e.dtstart = proposal.time
-        e.dtend = proposal.time + proposal.event_type.length * 60
+        e.dtend = proposal.time + (proposal.event_type.length * 60)
         e.duration = "PT#{proposal.event_type.length}M"
         e.created = proposal.created_at
         e.last_modified = proposal.updated_at
@@ -61,7 +57,8 @@ module ConferenceHelper
           location += "#{v.country_name}, " if v.country_name
           e.location = location
         end
-        e.categories = conference.title, "Difficulty: #{proposal.difficulty_level.title}", "Track: #{proposal.track.name}"
+        e.categories = conference.title, "Difficulty: #{proposal.difficulty_level.title}",
+                       "Track: #{proposal.track.name}"
       end
     end
     calendar
@@ -76,15 +73,11 @@ module ConferenceHelper
   def get_happening_next_events_schedules(conference)
     events_schedules = filter_events_schedules(conference, :happening_later?)
 
-    if events_schedules.empty?
-      return []
-    end
+    return [] if events_schedules.empty?
 
     # events_schedules have been sorted by start_time in selected_event_schedules
     happening_next_time = events_schedules[0].start_time
-    events_schedules = events_schedules.select { |s| s.start_time == happening_next_time }
-
-    events_schedules
+    events_schedules.select { |s| s.start_time == happening_next_time }
   end
 
   def load_happening_now
@@ -94,9 +87,11 @@ module ConferenceHelper
       events_schedules_list = get_happening_next_events_schedules(@conference)
       @is_happening_next = true
     end
-    @events_schedules_limit = EVENTS_PER_PAGE
+    @events_schedules_limit = Rails.configuration.conference[:events_per_page]
     @events_schedules_length = events_schedules_list.length
-    @pagy, @events_schedules = pagy_array(events_schedules_list, items: @events_schedules_limit, link_extra: 'data-remote="true"')
+    @pagy, @events_schedules = pagy_array(events_schedules_list,
+                                          items:      @events_schedules_limit,
+                                          link_extra: 'data-remote="true"')
   end
 
   private
@@ -105,7 +100,7 @@ module ConferenceHelper
   def filter_events_schedules(conference, filter)
     conference.program.selected_event_schedules(
       includes: [:event, :room, { event:
-                                         [:event_type, :speakers, :speaker_event_users, :track, :program] }]
+                                         %i[event_type speakers speaker_event_users track program] }]
     ).select(&filter)
   end
 end

@@ -74,12 +74,12 @@ class Ticket < ApplicationRecord
     rescue Money::Bank::UnknownRate
       result = Money.new(-1, 'USD')
     end
-    result ? result : Money.new(0, 'USD')
+    result || Money.new(0, 'USD')
   end
 
   def self.total_price_user(conference, user, paid: false)
     tickets = TicketPurchase.where(conference: conference, user: user, paid: paid)
-    tickets.inject(0){ |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
+    tickets.inject(0) { |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
   end
 
   def tickets_turnover_total(id)
@@ -100,7 +100,7 @@ class Ticket < ApplicationRecord
     tickets = Ticket.where(conference_id: conference_id)
     return if tickets.count.zero? || (tickets.count == 1 && self == tickets.first)
 
-    unless tickets.all?{|t| t.price_currency == price_currency }
+    unless tickets.all? { |t| t.price_currency == price_currency }
       errors.add(:price_currency, 'is different from the existing tickets of this conference.')
     end
   end

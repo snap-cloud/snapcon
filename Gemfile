@@ -1,28 +1,35 @@
 # frozen_string_literal: true
 
-source 'https://rubygems.org'
-
-ruby ENV.fetch('OSEM_RUBY_VERSION', '~>2.7')
-
-# rails-assets requires >= 1.8.4
-if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
-  abort "Bundler version >= 1.8.4 is required"
+def next?
+  File.basename(__FILE__) == 'Gemfile.next'
 end
 
-gem 'rails', '~> 5.2'
+source 'https://rubygems.org'
+
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.1.3')
+
+# rails-assets requires >= 1.8.4
+abort 'Bundler version >= 1.8.4 is required' if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
+
+# as web framework
+if next?
+  gem 'rails', '~> 7'
+else
+  gem 'rails', '~> 7.0'
+end
 
 # Use Puma as the app server
-gem 'puma', '~> 5.6'
+gem 'puma'
 
 # respond_to methods have been extracted to the responders gem
 # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#responders
-gem 'responders', '~> 2.0'
+gem 'responders', '~> 3.0'
 
 # as supported databases
 gem 'pg'
 
 # for tracking data changes
-gem 'paper_trail'
+gem 'paper_trail', '< 13'
 
 # for upload management
 gem 'carrierwave'
@@ -39,11 +46,12 @@ gem 'devise'
 gem 'devise_ichain_authenticatable'
 
 gem 'omniauth'
-gem 'omniauth-discourse'
+gem 'omniauth-discourse', github: 'snap-cloud/omniauth-discourse'
 gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-openid'
+gem 'omniauth-rails_csrf_protection'
 
 # Bot-filtering
 gem 'recaptcha', require: 'recaptcha/rails'
@@ -58,7 +66,7 @@ gem 'rolify'
 gem 'unobtrusive_flash', '>=3'
 
 # as state machine
-gem 'transitions', :require => %w( transitions active_record/transitions )
+gem 'transitions', require: %w[transitions active_record/transitions]
 
 # for comments
 gem 'acts_as_commentable_with_threading'
@@ -77,8 +85,6 @@ gem 'uglifier', '>= 1.3.0'
 gem 'autoprefixer-rails'
 gem 'bootstrap-sass', '~> 3.4.0'
 gem 'cocoon'
-gem 'formtastic', '~> 3.1.5'
-gem 'formtastic-bootstrap'
 
 # as the JavaScript library
 # TODO: Consolidate with the rails-assets below or move to webpack...
@@ -120,9 +126,6 @@ end
 # as date picker
 gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
-# for switch checkboxes
-gem 'bootstrap-switch-rails', '~> 3.0.0'
-
 # data tables
 gem 'ajax-datatables-rails'
 gem 'jquery-datatables'
@@ -137,17 +140,23 @@ gem 'leaflet-rails'
 gem 'gravtastic'
 
 # for country selects
-gem 'country_select'
+gem 'country_select', '< 7'
 
 # as PDF generator
 gem 'prawn-qrcode'
 gem 'prawn-rails'
+# FIXME: for prawn, matrix isn't in the default set of Ruby 3.1 anymore
+# see https://github.com/prawnpdf/prawn/commit/3658d5125c3b20eb11484c3b039ca6b89dc7d1b7
+gem 'matrix', '~> 0.4'
+
+# FIXME: for selenium-webdriver, rexml isn't in the default set of Ruby 3.1 anymore
+# see https://github.com/SeleniumHQ/selenium/commit/526fd9d0de60a53746ffa982feab985fed09a278
+gem 'rexml'
 
 # for QR code generation
 gem 'rqrcode'
 
 # to render XLS spreadsheets
-gem 'caxlsx'
 gem 'caxlsx_rails'
 
 # Application Monitoring
@@ -162,14 +171,14 @@ gem 'turbolinks'
 gem 'active_model_serializers'
 
 # as icon font
-gem 'font-awesome-rails'
+gem 'font-awesome-sass'
 
 # for markdown
 gem 'redcarpet'
 
 # for recurring jobs
 gem 'delayed_job_active_record'
-gem 'whenever', :require => false
+gem 'whenever', require: false
 
 # to run scripts
 gem 'daemons'
@@ -179,6 +188,9 @@ gem 'money-rails'
 
 # for lists
 gem 'acts_as_list'
+
+# for switch checkboxes
+gem 'bootstrap-switch-rails', '3.3.3' # Locked pending Bttstrp/bootstrap-switch#707
 
 # for parsing OEmbed data
 gem 'ruby-oembed'
@@ -191,7 +203,7 @@ gem 'dotenv-rails'
 gem 'feature'
 
 # For countable.js
-gem "countable-rails"
+gem 'countable-rails'
 
 # Both are not in a group as we use it also for rake data:demo
 # for fake data
@@ -211,7 +223,7 @@ gem 'selectize-rails'
 # n+1 query logging
 gem 'bullet'
 # For collecting performance data
-gem 'skylight'
+gem 'skylight', '~> 5'
 
 gem 'nokogiri'
 
@@ -228,11 +240,10 @@ gem 'httparty'
 # pagination
 gem 'pagy', '<4.0'
 
-# Use guard and spring for testing in development
+# Use guard for testing in development
 group :development do
   # to launch specs when files are modified
   gem 'guard-rspec'
-  gem 'spring-commands-rspec'
   # to open mails
   gem 'letter_opener'
   # view mail at /letter_opener/
@@ -265,7 +276,7 @@ group :test do
   # for mocking external requests
   gem 'webmock'
   # for mocking Stripe responses in tests
-  gem 'stripe-ruby-mock'
+  gem 'stripe-ruby-mock', '~> 3.1.0.rc3'
   # For validating JSON schemas
   gem 'json-schema'
   # For using 'assigns' in tests
@@ -273,7 +284,7 @@ group :test do
   # For managing the environment
   gem 'climate_control'
   # For PDFs
-  gem 'pdf-inspector', require: "pdf/inspector"
+  gem 'pdf-inspector', require: 'pdf/inspector'
 end
 
 group :development, :test, :linters do
@@ -289,10 +300,13 @@ group :development, :test, :linters do
   gem 'pronto-haml', require: false
   gem 'pronto-rubocop', require: false
   gem 'rubocop-faker', require: false
+  gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
 end
 
 group :development, :test do
   # as development/test database
   gem 'sqlite3'
+  # to test new rails version
+  gem 'next_rails'
 end

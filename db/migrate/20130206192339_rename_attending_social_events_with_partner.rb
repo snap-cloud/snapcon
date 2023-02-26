@@ -5,6 +5,5 @@ class RenameAttendingSocialEventsWithPartner < ActiveRecord::Migration
     rename_column :registrations, :attending_social_events_with_partner, :attending_with_partner
   end
 
-  def down
-  end
+  def down; end
 end

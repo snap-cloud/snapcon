@@ -30,10 +30,10 @@
               - else
                 %p.text-center
                   - if lodging.website_link.present?
-                    = link_to(lodging.website_link) do
-                      %i.fa.fa-home.fa-5x
+                    = link_to(lodging.website_link, class: 'thumbnail') do
+                      %i.fa-solid.fa-house.fa-5x
                   - else
-                    %i.fa.fa-home.fa-5x
+                    %i.fa-solid.fa-house.fa-5x
               .caption
                 %h3.text-center
                   - if lodging.website_link.present?

@@ -2,22 +2,22 @@ name: Specs
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
   linters:
     continue-on-error: true
     runs-on: ubuntu-latest
-    env:
-      OSEM_RUBY_VERSION: 2.7.6
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.6
+          ruby-version: 3.1.3
           bundler-cache: true
       - run: bundle exec rubocop
       - run: bundle exec haml-lint app/views
@@ -27,21 +27,21 @@ jobs:
     name: spec
     env:
       OSEM_DB_ADAPTER: sqlite3
-      OSEM_RUBY_VERSION: 2.7.6
       RAILS_ENV: test
     strategy:
       matrix:
-        suite: [models, features, controllers, ability, leftovers]
+        suite: [models, features, controllers, ability, leftovers, cucumber]
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.6
+          ruby-version: 3.1.3
           bundler-cache: true
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+      - run: sudo apt-get install xvfb
       - name: Install JavaScript libraries via npm
         run: npm install
       - name: Prepare spec
@@ -49,11 +49,20 @@ jobs:
           rm -f osem_test osem_development
           bundle exec rake db:setup --trace
           bundle exec bin/rails webdrivers:chromedriver:update
+          bundle exec rake factory_bot:lint RAILS_ENV=test
+        # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}
-        run: bundle exec rake spec:${{ matrix.suite }}
+        run: xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
       - name: coverage upload ${{ matrix.suite }}
         uses: codacy/codacy-coverage-reporter-action@v1
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' && always()
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage/coverage.xml
+      - name: Upload Capybara Failure Screenshots
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: capybara-screenshots
+          path: tmp/capybara/
+          retention-days: 7

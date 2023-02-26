@@ -41,7 +41,7 @@ FactoryBot.define do
     title { Faker::Book.title }
     short_title { SecureRandom.urlsafe_base64(4) }
     timezone { Faker::Address.time_zone }
-    start_date { Time.zone.today }
+    start_date { Date.today }
     end_date { 6.days.from_now }
     start_hour { 9 }
     end_hour { 20 }
@@ -51,10 +51,13 @@ FactoryBot.define do
     organization
     color { '#FFFFFF' }
     after(:create) do |conference|
-      Role.where(name: 'organizer', resource: conference).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
+      Role.where(name:     'organizer',
+                 resource: conference).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
       Role.where(name: 'cfp', resource: conference).first_or_create(description: 'For the members of the CfP team')
-      Role.where(name: 'info_desk', resource: conference).first_or_create(description: 'For the members of the Info Desk team')
-      Role.where(name: 'volunteers_coordinator', resource: conference).first_or_create(description: 'For the people in charge of volunteers')
+      Role.where(name:     'info_desk',
+                 resource: conference).first_or_create(description: 'For the members of the Info Desk team')
+      Role.where(name:     'volunteers_coordinator',
+                 resource: conference).first_or_create(description: 'For the people in charge of volunteers')
     end
 
     trait :with_splashpage do
@@ -72,7 +75,7 @@ FactoryBot.define do
         # Contact/Program is created by Conference callbacks
         conference.contact.destroy
         conference.contact = create(:contact, conference: conference)
-        conference.program.update_attributes(schedule_public: true)
+        conference.program.update_attribute(:schedule_public, true)
 
         create(:cfp, program: conference.program)
         create_list(:track, 2, program: conference.program)

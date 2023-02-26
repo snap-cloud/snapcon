@@ -1,9 +1,17 @@
 # frozen_string_literal: true
 
-class UserDatatable < AjaxDatatablesRails::Base
+class UserDatatable < AjaxDatatablesRails::ActiveRecord
+  extend Forwardable
+
+  def_delegator :@view, :dom_id
   def_delegator :@view, :show_roles
   def_delegator :@view, :admin_user_path
   def_delegator :@view, :edit_admin_user_path
+
+  def initialize(params, opts = {})
+    @view = opts[:view_context]
+    super
+  end
 
   def view_columns
     # Declare strings in this format: ModelName.column_name
@@ -16,8 +24,8 @@ class UserDatatable < AjaxDatatablesRails::Base
       username:     { source: 'User.username' },
       attended:     { source: 'attended_count', searchable: false },
       roles:        { source: 'Role.name' },
-      view_url:     { source: 'User.id', searchable: false, orderable: false },
-      edit_url:     { source: 'User.id', searchable: false, orderable: false }
+      actions:      { source: 'User.id', searchable: false, orderable: false },
+      confirmed: { source: 'User.confirmed_at', searchable: false },
     }
   end
 
@@ -35,7 +43,7 @@ class UserDatatable < AjaxDatatablesRails::Base
         roles:        record.roles.any? ? show_roles(record.get_roles) : 'None',
         view_url:     admin_user_path(record),
         edit_url:     edit_admin_user_path(record),
-        DT_RowId:     record.id,
+        DT_RowId:     dom_id(record),
         confirmed:    record.confirmed_at.present?
       }
     end
@@ -44,9 +52,9 @@ class UserDatatable < AjaxDatatablesRails::Base
   # rubocop:disable Naming/AccessorMethodName
   def get_raw_records
     User.left_outer_joins(:registrations, :roles)
-      .distinct
-      .select("users.*, COUNT(CASE WHEN registrations.attended = 't' THEN 1 END) AS attended_count")
-      .group('users.id')
+        .distinct
+        .select("users.*, COUNT(CASE WHEN registrations.attended = 't' THEN 1 END) AS attended_count")
+        .group('users.id')
   end
   # rubocop:enable Naming/AccessorMethodName
 

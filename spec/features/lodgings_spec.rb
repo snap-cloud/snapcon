@@ -2,16 +2,17 @@
 
 require 'spec_helper'
 
-feature Lodging do
+describe Lodging do
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
-  scenario 'Add a lodging', feature: true, js: true do
+  it 'Add a lodging', feature: true, js: true do
     path = "#{Rails.root}/app/assets/images/rails.png"
 
     sign_in organizer
     visit admin_conference_lodgings_path(
-              conference_id: conference.short_title)
+      conference_id: conference.short_title
+    )
     # Add lodging
     click_link 'Add Lodging'
 
@@ -27,14 +28,15 @@ feature Lodging do
     expect(Lodging.count).to eq(1)
   end
 
-  scenario 'Update a lodging', feature: true, js: true do
+  it 'Update a lodging', feature: true, js: true do
     path = "#{Rails.root}/app/assets/images/rails.png"
 
     lodging = create(:lodging, conference: conference)
 
     sign_in organizer
     visit admin_conference_lodgings_path(
-              conference_id: conference.short_title)
+      conference_id: conference.short_title
+    )
 
     expect(page.has_content?(CGI.escapeHTML(lodging.name))).to be true
 
@@ -57,12 +59,13 @@ feature Lodging do
     expect(Lodging.count).to eq(1)
   end
 
-  scenario 'Delete a lodging', feature: true, js: true do
+  it 'Delete a lodging', feature: true, js: true do
     lodging = create(:lodging, conference: conference)
 
     sign_in organizer
     visit admin_conference_lodgings_path(
-              conference_id: conference.short_title)
+      conference_id: conference.short_title
+    )
 
     expect(page.has_content?(lodging.name)).to be true
 

@@ -2,16 +2,17 @@
 
 require 'spec_helper'
 
-feature Room do
+describe Room do
   let!(:conference) { create(:conference) }
   let!(:venue) { create(:venue, conference: conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'rooms' do
-    scenario 'adds a room', feature: true, js: true do
+    it 'adds a room', feature: true, js: true do
       sign_in organizer
       visit admin_conference_venue_rooms_path(
-                conference_id: conference.short_title)
+        conference_id: conference.short_title
+      )
 
       expect(page.has_no_table?('#rooms')).to be true
 
@@ -31,11 +32,12 @@ feature Room do
       end
     end
 
-    scenario 'updates a room', feature: true, js: true do
+    it 'updates a room', feature: true, js: true do
       room = create(:room, venue: venue)
       sign_in organizer
       visit edit_admin_conference_venue_room_path(
-                conference_id: conference.short_title, id: room.id)
+        conference_id: conference.short_title, id: room.id
+      )
 
       fill_in 'room_name', with: 'Auditorium'
       fill_in 'room_size', with: '100'

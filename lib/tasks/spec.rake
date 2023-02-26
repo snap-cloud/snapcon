@@ -6,6 +6,10 @@ unless Rails.env.production?
     task :ability do
       sh 'bundle exec rspec --format documentation spec/ability'
     end
+    desc 'run the cucumber tests'
+    task :cucumber do
+      sh 'CUCUMBER_PUBLISH_QUIET=true bundle exec cucumber'
+    end
     desc 'rspec models'
     task :models do
       sh 'bundle exec rspec --format documentation spec/models'

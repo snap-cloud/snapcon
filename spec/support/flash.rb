@@ -3,13 +3,11 @@
 module Flash
   def flash
     results = all(:css, 'div#flash p')
-    if results.empty?
-      return 'none'
-    end
+    return 'none' if results.empty?
 
     if results.count > 1
       texts = results.map { |r| r.text }
-      fail "One flash expected, but we had #{texts.inspect}"
+      raise "One flash expected, but we had #{texts.inspect}"
     end
     results.first.text
   end

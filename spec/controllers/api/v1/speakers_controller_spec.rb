@@ -18,21 +18,19 @@ describe Api::V1::SpeakersController do
 
     context 'without conference scope' do
       it 'returns all speakers' do
-
         get :index, params: { format: :json }
         json = JSON.parse(response.body)['speakers']
-        expect(response).to be_success
+        expect(response).to be_successful
         expect(json.pluck('name')).to contain_exactly('Conf_Speaker', 'Speaker')
       end
     end
 
     context 'with conference scope' do
       it 'returns all speakers of conference' do
-
         get :index, params: { conference_id: conference.short_title, format: :json }
         json = JSON.parse(response.body)['speakers']
 
-        expect(response).to be_success
+        expect(response).to be_successful
 
         expect(json.length).to eq(1)
         expect(json[0]['name']).to eq('Conf_Speaker')

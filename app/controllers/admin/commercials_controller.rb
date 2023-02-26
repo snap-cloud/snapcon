@@ -3,7 +3,7 @@
 module Admin
   class CommercialsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
-    load_and_authorize_resource through: :conference, except: [:new, :create]
+    load_and_authorize_resource through: :conference, except: %i[new create]
 
     def index
       @commercials = @conference.commercials
@@ -20,8 +20,8 @@ module Admin
                     notice: 'Materials were successfully created.'
       else
         redirect_to admin_conference_commercials_path,
-                    error: 'An error prohibited materials from being saved: '\
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                    error: 'An error prohibited materials from being saved: ' \
+                           "#{@commercial.errors.full_messages.join('. ')}."
 
       end
     end
@@ -32,8 +32,8 @@ module Admin
                     notice: 'Materials were successfully updated.'
       else
         redirect_to admin_conference_commercials_path,
-                    error: 'An error prohibited materials from being saved: '\
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                    error: 'An error prohibited materials from being saved: ' \
+                           "#{@commercial.errors.full_messages.join('. ')}."
       end
     end
 
@@ -45,7 +45,7 @@ module Admin
     def render_commercial
       result = Commercial.render_from_url(params[:url])
       if result[:error]
-        render plain: result[:error], status: 400
+        render plain: result[:error], status: :bad_request
       else
         render plain: result[:html]
       end
@@ -66,7 +66,9 @@ module Admin
       else
         errors_text = ''
         errors_text += 'Unable to find event with ID: ' + errors[:no_event].join(', ') + '. ' if errors[:no_event].any?
-        errors_text += 'There were some errors: ' + errors[:validation_errors].join('. ') if errors[:validation_errors].any?
+        if errors[:validation_errors].any?
+          errors_text += 'There were some errors: ' + errors[:validation_errors].join('. ')
+        end
 
         flash[:error] = errors_text
       end

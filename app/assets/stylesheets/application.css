@@ -1,29 +1,30 @@
 /*
  *= require strap-on
-
-*= require datatables/dataTables.bootstrap
+ *= require datatables/dataTables.bootstrap
  *= require datatables/extensions/Buttons/buttons.dataTables
  *= require datatables/extensions/Buttons/buttons.bootstrap
- *= require formtastic-bootstrap
 
  *= require selectize
  *= require selectize.bootstrap3
- *= require bootstrap-select
  *= require bootstrap-markdown
  *= require bootstrap-datetimepicker
- *= require leaflet
+ *= require bootstrap-select
 
  *= require osem
  *= require osem-rating
  *= require osem-schedule
  *= require osem-dashboard
  *= require osem-splash
- *= require font-awesome
  *= require osem-fonts
+ *= require bootstrap-markdown
+ *= require bootstrap-datetimepicker
+ *= require leaflet
  *= require bootstrap3-switch
  *= require osem-payments
  *= require osem-navbar
- *= require mastodon
+ *= require selectize
+ *= require selectize.bootstrap3
+ *= require bootstrap-select
  *= require conferences
 
  *= require fullcalendar-scheduler/main.css

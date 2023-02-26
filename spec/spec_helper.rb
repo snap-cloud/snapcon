@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
+ENV['RAILS_ENV'] ||= 'test'
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'simplecov'
 
-if ENV['GITHUB_ACTIONS'] || ENV['TRAVIS']
+if ENV['CI']
   require 'simplecov-cobertura'
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 SimpleCov.start 'rails'
 
-ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 
 require 'rspec/rails'
 require 'shoulda/matchers'
@@ -24,7 +25,6 @@ ActiveRecord::Migration.maintain_test_schema!
 # makes it easier to control when PaperTrail is enabled during testing.
 require 'paper_trail/frameworks/rspec'
 
-# Make htmlescape() available
 require 'erb'
 include ERB::Util
 
@@ -85,17 +85,17 @@ RSpec.configure do |config|
 
   # use a real browser for JS tests
   Capybara.javascript_driver = (
-    ENV['OSEM_TEST_DRIVER'].try(:to_sym) || :chrome_headless
+    ENV.fetch('OSEM_TEST_DRIVER', 'chrome_headless').to_sym
   )
 
   # Includes helpers and connect them to specific types of tests
   config.include FactoryBot::Syntax::Methods
   config.include OmniauthMacros
-  config.include Devise::TestHelpers, type: :controller
+  config.include Devise::Test::ControllerHelpers, type: :controller
   config.include LoginMacros, type: :feature
   config.include Flash, type: :feature
   config.include Sidebar, type: :view
-  config.include Devise::TestHelpers, type: :view
+  config.include Devise::Test::ControllerHelpers, type: :view
 
   # As we start from scratch in April 2014, let's forbid the old :should syntax
   config.expect_with :rspec do |c|

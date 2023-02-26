@@ -58,12 +58,15 @@ class EmailSettings < ApplicationRecord
       'conference_start_date'  => conference.start_date,
       'conference_end_date'    => conference.end_date,
       'registrationlink'       => Rails.application.routes.url_helpers.conference_conference_registration_url(
-                            conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000')),
+        conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+      ),
       'conference_splash_link' => Rails.application.routes.url_helpers.conference_url(
-                                  conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000')),
+        conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+      ),
 
       'schedule_link'          => Rails.application.routes.url_helpers.conference_schedule_url(
-                         conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000'))
+        conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+      )
     }
 
     if conference.program.cfp
@@ -90,14 +93,13 @@ class EmailSettings < ApplicationRecord
     if event
       h['eventtitle'] = event.title
       h['proposalslink'] = Rails.application.routes.url_helpers.conference_program_proposals_url(
-                           conference.short_title, host: (ENV['OSEM_HOSTNAME'] || 'localhost:3000'))
+        conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+      )
       h['committee_review'] = event.committee_review
       h['committee_review_html'] = ApplicationController.helpers.markdown(event.committee_review)
     end
 
-    if booth
-      h['booth_title'] = booth.title
-    end
+    h['booth_title'] = booth.title if booth
     h
   end
 
@@ -120,8 +122,8 @@ class EmailSettings < ApplicationRecord
 
   def parse_template(text, values)
     values.each do |key, value|
-      if value.kind_of?(Date)
-        text = text.gsub "{#{key}}", value.strftime('%Y-%m-%d') unless text.blank?
+      if value.is_a?(Date)
+        text = text.gsub "{#{key}}", value.strftime('%Y-%m-%d') if text.present?
       else
         text = text.gsub "{#{key}}", value unless text.blank? || value.blank?
       end

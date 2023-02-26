@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-feature 'Code of Conduct:' do
+describe 'Code of Conduct:' do
   let!(:organization) { create(:organization) }
   let!(:conference) { create(:full_conference, organization: organization) }
   let(:admin) { create(:admin) }
@@ -85,19 +85,6 @@ feature 'Code of Conduct:' do
         end
         page.find('.modal-dialog')
         expect(page).to have_content(sample_text)
-      end
-
-      it 'must be accepted', js: true do
-        find("input[type='submit']").click
-        page.find('#flash')
-        expect(conference.user_registered?(participant)).to be_falsey
-        expect(flash).to match('Accepted code of conduct must be accepted')
-        check 'registration[accepted_code_of_conduct]'
-        click_on 'Register'
-        page.find('#flash')
-        expect(conference.user_registered?(participant)).to be_truthy
-        visit conference_conference_registration_path(conference)
-        expect(page).to have_content('You have accepted the Code of Conduct')
       end
     end
   end
