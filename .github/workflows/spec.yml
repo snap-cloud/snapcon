@@ -55,12 +55,13 @@ jobs:
         run: xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
       - name: coverage upload ${{ matrix.suite }}
         uses: codacy/codacy-coverage-reporter-action@v1
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' && always()
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage/coverage.xml
       - name: Upload Capybara Failure Screenshots
         uses: actions/upload-artifact@v3
+        if: always()
         with:
           name: capybara-screenshots
           path: tmp/capybara/
