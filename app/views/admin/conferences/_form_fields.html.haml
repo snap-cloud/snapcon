@@ -1,5 +1,4 @@
-%h4
-  Basic Information
+%h4 Basic Information
 %hr
 - if f.object.new_record?
   .form-group
@@ -35,7 +34,6 @@
     = f.file_field :picture
     %span.help-block
       This will be shown in the navigation bar and emails.
-
   .form-group
     = f.label :custom_css, "Custom CSS"
     = f.text_area :custom_css, rows: 10, class: 'form-control', html: { style: 'font-family: monospace' }
@@ -43,15 +41,13 @@
       Add custon CSS to all pages within the conference. The class
       %code .conference-#{@conference.short_title}
       is included on the body element.
-
   .form-group
     = f.label :ticket_layout
     = f.select :ticket_layout, Conference.ticket_layouts.keys, {}, class: 'form-control'
     %span.help-block
       Layout type for tickets of the conference.
 
-%h4
-  Scheduling
+%h4 Scheduling
 %hr
 .form-group
   = f.label :timezone
@@ -66,7 +62,7 @@
   = f.label :end_date, "End Date"
   %abbr{title: 'This field is required'} *
   = f.text_field :end_date, id: 'conference-end-datepicker', required: true, class: 'form-control'
-- unless f.object.new_record? # We are showing more fields on the edit form
+- unless f.object.new_record?
   .form-group
     = f.label :start_hour
     = f.number_field :start_hour, size: 2, min: 0, max: 23, class: 'form-control'
@@ -77,8 +73,7 @@
     = f.number_field :end_hour, size: 2, min: 1, max: 24, class: 'form-control'
     %span.help-block
       = rescheduling_hint(@affected_event_count)
-  %h4
-    Registrations
+  %h4 Registrations
   %hr
   .form-group
     = f.label :registration_limit
@@ -86,8 +81,7 @@
     %span.help-block
       Limit the number of registrations to the conference (0 no limit). Please note that the registration limit
       does not apply to speakers of confirmed events, they will still be able to register even if the limit has been reached.
-      You currently have
-      = pluralize(@conference.registrations.count, 'registration')
+      You currently have #{pluralize(@conference.registrations.count, 'registration')}.
   %h4
     Booths
   %hr
@@ -95,14 +89,9 @@
     = f.label :booth_limit
     = f.number_field :booth_limit, in: 0..9999, class: 'form-control'
     %span.help-block
-      = (t'booth').capitalize
-      limit is the maximum number of
-      = (t'booth').pluralize
-      that you can accept for this conference. By setting this number (0 no limit) you can be sure that you are not
-      going to accept more
-      = (t'booth').pluralize
-      than the conference can accommodate. You currently have
-      = pluralize(@conference.booths.accepted.count, "accepted #{t'booth'}") + '.'
+      #{(t'booth').capitalize} limit is the maximum number of #{(t'booth').pluralize}
+      that you can accept for this conference. By setting this number (0 no limit) you can be sure that you are not going to accept more #{(t'booth').pluralize}
+      than the conference can accommodate. You currently have #{pluralize(@conference.booths.accepted.count, "accepted #{t'booth'}")}.
 %p.text-right
   - if f.object.new_record?
     = f.submit nil, { class: 'btn btn-success' }
