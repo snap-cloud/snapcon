@@ -26,7 +26,7 @@
             %span.help-block
               = markdown_hint
           .form-group
-            = f.label 'Logo'
+            = f.label :picture, 'Logo'
             %br
             - if @venue.picture?
               = image_tag @venue.picture.thumb.url
