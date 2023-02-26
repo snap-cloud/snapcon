@@ -4,7 +4,7 @@ $(function () {
     * releases a key on the keyboard
      */
     $("#user_biography").bind('keyup', function() {
-        word_count(this, 'bio_length', 150);
+        word_count(this, 'bio-length', 150);
     } );
 
     /**
