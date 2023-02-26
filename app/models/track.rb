@@ -59,7 +59,7 @@ class Track < ApplicationRecord
   validates :cfp_active, inclusion: { in: [true, false] }
   validates :start_date, presence: true, if: :self_organized_and_accepted_or_confirmed?
   validates :end_date, presence: true, if: :self_organized_and_accepted_or_confirmed?
-  validates :room, if: :self_organized_and_accepted_or_confirmed?
+  validates :room, presence: true, if: :self_organized_and_accepted_or_confirmed?
   validates :relevance, presence: true, if: :self_organized?
   validates :description, presence: true, if: :self_organized?
   validate :dates_within_conference_dates
