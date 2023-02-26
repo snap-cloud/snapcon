@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
-EMAIL_TEMPLATE = 'email_template'
-
-SNAPCON_BCC_ADDRESS = Rails.configuration.mailbot[:bcc_address]
 YTLF_TICKET_ID = Rails.configuration.mailbot[:ytlf_ticket_id]
 
 class Mailbot < ApplicationMailer
   helper ApplicationHelper
   helper ConferenceHelper
 
-  default bcc:           SNAPCON_BCC_ADDRESS,
-          template_name: EMAIL_TEMPLATE,
+  default bcc:           Rails.configuration.mailbot[:bcc_address],
+          template_name: 'email_template',
           content_type:  'text/html',
           to:            -> { @user.email },
           from:          -> { @conference.contact.email }
