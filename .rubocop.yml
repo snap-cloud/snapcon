@@ -2,7 +2,7 @@ inherit_from: .rubocop_todo.yml
 
 require:
   - rubocop-rspec
-  # - rubocop-rails
+  - rubocop-rails # Currently disabled below.
 
 inherit_mode:
   merge:
