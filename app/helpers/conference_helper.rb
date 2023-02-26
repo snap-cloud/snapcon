@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-DEFAULT_COLOR = Rails.configuration.conference[:default_color]
-
 module ConferenceHelper
   # Return true if only call_for_papers or call_for_tracks or call_for_booths is open
   def one_call_open(*calls)
@@ -31,7 +29,7 @@ module ConferenceHelper
   end
 
   def conference_color(conference)
-    conference.color.presence || DEFAULT_COLOR
+    conference.color.presence || Rails.configuration.conference[:default_color]
   end
 
   # adds events to icalendar for proposals in a conference
