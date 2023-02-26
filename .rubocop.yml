@@ -54,6 +54,8 @@ Lint/AmbiguousRegexpLiteral:
 ##################### Rails ##################################
 Rails:
   Enabled: true
+  Exclude:
+    - spec/
 
 ##################### RSpec ##################################
 
