@@ -1,8 +1,7 @@
-[![Build Status](https://travis-ci.com/snap-cloud/snapcon.svg?branch=master)](https://travis-ci.com/snap-cloud/snapcon)
+[![Specs](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b7b0d559a03bf218663a/maintainability)](https://codeclimate.com/github/snap-cloud/snapcon/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/b7b0d559a03bf218663a/test_coverage)](https://codeclimate.com/github/snap-cloud/snapcon/test_coverage)
-[![Security Status](https://hakiri.io/github/snap-cloud/snapcon/master.svg)](https://hakiri.io/github/snap-cloud/snapcon/master)
-[![Dependencies](https://badges.depfu.com/badges/8fcd630367d20f5b48d393774c00c5fd/overview.svg)](https://depfu.com/repos/snap-cloud/snapcon)
+[![codecov](https://codecov.io/gh/snap-cloud/snapcon/branch/snapcon/graph/badge.svg?token=EViEwaSjH4)](https://codecov.io/gh/snap-cloud/snapcon)
 <a href="https://heroku.com/deploy?template=https://github.com/snap-cloud/snapcon/tree/v1.0">
   <img src="https://www.herokucdn.com/deploy/button.svg" height="20px" alt="Deploy">
 </a>
