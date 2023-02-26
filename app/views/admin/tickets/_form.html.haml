@@ -4,6 +4,7 @@
     %abbr{title: 'This field is required'} *
     = f.text_field :title, required: true, autofocus: true, class: 'form-control'
   .form-group
+    = f.label :description
     = f.text_area :description, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
   .form-group
     = f.label :price
@@ -17,13 +18,15 @@
     %span.help-block
       Your conference tickets are in
       = f.object.conference.tickets.first.price_currency
-  .checkbox
-    %label
-      = f.check_box :registration_ticket
+  .form-group
+    = f.check_box :registration_ticket, class: 'form-check-input'
+    = f.label :registration_ticket, class: 'form-check-label'
+    .help-block
       A registration ticket is with which user register for the conference.
-  .checkbox
-    %label
-      = f.check_box :visible
+  .form-group
+    = f.check_box :visible, class: 'form-check-input'
+    = f.label :visible, 'Visible?', class: 'form-check-label'
+    .help-block
       Only visible tickets are available to registrants. Non-visible tickets can only be managed by Admins.
 
   %p.text-right
