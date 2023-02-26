@@ -65,7 +65,7 @@ module Osem
 
 
     # See note about specifiying allowed classes
-    # https://github.com/rails/rails/blob/v7.0.4/activerecord/CHANGELOG.md#rails-7031-july-12-2022
+    # https://github.com/ra ils/rails/blob/v7.0.4/activerecord/CHANGELOG.md#rails-7031-july-12-2022
     config.active_record.yaml_column_permitted_classes = [Symbol, Date, Time, DateTime]
   end
 end
