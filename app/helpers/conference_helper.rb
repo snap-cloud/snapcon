@@ -87,10 +87,11 @@ module ConferenceHelper
       events_schedules_list = get_happening_next_events_schedules(@conference)
       @is_happening_next = true
     end
-    @events_schedules_limit = EVENTS_PER_PAGE
+    @events_schedules_limit = Rails.configuration.conference[:events_per_page]
     @events_schedules_length = events_schedules_list.length
-    @pagy, @events_schedules = pagy_array(events_schedules_list, items:      @events_schedules_limit,
-                                                                 link_extra: 'data-remote="true"')
+    @pagy, @events_schedules = pagy_array(events_schedules_list,
+                                          items:      @events_schedules_limit,
+                                          link_extra: 'data-remote="true"')
   end
 
   private
