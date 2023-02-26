@@ -2,11 +2,7 @@
 
 YTLF_TICKET_ID = Rails.configuration.mailbot[:ytlf_ticket_id]
 
-<<<<<<< HEAD
 class Mailbot < ApplicationMailer
-=======
-class Mailbot < ActionMailer::Base
->>>>>>> parent of 84ea1c6a... Regen rubcop todo file
   helper ApplicationHelper
   helper ConferenceHelper
 
