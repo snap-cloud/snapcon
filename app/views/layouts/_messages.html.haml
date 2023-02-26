@@ -10,7 +10,7 @@
 - flash.each do |type, message|
   .row
     .col-md-12
-      #flash.alert.alert-dismissable{class: bootstrap_class_for(type)}
+      .alert.alert-dismissable#flash{class: bootstrap_class_for(type)}
         .button.close{"data-dismiss": "alert", "aria-hidden": "true"}
           &times;
         %p
