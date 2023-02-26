@@ -1,0 +1,15 @@
+.caption.panel-footer
+  - if can?(:update, commercial)
+    = form_for commercial, url: form_url do |f|
+      .form-group
+        = f.label :title
+        = f.text_field :title, class: 'form-control'
+      .form-group
+        = f.label :url, 'URL'
+        %abbr{title: 'This field is required'} *
+        = f.url_field :url, class: 'form-control', id: "commercial_url_#{commercial.id}", required: 'required'
+        .help-block Just paste the url of your video/photo provider
+      = f.submit 'Update', class: 'btn btn-success'
+      - if can?(:destroy, commercial)
+        = link_to 'Delete', admin_conference_commercial_path(conference.short_title, commercial.id),
+          method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'

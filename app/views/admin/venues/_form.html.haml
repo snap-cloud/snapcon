@@ -57,7 +57,7 @@
           = f.submit nil, class: 'btn btn-primary'
 
     #commercials-content.tab-pane
-      - if can? :create, @venue.commercial and @venue.id
+      - if can?(:create, @venue.commercial) and @venue.id
         - if @venue.commercial.nil?
           .row
             .col-md-6
@@ -77,26 +77,9 @@
                 = f.submit nil, class: 'btn btn-primary pull-right', id: 'commercial_submit_action', disabled: true
           %hr
         - else
-          - if @venue.commercial.persisted?
-            .col-md-4
-              .thumbnail
-                .flexvideo{ id: "resource-content-#{@venue.commercial.id}"}
-                  = render partial: 'shared/media_item', locals: { commercial: @venue.commercial }
-                .caption
-                  - if can? :update, @venue.commercial
-                    = form_for @venue.commercial, as: :commercial, url: admin_conference_venue_venue_commercial_path(conference_id: @conference.short_title, id: @venue.commercial.id) do |f|
-                      .form-group
-                        = f.label :title
-                        = f.text_field :title, class: 'form-control'
-                        = f.label :url
-                        = f.url_field :url, id: "commercial_url_#{@venue.commercial.id}", class: 'form-control', required: 'required'
-                        %span.help-block
-                          Just paste the url of your video/photo provider. Anything that supports an iframe is allowed.
-                      = f.submit nil, class: 'btn btn-success'
-                      - if can? :destroy, @venue.commercial
-                        = link_to 'Delete', admin_conference_venue_venue_commercial_path(conference_id: @conference.short_title, id: @venue.commercial.id),
-                          method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'
-            %hr
-
+          .col-md-4
+            %div{ id: "resource-content-#{@venue.commercial.id}"}
+              = render partial: 'shared/media_item', locals: { commercial: @venue.commercial }
+            = render 'admin/commercials/update_form', form_url: admin_conference_venue_venue_commercial_path(conference_id: @conference.short_title, id: @venue.commercial.id), conference: @conference, commercial: @venue.commercial
       - else
         First Create Venue, then update materials
