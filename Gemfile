@@ -294,9 +294,9 @@ group :development, :test, :linters do
   gem 'pry-byebug'
 
   # Linters and static analysis.
+  gem 'faraday-retry', require: false
   gem 'haml-lint', require: false
   gem 'pronto', require: false
-  gem 'pronto-flay', require: false
   gem 'pronto-haml', require: false
   gem 'pronto-rubocop', require: false
   gem 'rubocop-faker', require: false
