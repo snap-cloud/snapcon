@@ -22,8 +22,6 @@ class Payment < ApplicationRecord
   attr_accessor :stripe_customer_email, :stripe_customer_token
 
   validates :status, presence: true
-  validates :user_id, presence: true
-  validates :conference_id, presence: true
 
   enum status: {
     unpaid:  0,

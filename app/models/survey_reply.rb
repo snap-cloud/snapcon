@@ -11,11 +11,10 @@
 #  survey_question_id :integer
 #  user_id            :integer
 #
-class SurveyReply < ActiveRecord::Base
+class SurveyReply < ApplicationRecord
   belongs_to :user
   belongs_to :survey_question
   serialize :text
 
-  validates :user_id, :survey_question_id, presence: true
   validates :survey_question_id, uniqueness: { scope: :user_id }
 end

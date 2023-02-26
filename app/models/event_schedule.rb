@@ -30,9 +30,6 @@ class EventSchedule < ApplicationRecord
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
-  validates :schedule, presence: true
-  validates :event, presence: true
-  validates :room, presence: true
   validates :start_time, presence: true
   validates :event, uniqueness: { scope: :schedule }
   validate :start_after_end_hour
@@ -41,11 +38,11 @@ class EventSchedule < ApplicationRecord
   validate :during_track
   validate :valid_schedule
 
-  scope :confirmed, -> { joins(:event).where('state = ?', 'confirmed') }
-  scope :canceled, -> { joins(:event).where('state = ?', 'canceled') }
-  scope :withdrawn, -> { joins(:event).where('state = ?', 'withdrawn') }
+  scope :confirmed, -> { joins(:event).where(state: 'confirmed') }
+  scope :canceled, -> { joins(:event).where(state: 'canceled') }
+  scope :withdrawn, -> { joins(:event).where(state: 'withdrawn') }
 
-  scope :with_event_states, ->(*states) { joins(:event).where('events.state IN (?)', states) }
+  scope :with_event_states, ->(*states) { joins(:event).where(events: { state: states }) }
 
   delegate :guid, to: :room, prefix: true
 
@@ -63,10 +60,10 @@ class EventSchedule < ApplicationRecord
     in_tz_start -= in_tz_start.utc_offset
     in_tz_end -= in_tz_end.utc_offset
 
-    return false if in_tz_end < Time.now
+    return false if in_tz_end < Time.zone.now
 
-    begin_range = Time.now - threshold
-    end_range = Time.now + threshold
+    begin_range = Time.zone.now - threshold
+    end_range = Time.zone.now + threshold
     event_time_range = in_tz_start..in_tz_end
     now_range = begin_range..end_range
     event_time_range.overlaps?(now_range)
@@ -77,7 +74,7 @@ class EventSchedule < ApplicationRecord
     in_tz_start = start_time.in_time_zone(timezone)
     in_tz_start -= in_tz_start.utc_offset
 
-    in_tz_start >= Time.now
+    in_tz_start >= Time.zone.now
   end
 
   def self.withdrawn_or_canceled_event_schedules(schedule_ids)

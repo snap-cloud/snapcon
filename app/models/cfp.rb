@@ -21,7 +21,6 @@ class Cfp < ApplicationRecord
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
   belongs_to :program
 
-  validates :program_id, presence: true
   validates :start_date, :end_date, presence: true
   validate :before_end_of_conference
   validate :start_after_end_date
@@ -76,7 +75,7 @@ class Cfp < ApplicationRecord
     end_date.strftime('%W').to_i
   end
 
-  def remaining_days(date = Date.today)
+  def remaining_days(date = Time.zone.today)
     result = (end_date - date).to_i
     result > 0 ? result : 0
   end

@@ -5,7 +5,7 @@ EMAIL_TEMPLATE = 'email_template'
 SNAPCON_BCC_ADDRESS = Rails.configuration.mailbot[:bcc_address]
 YTLF_TICKET_ID = Rails.configuration.mailbot[:ytlf_ticket_id]
 
-class Mailbot < ActionMailer::Base
+class MailbotMailer < ApplicationMailer
   helper ApplicationHelper
   helper ConferenceHelper
 

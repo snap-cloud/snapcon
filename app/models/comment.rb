@@ -26,7 +26,6 @@
 class Comment < ApplicationRecord
   acts_as_nested_set scope: %i[commentable_id commentable_type]
   validates :body, presence: true
-  validates :user, presence: true
   after_create :send_notification
 
   # NOTE: install the acts_as_votable plugin if you
@@ -69,7 +68,7 @@ class Comment < ApplicationRecord
 
   scope :find_since_last_login, lambda { |user|
     if user.last_sign_in_at
-      where(created_at: (user.last_sign_in_at..Time.now)).order(created_at: :desc)
+      where(created_at: (user.last_sign_in_at..Time.zone.now)).order(created_at: :desc)
     else
       none
     end

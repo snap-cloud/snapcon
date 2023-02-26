@@ -69,7 +69,7 @@ FactoryBot.define do
     sequence(:username) { |n| "username#{n}" }
     password { 'changeme' }
     password_confirmation { 'changeme' }
-    confirmed_at { Time.now }
+    confirmed_at { Time.zone.now }
     biography { <<-EOS }
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus enim
       nunc, venenatis non sapien convallis, dictum suscipit purus. Vestibulum

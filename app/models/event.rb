@@ -99,8 +99,6 @@ class Event < ApplicationRecord
   validate :before_end_of_conference, on: :create
   validates :title, presence: true
   validates :abstract, presence: true
-  validates :event_type, presence: true
-  validates :program, presence: true
   validates :max_attendees, numericality: { only_integer: true, greater_than_or_equal_to: 1, allow_nil: true }
 
   validate :max_attendees_no_more_than_room_size
@@ -432,7 +430,7 @@ class Event < ApplicationRecord
     return if submitter&.is_admin?
 
     if program.conference&.end_date &&
-       (Date.today > program.conference.end_date)
+       (Time.zone.today > program.conference.end_date)
       errors
         .add(:created_at, "can't be after the conference end date!")
     end

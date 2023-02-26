@@ -13,7 +13,7 @@
 #  title            :string
 #  survey_id        :integer
 #
-class SurveyQuestion < ActiveRecord::Base
+class SurveyQuestion < ApplicationRecord
   belongs_to :survey
   has_many :survey_replies, dependent: :destroy
 

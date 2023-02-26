@@ -153,7 +153,7 @@ module Admin
     def vote
       @votes = @event.votes.includes(:user)
 
-      if (votes = current_user.votes.find_by_event_id(params[:id]))
+      if (votes = current_user.votes.find_by(event_id: params[:id]))
         votes.update(rating: params[:rating])
       else
         @myvote = @event.votes.build

@@ -19,7 +19,7 @@
 #
 #  index_surveys_on_surveyable_type_and_surveyable_id  (surveyable_type,surveyable_id)
 #
-class Survey < ActiveRecord::Base
+class Survey < ApplicationRecord
   belongs_to :surveyable, polymorphic: true
   has_many :survey_questions, dependent: :destroy
   has_many :survey_submissions, dependent: :destroy

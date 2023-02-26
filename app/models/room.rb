@@ -23,7 +23,7 @@ class Room < ApplicationRecord
 
   before_create :generate_guid
 
-  validates :name, :venue_id, presence: true
+  validates :name, presence: true
 
   validates :size, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :order, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
@@ -34,7 +34,7 @@ class Room < ApplicationRecord
   after_update lambda {
     return unless previous_changes[:url]
 
-    event_schedules.update_all(updated_at: Time.now)
+    event_schedules.update_all(updated_at: Time.zone.now)
   }
 
   delegate :conference, to: :venue

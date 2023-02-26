@@ -49,7 +49,7 @@ Rails.application.configure do
 
   config.after_initialize do
     # Set Time.now to May 1, 2014 00:01:00 AM (at this instant), but allow it to move forward
-    t = Time.local(2014, 0o5, 0o1, 0o0, 0o1, 0o0)
+    t = Time.zone.local(2014, 0o5, 0o1, 0o0, 0o1, 0o0)
     Timecop.travel(t)
   end
 

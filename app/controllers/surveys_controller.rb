@@ -24,7 +24,7 @@ class SurveysController < ApplicationController
 
     @survey.survey_questions.each do |survey_question|
       reply = survey_question.survey_replies.find_by(user: current_user)
-      reply_text = survey_submission[survey_question.id.to_s].reject(&:blank?).join(',')
+      reply_text = survey_submission[survey_question.id.to_s].compact_blank.join(',')
 
       if reply
         reply.update(text: reply_text) unless reply.text == reply_text

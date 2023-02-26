@@ -21,7 +21,7 @@ class TicketPurchase < ApplicationRecord
   belongs_to :conference
   belongs_to :payment
 
-  validates :ticket_id, :user_id, :conference_id, :quantity, presence: true
+  validates :quantity, presence: true
   validate :one_registration_ticket_per_user
   validate :registration_ticket_already_purchased, on: :create
   validates :quantity, numericality: { greater_than: 0 }

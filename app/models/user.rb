@@ -62,7 +62,7 @@ class User < ApplicationRecord
   has_many :ticket_purchases, dependent: :destroy
   has_many :physical_tickets, through: :ticket_purchases do
     def by_conference(conference)
-      where('ticket_purchases.conference_id = ?', conference)
+      where(ticket_purchases: { conference_id: conference })
     end
   end
   has_many :tickets, through: :ticket_purchases, source: :ticket do
@@ -101,15 +101,15 @@ class User < ApplicationRecord
 
   # add scope
   scope :comment_notifiable, lambda { |conference|
-                               joins(:roles).where('roles.name IN (?)', %i[organizer cfp]).where('roles.resource_type = ? AND roles.resource_id = ?', 'Conference', conference.id)
+                               joins(:roles).where(roles: { name: %i[organizer cfp] }).where('roles.resource_type = ? AND roles.resource_id = ?', 'Conference', conference.id)
                              }
 
   # scopes for user distributions
   scope :recent, lambda {
-    where('last_sign_in_at > ?', Date.today - 3.months).where(is_disabled: false)
+    where('last_sign_in_at > ?', Time.zone.today - 3.months).where(is_disabled: false)
   }
-  scope :unconfirmed, -> { where('confirmed_at IS NULL') }
-  scope :dead, -> { where('last_sign_in_at < ?', Date.today - 1.year) }
+  scope :unconfirmed, -> { where(confirmed_at: nil) }
+  scope :dead, -> { where('last_sign_in_at < ?', Time.zone.today - 1.year) }
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -189,7 +189,7 @@ class User < ApplicationRecord
   def attended_event?(event)
     event_registration = event.events_registrations.find_by(registration: registrations)
 
-    return false unless event_registration.present?
+    return false if event_registration.blank?
 
     event_registration.attended
   end
@@ -239,7 +239,7 @@ class User < ApplicationRecord
   # Returns a user's profile picture URL.
   # Partials should *not* directly call `gravatar_url`
   def profile_picture(opts = {})
-    return gravatar_url(opts) unless picture.present?
+    return gravatar_url(opts) if picture.blank?
 
     size = (opts[:size] || 0).to_i
     if size < 50

@@ -24,7 +24,6 @@ class Contact < ApplicationRecord
 
   belongs_to :conference
 
-  validates :conference, presence: true
   # Conferences only have one contact
   validates :facebook, :twitter, :googleplus, :instagram, :mastodon,
             format: URI::DEFAULT_PARSER.make_regexp(%w[http https]), allow_blank: true

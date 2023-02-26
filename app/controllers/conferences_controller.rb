@@ -29,7 +29,7 @@ class ConferencesController < ApplicationController
 
     @splashpage = @conference.splashpage
 
-    redirect_to admin_conference_splashpage_path(@conference.short_title) && return unless @splashpage.present?
+    redirect_to admin_conference_splashpage_path(@conference.short_title) && return if @splashpage.blank?
 
     # User messages at the top of the page.
     @unpaid_tickets = current_user_has_unpaid_tickets?
