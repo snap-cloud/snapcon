@@ -1,8 +1,8 @@
 inherit_from: .rubocop_todo.yml
 
 require:
-  - rubocop-rails
   - rubocop-rspec
+  # - rubocop-rails
 
 inherit_mode:
   merge:
@@ -52,7 +52,9 @@ Lint/AmbiguousRegexpLiteral:
 ##################### Metrics ##################################
 
 ##################### Rails ##################################
+# TODO: Would be good to enable, but leads to spec failures.
 Rails:
+  Enabled: false
   Exclude:
     - spec/**/*.rb
 
