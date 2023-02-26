@@ -1,8 +1,4 @@
-- action_is_edit = @event.persisted?
-- display_registration = @program.cfp&.enable_registrations?
-
-%h4
-  Proposal Information
+%h4 Proposal Information
 %hr
 
 .form-group
@@ -16,15 +12,14 @@
 .form-group
   = f.label :speaker_ids, 'Speakers'
   = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
-  %span.help-block
+  .help-block
     The people responsible for the event. You can only select existing users.
 
 = committee_only_actions(current_user, @conference) do
   .form-group
     = f.label :volunteer_ids, 'Volunteers'
     = f.select :volunteer_ids, user_options_for_dropdown(@event, :volunteers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select volunteers..." }
-    .help-block
-      Assign volunteers to help run this session.
+    .help-block Assign volunteers to help run this session.
   .form-group
     = f.label "Is this is parent event?", for: :superevent
     = f.check_box :superevent, class: 'switch-checkbox'
@@ -58,16 +53,13 @@
 - if @event.committee_review.present?
   %br
   %strong.control-label Committee Feedback
-  %small
-    Use this feedback to improve your submission.
-  .well
-    = markdown(@event.committee_review)
+  %small Use this feedback to improve your submission.
+  .well= markdown(@event.committee_review)
 
 = render 'proposals/submission_type_content_form', f: f, program: @program
 
-- if display_registration
-  %h4
-    Event Registration
+- if  @program.cfp&.enable_registrations?
+  %h4 Event Registration
   %hr
   .checkbox
     %label
@@ -75,9 +67,9 @@
       Require participants to register to your event
   .form-group
     = f.number_field :max_attendees
-    %span.help-block
-      - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
-      = 'The maximum number of participants. ' + message
+    .help-block
+      The maximum number of participants.
+      = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
 
 = committee_only_actions(current_user, @conference) do
   .form-group
@@ -89,7 +81,6 @@
     = f.check_box :is_highlight, class: 'switch-checkbox'
   .help-block
     This shows the event on the conference homepage.
-
 
 .text-left
   .form-group
@@ -105,5 +96,4 @@
       e.g. Whiteboard, printer, or something like that.
 
 %p.text-right
-  - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
-  = f.submit submit_copy, class: 'btn btn-success'
+  = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'
