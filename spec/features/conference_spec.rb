@@ -19,7 +19,7 @@ describe Conference do
 
       select('(GMT+01:00) Berlin', from: 'conference[timezone]')
 
-      today = Time.zone.today - 1
+      today = Date.today - 1
       page
         .execute_script("$('#conference-start-datepicker').val('" +
                          "#{today.strftime('%d/%m/%Y')}')")
@@ -50,7 +50,7 @@ describe Conference do
       fill_in 'conference_title', with: 'New Con'
       fill_in 'conference_short_title', with: 'NewCon'
 
-      day = Time.zone.today + 10
+      day = Date.today + 10
       page
         .execute_script("$('#conference-start-datepicker').val('" +
                              "#{day.strftime('%d/%m/%Y')}')")

@@ -9,7 +9,7 @@ describe DateTimeHelper, type: :helper do
     end
 
     it 'returns formatted string' do
-      datetime = Time.zone.local(2016, 0o5, 0o4, 11, 30)
+      datetime = Time.zone.local(2016, 5, 4, 11, 30)
       expect(format_datetime(datetime)).to eq '2016-05-04 11:30'
     end
   end

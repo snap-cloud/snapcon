@@ -6,7 +6,7 @@ describe Admin::ConferencesController do
   # It is necessary to use bang version of let to build roles before user
   let!(:organization) { create(:organization, name: 'organization') }
   let!(:conference) do
-    create(:conference, organization: organization, start_date: Date.new(2014, 0o5, 26), end_date: Date.new(2014, 0o5, 26) + 15)
+    create(:conference, organization: organization, start_date: Date.new(2014, 5, 26), end_date: Date.new(2014, 5, 26) + 15)
   end
   let!(:organization_admin_role) { Role.find_by(name: 'organization_admin', resource: organization) }
   let(:organization_admin) { create(:user, role_ids: organization_admin_role.id) }
@@ -48,8 +48,8 @@ describe Admin::ConferencesController do
           conference.email_settings = create(:email_settings)
           patch :update,
                 params: { id:         conference.short_title,
-                          conference: attributes_for(:conference, start_date: Time.zone.today + 2.days,
-                                                                  end_date:   Time.zone.today + 4.days) }
+                          conference: attributes_for(:conference, start_date: Date.today + 2.days,
+                                                                  end_date:   Date.today + 4.days) }
           conference.reload
           allow(Mailbot).to receive(:conference_date_update_mail).and_return(mailer)
         end
