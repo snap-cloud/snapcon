@@ -97,8 +97,9 @@
     %p
       = link_to '#description', 'data-toggle' => 'collapse' do
         Do you require something special for your event?
-  #description{ class: "collapse #{ 'in' if @event.description.present? }" }
-    = f.label :description, 'Requirements'
+      Please include any scheduling constraints.
+  #description.collapse.in
+    = f.label :description, 'Requirements and Scheduling'
     = f.text_area :description, rows: 5, class: 'form-control'
     .help-block
       e.g. Whiteboard, printer, or something like that.
