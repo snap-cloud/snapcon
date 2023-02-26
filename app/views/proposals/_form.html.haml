@@ -97,9 +97,9 @@
 #description{ class: "collapse #{ 'in' if @event.description.present? }" }
   .form-group
     = f.label :description, 'Requirements'
-    = f.text_area :description, rows: 5
-    %span.help-block
-      Eg. Whiteboard, printer, or something like that.
+    = f.text_area :description, rows: 5, class: 'form-control'
+    .help-block
+      e.g. Whiteboard, printer, or something like that.
 
   %p.text-right
     - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
