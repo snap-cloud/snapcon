@@ -54,7 +54,7 @@ class Program < ApplicationRecord
     end
 
     def scheduled(schedule_id)
-      joins(:event_schedules).where(event_schedules: { schedule_id: schedule_id })
+      joins(:event_schedules).where('event_schedules.schedule_id = ?', schedule_id)
     end
 
     def highlights
@@ -71,7 +71,7 @@ class Program < ApplicationRecord
     end
 
     def registered(conference)
-      joins(:registrations).where(registrations: { conference_id: conference.id })
+      joins(:registrations).where('registrations.conference_id = ?', conference.id)
     end
 
     def unregistered(conference)
@@ -204,7 +204,7 @@ class Program < ApplicationRecord
   # * +False+ -> If there is not any event for the given date
   def any_event_for_this_date?(date)
     return false if date.nil? || date == ''
-    return false if selected_schedule.blank?
+    return false unless selected_schedule.present?
 
     parsed_date = DateTime.parse("#{date} 00:00").utc
     range = parsed_date..(parsed_date + 1.day)
@@ -282,12 +282,12 @@ class Program < ApplicationRecord
   # Check if languages string has the right format. Used as validation.
   #
   def check_languages_format
-    return if languages.blank?
+    return unless languages.present?
 
     # All white spaces are removed to allow languages to be separated by ',' and ', '. The languages string without spaces is saved
     self.languages = languages.delete(' ').downcase
-    errors.add(:languages, 'must be two letters separated by commas') && return if
-    languages.match(/^$|(\A[a-z][a-z](,[a-z][a-z])*\z)/).blank?
+    errors.add(:languages, 'must be two letters separated by commas') && return unless
+    languages.match(/^$|(\A[a-z][a-z](,[a-z][a-z])*\z)/).present?
 
     languages_array = languages.split(',')
     # We check that languages are not repeated

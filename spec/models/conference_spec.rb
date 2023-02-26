@@ -398,20 +398,20 @@ describe Conference do
 
     describe '#new_program_minutes' do
       it 'calculates correct values with events' do
-        create(:event, program: subject.program, event_type: @long, created_at: Time.zone.now - 3.days)
+        create(:event, program: subject.program, event_type: @long, created_at: Time.now - 3.days)
         create(:event, program: subject.program, event_type: @long)
-        create(:event, program: subject.program, event_type: @short, created_at: Time.zone.now - 3.days)
+        create(:event, program: subject.program, event_type: @short, created_at: Time.now - 3.days)
         create(:event, program: subject.program, event_type: @short)
         result_in_hours = 2
         result_in_minutes = 135
-        expect(subject.new_program_hours(Time.zone.now - 5.minutes)).to eq(result_in_hours)
-        expect(subject.new_program_minutes(Time.zone.now - 5.minutes)).to eq(result_in_minutes)
+        expect(subject.new_program_hours(Time.now - 5.minutes)).to eq(result_in_hours)
+        expect(subject.new_program_minutes(Time.now - 5.minutes)).to eq(result_in_minutes)
       end
 
       it 'calculates correct values without events' do
         result = 0
-        expect(subject.new_program_minutes(Time.zone.now - 5.minutes)).to eq(result)
-        expect(subject.new_program_hours(Time.zone.now - 5.minutes)).to eq(result)
+        expect(subject.new_program_minutes(Time.now - 5.minutes)).to eq(result)
+        expect(subject.new_program_hours(Time.now - 5.minutes)).to eq(result)
       end
     end
   end
@@ -707,29 +707,29 @@ describe Conference do
   describe '#get_active_conferences' do
     it 'returns pending conferences' do
       a = create(:conference,
-                 short_title: 'a', start_date: Time.zone.now + 14.days,
-                 end_date: Time.zone.now + 21.days)
+                 short_title: 'a', start_date: Time.now + 14.days,
+                 end_date: Time.now + 21.days)
       b = create(:conference,
-                 short_title: 'b', start_date: Time.zone.now + 21.days,
-                 end_date: Time.zone.now + 28.days)
+                 short_title: 'b', start_date: Time.now + 21.days,
+                 end_date: Time.now + 28.days)
       c = create(:conference,
-                 short_title: 'c', start_date: Time.zone.now + 21.days,
-                 end_date: Time.zone.now + 28.days)
+                 short_title: 'c', start_date: Time.now + 21.days,
+                 end_date: Time.now + 28.days)
       create(:conference,
-             short_title: 'd', start_date: Time.zone.now - 1.year,
-             end_date: Time.zone.now - 360.days)
+             short_title: 'd', start_date: Time.now - 1.year,
+             end_date: Time.now - 360.days)
       result = [a, b, c]
 
       expect(Conference.get_active_conferences_for_dashboard).to match_array(result)
     end
 
     it 'returns the last two past conferences if there are no pending conferences' do
-      subject.start_date = Time.zone.now - 10.days
-      subject.end_date = Time.zone.now - 5.days
+      subject.start_date = Time.now - 10.days
+      subject.end_date = Time.now - 5.days
       subject.save
       c = create(:conference,
-                 short_title: 'c', start_date: Time.zone.now - 1.year,
-                 end_date: Time.zone.now - 360.days)
+                 short_title: 'c', start_date: Time.now - 1.year,
+                 end_date: Time.now - 360.days)
       result = [subject, c]
 
       expect(Conference.get_active_conferences_for_dashboard).to match_array(result)
@@ -742,9 +742,9 @@ describe Conference do
 
   describe '#get_deactive_conferences' do
     it 'returns all conferences without the active conferences' do
-      a = create(:conference,  start_date: Time.zone.now - 3.years, end_date: Time.zone.now - 1080.days)
-      b = create(:conference,  start_date: Time.zone.now - 2.years, end_date: Time.zone.now - 720.days)
-      c = create(:conference, start_date: Time.zone.now - 1.year, end_date: Time.zone.now - 360.days)
+      a = create(:conference,  start_date: Time.now - 3.years, end_date: Time.now - 1080.days)
+      b = create(:conference,  start_date: Time.now - 2.years, end_date: Time.now - 720.days)
+      c = create(:conference, start_date: Time.now - 1.year, end_date: Time.now - 360.days)
       result = [a, b, c]
 
       expect(Conference.get_conferences_without_active_for_dashboard([subject]))
@@ -752,8 +752,8 @@ describe Conference do
     end
 
     it 'returns all conferences if there are no active conferences' do
-      subject.start_date = Time.zone.now - 10.days
-      subject.end_date = Time.zone.now - 5.days
+      subject.start_date = Time.now - 10.days
+      subject.end_date = Time.now - 5.days
       expect(Conference.get_conferences_without_active_for_dashboard([])).to match_array([subject])
     end
 
@@ -766,8 +766,8 @@ describe Conference do
     end
 
     it 'return no conferences if there are only two conferences and no pending' do
-      a = create(:conference, start_date: Time.zone.now - 2.years, end_date: Time.zone.now - 720.days)
-      b = create(:conference, start_date: Time.zone.now - 1.year, end_date: Time.zone.now - 360.days)
+      a = create(:conference, start_date: Time.now - 2.years, end_date: Time.now - 720.days)
+      b = create(:conference, start_date: Time.now - 1.year, end_date: Time.now - 360.days)
       expect(Conference.get_conferences_without_active_for_dashboard([a, b])).to match_array([])
     end
   end

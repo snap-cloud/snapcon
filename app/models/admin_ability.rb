@@ -111,7 +111,7 @@ class AdminAbility
     # conferences that belong to organizations for which user is 'organization_admin'
     conf_ids = conf_ids_for_organization_admin.concat(Conference.with_role(:organizer, user).pluck(:id)).uniq
     # ids of all the tracks that belong to the programs of the above conferences
-    track_ids = Track.joins(:program).where(programs: { conference_id: conf_ids }).pluck(:id)
+    track_ids = Track.joins(:program).where('programs.conference_id IN (?)', conf_ids).pluck(:id)
 
     can :manage, Resource, conference_id: conf_ids
     can %i[read update destroy], Conference, id: conf_ids
@@ -138,7 +138,7 @@ class AdminAbility
     can :manage, Track, program: { conference_id: conf_ids }
     can :manage, DifficultyLevel, program: { conference_id: conf_ids }
     can :manage, Commercial, commercialable_type: 'Event',
-                             commercialable_id:   Event.where(program_id: Program.where(conference_id: conf_ids).select(:id)).pluck(:id)
+                             commercialable_id:   Event.where(program_id: Program.where(conference_id: conf_ids).pluck(:id)).pluck(:id)
     can :manage, Venue, conference_id: conf_ids
     can :manage, Commercial, commercialable_type: 'Venue',
                              commercialable_id:   Venue.where(conference_id: conf_ids).pluck(:id)
@@ -156,7 +156,7 @@ class AdminAbility
       conf_ids.include? conf_id
     end
     can :index, Comment, commentable_type: 'Event',
-                         commentable_id:   Event.where(program_id: Program.where(conference_id: conf_ids).select(:id)).pluck(:id)
+                         commentable_id:   Event.where(program_id: Program.where(conference_id: conf_ids).pluck(:id)).pluck(:id)
 
     # Abilities for Role (Conference resource)
     can [:index, :show], Role do |role|
@@ -194,9 +194,9 @@ class AdminAbility
     can :manage, Cfp, program: { conference_id: conf_ids_for_cfp }
     can :manage, Program, conference_id: conf_ids_for_cfp
     can :manage, Commercial, commercialable_type: 'Event',
-                             commercialable_id:   Event.where(program_id: Program.where(conference_id: conf_ids_for_cfp).select(:id)).pluck(:id)
+                             commercialable_id:   Event.where(program_id: Program.where(conference_id: conf_ids_for_cfp).pluck(:id)).pluck(:id)
     can :index, Comment, commentable_type: 'Event',
-                         commentable_id:   Event.where(program_id: Program.where(conference_id: conf_ids_for_cfp).select(:id)).pluck(:id)
+                         commentable_id:   Event.where(program_id: Program.where(conference_id: conf_ids_for_cfp).pluck(:id)).pluck(:id)
 
     # Abilities for Role (Conference resource)
     can [:index, :show], Role do |role|

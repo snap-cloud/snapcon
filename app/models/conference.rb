@@ -121,6 +121,7 @@ class Conference < ApplicationRecord
             :start_hour,
             :end_hour,
             :ticket_layout,
+            :organization,
             :timezone, presence: true
 
   validates :short_title, uniqueness: true
@@ -388,7 +389,7 @@ class Conference < ApplicationRecord
   # * +false+ -> If the conference start date is in the past.
   # * +true+ -> If the conference start date is in the future.
   def pending?
-    start_date > Time.zone.today
+    start_date > Date.today
   end
 
   ##
@@ -420,7 +421,7 @@ class Conference < ApplicationRecord
   # ====Returns
   # * +hash+ -> user: submissions
   def self.get_top_submitter(limit = 5)
-    submitter = EventUser.select(:user_id).where(event_role: 'submitter').limit(limit).group(:user_id)
+    submitter = EventUser.select(:user_id).where('event_role = ?', 'submitter').limit(limit).group(:user_id)
     counter = submitter.order('count_all desc').count(:all)
     calculate_user_submission_hash(submitter, counter)
   end
@@ -626,7 +627,7 @@ class Conference < ApplicationRecord
   # * +hash+ -> track => {color, value}
   def tracks_distribution(state = nil)
     tracks_grouped = if state
-                       program.events.select(:track_id).where(state: state).group(:track_id)
+                       program.events.select(:track_id).where('state = ?', state).group(:track_id)
                      else
                        program.events.select(:track_id).group(:track_id)
                      end
@@ -642,7 +643,7 @@ class Conference < ApplicationRecord
   # ====Returns
   # * +ActiveRecord+
   def self.get_active_conferences_for_dashboard
-    result = Conference.where('start_date > ?', Time.zone.now)
+    result = Conference.where('start_date > ?', Time.now)
                        .select('id, short_title, color, start_date, organization_id')
 
     if result.empty?
@@ -683,10 +684,10 @@ class Conference < ApplicationRecord
   def self.write_event_distribution_to_db
     week = DateTime.now.end_of_week
 
-    Conference.where('end_date > ?', Time.zone.today).find_each do |conference|
+    Conference.where('end_date > ?', Date.today).find_each do |conference|
       result = {}
       Event.state_machine.states.each do |state|
-        count = conference.program.events.where(state: state.name).count
+        count = conference.program.events.where('state = ?', state.name).count
         result[state.name] = count
       end
 
@@ -901,9 +902,9 @@ class Conference < ApplicationRecord
     end
 
     # Actual week
-    this_week = Time.zone.today.end_of_week.strftime('%W').to_i
-    result['Confirmed'][this_week] = program.events.where(state: :confirmed).count
-    result['Unconfirmed'][this_week] = program.events.where(state: :unconfirmed).count
+    this_week = Date.today.end_of_week.strftime('%W').to_i
+    result['Confirmed'][this_week] = program.events.where('state = ?', :confirmed).count
+    result['Unconfirmed'][this_week] = program.events.where('state = ?', :unconfirmed).count
     result['Submitted'] = program.events.select(:week).group(:week).count
     result['Submitted'][this_week] = program.events.where(week: this_week).count
     result
@@ -1055,7 +1056,7 @@ class Conference < ApplicationRecord
   # * +hash+ -> object_type => {color, value}
   def calculate_event_distribution(group_by_id, association_symbol, state = nil)
     grouped = if state
-                program.events.select(group_by_id).where(state: state).group(group_by_id)
+                program.events.select(group_by_id).where('state = ?', state).group(group_by_id)
               else
                 program.events.select(group_by_id).group(group_by_id)
               end

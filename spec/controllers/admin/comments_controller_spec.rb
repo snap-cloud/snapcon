@@ -5,7 +5,7 @@ require 'spec_helper'
 describe Admin::CommentsController, type: :controller do
   # It is necessary to use bang version of let to build roles before user
   let(:conference) { create(:conference) }
-  let(:organizer) { create(:organizer, resource: conference, last_sign_in_at: Time.zone.now - 1.day) }
+  let(:organizer) { create(:organizer, resource: conference, last_sign_in_at: Time.now - 1.day) }
   let(:participant) { create(:user) }
   let(:event) { create(:event, program: conference.program) }
   let(:comment) { create(:comment, commentable_type: 'Event', commentable_id: event.id) }

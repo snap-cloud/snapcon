@@ -47,13 +47,13 @@ describe Admin::RegistrationPeriodsController do
           allow(mailer).to receive(:deliver)
           conference.email_settings = create(:email_settings)
           conference.registration_period = create(:registration_period,
-                                                  start_date: Time.zone.today,
-                                                  end_date:   Time.zone.today + 2.days)
+                                                  start_date: Date.today,
+                                                  end_date:   Date.today + 2.days)
 
           patch :update, params: { conference_id: conference.short_title, registration_period:
                          attributes_for(:registration_period,
-                                        start_date: Time.zone.today + 2.days,
-                                        end_date:   Time.zone.today + 4.days) }
+                                        start_date: Date.today + 2.days,
+                                        end_date:   Date.today + 4.days) }
           conference.reload
           allow(Mailbot).to receive(:conference_registration_date_update_mail).and_return(mailer)
         end

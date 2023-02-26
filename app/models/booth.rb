@@ -38,6 +38,7 @@ class Booth < ApplicationRecord
             :reasoning,
             :state,
             :responsibles,
+            :conference_id,
             :website_url,
             :submitter_relationship,
             presence: true

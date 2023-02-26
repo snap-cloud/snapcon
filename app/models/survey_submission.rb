@@ -10,7 +10,7 @@
 #  survey_id  :integer
 #  user_id    :integer
 #
-class SurveySubmission < ApplicationRecord
+class SurveySubmission < ActiveRecord::Base
   belongs_to :user
   belongs_to :survey
   has_many :survey_replies, through: :user

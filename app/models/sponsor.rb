@@ -23,5 +23,5 @@ class Sponsor < ApplicationRecord
 
   mount_uploader :picture, PictureUploader, mount_on: :logo_file_name
 
-  validates :name, :website_url, presence: true
+  validates :name, :website_url, :sponsorship_level, presence: true
 end

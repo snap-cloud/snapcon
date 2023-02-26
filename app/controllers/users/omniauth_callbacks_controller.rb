@@ -13,7 +13,7 @@ module Users
 
     def handle(provider)
       auth_hash = request.env['omniauth.auth']
-      if auth_hash.info.email.blank?
+      unless auth_hash.info.email.present?
         flash[:error] = "Email field is missing in your #{provider} account"
         redirect_to new_user_registration_path
         return

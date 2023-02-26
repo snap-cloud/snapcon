@@ -39,6 +39,8 @@ class Registration < ApplicationRecord
 
   alias_attribute :other_needs, :other_special_needs
 
+  validates :user, presence: true
+
   validates :user_id, uniqueness: { scope: :conference_id, message: 'already Registered!' }
   validate :registration_limit_not_exceed, on: :create
   validates :accepted_code_of_conduct, acceptance: {
