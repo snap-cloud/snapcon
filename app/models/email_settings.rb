@@ -123,7 +123,7 @@ class EmailSettings < ApplicationRecord
   def parse_template(text, values)
     values.each do |key, value|
       if value.is_a?(Date)
-        text = text.gsub "{#{key}}", value.strftime('%Y-%m-%d') unless text.blank?
+        text = text.gsub "{#{key}}", value.strftime('%Y-%m-%d') if text.present?
       else
         text = text.gsub "{#{key}}", value unless text.blank? || value.blank?
       end

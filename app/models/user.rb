@@ -149,7 +149,6 @@ class User < ApplicationRecord
   has_many :voted_events, through: :votes, source: :events
   has_many :subscriptions, dependent: :destroy
   has_many :tracks, foreign_key: 'submitter_id'
-  has_many :booth_requests
   has_many :booth_requests, dependent: :destroy
   has_many :booths, through: :booth_requests
   has_many :survey_replies
@@ -217,7 +216,7 @@ class User < ApplicationRecord
   end
 
   def name
-    self[:name].blank? ? username : self[:name]
+    self[:name].presence || username
   end
 
   ##

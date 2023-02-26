@@ -187,7 +187,7 @@ name: 'My awesome track')
     end
     let!(:event_schedule2) do
       create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
-     start_time: (Time.now.in_time_zone(conference2.timezone) + 2.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+     start_time: (Time.now.in_time_zone(conference2.timezone) + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
     end
     let!(:scheduled_event3) do
       program.update!(selected_schedule: selected_schedule)

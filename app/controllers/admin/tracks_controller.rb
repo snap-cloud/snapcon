@@ -130,7 +130,7 @@ module Admin
         respond_to do |format|
           format.js do
             render json:   { errors: "The selected schedule couldn't be updated #{@track.errors.to_a.join('. ')}" },
-                   status: 422
+                   status: :unprocessable_entity
           end
         end
       end

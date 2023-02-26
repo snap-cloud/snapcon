@@ -25,6 +25,7 @@ class Venue < ApplicationRecord
   belongs_to :conference
   has_one :commercial, as: :commercialable, dependent: :destroy
   has_many :rooms, dependent: :destroy
+  before_save :send_mail_notification
   before_create :generate_guid
 
   has_paper_trail ignore: %i[updated_at guid], meta: { conference_id: :conference_id }
@@ -33,8 +34,6 @@ class Venue < ApplicationRecord
   validates :name, :street, :city, :country, presence: true
 
   mount_uploader :picture, PictureUploader, mount_on: :photo_file_name
-
-  before_save :send_mail_notification
 
   def address
     "#{street}, #{city}, #{country_name}"
@@ -66,7 +65,7 @@ class Venue < ApplicationRecord
     end
 
     # do not notify unless the mail content is set up
-    (!conference.email_settings.venue_updated_subject.blank? && !conference.email_settings.venue_updated_body.blank?)
+    (conference.email_settings.venue_updated_subject.present? && conference.email_settings.venue_updated_body.present?)
   end
 
   # TODO: create a module to be mixed into model to perform same operation

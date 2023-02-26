@@ -33,7 +33,6 @@ class Program < ApplicationRecord
   has_many :tracks, dependent: :destroy
   has_many :difficulty_levels, dependent: :destroy
   has_many :schedules, dependent: :destroy
-  has_many :event_schedules, through: :schedules
   belongs_to :selected_schedule, class_name: 'Schedule'
   has_many :events, dependent: :destroy do
     def require_registration
@@ -190,7 +189,7 @@ class Program < ApplicationRecord
     return false unless schedule_public
 
     # do not notify unless the mail content is set up
-    (!conference.email_settings.program_schedule_public_subject.blank? && !conference.email_settings.program_schedule_public_body.blank?)
+    (conference.email_settings.program_schedule_public_subject.present? && conference.email_settings.program_schedule_public_body.present?)
   end
 
   def languages_list

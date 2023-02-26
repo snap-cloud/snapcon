@@ -268,7 +268,7 @@ start_time: conference.start_hour + 1.hour)
         it 'marks you as having attended the event and conference' do
           expect(@registration.attended).to be false
           expect(participant.attended_event?(@scheduled_event1)).to be false
-          Timecop.travel @event_schedule1.start_time_in_conference_timezone - (Time.now.getlocal.utc_offset / 1.hours)
+          Timecop.travel @event_schedule1.start_time_in_conference_timezone - (Time.now.getlocal.utc_offset / 1.hour)
           # A check to make sure all conditions are met.
           expect(@scheduled_event1.happening_now?).to be true
           visit join_conference_program_proposal_path(conference, @scheduled_event1)

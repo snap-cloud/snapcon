@@ -10,7 +10,7 @@ module Admin
         render json: { event_schedule_id: @event_schedule.id }
       else
         render json:   { errors: "The event couldn't be scheduled. #{@event_schedule.errors.full_messages.join('. ')}" },
-               status: 422
+               status: :unprocessable_entity
       end
     end
 
@@ -19,7 +19,7 @@ module Admin
         render json: { event_schedule_id: @event_schedule.id }
       else
         render json:   { errors: "The event couldn't be scheduled. #{@event_schedule.errors.full_messages.join('. ')}" },
-               status: 422
+               status: :unprocessable_entity
       end
     end
 
@@ -28,7 +28,7 @@ module Admin
         render json: {}
       else
         render json:   { errors: "The event couldn't be unscheduled. #{@event_schedule.errors.full_messages.join('. ')}" },
-               status: 422
+               status: :unprocessable_entity
       end
     end
 

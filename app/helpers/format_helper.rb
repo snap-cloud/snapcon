@@ -196,7 +196,7 @@ module FormatHelper
   def markdown_hint(text = '')
     markdown(
       "#{text} Please look at #{link_to '**Markdown Syntax**', 'https://daringfireball.net/projects/markdown/syntax',
-                                        target: '_blank'} to format your text", false
+                                        target: '_blank', rel: 'noopener'} to format your text", false
     )
   end
 

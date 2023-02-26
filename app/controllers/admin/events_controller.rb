@@ -131,7 +131,7 @@ module Admin
       if selected_schedule
         event_schedule = EventSchedule.unscoped.where(event: @event).find_by(schedule: selected_schedule)
       end
-      Rails.logger.debug "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}"
+      Rails.logger.debug { "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}" }
       if selected_schedule && event_schedule
         event_schedule.enabled = false
         event_schedule.save

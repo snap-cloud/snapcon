@@ -48,6 +48,7 @@ class Event < ApplicationRecord
 
   acts_as_commentable
 
+  before_create :generate_guid
   after_create :set_week
 
   has_many :event_users, dependent: :destroy
@@ -92,8 +93,6 @@ class Event < ApplicationRecord
   accepts_nested_attributes_for :speakers, allow_destroy: true
   accepts_nested_attributes_for :users
   accepts_nested_attributes_for :favourite_users
-
-  before_create :generate_guid
 
   validate :abstract_limit
   validate :submission_limit
@@ -237,7 +236,7 @@ class Event < ApplicationRecord
     if program.conference.email_settings.send_on_accepted &&
        program.conference.email_settings.accepted_body &&
        program.conference.email_settings.accepted_subject &&
-       !options[:send_mail].blank?
+       options[:send_mail].present?
       Mailbot.acceptance_mail(self).deliver_later
     end
   end
@@ -246,7 +245,7 @@ class Event < ApplicationRecord
     if program.conference.email_settings.send_on_rejected &&
        program.conference.email_settings.rejected_body &&
        program.conference.email_settings.rejected_subject &&
-       !options[:send_mail].blank?
+       options[:send_mail].present?
       Mailbot.rejection_mail(self).deliver_later
     end
   end
@@ -277,9 +276,9 @@ class Event < ApplicationRecord
       # If the event was previously scheduled, and then withdrawn or cancelled
       # its event_schedule will have enabled set to false
       # If the event is now confirmed again, we want it to be available for scheduling
-      Rails.logger.debug "transition is #{transition}"
+      Rails.logger.debug { "transition is #{transition}" }
       if transition == :confirm
-        Rails.logger.debug "schedules #{EventSchedule.unscoped.where(event: self, enabled: false)}"
+        Rails.logger.debug { "schedules #{EventSchedule.unscoped.where(event: self, enabled: false)}" }
         EventSchedule.unscoped.where(event: self, enabled: false).destroy_all
       end
     rescue Transitions::InvalidTransition => e
@@ -304,9 +303,9 @@ class Event < ApplicationRecord
     {
       registered:       speakers.all? { |speaker| program.conference.user_registered? speaker },
       commercials:      commercials.any?,
-      biographies:      speakers.all? { |speaker| !speaker.biography.blank? },
-      subtitle:         !subtitle.blank?,
-      track:            (!track.blank? unless program.tracks.empty?),
+      biographies:      speakers.all? { |speaker| speaker.biography.present? },
+      subtitle:         subtitle.present?,
+      track:            (track.present? unless program.tracks.empty?),
       difficulty_level: (difficulty_level.present? unless program.difficulty_levels.empty?),
       title:            true,
       abstract:         true
@@ -367,9 +366,7 @@ class Event < ApplicationRecord
     event_schedules.find_by(schedule_id: selected_schedule_id).try(:ended?)
   end
 
-  def conference
-    program.conference
-  end
+  delegate :conference, to: :program
 
   def <=>(other)
     time <=> other.time

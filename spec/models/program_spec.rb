@@ -141,9 +141,9 @@ describe Program do
 
     context 'voting dates are set' do
       it_behaves_like 'voting period', Date.today - 1, Date.today + 1, true
-      it_behaves_like 'voting period', Date.today - 1, Time.current + 1.hour, true
+      it_behaves_like 'voting period', Date.today - 1, 1.hour.from_now, true
       it_behaves_like 'voting period', Date.today - 2, Date.today - 1, false
-      it_behaves_like 'voting period', Date.today - 1, Time.current - 1.minute, false
+      it_behaves_like 'voting period', Date.today - 1, 1.minute.ago, false
     end
   end
 

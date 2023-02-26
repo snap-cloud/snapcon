@@ -138,7 +138,7 @@ class Conference < ApplicationRecord
   after_create :create_free_ticket
   after_update :delete_event_schedules
 
-  enum ticket_layout: %i[portrait landscape]
+  enum ticket_layout: { portrait: 0, landscape: 1 }
 
   ##
   # Checks if the user is registered to the conference

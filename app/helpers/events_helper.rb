@@ -226,7 +226,7 @@ module EventsHelper
       link_to("Join Event Now #{'(Early)' unless is_now}",
               join_conference_program_proposal_path(conference, event),
               target: '_blank', class: "btn btn-primary #{'btn-xs' if small}",
-              'aria-label': "Join #{event.title}")
+              'aria-label': "Join #{event.title}", rel: 'noopener')
     elsif is_registered
       content_tag :span, class: 'btn btn-default btn-xs disabled' do
         'Click to Join During Event'

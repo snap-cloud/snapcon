@@ -40,7 +40,7 @@ module Admin
           end
           format.js do
             render json:   { errors: "The selected schedule couldn't be updated #{@program.errors.to_a.join('. ')}" },
-                   status: 422
+                   status: :unprocessable_entity
           end
         end
       end

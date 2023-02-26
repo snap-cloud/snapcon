@@ -43,6 +43,7 @@ class Track < ApplicationRecord
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
+  before_validation :capitalize_color
   before_create :generate_guid
   validates :name, presence: true
   validates :color, format: /\A#[0-9A-F]{6}\z/
@@ -65,8 +66,6 @@ class Track < ApplicationRecord
   validate :start_date_before_end_date
   validate :valid_room
   validate :overlapping
-
-  before_validation :capitalize_color
 
   scope :accepted, -> { where(state: 'accepted') }
   scope :confirmed, -> { where(state: 'confirmed') }
@@ -111,9 +110,7 @@ class Track < ApplicationRecord
     end
   end
 
-  def conference
-    program.conference
-  end
+  delegate :conference, to: :program
 
   ##
   # Checks if the track is self-organized

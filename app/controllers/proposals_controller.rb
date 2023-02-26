@@ -136,7 +136,7 @@ class ProposalsController < ApplicationController
       @event.withdraw
       selected_schedule = @event.program.selected_schedule
       event_schedule = @event.event_schedules.find_by(schedule: selected_schedule) if selected_schedule
-      Rails.logger.debug "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}"
+      Rails.logger.debug { "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}" }
       if selected_schedule && event_schedule
         event_schedule.enabled = false
         event_schedule.save

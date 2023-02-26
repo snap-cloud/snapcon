@@ -154,7 +154,7 @@ describe User do
       end
 
       it 'scopes dead users' do
-        create(:user, last_sign_in_at: Time.zone.now - 1.year - 1.day) # dead
+        create(:user, last_sign_in_at: 1.year.ago - 1.day) # dead
         expect(User.dead.count).to eq(1)
       end
     end

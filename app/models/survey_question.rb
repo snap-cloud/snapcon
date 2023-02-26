@@ -18,7 +18,7 @@ class SurveyQuestion < ActiveRecord::Base
   has_many :survey_replies, dependent: :destroy
 
   # Order of this list should not be changed without proper action!
-  enum kind: %i[boolean choice string text datetime numeric]
+  enum kind: { boolean: 0, choice: 1, string: 2, text: 3, datetime: 4, numeric: 5 }
 
   ICONS = { boolean: 'circle-dot', choice: 'square-check', string: 'pen-to-square', text: 'align-left',
 datetime: 'clock', numeric: 'hashtag' }.freeze

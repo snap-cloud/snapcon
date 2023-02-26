@@ -55,7 +55,7 @@ module ApplicationHelper
 
   def remove_association_link(association_name, form_builder)
     link_to_remove_association('Remove ' + association_name.to_s.singularize, form_builder,
-                               class: 'assoc btn btn-danger') + tag(:hr)
+                               class: 'assoc btn btn-danger') + tag.hr
   end
 
   def dynamic_association(association_name, title, form_builder, options = {})
@@ -202,7 +202,7 @@ hint: options[:hint]
   def inyourtz(time, timezone, &block)
     time = time.in_time_zone(timezone)
     time -= time.utc_offset
-    link_to "https://inyourtime.zone/t?#{time.to_i}", target: '_blank' do
+    link_to "https://inyourtime.zone/t?#{time.to_i}", target: '_blank', rel: 'noopener' do
       block.call
     end
   end

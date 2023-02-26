@@ -33,7 +33,7 @@ class SchedulesController < ApplicationController
         dates = @conference.start_date..@conference.end_date
         # the schedule takes you to today if it is a date of the schedule
         current_day = @conference.current_conference_day
-        @day = current_day.present? ? current_day : dates.first
+        @day = current_day.presence || dates.first
 
         if current_user && @favourites
           event_schedules = event_schedules.select { |e| e.event.planned_for_user?(current_user) }

@@ -31,11 +31,7 @@ module ConferenceHelper
   end
 
   def conference_color(conference)
-    if conference.color.present?
-      conference.color
-    else
-      DEFAULT_COLOR
-    end
+    conference.color.presence || DEFAULT_COLOR
   end
 
   # adds events to icalendar for proposals in a conference
