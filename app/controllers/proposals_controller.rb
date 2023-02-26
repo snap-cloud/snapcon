@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-EVENTS_PER_PAGE = Rails.configuration.conference[:events_per_page]
-
 class ProposalsController < ApplicationController
   include ConferenceHelper
   before_action :authenticate_user!, except: %i[show new create]
