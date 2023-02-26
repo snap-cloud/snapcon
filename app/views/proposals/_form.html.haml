@@ -91,16 +91,18 @@
     This shows the event on the conference homepage.
 
 
-%p.text-right
-  = link_to '#description', 'data-toggle' => 'collapse' do
-    Do you require something special for your event?
-#description{ class: "collapse #{ 'in' if @event.description.present? }" }
+.text-left
   .form-group
+    %label Additional Information
+    %p
+      = link_to '#description', 'data-toggle' => 'collapse' do
+        Do you require something special for your event?
+  #description{ class: "collapse #{ 'in' if @event.description.present? }" }
     = f.label :description, 'Requirements'
     = f.text_area :description, rows: 5, class: 'form-control'
     .help-block
       e.g. Whiteboard, printer, or something like that.
 
-  %p.text-right
-    - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
-    = f.submit submit_copy, class: 'btn btn-success'
+%p.text-right
+  - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
+  = f.submit submit_copy, class: 'btn btn-success'
