@@ -3,9 +3,7 @@ on: [pull_request]
 
 jobs:
   pronto:
-
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -18,7 +16,7 @@ jobs:
       - name: Install pronto
         run: bundle install --without default development test staging production
       - name: Run Pronto
-        run: pronto run
+        run: bundle exec pronto run
         # run: pronto run -f github_combined_status github_pr_review -c origin/${{ github.base_ref }}
         env:
           PRONTO_PULL_REQUEST_ID: ${{ github.event.pull_request.number }}
