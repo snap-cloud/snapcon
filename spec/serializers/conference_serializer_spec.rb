@@ -41,8 +41,8 @@ describe ConferenceSerializer, type: :serializer do
   let(:conference) do
     create(:conference, short_title: 'goto',
                         description: 'Lorem ipsum dolor sit',
-                        start_date:  Date.new(2014, 0o3, 0o4),
-                        end_date:    Date.new(2014, 0o3, 10))
+                        start_date:  Date.new(2014, 3, 4),
+                        end_date:    Date.new(2014, 3, 10))
   end
 
   let(:serializer) { ConferenceSerializer.new(conference) }
