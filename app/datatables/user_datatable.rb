@@ -24,7 +24,8 @@ class UserDatatable < AjaxDatatablesRails::ActiveRecord
       username:     { source: 'User.username' },
       attended:     { source: 'attended_count', searchable: false },
       roles:        { source: 'Role.name' },
-      actions:      { source: 'User.id', searchable: false, orderable: false }
+      actions:      { source: 'User.id', searchable: false, orderable: false },
+      confirmed: { source: 'User.confirmed_at', searchable: false },
     }
   end
 
