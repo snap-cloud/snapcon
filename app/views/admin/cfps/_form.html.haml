@@ -7,10 +7,9 @@
     = f.label :end_date, "End Date"
     = f.text_field :end_date, class: 'form-control', id: 'registration-period-end-datepicker', start_date: @conference.start_date, end_date: @conference.end_date
   .form-group
-    = f.label :description, "Description"
-    = f.text_area :description, rows: 2, data: { provide: 'markdown' }
-    %span.help-block
-      = markdown_hint
+    = f.label :description
+    = f.text_area :description, rows: 15, data: { provide: 'markdown' }
+    .help-block= markdown_hint
   - if @cfp.cfp_type == 'events'
     .checkbox
       %label
