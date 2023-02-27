@@ -106,7 +106,7 @@ Rails.application.configure do
     password:             ENV.fetch('OSEM_SMTP_PASSWORD', nil),
     authentication:       ENV.fetch('OSEM_SMTP_AUTHENTICATION', 'plain').try(:to_sym),
     domain:               ENV.fetch('OSEM_SMTP_DOMAIN', nil),
-    enable_starttls_auto: ENV.fetch('OSEM_SMTP_ENABLE_STARTTLS_AUTO', nil),
+    enable_starttls_auto: ENV.fetch('OSEM_SMTP_ENABLE_STARTTLS_AUTO', 'false').downcase == 'true',
     openssl_verify_mode:  ENV.fetch('OSEM_SMTP_OPENSSL_VERIFY_MODE', nil)
   }.compact
 
