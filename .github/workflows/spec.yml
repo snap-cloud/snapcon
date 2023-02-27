@@ -1,12 +1,13 @@
 name: Specs
 
+# TODO-SNAPCON: (mb) this should run on all branches.
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 jobs:
