@@ -1,0 +1,21 @@
+.form-group
+  = f.label :title
+  = f.text_field :title, class: 'form-control'
+.form-group
+  = f.label :url, 'URL'
+  %abbr{title: 'This field is required'} *
+  = f.text_field :url, required: 'required', class: 'form-control'
+  %span.help-block
+    Just paste the url of your video/photo provider. Anything that supports an iframe is allowed.
+  .form-group
+    - if f.object.new_record?
+      = f.submit 'Create Materials', class: 'btn btn-primary pull-right', id: 'commercial_submit_action', disabled: true
+    - else
+      = f.submit 'Update Materials', class: 'btn btn-primary pull-right'
+      - if can? :destroy, commercial
+        = link_to('Delete', conference_program_proposal_commercial_path(@conference.short_title, @event.id, commercial.id),
+                  method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger')
+      - if f.object.versions.any?
+        .text-right
+          added by
+          = link_to_user(commercial.versions.last.whodunnit)

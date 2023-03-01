@@ -28,7 +28,8 @@ class ChangeConferenceIdToVenueIdInRooms < ActiveRecord::Migration
       if venue
         room.venue_id = venue.id
       else
-        test_venue = Venue.find_or_create_by!(conference_id: room.conference_id, name: 'test venue', street: 'test street', city: 'test city', country: 'test')
+        test_venue = Venue.find_or_create_by!(conference_id: room.conference_id, name: 'test venue',
+                                              street: 'test street', city: 'test city', country: 'test')
         room.venue_id = test_venue.id
       end
       room.save!
@@ -45,9 +46,7 @@ class ChangeConferenceIdToVenueIdInRooms < ActiveRecord::Migration
       venue = TempVenue.find(room.venue_id)
       conference = TempConference.find(venue.conference_id)
 
-      if conference
-        room.conference_id = conference.id
-      end
+      room.conference_id = conference.id if conference
 
       room.save!
     end

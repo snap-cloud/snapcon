@@ -12,7 +12,10 @@ describe Admin::CfpsController do
 
   describe 'POST #create' do
     it 'successes' do
-      post :create, params: { conference_id: conference.short_title, cfp: { cfp_type: 'events', start_date: today, end_date: today + 6.days, description: 'We call for papers, or tabak, or you know what!' } }
+      post :create,
+           params: { conference_id: conference.short_title,
+                     cfp:           { cfp_type: 'events', start_date: today, end_date: today + 6.days,
+description: 'We call for papers, or tabak, or you know what!' } }
       expect(flash[:notice]).to match('Call for papers successfully created.')
     end
   end

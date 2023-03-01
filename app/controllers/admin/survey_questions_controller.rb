@@ -14,7 +14,8 @@ module Admin
     def create
       @survey_question = @survey.survey_questions.new(survey_question_params)
       if @survey_question.save
-        redirect_to admin_conference_survey_path(@conference.short_title, @survey), notice: 'Successfully created Survey Question.'
+        redirect_to admin_conference_survey_path(@conference.short_title, @survey),
+                    notice: 'Successfully created Survey Question.'
       else
         @url = admin_conference_survey_survey_questions_path(@conference.short_title, @survey)
         render :new
@@ -28,8 +29,9 @@ module Admin
 
     # PUT questions/1
     def update
-      if @survey_question.update_attributes(survey_question_params)
-        redirect_to admin_conference_survey_path(@conference.short_title, @survey), notice: 'Successfully updated Survey Question.'
+      if @survey_question.update(survey_question_params)
+        redirect_to admin_conference_survey_path(@conference.short_title, @survey),
+                    notice: 'Successfully updated Survey Question.'
       else
         @url = admin_conference_survey_survey_question_path(@conference.short_title, @survey, @survey_question)
         render :edit
@@ -39,9 +41,11 @@ module Admin
     # DELETE questions/1
     def destroy
       if @survey_question.destroy
-        redirect_to admin_conference_survey_path(@conference.short_title, @survey), notice: 'Successfully deleted Survey Question.'
+        redirect_to admin_conference_survey_path(@conference.short_title, @survey),
+                    notice: 'Successfully deleted Survey Question.'
       else
-        redirect_to admin_conference_survey_path(@conference.short_title, @survey), error: "Can't delete this Survey Question"
+        redirect_to admin_conference_survey_path(@conference.short_title, @survey),
+                    error: "Can't delete this Survey Question"
       end
     end
 

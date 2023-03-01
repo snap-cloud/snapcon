@@ -4,6 +4,7 @@
   condensed_view = defined?(is_brief) && is_brief
   abstract_length = condensed_view ? 250 : 400
   program = event.conference.program
+  tz_object = current_user&.timezone.present? ? current_user : event
 
 .panel.panel-default
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
@@ -23,8 +24,7 @@
           = event.title
           - if !condensed_view && event.subtitle.present?
             %br
-            %small{ style: color_style }
-              = event.subtitle
+            %small{style: color_style}= event.subtitle
 
       - if !condensed_view
         %span
@@ -51,20 +51,20 @@
 
     - if !condensed_view
       - if event_schedule.present?
-        - new_start_time = current_user ? convert_timezone(event_schedule.start_time, event.timezone, current_user.timezone) || event_schedule.start_time : event_schedule.start_time
-        - new_end_time = current_user ? convert_timezone(event_schedule.end_time, event.timezone, current_user.timezone) || event_schedule.end_time : event_schedule.end_time
+        - new_start_time = convert_timezone(event_schedule.start_time, event.timezone, tz_object.timezone)
+        - new_end_time = convert_timezone(event_schedule.end_time, event.timezone, tz_object.timezone)
         = inyourtz(event_schedule.start_time, event.timezone) do
-          %span.fa.fa-clock-o
+          %span.fa-solid.fa-clock
             .label.label-info
               = new_start_time.strftime('%l:%M %P')
               \-
-              = "#{new_end_time.strftime('%l:%M %P')} #{timezone_text(current_user || event)}"
-        %span.fa.fa-map-marker
+              = "#{new_end_time.strftime('%l:%M %P')} #{timezone_text(tz_object)}"
+        %span.fa-solid.fa-location-dot
           .label.label-info
             = event_schedule.room.name
       - if event.track
         .track
-          %span.fa.fa-road
+          %span.fa-solid.fa-road
           .label{ style: css_background_color(event.track.color) }
             = event.track.name
       - if event.superevent && event.subevents.present?

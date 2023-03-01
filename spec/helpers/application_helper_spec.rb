@@ -21,76 +21,74 @@ describe ApplicationHelper, type: :helper do
     end
 
     it 'when conference ends in another month, of a different year' do
-      expect(date_string('Sun, 19 Feb 2017'.to_time, 'Sun, 12 March 2018'.to_time)).to eq 'February 19, 2017 - March 12, 2018'
+      expect(date_string('Sun, 19 Feb 2017'.to_time,
+                         'Sun, 12 March 2018'.to_time)).to eq 'February 19, 2017 - March 12, 2018'
     end
   end
 
   describe '#concurrent_events' do
-    before :each do
+    before do
       @other_event = create(:event, program: conference.program, state: 'confirmed')
       schedule = create(:schedule, program: conference.program)
-      conference.program.update_attributes!(selected_schedule: schedule)
-      @event_schedule = create(:event_schedule, event: event, start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
-      @other_event_schedule = create(:event_schedule, event: @other_event, start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
+      conference.program.update_attribute(:selected_schedule, schedule)
+      @event_schedule = create(:event_schedule, event: event,
+start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
+      @other_event_schedule = create(:event_schedule, event: @other_event,
+start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
     end
 
     describe 'does return correct concurrent events' do
       it 'when events starts at the same time' do
-        expect(concurrent_events(event).include?(@other_event)).to eq true
+        expect(concurrent_events(event).include?(@other_event)).to be true
       end
 
       it 'when event is in between the other event' do
-        @event_schedule.update_attributes!(start_time: @other_event_schedule.start_time + 10.minutes)
-        expect(concurrent_events(event).include?(@other_event)).to eq true
+        @event_schedule.update_attribute(:start_time, @other_event_schedule.start_time + 10.minutes)
+        expect(concurrent_events(event).include?(@other_event)).to be true
       end
     end
 
-    describe 'does not return as concurrent event ' do
+    describe 'does not return as concurrent event' do
       it 'when event is not scheduled' do
         @event_schedule.destroy
-        expect(concurrent_events(event).present?).to eq false
+        expect(concurrent_events(event).present?).to be false
       end
 
       it 'when one event starts and other ends at the same time' do
-        @event_schedule.update_attributes!(start_time: @other_event_schedule.end_time)
-        expect(concurrent_events(event).present?).to eq false
+        @event_schedule.update_attribute(:start_time, @other_event_schedule.end_time)
+        expect(concurrent_events(event).present?).to be false
       end
 
       it 'when conference program does not have a selected schedule' do
-        conference.program.update_attributes!(selected_schedule_id: nil)
-        expect(concurrent_events(event).present?).to eq false
+        conference.program.update_attribute(:selected_schedule_id, nil)
+        expect(concurrent_events(event).present?).to be false
       end
     end
 
     describe 'navigation image link' do
-      it 'should default to OSEM' do
+      it 'defaults to OSEM' do
         ENV.delete('OSEM_NAME')
         expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: 'OSEM')
       end
 
-      it 'should use the environment variable' do
-        ENV['OSEM_NAME'] = Faker::Company.name + "'"
-        expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: ENV['OSEM_NAME'])
-      end
-
-      # TODO-SNAPCON: This is an indicator in a conference it should be the conference name.
-      it 'should use the conference organization name' do
-        expect(nav_root_link_for(conference)).to include image_tag(conference.picture.thumb.url, alt: conference.organization.name)
+      it 'uses the conference organization name' do
+        expect(nav_root_link_for(conference)).to include image_tag(conference.picture.thumb.url,
+                                                                   alt: conference.organization.name)
       end
     end
 
     describe 'navigation link title text' do
-      it 'should default to OSEM' do
+      it 'defaults to OSEM' do
         ENV.delete('OSEM_NAME')
         expect(nav_link_text(nil)).to match 'OSEM'
       end
 
-      it 'should use the environment variable' do
+      it 'uses the environment variable' do
         ENV['OSEM_NAME'] = Faker::Company.name + "'"
-        expect(nav_link_text(nil)).to match ENV['OSEM_NAME']
+        expect(nav_link_text(nil)).to match ENV.fetch('OSEM_NAME', nil)
       end
 
-      it 'should use the conference organization name' do
+      it 'uses the conference organization name' do
         expect(nav_link_text(conference)).to match conference.organization.name
       end
     end
@@ -100,7 +98,7 @@ describe ApplicationHelper, type: :helper do
     context 'first sponsorship_level' do
       before do
         first_sponsorship_level = create(:sponsorship_level, position: 1)
-        sponsor.update_attributes(sponsorship_level: first_sponsorship_level)
+        sponsor.update_attribute(:sponsorship_level, first_sponsorship_level)
       end
 
       it 'returns correct url' do
@@ -111,7 +109,7 @@ describe ApplicationHelper, type: :helper do
     context 'second sponsorship_level' do
       before do
         second_sponsorship_level = create(:sponsorship_level, position: 2)
-        sponsor.update_attributes(sponsorship_level: second_sponsorship_level)
+        sponsor.update_attribute(:sponsorship_level, second_sponsorship_level)
       end
 
       it 'returns correct url' do
@@ -122,7 +120,7 @@ describe ApplicationHelper, type: :helper do
     context 'other sponsorship_level' do
       before do
         other_sponsorship_level = create(:sponsorship_level, position: 3)
-        sponsor.update_attributes(sponsorship_level: other_sponsorship_level)
+        sponsor.update_attribute(:sponsorship_level, other_sponsorship_level)
       end
 
       it 'returns correct url' do

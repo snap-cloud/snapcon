@@ -37,8 +37,16 @@ class Room < ApplicationRecord
     event_schedules.update_all(updated_at: Time.now)
   }
 
-  def conference
-    venue.conference
+  delegate :conference, to: :venue
+
+  def embed_url
+    return if url.blank?
+
+    if url.match?(/zoom.us/) & !url.match?('/zoom.us/wc')
+      return url.gsub('/j', '/wc/join')
+    end
+
+    url
   end
 
   private

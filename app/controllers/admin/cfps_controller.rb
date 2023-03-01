@@ -35,7 +35,7 @@ module Admin
 
       send_mail_on_cfp_dates_updates = @cfp.notify_on_cfp_date_update?
 
-      if @cfp.update_attributes(cfp_params)
+      if @cfp.update(cfp_params)
         ConferenceCfpUpdateMailJob.perform_later(@conference) if send_mail_on_cfp_dates_updates
         redirect_to admin_conference_program_cfps_path(@conference.short_title),
                     notice: 'Call for papers successfully updated.'
@@ -49,8 +49,8 @@ module Admin
       if @cfp.destroy
         redirect_to admin_conference_program_cfps_path, notice: 'Call for Papers was successfully deleted.'
       else
-        redirect_to admin_conference_program_cfps_path, error: 'An error prohibited this Call for Papers from being destroyed: '\
-        "#{@cfp.errors.full_messages.join('. ')}."
+        redirect_to admin_conference_program_cfps_path, error: 'An error prohibited this Call for Papers from being destroyed: ' \
+                                                               "#{@cfp.errors.full_messages.join('. ')}."
       end
     end
 

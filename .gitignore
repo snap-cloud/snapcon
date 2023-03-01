@@ -23,6 +23,8 @@ config/application.rb
 config/config.yml
 config/local_env.yml
 config/secrets.yml
+config/master.key
+config/credentials.yml.enc
 /vendor/cache
 /vendor/cache-old
 /storage/*
@@ -132,5 +134,6 @@ build-iPhoneSimulator/
 
 # common db things from heroku
 latest.dump*
-
+.ackrc
+spec/support/deprecation_shitlist.json
 .vs/*

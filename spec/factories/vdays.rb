@@ -13,9 +13,8 @@
 #
 FactoryBot.define do
   factory :vday do
-    day { Time.zone.today }
+    day { Date.today }
     description { 'Lorem Ipsum dolsum' }
     conference
   end
-
 end

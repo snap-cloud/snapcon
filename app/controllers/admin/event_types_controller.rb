@@ -26,7 +26,7 @@ module Admin
     end
 
     def update
-      if @event_type.update_attributes(event_type_params)
+      if @event_type.update(event_type_params)
         redirect_to admin_conference_program_event_types_path(conference_id: @conference.short_title),
                     notice: 'Event type successfully updated.'
       else
@@ -41,15 +41,16 @@ module Admin
                     notice: 'Event type successfully deleted.'
       else
         redirect_to admin_conference_program_event_types_path(conference_id: @conference.short_title),
-                    error: 'Destroying event type failed! '\
-                    "#{@event_type.errors.full_messages.join('. ')}."
+                    error: 'Destroying event type failed! ' \
+                           "#{@event_type.errors.full_messages.join('. ')}."
       end
     end
 
     private
 
     def event_type_params
-      params.require(:event_type).permit(:title, :length, :minimum_abstract_length, :maximum_abstract_length, :submission_instructions, :color, :conference_id, :description)
+      params.require(:event_type).permit(:title, :length, :minimum_abstract_length, :maximum_abstract_length,
+                                         :submission_instructions, :color, :conference_id, :description)
     end
   end
 end

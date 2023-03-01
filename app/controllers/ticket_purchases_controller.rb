@@ -16,7 +16,7 @@ class TicketPurchasesController < ApplicationController
     count_registration_tickets_after = current_user.count_registration_tickets(@conference)
 
     # Failed to create ticket purchase
-    unless message.blank?
+    if message.present?
       redirect_to conference_tickets_path(@conference.short_title),
                   error: "Oops, something went wrong with your purchase! #{message}"
       return

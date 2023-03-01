@@ -6,7 +6,8 @@
         = render 'layouts/admin_sidebar'
       -else
         -# Index admin sidebar
-        = render 'layouts/admin_sidebar_index'
+        - cache ['#admin-sidebar', @conference, current_user] do
+          = render 'layouts/admin_sidebar_index'
     .col-md-10
       #messages
         =render 'layouts/messages'

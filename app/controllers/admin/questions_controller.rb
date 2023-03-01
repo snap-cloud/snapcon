@@ -3,7 +3,7 @@
 module Admin
   class QuestionsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
-    load_and_authorize_resource through: :conference, except: [:new, :create]
+    load_and_authorize_resource except: %i[new create]
 
     def index
       authorize! :index, Question.new(conference_id: @conference.id)
@@ -34,7 +34,10 @@ module Admin
         if @conference.save
           format.html { redirect_to admin_conference_questions_path, notice: 'Question was successfully created.' }
         else
-          format.html { redirect_to admin_conference_questions_path, error: "Oops, couldn't save Question. #{@question.errors.full_messages.join('. ')}" }
+          format.html do
+            redirect_to admin_conference_questions_path,
+                        error: "Oops, couldn't save Question. #{@question.errors.full_messages.join('. ')}"
+          end
         end
       end
     end
@@ -42,26 +45,31 @@ module Admin
     # GET questions/1/edit
     def edit
       if @question.global
-        redirect_to admin_conference_questions_path(conference_id: @conference.short_title), error: 'Sorry, you cannot edit global questions. Create a new one.'
+        redirect_to admin_conference_questions_path(conference_id: @conference.short_title),
+                    error: 'Sorry, you cannot edit global questions. Create a new one.'
       end
     end
 
     # PUT questions/1
     def update
-      if @question.update_attributes(question_params)
-        redirect_to admin_conference_questions_path(conference_id: @conference.short_title), notice: "Question '#{@question.title}' for #{@conference.short_title} successfully updated."
+      if @question.update(question_params)
+        redirect_to admin_conference_questions_path(conference_id: @conference.short_title),
+                    notice: "Question '#{@question.title}' for #{@conference.short_title} successfully updated."
       else
-        redirect_to admin_conference_questions_path(conference_id: @conference.short_title), notice: "Update of questions for #{@conference.short_title} failed. #{@question.errors.full_messages.join('. ')}"
+        redirect_to admin_conference_questions_path(conference_id: @conference.short_title),
+                    notice: "Update of questions for #{@conference.short_title} failed. #{@question.errors.full_messages.join('. ')}"
       end
     end
 
     # Update questions used for the conference
     def update_conference
       authorize! :update, Question.new(conference_id: @conference.id)
-      if @conference.update_attributes(conference_params)
-        redirect_to admin_conference_questions_path(conference_id: @conference.short_title), notice: "Questions for #{@conference.short_title} successfully updated."
+      if @conference.update(conference_params)
+        redirect_to admin_conference_questions_path(conference_id: @conference.short_title),
+                    notice: "Questions for #{@conference.short_title} successfully updated."
       else
-        redirect_to admin_conference_questions_path(conference_id: @conference.short_title), notice: "Update of questions for #{@conference.short_title} failed."
+        redirect_to admin_conference_questions_path(conference_id: @conference.short_title),
+                    notice: "Update of questions for #{@conference.short_title} failed."
       end
     end
 
@@ -75,12 +83,13 @@ module Admin
           # Delete question and its answers
           begin
             Question.transaction do
-
               @question.destroy
               @question.answers.each do |a|
                 a.destroy
               end
-              flash[:notice] = "Deleted question: #{@question.title} and its answers: #{@question.answers.map {|a| a.title}.join ','}"
+              flash[:notice] = "Deleted question: #{@question.title} and its answers: #{@question.answers.map do |a|
+                                                                                          a.title
+                                                                                        end.join ','}"
             end
           rescue ActiveRecord::RecordInvalid
             flash[:error] = 'Could not delete question.'
@@ -97,7 +106,8 @@ module Admin
     private
 
     def question_params
-      params.require(:question).permit(:title, :global, :answer_ids, :question_type_id, :conference_id, answers_attributes: [:id, :title])
+      params.require(:question).permit(:title, :global, :answer_ids, :question_type_id, :conference_id,
+                                       answers_attributes: %i[id title])
     end
 
     def conference_params

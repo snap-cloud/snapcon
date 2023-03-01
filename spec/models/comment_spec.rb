@@ -26,7 +26,6 @@
 require 'spec_helper'
 
 describe Commercial do
-
   describe '.find_since_last_login' do
     let!(:user) do
       create(:user, last_sign_in_at: nil)

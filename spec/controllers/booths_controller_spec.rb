@@ -3,13 +3,12 @@
 require 'spec_helper'
 
 describe BoothsController do
-
   let(:user) { create(:user) }
   let(:conference) { create(:conference) }
   let(:booth) { create(:booth, title: 'Title', conference: conference) }
 
   context 'user is signed in with submitter role' do
-    before :each do
+    before do
       create(:cfp, program: conference.program, cfp_type: 'booths')
       sign_in booth.submitter
     end
@@ -43,7 +42,7 @@ describe BoothsController do
         before { post :create, params: { booth: attributes_for(:booth), conference_id: conference.short_title } }
 
         it 'creates a new booth' do
-          expect(Booth.count).to_not eq(0)
+          expect(Booth.count).not_to eq(0)
         end
 
         it 'redirects to booth index' do
@@ -51,7 +50,7 @@ describe BoothsController do
         end
 
         it 'has responsibles' do
-          expect(booth.responsibles.count).to_not eq(0)
+          expect(booth.responsibles.count).not_to eq(0)
         end
 
         it 'shows success message' do
@@ -60,13 +59,15 @@ describe BoothsController do
       end
 
       context 'create action fails' do
-        before { post :create, params: { booth: attributes_for(:booth, title: ''), conference_id: conference.short_title } }
+        before do
+          post :create, params: { booth: attributes_for(:booth, title: ''), conference_id: conference.short_title }
+        end
 
         it 'does not create any record' do
           expected = expect do
             post :create, params: { booth: attributes_for(:booth, title: ''), conference_id: conference.short_title }
           end
-          expected.to_not change(Booth, :count)
+          expected.not_to change(Booth, :count)
         end
 
         it 'redirects to new' do
@@ -93,7 +94,11 @@ describe BoothsController do
 
     describe 'PATCH #update' do
       context 'updates suchessfully' do
-        before { patch :update, params: { id: booth.id, booth: attributes_for(:booth, title: 'different'), conference_id: conference.short_title } }
+        before do
+          patch :update,
+                params: { id: booth.id, booth: attributes_for(:booth, title: 'different'),
+conference_id: conference.short_title }
+        end
 
         it 'redirects to booth index path' do
           expect(response).to redirect_to conference_booths_path

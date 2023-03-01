@@ -22,8 +22,8 @@ class Role < ApplicationRecord
   has_many :users_roles
   has_many :users, through: :users_roles
 
-  has_paper_trail on:   [:create, :update],
-                  only: [:name, :description],
+  has_paper_trail on:   %i[create update],
+                  only: %i[name description],
                   meta: { conference_id: :conference_id, organization_id: :organization_id }
 
   before_destroy :cancel

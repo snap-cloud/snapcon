@@ -8,7 +8,7 @@ class SchedulesController < ApplicationController
   before_action :favourites
   load_resource :conference, find_by: :short_title
   load_resource :program, through: :conference, singleton: true, except: :index
-  before_action :load_withdrawn_event_schedules, only: [:show, :events]
+  before_action :load_withdrawn_event_schedules, only: %i[show events]
 
   def show
     event_schedules = @program.event_schedule_for_fullcalendar
@@ -20,7 +20,7 @@ class SchedulesController < ApplicationController
 
     respond_to do |format|
       format.xml do
-        @events_xml = event_schedules.map(&:event).group_by{ |event| event.time.to_date } if event_schedules
+        @events_xml = event_schedules.map(&:event).group_by { |event| event.time.to_date } if event_schedules
       end
       format.ics do
         cal = Icalendar::Calendar.new
@@ -33,10 +33,10 @@ class SchedulesController < ApplicationController
         dates = @conference.start_date..@conference.end_date
         # the schedule takes you to today if it is a date of the schedule
         current_day = @conference.current_conference_day
-        @day = current_day.present? ? current_day : dates.first
+        @day = current_day.presence || dates.first
 
         if current_user && @favourites
-          event_schedules = event_schedules.select{ |e| e.event.planned_for_user?(current_user) }
+          event_schedules = event_schedules.select { |e| e.event.planned_for_user?(current_user) }
         end
 
         @rooms = FullCalendarFormatter.rooms_to_resources(@conference.rooms) if @conference.rooms
@@ -64,8 +64,8 @@ class SchedulesController < ApplicationController
     favourited_events(event_ids)
 
     if current_user && @favourites
-      @events_schedules.keep_if{ |es| es.event.planned_for_user?(current_user) }
-      @unscheduled_events.keep_if{ |e| e.planned_for_user?(current_user) }
+      @events_schedules.keep_if { |es| es.event.planned_for_user?(current_user) }
+      @unscheduled_events.keep_if { |e| e.planned_for_user?(current_user) }
     end
 
     day = @conference.current_conference_day
@@ -91,7 +91,8 @@ class SchedulesController < ApplicationController
   end
 
   def app
-    @qr_code = RQRCode::QRCode.new(conference_schedule_url).as_svg(offset: 20, color: '000', shape_rendering: 'crispEdges', module_size: 11)
+    @qr_code = RQRCode::QRCode.new(conference_schedule_url).as_svg(offset: 20, color: '000',
+                                                                   shape_rendering: 'crispEdges', module_size: 11)
   end
 
   private
@@ -104,14 +105,16 @@ class SchedulesController < ApplicationController
     return @favourited_events = [] unless current_user
 
     @favourited_events ||= FavouriteEvents.where(
-        user_id: current_user.id, event_id: event_ids
-      ).pluck(:event_id)
+      user_id: current_user.id, event_id: event_ids
+    ).pluck(:event_id)
   end
 
   def respond_to_options
-    respond_to do |format|
-      format.html { head :ok }
-    end if request.options?
+    if request.options?
+      respond_to do |format|
+        format.html { head :ok }
+      end
+    end
   end
 
   def load_withdrawn_event_schedules

@@ -14,8 +14,8 @@
               Past Conferences
               %span.notranslate
                 = "(#{@antiquated.count})"
-                %i.fa.fa-chevron-right{ style: 'display: none' }
-                %i.fa.fa-chevron-down
+                %i.fa-solid.fa-chevron-right{ style: 'display: none' }
+                %i.fa-solid.fa-chevron-down
     #antiquated
       - @antiquated.each do |conference|
         = render '/conferences/conference_details', conference: conference

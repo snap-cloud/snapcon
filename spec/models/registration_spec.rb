@@ -19,15 +19,12 @@ require 'spec_helper'
 
 describe Registration do
   subject { create(:registration) }
+
   let!(:user) { create(:user) }
   let!(:conference) { create(:conference) }
   let!(:registration) { create(:registration, conference: conference, user: user) }
 
   describe 'validation' do
-    it 'has a valid factory' do
-      expect(build(:registration)).to be_valid
-    end
-
     it { is_expected.to validate_presence_of(:user) }
 
     it 'validates uniqueness of user in scope of conference' do
@@ -37,7 +34,10 @@ describe Registration do
     describe 'registration_limit_not_exceed' do
       it 'is not valid when limit exceeded' do
         conference.registration_limit = 1
-        expect { create(:registration, conference: conference, user: user) }.to raise_error('Validation failed: User already Registered!, Registration limit exceeded')
+        expect do
+          create(:registration, conference: conference,
+                                user:       user)
+        end.to raise_error('Validation failed: User already Registered!, Registration limit exceeded')
         expect(user.registrations.size).to be 1
       end
     end

@@ -70,26 +70,26 @@ class RenameConferenceIdToProgramIdInEventsTracksDifficultyLevels < ActiveRecord
     TempConference.all.each do |conference|
       program = TempProgram.find_by(conference_id: conference.id)
 
-      if program
-        TempEvent.where(program_id: program.id).each do |event|
-          event.conference_id = conference.id
-          event.save!
-        end
+      next unless program
 
-        TempEventType.where(program_id: program.id).each do |event_type|
-          event_type.conference_id = conference.id
-          event_type.save!
-        end
+      TempEvent.where(program_id: program.id).each do |event|
+        event.conference_id = conference.id
+        event.save!
+      end
 
-        TempTrack.where(program_id: program.id).each do |track|
-          track.conference_id = conference.id
-          track.save!
-        end
+      TempEventType.where(program_id: program.id).each do |event_type|
+        event_type.conference_id = conference.id
+        event_type.save!
+      end
 
-        TempDifficultyLevel.where(program_id: program.id).each do |difficulty_level|
-          difficulty_level.conference_id = conference.id
-          difficulty_level.save!
-        end
+      TempTrack.where(program_id: program.id).each do |track|
+        track.conference_id = conference.id
+        track.save!
+      end
+
+      TempDifficultyLevel.where(program_id: program.id).each do |difficulty_level|
+        difficulty_level.conference_id = conference.id
+        difficulty_level.save!
       end
     end
 

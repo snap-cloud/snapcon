@@ -29,11 +29,9 @@
 
 FactoryBot.define do
   factory :splashpage do
-
     public  { false }
 
     factory :full_splashpage do
-
       public { true }
 
       include_tracks { true }

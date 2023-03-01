@@ -4,7 +4,7 @@ $(function () {
     * releases a key on the keyboard
      */
     $("#user_biography").bind('keyup', function() {
-        word_count(this, 'bio_length', 150);
+        word_count(this, 'bio-length', 150);
     } );
 
     /**
@@ -96,11 +96,6 @@ $(function () {
         return false;
     });
 
-    $("#event-comment-link").click(function(){
-        $("#comments-div").toggle();
-        return false;
-    });
-
     $(".comment-reply").hide();
     $(".user-details-popover").popover();
     $("#comments-div").hide();
@@ -140,7 +135,7 @@ function get_color() {
 function word_count(text, divId, maxcount) {
     var area = document.getElementById(text.id)
 
-    Countable.live(area, function(counter) {
+    Countable.once(area, function(counter) {
         $('#' + divId).text(counter.words);
         if (counter.words > maxcount)
             $('#' + divId).css('color', 'red');
@@ -193,7 +188,7 @@ $( document ).ready(function() {
     }).trigger('change');
 
     /* Count the proposal abstract length */
-    $("#event_abstract").bind('change keyup paste input', function() {
+    $("#event_abstract").on('input', function() {
         var $selected = $("#event_event_type_id option:selected")
         var max = $selected.data("max-words");
         word_count(this, 'abstract-count', max);

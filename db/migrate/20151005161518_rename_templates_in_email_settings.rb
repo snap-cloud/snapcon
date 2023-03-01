@@ -9,9 +9,12 @@ class RenameTemplatesInEmailSettings < ActiveRecord::Migration
     rename_column :email_settings, :send_on_updated_conference_dates, :send_on_conference_dates_updated
     rename_column :email_settings, :updated_conference_dates_subject, :conference_dates_updated_subject
     rename_column :email_settings, :updated_conference_dates_template, :conference_dates_updated_body
-    rename_column :email_settings, :send_on_updated_conference_registration_dates, :send_on_conference_registration_dates_updated
-    rename_column :email_settings, :updated_conference_registration_dates_subject, :conference_registration_dates_updated_subject
-    rename_column :email_settings, :updated_conference_registration_dates_template, :conference_registration_dates_updated_body
+    rename_column :email_settings, :send_on_updated_conference_registration_dates,
+                  :send_on_conference_registration_dates_updated
+    rename_column :email_settings, :updated_conference_registration_dates_subject,
+                  :conference_registration_dates_updated_subject
+    rename_column :email_settings, :updated_conference_registration_dates_template,
+                  :conference_registration_dates_updated_body
     rename_column :email_settings, :send_on_venue_update, :send_on_venue_updated
     rename_column :email_settings, :venue_update_subject, :venue_updated_subject
     rename_column :email_settings, :venue_update_template, :venue_updated_body

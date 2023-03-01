@@ -25,6 +25,6 @@ class MigrateRolesForCancancan < ActiveRecord::Migration
   end
 
   def down
-    raise ActiveRecord::IrreversibleMigration.new('Cannot reverse migration.')
+    raise ActiveRecord::IrreversibleMigration, 'Cannot reverse migration.'
   end
 end
