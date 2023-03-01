@@ -39,6 +39,16 @@ class Room < ApplicationRecord
 
   delegate :conference, to: :venue
 
+  def embed_url
+    return if url.blank?
+
+    if url.match?(/zoom.us/) & !url.match?('/zoom.us/wc')
+      return url.gsub('/j', '/wc/join')
+    end
+
+    url
+  end
+
   private
 
   def generate_guid

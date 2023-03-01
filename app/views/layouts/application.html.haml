@@ -9,7 +9,6 @@
     = javascript_include_tag "application"
 
     = csrf_meta_tags
-    = content_for(:script_head)
     - if ENV.fetch('OSEM_TRANSIFEX_APIKEY', nil)
       :javascript
         window.liveSettings = {
