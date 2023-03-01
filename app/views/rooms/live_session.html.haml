@@ -4,7 +4,12 @@
   %li
     = link_to('Schedule', events_conference_schedule_path(@conference))
 
+%style
+  body { padding-top: 50px; }
+  .navbar { margin-bottom: 0; }
+  #content { padding-bottom: 0; }
+
 %div{ style: 'display: flex; flex: 1 1 auto; height: 100%' }
-  %iframe{ src: @room.url, with: '67%', style: 'flex-grow: 1' }
+  %iframe{ src: @room.embed_url, with: '67%', style: 'flex-grow: 1' }
   - if @room.discussion_url.present?
     %iframe{ src: @room.discussion_url, width: '33%' }
