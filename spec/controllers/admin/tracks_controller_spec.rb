@@ -9,21 +9,24 @@ describe Admin::TracksController do
   let(:venue) { create(:venue, conference: conference) }
   let(:room) { create(:room, venue: venue) }
   let!(:track) { create(:track, program: conference.program, color: '#800080') }
-  let!(:self_organized_track) { create(:track, :self_organized, program: conference.program, name: 'My awesome track', start_date: Date.current, end_date: Date.current, room: room) }
+  let!(:self_organized_track) do
+    create(:track, :self_organized, program: conference.program, name: 'My awesome track', start_date: Date.current,
+   end_date: Date.current, room: room)
+  end
 
-  before :each do
+  before do
     sign_in(admin)
   end
 
   describe 'GET #index' do
-    before :each do
+    before do
       get :index, params: { conference_id: conference.short_title }
     end
 
     it 'assigns @tracks with the correct values' do
       expect(assigns(:tracks).length).to eq 2
-      expect(assigns(:tracks).include?(track)).to eq true
-      expect(assigns(:tracks).include?(self_organized_track)).to eq true
+      expect(assigns(:tracks).include?(track)).to be true
+      expect(assigns(:tracks).include?(self_organized_track)).to be true
     end
 
     it 'renders the index template' do
@@ -32,7 +35,7 @@ describe Admin::TracksController do
   end
 
   describe 'GET #show' do
-    before :each do
+    before do
       get :show, params: { conference_id: conference.short_title, id: track.short_name }
     end
 
@@ -46,13 +49,13 @@ describe Admin::TracksController do
   end
 
   describe 'GET #new' do
-    before :each do
+    before do
       get :new, params: { conference_id: conference.short_title }
     end
 
     it 'assigns a new track with the correct conference' do
       expect(assigns(:track)).to be_a Track
-      expect(assigns(:track).new_record?).to eq true
+      expect(assigns(:track).new_record?).to be true
       expect(assigns(:track).program_id).to eq conference.program.id
     end
 
@@ -63,13 +66,13 @@ describe Admin::TracksController do
 
   describe 'POST #create' do
     context 'saves successfuly' do
-      before :each do
+      before do
         post :create, params: { track: attributes_for(:track), conference_id: conference.short_title }
       end
 
       it 'assigns a new track with the correct conference' do
         expect(assigns(:track)).to be_a Track
-        expect(assigns(:track).new_record?).to eq false
+        expect(assigns(:track).new_record?).to be false
         expect(assigns(:track).program_id).to eq conference.program.id
       end
 
@@ -87,19 +90,20 @@ describe Admin::TracksController do
 
       it 'the new track has the correct attributes' do
         expect(assigns(:track).state).to eq 'confirmed'
-        expect(assigns(:track).cfp_active).to eq true
+        expect(assigns(:track).cfp_active).to be true
       end
     end
 
     context 'save fails' do
-      before :each do
+      before do
         allow_any_instance_of(Track).to receive(:save).and_return(false)
-        post :create, params: { track: attributes_for(:track, short_name: 'my_track'), conference_id: conference.short_title }
+        post :create,
+             params: { track: attributes_for(:track, short_name: 'my_track'), conference_id: conference.short_title }
       end
 
       it 'assigns a new track with the correct conference' do
         expect(assigns(:track)).to be_a Track
-        expect(assigns(:track).new_record?).to eq true
+        expect(assigns(:track).new_record?).to be true
         expect(assigns(:track).program_id).to eq conference.program.id
       end
 
@@ -112,13 +116,13 @@ describe Admin::TracksController do
       end
 
       it 'does not create a new track' do
-        expect(conference.program.tracks.find_by(short_name: 'my_track')).to eq nil
+        expect(conference.program.tracks.find_by(short_name: 'my_track')).to be_nil
       end
     end
   end
 
   describe 'GET #edit' do
-    before :each do
+    before do
       get :edit, params: { conference_id: conference.short_title, id: track.short_name }
     end
 
@@ -133,7 +137,7 @@ describe Admin::TracksController do
 
   describe 'PATCH #update' do
     context 'updates successfully' do
-      before :each do
+      before do
         patch :update, params: { track:         attributes_for(:track, color: '#FF0000'),
                                  conference_id: conference.short_title,
                                  id:            track.short_name }
@@ -158,7 +162,7 @@ describe Admin::TracksController do
     end
 
     context 'update fails' do
-      before :each do
+      before do
         allow_any_instance_of(Track).to receive(:save).and_return(false)
         patch :update, params: { track:         attributes_for(:track, color: '#FF0000'),
                                  conference_id: conference.short_title,
@@ -186,7 +190,7 @@ describe Admin::TracksController do
 
   describe 'DELETE #destroy' do
     context 'deletes successfully' do
-      before :each do
+      before do
         delete :destroy, params: { conference_id: conference.short_title, id: track.short_name }
       end
 
@@ -199,12 +203,12 @@ describe Admin::TracksController do
       end
 
       it 'deletes the track' do
-        expect(Track.find_by(id: track)).to eq nil
+        expect(Track.find_by(id: track)).to be_nil
       end
     end
 
     context 'delete fails' do
-      before :each do
+      before do
         allow_any_instance_of(Track).to receive(:destroy).and_return(false)
         delete :destroy, params: { conference_id: conference.short_title, id: track.short_name }
       end
@@ -229,14 +233,15 @@ describe Admin::TracksController do
 
   describe 'PATCH #toggle_cfp_inclusion' do
     context 'cfp_active is false' do
-      before :each do
+      before do
         self_organized_track.cfp_active = false
         self_organized_track.save!
       end
 
       context 'toggles successfully' do
-        before :each do
-          patch :toggle_cfp_inclusion, params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
+        before do
+          patch :toggle_cfp_inclusion,
+                params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
           self_organized_track.reload
         end
 
@@ -249,14 +254,15 @@ describe Admin::TracksController do
         end
 
         it 'becomes true' do
-          expect(self_organized_track.cfp_active).to eq true
+          expect(self_organized_track.cfp_active).to be true
         end
       end
 
       context 'save fails' do
-        before :each do
+        before do
           allow_any_instance_of(Track).to receive(:save).and_return(false)
-          patch :toggle_cfp_inclusion, params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
+          patch :toggle_cfp_inclusion,
+                params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
           self_organized_track.reload
         end
 
@@ -269,20 +275,21 @@ describe Admin::TracksController do
         end
 
         it 'stays false' do
-          expect(self_organized_track.cfp_active).to eq false
+          expect(self_organized_track.cfp_active).to be false
         end
       end
     end
 
     context 'cfp_active is true' do
-      before :each do
+      before do
         self_organized_track.cfp_active = true
         self_organized_track.save!
       end
 
       context 'toggles successfully' do
-        before :each do
-          patch :toggle_cfp_inclusion, params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
+        before do
+          patch :toggle_cfp_inclusion,
+                params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
           self_organized_track.reload
         end
 
@@ -295,14 +302,15 @@ describe Admin::TracksController do
         end
 
         it 'becomes false' do
-          expect(self_organized_track.cfp_active).to eq false
+          expect(self_organized_track.cfp_active).to be false
         end
       end
 
       context 'save fails' do
-        before :each do
+        before do
           allow_any_instance_of(Track).to receive(:save).and_return(false)
-          patch :toggle_cfp_inclusion, params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
+          patch :toggle_cfp_inclusion,
+                params: { conference_id: conference.short_title, id: self_organized_track.short_name, format: :js }
           self_organized_track.reload
         end
 
@@ -315,14 +323,14 @@ describe Admin::TracksController do
         end
 
         it 'stays true' do
-          expect(self_organized_track.cfp_active).to eq true
+          expect(self_organized_track.cfp_active).to be true
         end
       end
     end
   end
 
   describe 'PATCH #restart' do
-    before :each do
+    before do
       self_organized_track.state = 'canceled'
       self_organized_track.save!
       patch :restart, params: { conference_id: conference.short_title, id: self_organized_track.short_name }
@@ -343,7 +351,7 @@ describe Admin::TracksController do
   end
 
   describe 'PATCH #to_accept' do
-    before :each do
+    before do
       patch :to_accept, params: { conference_id: conference.short_title, id: self_organized_track.short_name }
       self_organized_track.reload
     end
@@ -363,7 +371,7 @@ describe Admin::TracksController do
 
   describe 'PATCH #accept' do
     shared_examples 'fails to accept' do
-      before :each do
+      before do
         patch :accept, params: { conference_id: conference.short_title, id: self_organized_track.short_name }
       end
 
@@ -372,7 +380,8 @@ describe Admin::TracksController do
       end
 
       it 'redirects to Tracks#edit' do
-        expect(response).to redirect_to edit_admin_conference_program_track_path(conference.short_title, self_organized_track)
+        expect(response).to redirect_to edit_admin_conference_program_track_path(conference.short_title,
+                                                                                 self_organized_track)
       end
 
       it 'shows message in flash alert' do
@@ -381,7 +390,7 @@ describe Admin::TracksController do
     end
 
     context 'has start_date, end_date and room' do
-      before :each do
+      before do
         patch :accept, params: { conference_id: conference.short_title, id: self_organized_track.short_name }
         self_organized_track.reload
       end
@@ -400,7 +409,7 @@ describe Admin::TracksController do
     end
 
     context 'has start_date and end_date' do
-      before :each do
+      before do
         self_organized_track.room = nil
         self_organized_track.save!
       end
@@ -409,7 +418,7 @@ describe Admin::TracksController do
     end
 
     context 'has start_date and room' do
-      before :each do
+      before do
         self_organized_track.end_date = nil
         self_organized_track.save!
       end
@@ -418,7 +427,7 @@ describe Admin::TracksController do
     end
 
     context 'has start_date' do
-      before :each do
+      before do
         self_organized_track.end_date = nil
         self_organized_track.room = nil
         self_organized_track.save!
@@ -428,7 +437,7 @@ describe Admin::TracksController do
     end
 
     context 'has end_date and room' do
-      before :each do
+      before do
         self_organized_track.start_date = nil
         self_organized_track.save!
       end
@@ -437,7 +446,7 @@ describe Admin::TracksController do
     end
 
     context 'has end_date' do
-      before :each do
+      before do
         self_organized_track.start_date = nil
         self_organized_track.room = nil
         self_organized_track.save!
@@ -447,7 +456,7 @@ describe Admin::TracksController do
     end
 
     context 'has room' do
-      before :each do
+      before do
         self_organized_track.start_date = nil
         self_organized_track.end_date = nil
         self_organized_track.save!
@@ -457,7 +466,7 @@ describe Admin::TracksController do
     end
 
     context 'has none of start_date, end_date, room' do
-      before :each do
+      before do
         self_organized_track.start_date = nil
         self_organized_track.end_date = nil
         self_organized_track.room = nil
@@ -469,7 +478,7 @@ describe Admin::TracksController do
   end
 
   describe 'PATCH #confirm' do
-    before :each do
+    before do
       self_organized_track.state = 'accepted'
       self_organized_track.save!
       patch :confirm, params: { conference_id: conference.short_title, id: self_organized_track.short_name }
@@ -490,7 +499,7 @@ describe Admin::TracksController do
   end
 
   describe 'PATCH #to_reject' do
-    before :each do
+    before do
       patch :to_reject, params: { conference_id: conference.short_title, id: self_organized_track.short_name }
       self_organized_track.reload
     end
@@ -509,7 +518,7 @@ describe Admin::TracksController do
   end
 
   describe 'PATCH #reject' do
-    before :each do
+    before do
       patch :reject, params: { conference_id: conference.short_title, id: self_organized_track.short_name }
       self_organized_track.reload
     end
@@ -528,7 +537,7 @@ describe Admin::TracksController do
   end
 
   describe 'PATCH #cancel' do
-    before :each do
+    before do
       self_organized_track.state = 'confirmed'
       self_organized_track.save!
       patch :cancel, params: { conference_id: conference.short_title, id: self_organized_track.short_name }

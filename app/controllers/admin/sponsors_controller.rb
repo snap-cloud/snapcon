@@ -4,7 +4,7 @@ module Admin
   class SponsorsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :sponsor, through: :conference
-    before_action :sponsorship_level_required, only: [:index, :new]
+    before_action :sponsorship_level_required, only: %i[index new]
 
     def index
       authorize! :index, Sponsor.new(conference_id: @conference.id)
@@ -28,9 +28,10 @@ module Admin
     end
 
     def update
-      if @sponsor.update_attributes(sponsor_params)
+      if @sponsor.update(sponsor_params)
         redirect_to admin_conference_sponsors_path(
-                    conference_id: @conference.short_title),
+          conference_id: @conference.short_title
+        ),
                     notice: 'Sponsor successfully updated.'
       else
         flash.now[:error] = "Update sponsor failed: #{@sponsor.errors.full_messages.join('. ')}."
@@ -45,14 +46,15 @@ module Admin
       else
         redirect_to admin_conference_sponsors_path(conference_id: @conference.short_title),
                     error: 'Deleting sponsor failed! ' \
-                    "#{@sponsor.errors.full_messages.join('. ')}."
+                           "#{@sponsor.errors.full_messages.join('. ')}."
       end
     end
 
     private
 
     def sponsor_params
-      params.require(:sponsor).permit(:name, :description, :website_url, :picture, :picture_cache, :sponsorship_level_id, :conference_id)
+      params.require(:sponsor).permit(:name, :description, :website_url, :picture, :picture_cache,
+                                      :sponsorship_level_id, :conference_id)
     end
 
     def sponsorship_level_required

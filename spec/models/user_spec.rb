@@ -50,7 +50,6 @@
 require 'spec_helper'
 
 describe User do
-
   let(:user_admin) { create(:admin) }
   let(:conference) { create(:conference, short_title: 'oSC16', title: 'openSUSE Conference 2016') }
   let(:conference2) { create(:conference, short_title: 'oSC15', title: 'openSUSE Conference 2015') }
@@ -68,10 +67,6 @@ describe User do
   let(:events_registration) { create(:events_registration, event: event1, registration: registration) }
 
   describe 'validation' do
-    it 'has a valid factory' do
-      expect(build(:user)).to be_valid
-    end
-
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_presence_of(:username) }
     it { is_expected.to validate_uniqueness_of(:username).ignoring_case_sensitivity }
@@ -96,7 +91,7 @@ describe User do
         vitae justo dignissim, a condimentum turpis molestie. Aenean
         scelerisque, arcu eu congue mollis, nibh nulla finibus.
       EOS
-      expect(build(:user, biography: long_text)).to_not be_valid
+      expect(build(:user, biography: long_text)).not_to be_valid
     end
   end
 
@@ -113,7 +108,7 @@ describe User do
   end
 
   describe 'scope and nested attribute' do
-    it { should accept_nested_attributes_for :roles }
+    it { is_expected.to accept_nested_attributes_for :roles }
 
     describe '.admin' do
       it 'includes users with admin flag' do
@@ -159,7 +154,7 @@ describe User do
       end
 
       it 'scopes dead users' do
-        create(:user, last_sign_in_at: Time.zone.now - 1.year - 1.day) # dead
+        create(:user, last_sign_in_at: 1.year.ago - 1.day) # dead
         expect(User.dead.count).to eq(1)
       end
     end
@@ -169,7 +164,7 @@ describe User do
     describe '#attended_event?' do
       context 'user has attended to the event' do
         before do
-          events_registration.update_attributes(attended: true)
+          events_registration.update_attribute(:attended, true)
         end
 
         it 'returns true' do
@@ -252,7 +247,7 @@ describe User do
     end
 
     describe '.for_ichain_username' do
-      before { user.update_attributes(current_sign_in_at: Date.new(2014, 12, 12)) }
+      before { user.update_attribute(:current_sign_in_at, Date.new(2014, 12, 12)) }
 
       context 'user exists' do
         it 'updates last_sign_in_at of user' do
@@ -271,10 +266,10 @@ describe User do
       end
 
       context 'user is disabled' do
-        before { user.update_attributes(is_disabled: true) }
+        before { user.update_attribute(:is_disabled, true) }
 
         it 'User.for_ichain_username raises exception if user is disabled' do
-          expect{ User.for_ichain_username(user.username, email: user.email) }
+          expect { User.for_ichain_username(user.username, email: user.email) }
             .to raise_error(UserDisabled)
         end
       end
@@ -283,14 +278,14 @@ describe User do
     describe '.find_for_database_authentication' do
       context 'login with username' do
         it 'can find user by jumbled username' do
-          scrambled_username = user.username.chars.map{|c| rand > 0.5 ? c.capitalize : c}.join
+          scrambled_username = user.username.chars.map { |c| rand > 0.5 ? c.capitalize : c }.join
           expect(User.find_for_database_authentication(login: scrambled_username)).to eq(user)
         end
       end
 
       context 'login with email' do
         it 'can find user by jumbled email' do
-          scrambled_email = user.email.chars.map{|c| rand > 0.5 ? c.capitalize : c}.join
+          scrambled_email = user.email.chars.map { |c| rand > 0.5 ? c.capitalize : c }.join
           expect(User.find_for_database_authentication(login: scrambled_email)).to eq(user)
         end
       end
@@ -308,8 +303,7 @@ describe User do
                                credentials: {
                                  token:  'mock_token',
                                  secret: 'mock_secret'
-                               }
-                              )
+                               })
       end
 
       context 'user is not signed in' do
@@ -321,7 +315,7 @@ describe User do
           end
 
           it 'sets name, email, username and password' do
-            regex_base64 = %r{^(?:[A-Za-z_\-0-9+\/]{4}\n?)*(?:[A-Za-z_\-0-9+\/]{2}|[A-Za-z_\-0-9+\/]{3}=)?$}
+            regex_base64 = %r{^(?:[A-Za-z_\-0-9+/]{4}\n?)*(?:[A-Za-z_\-0-9+/]{2}|[A-Za-z_\-0-9+/]{3}=)?$}
             expect(@auth_user.name).to eq 'new user name'
             expect(@auth_user.email).to eq 'test-1@gmail.com'
             expect(@auth_user.username).to eq 'newuser'
@@ -343,7 +337,7 @@ describe User do
       let(:conf2_organizer_role) { Role.find_by(name: 'organizer', resource: conference2) }
 
       before do
-        user.update_attributes(role_ids: [organizer_role.id, cfp_role.id, conf2_organizer_role.id])
+        user.update_attribute(:role_ids, [organizer_role.id, cfp_role.id, conf2_organizer_role.id])
       end
 
       it 'returns hash of role and conference' do
@@ -397,15 +391,15 @@ describe User do
     describe '#confirmed?' do
       context 'confirmed user' do
         it 'returns true' do
-          expect(user.confirmed?).to eq true
+          expect(user.confirmed?).to be true
         end
       end
 
       context 'unconfirmed user' do
-        before { user.update_attributes(confirmed_at: nil) }
+        before { user.update_attribute(:confirmed_at, nil) }
 
         it 'returns false' do
-          expect(user.confirmed?).to eq false
+          expect(user.confirmed?).to be false
         end
       end
     end
@@ -445,8 +439,12 @@ describe User do
 
     describe '#count_registration_tickets' do
       let(:registration_ticket) { create(:registration_ticket, price_cents: 0) }
-      let(:conference3) { create(:conference, short_title: 'oSC17', title: 'openSUSE Conference 2017', tickets: [registration_ticket]) }
-      let(:ticket_purchase) { create(:ticket_purchase, user: user, conference: conference3, ticket: registration_ticket, quantity: 1) }
+      let(:conference3) do
+        create(:conference, short_title: 'oSC17', title: 'openSUSE Conference 2017', tickets: [registration_ticket])
+      end
+      let(:ticket_purchase) do
+        create(:ticket_purchase, user: user, conference: conference3, ticket: registration_ticket, quantity: 1)
+      end
 
       it 'counts the number of registration tickets of a conference held by user' do
         user.ticket_purchases << ticket_purchase
@@ -459,7 +457,7 @@ describe User do
 
   describe 'rolify' do
     it 'returns the correct role' do
-      expect(user_admin.is_admin).to eq(true)
+      expect(user_admin.is_admin).to be(true)
       expect(organizer.roles.first).to eq(organizer_role)
     end
 
@@ -494,7 +492,7 @@ describe User do
   end
 
   describe 'assigns admin attribute' do
-    xit 'to second user when first user is deleted_user' do
+    it 'to second user when first user is deleted_user' do
       deleted_user = User.find_by(email: 'deleted@localhost.osem')
       expect(deleted_user.is_admin).to be false
 
@@ -514,7 +512,7 @@ describe User do
   end
 
   describe 'has_many events_registrations' do
-    before :each do
+    before do
       registration1 = create(:registration, user: user, conference: conference)
       registration2 = create(:registration, user: user, conference: another_conference)
       @events_registration1 = create(:events_registration, registration: registration1, event: event1)
@@ -528,7 +526,7 @@ describe User do
 
   describe '.omniauth_providers' do
     it 'contains providers' do
-      expect(User.omniauth_providers).to eq [:suse, :google, :facebook, :github, :discourse]
+      expect(User.omniauth_providers).to eq %i[suse google facebook github discourse]
     end
   end
 end

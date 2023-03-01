@@ -1,48 +1,99 @@
-.tabbable
-  %ul.nav.nav-tabs
-    %li.active
-      = link_to 'Proposal', '#proposal-content', 'data-toggle' => 'tab'
-    %li
-      = link_to 'Materials', '#commercials-content', 'data-toggle' => 'tab'
-  .tab-content
-    #proposal-content.tab-pane.active
-      = render 'proposals/proposal_form'
-    #commercials-content.tab-pane
-      %p.text-muted
-        You can add materals for your proposal. These materials will be displayed on the
-        = link_to 'public proposal page.', conference_program_proposal_path(@conference.short_title, @event)
-        If you don't add any materials, the conference materials will be displayed.
-      - if can? :create, @event.commercials.new
-        .row
-          .col-md-6
-            #resource-content
-            #resource-placeholder{ style: 'background-color:#d3d3d3; float: left; width: 400px; height: 250px; margin: 5px; border-width: 1px; border-style: solid; border-color: rgba(0,0,0,.2);' }
-        .row
-          .col-md-6
-            = semantic_form_for(@event.commercials.build, url: conference_program_proposal_commercials_path(conference_id: @conference.short_title, proposal_id: @event)) do |f|
-              = f.input :title, label: 'Title', as: :string
-              = f.input :url, label: 'URL', as: :string, input_html: { required: 'required', type: 'url' },
-              hint: 'Just paste the url of your video/photo provider. Anything that supports an iframe is allowed.'
-              = f.action :submit, as: :button, button_html: { class: 'btn btn-primary pull-right', disabled: true }, label: 'Save Materials'
-        %hr
-      - @event.commercials.each_slice(3) do |slice|
-        .row
-          - slice.each do |commercial|
-            - if commercial.persisted?
-              .col-md-4
-                .panel.panel-default
-                  %div{ id: "resource-content-#{commercial.id}"}
-                    = render partial: 'shared/media_item', locals: { commercial: commercial }
-                  .caption.panel-footer
-                    - if can? :update, commercial
-                      = semantic_form_for commercial, url: conference_program_proposal_commercial_path(conference_id: @conference.short_title, proposal_id: @event, id: commercial) do |f|
-                        = f.input :title, label: 'Title', as: :string, input_html: { id: "commercial_title_#{commercial.id}" }
-                        = f.input :url, label: 'URL', as: :string, input_html: { id: "commercial_url_#{commercial.id}", required: 'required', type: 'url' }
-                        = f.action :submit, as: :button, button_html: { class: 'btn btn-success' }, label: 'Update'
-                        - if can? :destroy, commercial
-                          = link_to 'Delete', conference_program_proposal_commercial_path(@conference.short_title, @event.id, commercial.id),
-                          :method => :delete, :data => { :confirm => 'Are you sure?' }, class: 'btn btn-danger'
-                    - if commercial.versions.any?
-                      .text-right
-                        = "added by "
-                        = link_to_user(commercial.versions.last.whodunnit)
+%h4 Proposal Information
+%hr
+
+.form-group
+  = f.label :title
+  %abbr{title: 'This field is required'} *
+  = f.text_field :title, autofocus: true, required: true, class: 'form-control'
+.form-group
+  = f.label :subtitle
+  = f.text_field :subtitle, class: 'form-control'
+
+.form-group
+  = f.label :speaker_ids, 'Speakers'
+  = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
+  .help-block
+    The people responsible for the event. You can only select existing users.
+
+= committee_only_actions(current_user, @conference) do
+  .form-group
+    = f.label :volunteer_ids, 'Volunteers'
+    = f.select :volunteer_ids, user_options_for_dropdown(@event, :volunteers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select volunteers..." }
+    .help-block Assign volunteers to help run this session.
+  .form-group
+    = f.label "Is this is parent event?", for: :superevent
+    = f.check_box :superevent, class: 'switch-checkbox'
+    .help-block
+      A parent event can contain subevents. Enable this for the primary lightning talk
+      session, poster sessions, etc.
+  .form-group
+    = f.label :parent_id, 'Selet a Parent Event'
+    = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, {}, include_blank: 'Select a Parent Event', class: 'select-help-toggle form-control'
+    .help-block
+      Designate a parent event so that this event appears scheduled "inside"
+      the parent event on the schedule.
+
+- if @program.tracks.confirmed.cfp_active.any?
+  .form-group
+    = f.label :track_id, 'Track'
+    = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), { include_blank: '(Please select)' }, { class: 'form-control' }
+
+- if @program.languages.present?
+  .form-group
+  = f.label :language
+  = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
+
+- if @conference.program.difficulty_levels.any?
+  = f.label :difficulty_level
+  = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
+  - @conference.program.difficulty_levels.each do |difficulty_level|
+    %span{ class: 'help-block select-help-text collapse event_difficulty_level_id', id: "#{difficulty_level.id}-help" }
+      = difficulty_level.description
+
+- if @event.committee_review.present?
+  %br
+  %strong.control-label Committee Feedback
+  %small Use this feedback to improve your submission.
+  .well= markdown(@event.committee_review)
+
+= render 'proposals/submission_type_content_form', f: f, program: @program
+
+- if  @program.cfp&.enable_registrations?
+  %h4 Event Registration
+  %hr
+  .checkbox
+    %label
+      = f.check_box :require_registration
+      Require participants to register to your event
+  .form-group
+    = f.number_field :max_attendees
+    .help-block
+      The maximum number of participants.
+      = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
+
+= committee_only_actions(current_user, @conference) do
+  .form-group
+    = f.label :committee_review, 'Committee Feedback'
+    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }
+    .help-block= markdown_hint('This field is shared with the submission authors.')
+  .form-group
+    = f.label :is_highlight
+    = f.check_box :is_highlight, class: 'switch-checkbox'
+  .help-block
+    This shows the event on the conference homepage.
+
+.text-left
+  .form-group
+    %label Additional Information
+    %p
+      = link_to '#description', 'data-toggle' => 'collapse' do
+        Do you require something special for your event?
+      Please include any scheduling constraints.
+  #description.collapse.in
+    = f.label :description, 'Requirements and Scheduling'
+    = f.text_area :description, rows: 5, class: 'form-control'
+    .help-block
+      e.g. Whiteboard, printer, or something like that.
+
+%p.text-right
+  = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'

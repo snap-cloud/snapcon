@@ -11,7 +11,6 @@
       %label
         %input{ type: 'radio', name: "survey_submission[#{survey_question.id}][]", value: 'No', checked: survey_reply.text == 'No' }
         No
-
     - elsif survey_question.choice?
       %input{ type: 'hidden', name: "survey_submission[#{survey_question.id}][]" }
       - possible_answers = survey_question.possible_answers.split(',').map(&:strip)
@@ -36,7 +35,7 @@
       .form-group{ class: 'datetimepicker' }
         .input-group
           .input-group-addon
-            %span.fa.fa-calendar
+            %span.fa-solid.fa-calendar
           %input.form-control{ readonly: 'readonly', name: "survey_submission[#{survey_question.id}][]", value: survey_reply.text, required: survey_question.mandatory }
     - elsif survey_question.numeric?
       %input.form-control{ type: 'number', name: "survey_submission[#{survey_question.id}][]", value: survey_reply.text, required: survey_question.mandatory }

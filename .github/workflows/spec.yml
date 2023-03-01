@@ -1,10 +1,13 @@
 name: Specs
 
+# TODO-SNAPCON: (mb) this should run on all branches.
 on:
   push:
-    branches: [ master ]
+    branches:
+      - main
   pull_request:
-    branches: [ master ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -12,13 +15,17 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     env:
-      OSEM_RUBY_VERSION: 2.7.6
+      PRONTO_PULL_REQUEST_ID: ${{ github.event.pull_request.number }}
+      PRONTO_GITHUB_ACCESS_TOKEN: "${{ github.token }}"
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.6
+          ruby-version: 3.1.3
           bundler-cache: true
+      # - name: Run Pronto
+      #   run: bundle exec pronto run
+      #   run: pronto run -f github_combined_status github_pr_review -c origin/${{ github.base_ref }}
       - run: bundle exec rubocop
       - run: bundle exec haml-lint app/views
   spec:
@@ -27,21 +34,21 @@ jobs:
     name: spec
     env:
       OSEM_DB_ADAPTER: sqlite3
-      OSEM_RUBY_VERSION: 2.7.6
       RAILS_ENV: test
     strategy:
       matrix:
-        suite: [models, features, controllers, ability, leftovers]
+        suite: [models, features, controllers, ability, leftovers, cucumber]
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.6
+          ruby-version: 3.1.3
           bundler-cache: true
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
+      - run: sudo apt-get install xvfb
       - name: Install JavaScript libraries via npm
         run: npm install
       - name: Prepare spec
@@ -49,11 +56,20 @@ jobs:
           rm -f osem_test osem_development
           bundle exec rake db:setup --trace
           bundle exec bin/rails webdrivers:chromedriver:update
+          bundle exec rake factory_bot:lint RAILS_ENV=test
+        # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}
-        run: bundle exec rake spec:${{ matrix.suite }}
-      - name: coverage upload ${{ matrix.suite }}
-        uses: codacy/codacy-coverage-reporter-action@v1
-        if: github.ref == 'refs/heads/master'
+        run: xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
+      # - name: coverage upload ${{ matrix.suite }}
+      #   uses: codacy/codacy-coverage-reporter-action@v1
+      #   if: github.ref == 'refs/heads/master' && always()
+      #   with:
+      #     project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+      #     coverage-reports: coverage/coverage.xml
+      - name: Upload Capybara Failure Screenshots
+        uses: actions/upload-artifact@v3
+        if: always()
         with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage/coverage.xml
+          name: capybara-screenshots
+          path: tmp/capybara/
+          retention-days: 7

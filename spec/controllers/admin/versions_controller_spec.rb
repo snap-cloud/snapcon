@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Admin::VersionsController do
-
   let!(:conference) { create(:conference, short_title: 'exampletitle', description: 'Example Description') }
   let(:admin) { create(:admin) }
   let(:role_organizer) { conference.roles.find_by(name: 'organizer') }
@@ -12,12 +11,12 @@ describe Admin::VersionsController do
 
   with_versioning do
     describe 'GET #revert' do
-      before :each do
+      before do
         sign_in admin
       end
 
       it 'reverts all changes for update actions' do
-        conference.update_attributes(short_title: 'testtitle', description: 'Some random text')
+        conference.update(short_title: 'testtitle', description: 'Some random text')
         get :revert_object, params: { id: conference.versions.last.id }
         conference.reload
         expect(conference.short_title).to eq 'exampletitle'
@@ -31,7 +30,7 @@ describe Admin::VersionsController do
         expect(flash[:error]).to match('The item is already in the state that you are trying to revert it back to')
       end
 
-      it 'reverting deletion of object  creates it again' do
+      it 'reverting deletion of object creates it again' do
         event_type = conference.program.event_types.first
         event_type.destroy
         event_types_count = conference.program.event_types.count
@@ -41,7 +40,7 @@ describe Admin::VersionsController do
         expect(conference.program.event_types.count).to eq(event_types_count + 1)
       end
 
-      it 'reverting creation of object deletes it ' do
+      it 'reverting creation of object deletes it' do
         lodging = create(:lodging, conference: conference)
         get :revert_object, params: { id: lodging.versions.last.id }
         expect(lodging.versions.last.event).to eq 'destroy'
@@ -57,12 +56,12 @@ describe Admin::VersionsController do
     end
 
     describe 'GET #revert_attribute' do
-      before :each do
+      before do
         sign_in admin
       end
 
       it 'reverts specified change for update actions' do
-        conference.update_attributes(short_title: 'testtitle', description: 'Some random text')
+        conference.update(short_title: 'testtitle', description: 'Some random text')
         get :revert_attribute, params: { id: conference.versions.last.id, attribute: 'short_title' }
         conference.reload
         expect(conference.short_title).to eq 'exampletitle'
@@ -70,8 +69,8 @@ describe Admin::VersionsController do
       end
 
       it 'shows correct flash on trying to revert to the current state' do
-        conference.update_attributes(short_title: 'testtitle', description: 'Some random text')
-        conference.update_attributes(short_title: 'exampletitle')
+        conference.update(short_title: 'testtitle', description: 'Some random text')
+        conference.update_attribute(:short_title, 'exampletitle')
         get :revert_attribute, params: { id: conference.versions[-2].id, attribute: 'short_title' }
         expect(flash[:error]).to match('The item is already in the state that you are trying to revert it back to')
         expect(conference.short_title).to eq 'exampletitle'
@@ -79,7 +78,7 @@ describe Admin::VersionsController do
 
       it 'fails on trying to revert deleted object' do
         event_type = conference.program.event_types.first
-        event_type.update_attributes(title: 'New Event Title')
+        event_type.update_attribute(:title, 'New Event Title')
         event_type.destroy
         get :revert_attribute, params: { id: event_type.versions[-2].id, attribute: 'title' }
         conference.reload
@@ -93,7 +92,7 @@ describe Admin::VersionsController do
       end
 
       it 'revert fails when attribute is invalid' do
-        conference.update_attributes(short_title: 'testtitle', description: 'Some random text')
+        conference.update(short_title: 'testtitle', description: 'Some random text')
         before_conference_title = conference.title
         # Note: even though title is a valid attribute of conference, it was not updated in the change we are trying to revert
         get :revert_attribute, params: { id: conference.versions.last.id, attribute: 'title' }
@@ -114,15 +113,15 @@ describe Admin::VersionsController do
       end
 
       context 'with conference' do
-        before :each do
+        before do
           @user = create(:user)
 
-          conference.update_attributes(short_title: 'testtitle', description: 'Some random text')
+          conference.update(short_title: 'testtitle', description: 'Some random text')
           @version_organizer = conference.versions.last
           cfp = create(:cfp, program: conference.program)
           @version_cfp = cfp.versions.last
           registration = create(:registration, conference: conference)
-          registration.update_attributes(attended: true)
+          registration.update_attribute(:attended, true)
           @version_info_desk = registration.versions.last
         end
 
@@ -131,8 +130,8 @@ describe Admin::VersionsController do
           sign_in @user
           get :index, params: { conference_id: conference.short_title }
 
-          expect(assigns(:versions).include?(@version_cfp)).to eq true
-          expect(assigns(:versions).include?(@version_organizer)).to eq false
+          expect(assigns(:versions).include?(@version_cfp)).to be true
+          expect(assigns(:versions).include?(@version_organizer)).to be false
         end
 
         it 'when user has role info_desk' do
@@ -140,9 +139,9 @@ describe Admin::VersionsController do
           sign_in @user
           get :index, params: { conference_id: conference.short_title }
 
-          expect(assigns(:versions).include?(@version_info_desk)).to eq true
-          expect(assigns(:versions).include?(@version_organizer)).to eq false
-          expect(assigns(:versions).include?(@version_cfp)).to eq false
+          expect(assigns(:versions).include?(@version_info_desk)).to be true
+          expect(assigns(:versions).include?(@version_organizer)).to be false
+          expect(assigns(:versions).include?(@version_cfp)).to be false
         end
 
         it 'when user has role organizer' do
@@ -150,9 +149,9 @@ describe Admin::VersionsController do
           sign_in @user
           get :index, params: { conference_id: conference.short_title }
 
-          expect(assigns(:versions).include?(@version_organizer)).to eq true
-          expect(assigns(:versions).include?(@version_cfp)).to eq true
-          expect(assigns(:versions).include?(@version_info_desk)).to eq true
+          expect(assigns(:versions).include?(@version_organizer)).to be true
+          expect(assigns(:versions).include?(@version_cfp)).to be true
+          expect(assigns(:versions).include?(@version_info_desk)).to be true
         end
       end
     end

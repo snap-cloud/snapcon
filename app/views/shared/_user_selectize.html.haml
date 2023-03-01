@@ -1,0 +1,25 @@
+:javascript
+  $(document).ready(function() {
+    $('.js-userSelector, #users_selectize').selectize({
+      plugins: ['remove_button'],
+      valueField: 'id',
+      labelField: 'dropdwon_display',
+      searchField: ['username', 'name', 'email'],
+      load: function(query, callback) {
+        $.ajax({
+          url: "#{search_users_path}.json",
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            query: query,
+          },
+          error: function(res) {
+            callback();
+          },
+          success: function(res) {
+            callback(res.users);
+          }
+        });
+      }
+    });
+  });

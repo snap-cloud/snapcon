@@ -1,4 +1,3 @@
-# encoding: utf-8
 # frozen_string_literal: true
 
 class PictureUploader < CarrierWave::Uploader::Base
@@ -88,14 +87,12 @@ class PictureUploader < CarrierWave::Uploader::Base
     process resize_and_pad: [120, 70]
   end
 
-  # Add a white list of extensions which are allowed to be uploaded.
-  # For images you might use something like this:
-  def extension_whitelist
-    %w(jpg jpeg gif png)
+  def extension_allowlist
+    %w[jpg jpeg gif png]
   end
 
-  def content_type_whitelist
-    /image\//
+  def content_type_allowlist
+    %r{image/}
   end
 
   private

@@ -14,9 +14,7 @@ class TicketsController < ApplicationController
   end
 
   def check_load_resource
-    if @tickets.empty?
-      redirect_to root_path, notice: "There are no tickets available for #{@conference.title}!"
-    end
+    redirect_to root_path, notice: "There are no tickets available for #{@conference.title}!" if @tickets.empty?
   end
 
   def load_tickets

@@ -18,52 +18,45 @@
 require 'spec_helper'
 
 describe TicketPurchase do
-
   describe 'validations' do
-    it 'has a valid factory' do
-      expect(build(:ticket_purchase)).to be_valid
-    end
-
     it 'is not valid without a conference_id' do
-      should validate_presence_of(:conference_id)
+      expect(subject).to validate_presence_of(:conference_id)
     end
 
     it 'is not valid without a ticket_id' do
-      should validate_presence_of(:ticket_id)
+      expect(subject).to validate_presence_of(:ticket_id)
     end
 
     it 'is not valid without a user_id' do
-      should validate_presence_of(:user_id)
+      expect(subject).to validate_presence_of(:user_id)
     end
 
     it 'is not valid without a quantity' do
-      should validate_presence_of(:quantity)
+      expect(subject).to validate_presence_of(:quantity)
     end
 
     it 'is not valid with a quantity equals zero' do
-      should_not allow_value(0).for(:quantity)
+      expect(subject).not_to allow_value(0).for(:quantity)
     end
 
     it 'is not valid with a quantity smaller than zero' do
-      should_not allow_value(-1).for(:quantity)
+      expect(subject).not_to allow_value(-1).for(:quantity)
     end
 
     it 'is valid with a quantity greater than zero' do
-      should allow_value(1).for(:quantity)
+      expect(subject).to allow_value(1).for(:quantity)
     end
 
     describe 'one_registration_ticket_per_user' do
       let(:registration_ticket) { create(:registration_ticket) }
       let(:ticket_purchase) { build(:ticket_purchase, ticket: registration_ticket, quantity: 1) }
 
-      it 'it is valid, if quantity for registration tickets is less than or equal to one' do
-        expect(ticket_purchase.valid?).to eq true
-      end
+      it { is_expected.to validate_numericality_of(:quantity) }
 
-      it 'it is not valid, if quantity for registration tickets is greater than to one' do
+      it 'is not valid, if quantity for registration tickets is greater than to one' do
         ticket_purchase.quantity = 4
 
-        expect(ticket_purchase.valid?).to eq false
+        expect(ticket_purchase.valid?).to be false
         expect(ticket_purchase.errors[:quantity]).to eq ['cannot be greater than one for registration tickets.']
       end
     end

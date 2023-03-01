@@ -1,3 +1,6 @@
+- if commercial.title.present?
+  .panel-heading= commercial.title
+
 .flexvideo
   - if commercial.commercial_type == 'SlideShare'
     %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', src: "https://www.slideshare.net/slideshow/embed_code/#{commercial.commercial_id}"}
@@ -14,5 +17,5 @@
   - elsif commercial.url
     = Commercial.render_from_url(commercial.url)[:html]
 - if commercial.url
+  = link_to('Open in a new tab', commercial.url, target: '_blank', class: 'btn btn-info btn-xs')
   %br
-  = link_to('Open in a new tab', commercial.url, target: '_blank', class: 'btn btn-info')

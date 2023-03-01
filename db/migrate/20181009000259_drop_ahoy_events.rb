@@ -1,7 +1,7 @@
 class DropAhoyEvents < ActiveRecord::Migration[5.0]
   def up
     remove_index :visits, [:visit_token]
-    remove_index :ahoy_events, [:name, :time]
+    remove_index :ahoy_events, %i[name time]
 
     drop_table :targets
     drop_table :campaigns

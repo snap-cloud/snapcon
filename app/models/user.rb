@@ -55,7 +55,9 @@ end
 
 class User < ApplicationRecord
   include TrackSavedChanges
-  rolify
+
+  # prevent N+1 queries with has_cached_role? by preloading roles *always*
+  default_scope { preload(:roles) }
 
   has_many :ticket_purchases, dependent: :destroy
   has_many :physical_tickets, through: :ticket_purchases do
@@ -63,11 +65,18 @@ class User < ApplicationRecord
       where('ticket_purchases.conference_id = ?', conference)
     end
   end
+  has_many :tickets, through: :ticket_purchases, source: :ticket do
+    def for_registration(conference)
+      where(conference: conference, registration_ticket: true).first
+    end
+  end
+
   has_many :users_roles
+  rolify
   has_many :roles, through: :users_roles, dependent: :destroy
 
-  has_paper_trail on: [:create, :update], ignore: [:sign_in_count, :remember_created_at, :current_sign_in_at, :last_sign_in_at, :current_sign_in_ip, :last_sign_in_ip, :unconfirmed_email,
-                                                   :avatar_content_type, :avatar_file_size, :avatar_updated_at, :updated_at, :confirmation_sent_at, :confirmation_token, :reset_password_token]
+  has_paper_trail on: %i[create update], ignore: %i[sign_in_count remember_created_at current_sign_in_at last_sign_in_at current_sign_in_ip last_sign_in_ip unconfirmed_email
+                                                    avatar_content_type avatar_file_size avatar_updated_at updated_at confirmation_sent_at confirmation_token reset_password_token]
 
   # A user may have an uploaded avatar or use gravatar.
   # The uploaded picture takes precedence.
@@ -84,10 +93,16 @@ class User < ApplicationRecord
   # See https://github.com/CactusPuppy/snapcon/pull/43#discussion_r609458034
   after_commit :mailbluster_create_lead, on: :create
   after_commit :mailbluster_delete_lead, on: :destroy
-  after_commit :mailbluster_update_lead, on: :update, if: ->(user) { ['name', 'email'].any? { |key| user.ts_saved_changes.key? key } }
+  after_commit :mailbluster_update_lead, on: :update, if: lambda { |user|
+                                                            %w[name email].any? do |key|
+                                                              user.ts_saved_changes.key? key
+                                                            end
+                                                          }
 
   # add scope
-  scope :comment_notifiable, ->(conference) {joins(:roles).where('roles.name IN (?)', [:organizer, :cfp]).where('roles.resource_type = ? AND roles.resource_id = ?', 'Conference', conference.id)}
+  scope :comment_notifiable, lambda { |conference|
+                               joins(:roles).where('roles.name IN (?)', %i[organizer cfp]).where('roles.resource_type = ? AND roles.resource_id = ?', 'Conference', conference.id)
+                             }
 
   # scopes for user distributions
   scope :recent, lambda {
@@ -101,13 +116,13 @@ class User < ApplicationRecord
   # :lockable, :timeoutable and :omniauthable
   devise_modules = []
 
-  devise_modules += if ENV['OSEM_ICHAIN_ENABLED'] == 'true'
-                      [:ichain_authenticatable, :ichain_registerable, :omniauthable, omniauth_providers: []]
+  devise_modules += if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
+                      [:ichain_authenticatable, :ichain_registerable, :omniauthable, { omniauth_providers: [] }]
                     else
                       [:database_authenticatable, :registerable,
                        :recoverable, :rememberable, :trackable, :validatable, :confirmable,
                        :omniauthable,
-                       omniauth_providers: [:suse, :google, :facebook, :github, :discourse]]
+                       { omniauth_providers: %i[suse google facebook github discourse] }]
                       #  omniauth_providers: [:google, :discourse]
                     end
 
@@ -119,24 +134,21 @@ class User < ApplicationRecord
 
   has_many :event_users, dependent: :destroy
   has_many :events, -> { distinct }, through: :event_users
-  has_many :presented_events, -> { joins(:event_users).where(event_users: {event_role: 'speaker'}).distinct }, through: :event_users, source: :event
+  has_many :presented_events, lambda {
+                                joins(:event_users).where(event_users: { event_role: 'speaker' }).distinct
+                              }, through: :event_users, source: :event
   has_many :registrations, dependent: :destroy do
-    def for_conference conference
+    def for_conference(conference)
       where(conference: conference).first
     end
   end
   has_many :events_registrations, through: :registrations
   has_many :payments, dependent: :destroy
-  has_many :tickets, through: :ticket_purchases, source: :ticket do
-    def for_registration conference
-      where(conference: conference, registration_ticket: true).first
-    end
-  end
+
   has_many :votes, dependent: :destroy
   has_many :voted_events, through: :votes, source: :events
   has_many :subscriptions, dependent: :destroy
   has_many :tracks, foreign_key: 'submitter_id'
-  has_many :booth_requests
   has_many :booth_requests, dependent: :destroy
   has_many :booths, through: :booth_requests
   has_many :survey_replies
@@ -154,7 +166,7 @@ class User < ApplicationRecord
 
   validates :username,
             uniqueness: {
-                case_sensitive: false
+              case_sensitive: false
             },
             presence:   true
 
@@ -174,7 +186,7 @@ class User < ApplicationRecord
   # === Returns
   # * +true+ if the user attended the event
   # * +false+ if the user did not attend the event
-  def attended_event? event
+  def attended_event?(event)
     event_registration = event.events_registrations.find_by(registration: registrations)
 
     return false unless event_registration.present?
@@ -204,22 +216,22 @@ class User < ApplicationRecord
   end
 
   def name
-    self[:name].blank? ? username : self[:name]
+    self[:name].presence || username
   end
 
   ##
   # Checks if a user has registered to an event
   # ====Returns
   # * +true+ or +false+
-  def registered_to_event? event
+  def registered_to_event?(event)
     event.registrations.include? registrations.find_by(conference: event.program.conference)
   end
 
-  def subscribed? conference
+  def subscribed?(conference)
     subscriptions.find_by(conference_id: conference.id).present?
   end
 
-  def supports? conference
+  def supports?(conference)
     ticket_purchases.find_by(conference_id: conference.id, paid: true).present?
   end
 
@@ -245,9 +257,9 @@ class User < ApplicationRecord
     raise UserDisabled if user&.is_disabled
 
     if user
-      user.update_attributes(email:              attributes[:email],
-                             last_sign_in_at:    user.current_sign_in_at,
-                             current_sign_in_at: Time.current)
+      user.update(email:              attributes[:email],
+                  last_sign_in_at:    user.current_sign_in_at,
+                  current_sign_in_at: Time.current)
     else
       begin
         user = create!(username: username, email: attributes[:email])
@@ -358,7 +370,8 @@ class User < ApplicationRecord
   end
 
   def proposals(conference)
-    events.where('program_id = ? AND (event_users.event_role=? OR event_users.event_role=?)', conference.program.id, 'submitter', 'speaker')
+    events.where('program_id = ? AND (event_users.event_role=? OR event_users.event_role=?)', conference.program.id,
+                 'submitter', 'speaker')
   end
 
   def proposal_count(conference)
@@ -372,9 +385,7 @@ class User < ApplicationRecord
   def count_registration_tickets(conference)
     count = 0
     ticket_purchases.by_conference(conference).each do |ticket_purchase|
-      if ticket_purchase.ticket.registration_ticket
-        count += 1
-      end
+      count += 1 if ticket_purchase.ticket.registration_ticket
     end
 
     count
@@ -382,6 +393,10 @@ class User < ApplicationRecord
 
   def self.empty?
     User.count == 1 && User.first.email == 'deleted@localhost.osem'
+  end
+
+  def dropdwon_display
+    "#{name} (#{username} #{email})"
   end
 
   private
@@ -413,9 +428,7 @@ class User < ApplicationRecord
   # Check if biography has an allowed number of words. Used as validation.
   #
   def biography_limit
-    if biography.present?
-      errors.add(:biography, 'is limited to 150 words.') if biography.split.length > 150
-    end
+    errors.add(:biography, 'is limited to 150 words.') if biography.present? && (biography.split.length > 150)
   end
 
   def send_devise_notification(notification, *args)

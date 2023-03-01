@@ -6,7 +6,7 @@ require 'webmock/rspec'
 describe MailblusterManager, type: :model do
   let!(:user) { create(:user) }
 
-  before(:each) do
+  before do
     WebMock.reset_executed_requests!
   end
 
@@ -40,7 +40,7 @@ describe MailblusterManager, type: :model do
           \"email\": \"#{user.email}\",
           \"subscribed\": true,
           \"tags\": [
-            #{ENV['OSEM_NAME'] || 'snapcon'}
+            #{ENV.fetch('OSEM_NAME', 'snapcon')}
           ],
         }
       }"
@@ -49,11 +49,11 @@ describe MailblusterManager, type: :model do
       response = described_class.create_lead(user)
 
       expect(WebMock).to have_requested(:post, url).with(body: {
-        'email':            user.email,
-        'firstName':        user.name,
-        'overrideExisting': true,
-        'subscribed':       true,
-        'tags':             [ENV['OSEM_NAME'] || 'snapcon']
+        email:            user.email,
+        firstName:        user.name,
+        overrideExisting: true,
+        subscribed:       true,
+        tags:             [ENV.fetch('OSEM_NAME', 'snapcon')]
       }.to_json)
       expect(response).to eq(response_body)
     end
@@ -71,7 +71,7 @@ describe MailblusterManager, type: :model do
           \"email\": \"#{user.email}\",
           \"subscribed\": true,
           \"tags\": [
-            #{ENV['OSEM_NAME'] || 'snapcon'}
+            #{ENV.fetch('OSEM_NAME', 'snapcon')}
           ],
         }
       }"
@@ -83,10 +83,10 @@ describe MailblusterManager, type: :model do
       response = described_class.edit_lead(user, old_email: old_email)
 
       expect(WebMock).to have_requested(:put, url + Digest::MD5.hexdigest(old_email)).with(body: {
-        'email':      user.email,
-        'firstName':  user.name,
-        'addTags':    [],
-        'removeTags': []
+        email:      user.email,
+        firstName:  user.name,
+        addTags:    [],
+        removeTags: []
       }.to_json)
       expect(response).to eq(response_body)
     end
@@ -102,7 +102,7 @@ describe MailblusterManager, type: :model do
           \"email\": \"#{user.email}\",
           \"subscribed\": true,
           \"tags\": [
-            #{ENV['OSEM_NAME'] || 'snapcon'}, '2021'
+            #{ENV.fetch('OSEM_NAME', 'snapcon')}, '2021'
           ],
         }
       }"
@@ -112,10 +112,10 @@ describe MailblusterManager, type: :model do
       response = described_class.edit_lead(user, add_tags: add_tags)
 
       expect(WebMock).to have_requested(:put, url + Digest::MD5.hexdigest(user.email)).with(body: {
-        'email':      user.email,
-        'firstName':  user.name,
-        'addTags':    add_tags,
-        'removeTags': []
+        email:      user.email,
+        firstName:  user.name,
+        addTags:    add_tags,
+        removeTags: []
       }.to_json)
       expect(response).to eq(response_body)
     end

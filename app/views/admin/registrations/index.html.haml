@@ -26,8 +26,7 @@
           %tr
             %th{ width: '0' } ID#
             %th{ width: '25%' } Name
-            %th{ width: '0' } Roles
-            %th{ width: '20%' } E-Mail
+            %th{ width: '0' } E-Mail
             %th{ width: '0' } Ticket Type
             %th{ width: '0' }
               %abbr{ title: 'Code of Conduct' } CoC
@@ -45,7 +44,7 @@
         checkboxSwitch("[class='switch-checkbox']");
         if (codeOfConductPresent) {
           iconize("td.code-of-conduct", "true", "check", "accepted");
-          iconize("td.code-of-conduct", "false", "exclamation-circle", "Has not accepted Code of Conduct");
+          iconize("td.code-of-conduct", "false", "circle-exclamation", "Has not accepted Code of Conduct");
         };
         // truncatify("td.truncate");
       },
@@ -65,14 +64,6 @@
           }
         },
         {
-          "name": "roles",
-          "data": "roles",
-          "className": "truncate",
-          "render": function(data, type, row) {
-            return data.join(', ');
-          }
-        },
-        {
           "data": "email"
         },
         {
@@ -84,20 +75,18 @@
           "searchable": false,
         },
         {
-          "data": null,
+          "data": "actions",
           "className": "actions",
           "searchable": false,
           "sortable": false,
           "render":    function (data, type, row, meta) {
             return '<div class="btn-group">'+
-                   '<a class="btn-primary" href="'+data.edit_url+'">Edit</a>'+
+                   '<a class="btn-primary" href="'+row.edit_url+'">Edit</a>'+
                    '</div>';
           }
         }
       ]
     });
-    // Hide Roles (tooltip used)
-    registrationsDataTable.columns(3).visible(true);
-    registrationsDataTable.columns(2).visible(false);
+
     registrationsDataTable.columns(4).visible(true);
   });

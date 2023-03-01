@@ -3,14 +3,13 @@
 require 'spec_helper'
 
 describe DateTimeHelper, type: :helper do
-
   describe 'format_datetime' do
     it 'returns nothing if there is no parameter' do
-      expect(format_datetime(nil)).to eq nil
+      expect(format_datetime(nil)).to be_nil
     end
 
     it 'returns formatted string' do
-      datetime = Time.zone.local(2016, 05, 04, 11, 30)
+      datetime = Time.zone.local(2016, 5, 4, 11, 30)
       expect(format_datetime(datetime)).to eq '2016-05-04 11:30'
     end
   end

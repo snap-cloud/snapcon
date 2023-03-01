@@ -89,7 +89,7 @@ describe ProposalsController do
               post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                       conference_id: conference.short_title,
                                       user:          attributes_for(:user) }
-            end.to change{ Event.count }.by 1
+            end.to change { Event.count }.by 1
           end
         end
 
@@ -115,7 +115,7 @@ describe ProposalsController do
               post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                       conference_id: conference.short_title,
                                       user:          attributes_for(:user) }
-            end.not_to change{ Event.count }
+            end.not_to change { Event.count }
           end
         end
       end
@@ -271,7 +271,7 @@ describe ProposalsController do
           expect do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title }
-          end.to change{ Event.count }.by 1
+          end.to change { Event.count }.by 1
         end
       end
 
@@ -295,13 +295,12 @@ describe ProposalsController do
           expect do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title }
-          end.not_to change{ Event.count }
+          end.not_to change { Event.count }
         end
       end
     end
 
     describe 'PATCH #update' do
-
       it 'assigns url variable' do
         patch :update, params: { event:         attributes_for(:event, title: 'some title', event_type_id: event_type.id),
                                  conference_id: conference.short_title,
@@ -354,7 +353,6 @@ describe ProposalsController do
     end
 
     describe 'PATCH #withdraw' do
-
       it 'assigns url variable' do
         patch :withdraw, params: { conference_id: conference.short_title, id: event.id }
         expect(assigns(:url)).to eq "/conferences/lama101/program/proposals/#{event.id}"
@@ -422,11 +420,11 @@ describe ProposalsController do
     end
 
     describe 'PATCH #confirm' do
-      before { event.update_attributes(state: 'unconfirmed') }
+      before { event.update_attribute(:state, 'unconfirmed') }
 
       context 'confirmed successfully' do
         describe 'when require_registration is set' do
-          before :each do
+          before do
             event.require_registration = true
             event.max_attendees = nil
             event.save!
@@ -508,7 +506,7 @@ describe ProposalsController do
 
       context 'event save fails' do
         before do
-          event.update_attributes(state: 'unconfirmed')
+          event.update_attribute(:state, 'unconfirmed')
           allow_any_instance_of(Event).to receive(:save).and_return(false)
           patch :confirm, params: { conference_id: conference.short_title, id: event.id }
         end
@@ -528,7 +526,7 @@ describe ProposalsController do
     end
 
     describe 'PATCH #restart' do
-      before { event.update_attributes(state: 'withdrawn') }
+      before { event.update_attribute(:state, 'withdrawn') }
 
       it 'assigns url variable' do
         patch :restart, params: { conference_id: conference.short_title, id: event.id }

@@ -1,20 +1,26 @@
-require: rubocop-rspec
-
 inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-rspec
+  - rubocop-rails # Currently disabled below.
 
 inherit_mode:
   merge:
     - Exclude
 
 AllCops:
+  SuggestExtensions: false
   UseCache: true
   CacheRootDirectory: tmp/rubocop_cache_rails_dir
   MaxFilesInCache: 4000
+  NewCops: enable
   Exclude:
     - db/schema.rb
     - features/step_definitions/web_steps.rb
     - features/support/selectors.rb
-    - lib/tasks/cucumber.rake
+    - lib/tasks/*.rake
+    - db/migrate/*.rb
+    - bin/*
 
 #################### Style ###########################
 
@@ -26,6 +32,16 @@ Style/CommentAnnotation:
     - HACK
     - REVIEW
 
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
+Style/SymbolArray:
+  Enabled: false
+
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
+
 Layout/EndOfLine:
   EnforcedStyle: lf
 
@@ -36,20 +52,47 @@ Lint/AmbiguousRegexpLiteral:
 ##################### Metrics ##################################
 
 ##################### Rails ##################################
-
+# TODO: Would be good to enable, but leads to spec failures.
 Rails:
-  Enabled: true
+  Enabled: false
+  Exclude:
+    - spec/**/*.rb
+
+# TODO: This would be good to enable at some point...specs need work.
+Rails/Date:
+  Enabled: false
+
+Rails/FilePath:
+  Enabled: false
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# TODO-SNAPCON: Investigate if that makes sense to enable.
+Rails/InverseOf:
+  Enabled: false
+
+Rails/HasAndBelongsToMany:
+  Enabled: false
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Rails/OutputSafety:
+  Enabled: false
+
+Rails/RenderInline:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: false
 
 ##################### RSpec ##################################
-
-FactoryBot/AttributeDefinedStatically:
-  Enabled: true
 
 RSpec/DescribeClass:
   Exclude:
     - "spec/views/**/*"
     - "spec/ability/*"
-
-Layout/AlignHash:
-  EnforcedHashRocketStyle: table
-  EnforcedColonStyle: table

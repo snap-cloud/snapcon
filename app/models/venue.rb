@@ -25,24 +25,26 @@ class Venue < ApplicationRecord
   belongs_to :conference
   has_one :commercial, as: :commercialable, dependent: :destroy
   has_many :rooms, dependent: :destroy
+  before_save :send_mail_notification
   before_create :generate_guid
 
-  has_paper_trail ignore: [:updated_at, :guid], meta: { conference_id: :conference_id }
+  has_paper_trail ignore: %i[updated_at guid], meta: { conference_id: :conference_id }
 
   accepts_nested_attributes_for :commercial, allow_destroy: true
   validates :name, :street, :city, :country, presence: true
 
   mount_uploader :picture, PictureUploader, mount_on: :photo_file_name
 
-  before_save :send_mail_notification
-
   def address
     "#{street}, #{city}, #{country_name}"
   end
 
+  # TODO-SNAPCON: (mb) iso_short_name seems to fail in tests only...this makes no sense.
   def country_name
+    return unless country
+
     name = ISO3166::Country[country]
-    name&.name
+    name.try(:iso_short_name) || name.try(:name)
   end
 
   def location?
@@ -58,10 +60,12 @@ class Venue < ApplicationRecord
   def notify_on_venue_changed?
     return false unless conference.try(:email_settings).try(:send_on_venue_updated)
     # do not notify unless the address changed
-    return false unless saved_change_to_name? || saved_change_to_street? || saved_change_to_city? || saved_change_to_country?
+    unless saved_change_to_name? || saved_change_to_street? || saved_change_to_city? || saved_change_to_country?
+      return false
+    end
 
     # do not notify unless the mail content is set up
-    (!conference.email_settings.venue_updated_subject.blank? && !conference.email_settings.venue_updated_body.blank?)
+    (conference.email_settings.venue_updated_subject.present? && conference.email_settings.venue_updated_body.present?)
   end
 
   # TODO: create a module to be mixed into model to perform same operation

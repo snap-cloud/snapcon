@@ -51,7 +51,7 @@ class TicketPdf < Prawn::Document
                          when 'http', 'ftp:' # CDNs
                            begin
                              open(@conference.picture.ticket.url)
-                           rescue OpenURI::HTTPError
+                           rescue OpenURI::HTTPError, Errno::ENOENT
                              nil
                            end
                          when '/sys' # local storage
@@ -99,8 +99,8 @@ class TicketPdf < Prawn::Document
   end
 
   def draw_fourth_square
-    x = @mid_horizontal + (@right - @mid_horizontal - 180) / 2
-    y = cursor - (bounds.top - @mid_vertical - 180) / 2
+    x = @mid_horizontal + ((@right - @mid_horizontal - 180) / 2)
+    y = cursor - ((bounds.top - @mid_vertical - 180) / 2)
     print_qr_code(@physical_ticket.token, pos: [x, y], extent: 180, stroke: false)
   end
 end

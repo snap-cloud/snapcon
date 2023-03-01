@@ -2,14 +2,13 @@
 
 require 'spec_helper'
 
-feature EmailSettings do
+describe EmailSettings do
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'email settings' do
-    scenario 'updates email settings',
-             feature: true, js: true do
-
+    it 'updates email settings',
+       feature: true, js: true do
       expected_count = EmailSettings.count
 
       sign_in organizer
@@ -56,7 +55,7 @@ feature EmailSettings do
       click_button 'Update Email settings'
       page.find('#flash')
       expect(flash)
-          .to eq('Email settings have been successfully updated.')
+        .to eq('Email settings have been successfully updated.')
 
       expect(find('#email_settings_registration_subject')
                  .value).to eq('Registration subject')
@@ -90,7 +89,6 @@ feature EmailSettings do
                  .value).to eq('Updated conference venue template')
 
       expect(EmailSettings.count).to eq(expected_count)
-
     end
   end
 

@@ -24,7 +24,7 @@ class Survey < ActiveRecord::Base
   has_many :survey_questions, dependent: :destroy
   has_many :survey_submissions, dependent: :destroy
 
-  enum target: [:after_conference, :during_registration, :after_event]
+  enum target: { after_conference: 0, during_registration: 1, after_event: 2 }
   validates :title, presence: true
 
   ##
@@ -50,5 +50,9 @@ class Survey < ActiveRecord::Base
     elsif !start_date && end_date
       now <= end_date
     end
+  end
+
+  def closed?
+    !active?
   end
 end

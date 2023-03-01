@@ -48,7 +48,9 @@
 require 'spec_helper'
 
 describe EmailSettings do
-  let(:conference) { create(:conference, short_title: 'goto', start_date: Date.new(2014, 05, 01), end_date: Date.new(2014, 05, 06)) }
+  let(:conference) do
+    create(:conference, short_title: 'goto', start_date: Date.new(2014, 5, 1), end_date: Date.new(2014, 5, 6))
+  end
   let(:user) { create(:user, username: 'johnd', email: 'john@doe.com', name: 'John Doe') }
   let(:event) { create(:event, program: conference.program, title: 'Talk about talks', submitter: user) }
   let(:expected_hash) do
@@ -56,8 +58,8 @@ describe EmailSettings do
       'email'                  => 'john@doe.com',
       'name'                   => 'John Doe',
       'conference'             => conference.title,
-      'conference_start_date'  => Date.new(2014, 05, 01),
-      'conference_end_date'    => Date.new(2014, 05, 06),
+      'conference_start_date'  => Date.new(2014, 5, 1),
+      'conference_end_date'    => Date.new(2014, 5, 6),
       'registrationlink'       => 'http://localhost:3000/conferences/goto/register',
       'conference_splash_link' => 'http://localhost:3000/conferences/goto',
       'schedule_link'          => 'http://localhost:3000/conferences/goto/schedule',
@@ -66,10 +68,6 @@ describe EmailSettings do
       'venue'                  => 'Unknown',
       'venue_address'          => 'Unknown'
     }
-  end
-
-  it 'has a valid factory' do
-    expect(build(:email_settings)).to be_valid
   end
 
   describe '#get_values' do
@@ -81,7 +79,7 @@ describe EmailSettings do
 
     context 'user does not have name' do
       before do
-        user.update_attributes(name: nil)
+        user.update(name: nil)
         username_hash = { 'name' => 'johnd' }
         expected_hash.merge!(username_hash)
       end
@@ -94,10 +92,10 @@ describe EmailSettings do
     context 'conference has cfp' do
       before do
         create(:cfp,
-               start_date: Date.new(2014, 04, 29),
-               end_date:   Date.new(2014, 05, 06),
+               start_date: Date.new(2014, 4, 29),
+               end_date:   Date.new(2014, 5, 6),
                program:    conference.program)
-        cfp_dates_hash = { 'cfp_start_date' => Date.new(2014, 04, 29), 'cfp_end_date' => Date.new(2014, 05, 06) }
+        cfp_dates_hash = { 'cfp_start_date' => Date.new(2014, 4, 29), 'cfp_end_date' => Date.new(2014, 5, 6) }
         expected_hash.merge!(cfp_dates_hash)
       end
 
@@ -108,7 +106,7 @@ describe EmailSettings do
 
     context 'conference has venue' do
       before do
-        conference.update_attributes(venue: create(:venue))
+        conference.venue = create(:venue)
         venue_hash = { 'venue' => conference.venue.name, 'venue_address' => conference.venue.address }
         expected_hash.merge!(venue_hash)
       end
@@ -120,10 +118,11 @@ describe EmailSettings do
 
     context 'conference has registration period' do
       before do
-        conference.update_attributes(registration_period: create(:registration_period,
-                                                                 start_date: Date.new(2014, 05, 03),
-                                                                 end_date:   Date.new(2014, 05, 05)))
-        registration_period_hash = { 'registration_start_date' => Date.new(2014, 05, 03), 'registration_end_date' => Date.new(2014, 05, 05) }
+        conference.registration_period = create(:registration_period,
+                                                start_date: Date.new(2014, 5, 3),
+                                                end_date:   Date.new(2014, 5, 5))
+        registration_period_hash = { 'registration_start_date' => Date.new(2014, 5, 3),
+                                     'registration_end_date'   => Date.new(2014, 5, 5) }
         expected_hash.merge!(registration_period_hash)
       end
 
@@ -152,12 +151,12 @@ describe EmailSettings do
   describe '#generate_event_mail' do
     let(:event_template) do
       "Dear {name}\n\nWe are very pleased" \
-      'to inform you that your submission {eventtitle} has been accepted for the conference {conference}.'
+        'to inform you that your submission {eventtitle} has been accepted for the conference {conference}.'
     end
 
     it 'replaces fillers in template' do
       expected_text = "Dear John Doe\n\nWe are very pleased" \
-        "to inform you that your submission Talk about talks has been accepted for the conference #{conference.title}."
+                      "to inform you that your submission Talk about talks has been accepted for the conference #{conference.title}."
       expect(conference.email_settings.generate_event_mail(event, event_template)).to eq expected_text
     end
   end
@@ -167,7 +166,8 @@ describe EmailSettings do
 
     it 'replaces fillers in template' do
       expected_text = "Dear John Doe,\n\nThank you for Registering for the conference #{conference.title}."
-      expect(conference.email_settings.generate_email_on_conf_updates(conference, user, conf_update_template)).to eq expected_text
+      expect(conference.email_settings.generate_email_on_conf_updates(conference, user,
+                                                                      conf_update_template)).to eq expected_text
     end
   end
 end

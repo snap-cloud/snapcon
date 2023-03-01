@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-feature 'Routing', type: :routing do
+describe 'Routing', type: :routing do
   let(:conference) { create(:conference) }
 
   context 'the root URL' do

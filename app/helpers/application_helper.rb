@@ -3,7 +3,6 @@
 DEFAULT_LOGO = Rails.configuration.conference[:default_logo_filename]
 
 # TODO-SNAPCON: Refactor this module. Move chunks to a dates_help, some events_helper
-# rubocop:disable Metrics/ModuleLength
 module ApplicationHelper
   include Pagy::Frontend
   # Returns a string build from the start and end date of the given conference.
@@ -36,8 +35,7 @@ module ApplicationHelper
       endstr = end_date.strftime('%B %d, %Y')
     end
 
-    result = startstr + endstr
-    result
+    startstr + endstr
   end
 
   # Returns time with conference timezone
@@ -51,15 +49,18 @@ module ApplicationHelper
   end
 
   def add_association_link(association_name, form_builder, div_class, html_options = {})
-    link_to_add_association 'Add ' + association_name.to_s.singularize, form_builder, div_class, html_options.merge(class: 'assoc btn btn-success')
+    link_to_add_association 'Add ' + association_name.to_s.singularize, form_builder, div_class,
+                            html_options.merge(class: 'assoc btn btn-success')
   end
 
   def remove_association_link(association_name, form_builder)
-    link_to_remove_association('Remove ' + association_name.to_s.singularize, form_builder, class: 'assoc btn btn-danger') + tag(:hr)
+    link_to_remove_association('Remove ' + association_name.to_s.singularize, form_builder,
+                               class: 'assoc btn btn-danger') + tag.hr
   end
 
   def dynamic_association(association_name, title, form_builder, options = {})
-    render 'shared/dynamic_association', association_name: association_name, title: title, f: form_builder, hint: options[:hint]
+    render 'shared/dynamic_association', association_name: association_name, title: title, f: form_builder,
+hint: options[:hint]
   end
 
   def tracks(conference)
@@ -80,24 +81,14 @@ module ApplicationHelper
   # Output will be 'title, description and conference'
   def updated_attributes(version)
     version.changeset
-      .reject{ |_, values| values[0].blank? && values[1].blank? }
-      .keys.map{ |key| key.gsub('_id', '').tr('_', ' ')}.join(', ')
-      .reverse.sub(',', ' dna ').reverse
+           .reject { |_, values| values[0].blank? && values[1].blank? }
+           .keys.map { |key| key.gsub('_id', '').tr('_', ' ') }.join(', ')
+           .reverse.sub(',', ' dna ').reverse
   end
 
   def normalize_array_length(hashmap, length)
     hashmap.each_value do |value|
-      if value.length < length
-        value.fill(value[-1], value.length...length)
-      end
-    end
-  end
-
-  def redirect_back_or_to(options = {}, response_status = {})
-    if request.env['HTTP_REFERER']
-      redirect_back(fallback_location: root_path)
-    else
-      redirect_to options, response_status
+      value.fill(value[-1], value.length...length) if value.length < length
     end
   end
 
@@ -106,7 +97,9 @@ module ApplicationHelper
     return nil unless event.scheduled? && event.program.selected_event_schedules
 
     event_schedule = event.program.selected_event_schedules.find { |es| es.event == event }
-    other_event_schedules = event.program.selected_event_schedules.reject { |other_event_schedule| other_event_schedule == event_schedule }
+    other_event_schedules = event.program.selected_event_schedules.reject do |other_event_schedule|
+      other_event_schedule == event_schedule
+    end
     concurrent_events = []
 
     event_time_range = (event_schedule.start_time.strftime '%Y-%m-%d %H:%M')...(event_schedule.end_time.strftime '%Y-%m-%d %H:%M')
@@ -114,19 +107,13 @@ module ApplicationHelper
       next unless other_event_schedule.event.confirmed?
 
       other_event_time_range = (other_event_schedule.start_time.strftime '%Y-%m-%d %H:%M')...(other_event_schedule.end_time.strftime '%Y-%m-%d %H:%M')
-      if (event_time_range.to_a & other_event_time_range.to_a).present?
-        concurrent_events << other_event_schedule.event
-      end
+      concurrent_events << other_event_schedule.event if (event_time_range.to_a & other_event_time_range.to_a).present?
     end
     concurrent_events.sort_by { |schedule| schedule.room&.order }
   end
 
   def speaker_links(event)
-    safe_join(event.speakers.map{ |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
-  end
-
-  def speaker_selector_input(form)
-    user_selector_input(:speakers, form, '', true)
+    safe_join(event.speakers.map { |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
   end
 
   def volunteer_links(event)
@@ -135,44 +122,12 @@ module ApplicationHelper
     end, ', ')
   end
 
-  def volunteer_selector_input(form)
-    user_selector_input(:volunteers, form, '', true)
-  end
-
-  def responsibles_selector_input(form)
-    user_selector_input(
-      :responsibles,
-      form,
-      "The people responsible for the #{t 'booth'}. You can only select existing users."
-    )
-  end
-
-  def user_selector_input(field, form, hint = '', multiple = true)
-    users = User.where(is_disabled: false).pluck(:id, :name, :username, :email).map { |user| [user[0], user[1].blank? ? user[2] : user[1], user[2], user[3]] }.sort_by { |user| user[1].downcase }
-    form.input(
-      field,
-      as:            :select,
-      include_blank: true,
-      label:         field.to_s.titleize,
-      hint:          hint,
-      collection:    options_for_select(
-        users.map { |user| ["#{user[1]} (#{user[2]}) #{user[3]}", user[0]] },
-        (form.object.send(field)&.map(&:id) || form.object.send(field)&.id)
-      ),
-      input_html:    {
-        class:       'select-help-toggle js-userSelector',
-        multiple:    multiple,
-        placeholder: (multiple ? 'Select users...' : 'Select a user...')
-      }
-    )
-  end
-
   def event_types_sentence(conference)
     conference.event_types.map { |et| et.title.pluralize }.to_sentence
   end
 
   def sign_in_path
-    if ENV['OSEM_ICHAIN_ENABLED'] == 'true'
+    if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
       new_user_ichain_session_path
     else
       new_user_session_path
@@ -208,9 +163,7 @@ module ApplicationHelper
 
   # TODO-SNAPCON: This should be the conference title.
   def nav_link_text(conference = nil)
-    conference.try(:organization).try(:name) ||
-      ENV['OSEM_NAME'] ||
-      'OSEM'
+    conference.try(:organization).try(:name) || ENV.fetch('OSEM_NAME', 'OSEM')
   end
 
   # TODO: Consider Renaming this?
@@ -249,9 +202,8 @@ module ApplicationHelper
   def inyourtz(time, timezone, &block)
     time = time.in_time_zone(timezone)
     time -= time.utc_offset
-    link_to "https://inyourtime.zone/t?#{time.to_i}", target: '_blank' do
+    link_to "https://inyourtime.zone/t?#{time.to_i}", target: '_blank', rel: 'noopener' do
       block.call
     end
   end
 end
-# rubocop:enable Metrics/ModuleLength

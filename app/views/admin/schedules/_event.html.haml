@@ -14,7 +14,7 @@
                  event_schedule_id: event_schedule_id, |
                  class: "#{'compact' if compact_grid} #{'non_schedulable' if non_schedulable}" }
   .schedule-event-text{ style: "-webkit-line-clamp: #{lines}; height: #{height - 2}px;"}
-    %span.fa.fa-times-circle-o.schedule-event-delete-button{ onclick: "Schedule.remove(\'event-#{event.id}\');", class: "#{'compact' if compact_grid}" }
+    %span.fa-solid.fa-circle-xmark.schedule-event-delete-button{ onclick: "Schedule.remove(\'event-#{event.id}\');", class: "#{'compact' if compact_grid}" }
     %b= link_to(event.id, admin_conference_program_event_path(@conference, event))
     = event.speakers.collect(&:name).to_sentence
     = ':'

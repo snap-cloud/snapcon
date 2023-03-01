@@ -9,7 +9,9 @@ namespace :data do
     nullify_attribute(events_track, 'track_id')
 
     # Difficulty level
-    events_difficulty_level = Event.all.select { |e| e.difficulty_level_id && DifficultyLevel.find_by(id: e.difficulty_level_id).nil? }
+    events_difficulty_level = Event.all.select do |e|
+      e.difficulty_level_id && DifficultyLevel.find_by(id: e.difficulty_level_id).nil?
+    end
     nullify_attribute(events_difficulty_level, 'difficulty_level_id')
 
     # Room
@@ -30,7 +32,7 @@ namespace :data do
     if collection.any?
       puts "IDs: #{collection.map(&:id)}"
       collection.each do |item|
-        item.send(attribute+'=', nil)
+        item.send(attribute + '=', nil)
         item.save!
       end
       puts "Fixed #{attribute}!"
