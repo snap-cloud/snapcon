@@ -17,6 +17,8 @@ jobs:
     env:
       PRONTO_PULL_REQUEST_ID: ${{ github.event.pull_request.number }}
       PRONTO_GITHUB_ACCESS_TOKEN: "${{ github.token }}"
+          CCTR: ./cc-test-reporter
+      CCTR_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
@@ -51,6 +53,11 @@ jobs:
       - run: sudo apt-get install xvfb
       - name: Install JavaScript libraries via npm
         run: npm install
+      - name: set up CodeClimate test-reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
+          chmod +x $CCTR
+          $CCTR before-build
       - name: Prepare spec
         run: |
           rm -f osem_test osem_development
@@ -59,7 +66,9 @@ jobs:
           bundle exec rake factory_bot:lint RAILS_ENV=test
         # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}
-        run: xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
+        run: |
+          xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
+          $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
       # - name: coverage upload ${{ matrix.suite }}
       #   uses: codacy/codacy-coverage-reporter-action@v1
       #   if: github.ref == 'refs/heads/master' && always()
@@ -73,3 +82,10 @@ jobs:
           name: capybara-screenshots
           path: tmp/capybara/
           retention-days: 7
+
+      - name: Publish code coverage
+        run: |
+          export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
+          $CCTR sum-coverage coverage/codeclimate.*.json
+          $CCTR upload-coverage --id $CCTR_ID
+          $CCTR after-build --id $CCTR_ID
