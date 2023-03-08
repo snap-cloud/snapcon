@@ -1,0 +1,65 @@
+@import "breakpoints.scss";
+
+.dashbox span {
+  margin-bottom: 2px;
+
+  @include breakpoint(xs) {
+    font-size: 1.5em;
+  }
+  @include breakpoint(sm) {
+    font-size: 2em;
+  }
+  @include breakpoint(md) {
+    font-size: 3.5em;
+  }
+  @include breakpoint(lg) {
+    font-size: 5em;
+  }
+}
+
+.dashbox.panel {
+    padding: 10px;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    line-height: 1.6rem;
+
+    label {
+      line-height: 2rem;
+    }
+}
+
+.todolist-missing span {
+    color: #ff0000;
+}
+
+.todolist-ok {
+    text-decoration: line-through;
+}
+
+.todolist-ok span {
+    color: #02A10F;
+}
+
+.top-submitter img {
+    margin: 0 auto;
+}
+
+#doughnut .tab-content {
+    padding-bottom: 20px;
+}
+
+#submissions {
+    padding-bottom: 20px;
+}
+
+.conferenceCheckboxes div {
+    display: inline-block;
+    padding: 0px 10px 0px 0px;
+}
+
+.margin-event-table{
+  margin-top: 40px !important;
+}

@@ -23,7 +23,7 @@ project:
       surname: 'Pau'
       githubUsername: 'Juapu'
       pivotalUsername: 'Jupau'
-      herokuEmail: 'jupau@berkeley.edu'
+      herokuEmail: 'jupau@berkeley.edu '
     member4:
       name: 'Shiv'
       surname: 'Sethi'
