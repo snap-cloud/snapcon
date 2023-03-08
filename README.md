@@ -14,7 +14,6 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6b5dc427c6d2ae2b810e/test_coverage)](https://codeclimate.com/github/cs169L-spring2022-snapcon/snapcon/test_coverage)
 
 ## Spring 2023 CS169L:
-[![Bluejay Dashboard](https://img.shields.io/badge/Bluejay-Dashboard_02-blue.svg)](http://dashboard.bluejay.governify.io/dashboard/script/dashboardLoader.js?dashboardURL=https://reporter.bluejay.governify.io/api/v4/dashboards/tpa-CS169L-23-GH-cs169_snapcon/main)
 [![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
 [![CodeQL](https://github.com/cs169/snapcon/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/codeql-analysis.yml)
 [![build](https://github.com/cs169/snapcon/actions/workflows/main.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/main.yml)
