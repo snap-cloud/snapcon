@@ -17,7 +17,7 @@ jobs:
     env:
       PRONTO_PULL_REQUEST_ID: ${{ github.event.pull_request.number }}
       PRONTO_GITHUB_ACCESS_TOKEN: "${{ github.token }}"
-          CCTR: ./cc-test-reporter
+      CCTR: ./cc-test-reporter
       CCTR_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     steps:
       - uses: actions/checkout@v2
