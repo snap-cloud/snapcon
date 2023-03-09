@@ -15,10 +15,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
-  # Custom types defined in this database.
-  # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "presentation_mode", ["in person", "online"]
-
   create_table "answers", force: :cascade do |t|
     t.string "title"
     t.datetime "created_at", precision: nil
@@ -267,7 +263,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
     t.text "committee_review"
     t.boolean "superevent"
     t.integer "parent_id"
-    t.enum "presentation_mode", enum_type: "presentation_mode"
+    t.integer "presentation_mode"
   end
 
   create_table "events_registrations", force: :cascade do |t|
