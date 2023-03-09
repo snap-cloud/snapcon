@@ -13,7 +13,7 @@
 #  is_highlight                 :boolean          default(FALSE)
 #  language                     :string
 #  max_attendees                :integer
-#  presentation_mode            :enum
+#  presentation_mode            :integer
 #  progress                     :string           default("new"), not null
 #  proposal_additional_speakers :text
 #  public                       :boolean          default(TRUE)
@@ -112,6 +112,8 @@ class Event < ApplicationRecord
   scope :canceled, -> { where(state: 'canceled') }
   scope :withdrawn, -> { where(state: 'withdrawn') }
   scope :highlighted, -> { where(is_highlight: true) }
+
+  enum :presentation_mode, [:in_person, :online]
 
   state_machine initial: :new do
     state :new
@@ -295,6 +297,10 @@ class Event < ApplicationRecord
   # Returns emails of all the speaker belongs to a particular event
   def speaker_emails
     speakers.map(&:email).join(', ')
+  end
+
+  def self.display_presentation_modes
+    presentation_modes.transform_keys { |key| key.humanize.titlecase }
   end
 
   ##
