@@ -13,6 +13,7 @@
 #  is_highlight                 :boolean          default(FALSE)
 #  language                     :string
 #  max_attendees                :integer
+#  presentation_mode            :enum
 #  progress                     :string           default("new"), not null
 #  proposal_additional_speakers :text
 #  public                       :boolean          default(TRUE)
