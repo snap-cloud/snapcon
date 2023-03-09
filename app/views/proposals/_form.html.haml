@@ -43,6 +43,11 @@
   = f.label :language
   = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
 
+.form-group
+  = f.label :presentation_mode
+  = f.select :presentation_mode, Event.display_presentation_modes, { include_blank: true}, { class: 'select-help-toggle form-control' }
+
+
 - if @conference.program.difficulty_levels.any?
   = f.label :difficulty_level
   = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
