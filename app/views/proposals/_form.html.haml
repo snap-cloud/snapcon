@@ -8,12 +8,14 @@
 .form-group
   = f.label :subtitle
   = f.text_field :subtitle, class: 'form-control'
+.form-group
+  = f.label :presentation_mode
+  = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode_for_database), { include_blank: true}, { class: 'select-help-toggle form-control' }
 
 .form-group
   = f.label :speaker_ids, 'Speakers'
   = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
-  .help-block
-    The people responsible for the event. You can only select existing users.
+  .help-block The people responsible for the event. You can only select existing users.
 
 = committee_only_actions(current_user, @conference) do
   .form-group
@@ -42,13 +44,6 @@
   .form-group
   = f.label :language
   = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
-
-.form-group
-  = f.label :presentation_mode
-  = f.select :presentation_mode,
-    options_for_select(Event.display_presentation_modes, @event.presentation_mode_for_database),
-    { include_blank: true}, { class: 'select-help-toggle form-control' }
-
 
 - if @conference.program.difficulty_levels.any?
   = f.label :difficulty_level
@@ -86,8 +81,7 @@
   .form-group
     = f.label :is_highlight
     = f.check_box :is_highlight, class: 'switch-checkbox'
-  .help-block
-    This shows the event on the conference homepage.
+  .help-block This shows the event on the conference homepage.
 
 .text-left
   .form-group
@@ -99,8 +93,7 @@
   #description.collapse.in
     = f.label :description, 'Requirements and Scheduling'
     = f.text_area :description, rows: 5, class: 'form-control'
-    .help-block
-      e.g. Whiteboard, printer, or something like that.
+    .help-block e.g. Whiteboard, printer, or something like that.
 
 %p.text-right
   = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'
