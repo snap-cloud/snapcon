@@ -10,23 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "answers", force: :cascade do |t|
     t.string "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "booth_requests", force: :cascade do |t|
     t.integer "booth_id"
     t.integer "user_id"
     t.string "role"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.index ["booth_id"], name: "index_booth_requests_on_booth_id"
     t.index ["user_id"], name: "index_booth_requests_on_user_id"
   end
@@ -40,15 +40,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "website_url"
     t.text "submitter_relationship"
     t.integer "conference_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "cfps", force: :cascade do |t|
     t.date "start_date", null: false
     t.date "end_date", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "program_id"
     t.string "cfp_type"
     t.text "description"
@@ -61,8 +61,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "commentable_id"
     t.string "commentable_type"
     t.integer "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "subject"
     t.integer "parent_id"
     t.integer "lft"
@@ -77,8 +77,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "commercial_type"
     t.integer "commercialable_id"
     t.string "commercialable_type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "url"
     t.string "title"
   end
@@ -90,8 +90,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "timezone", null: false
     t.date "start_date", null: false
     t.date "end_date", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "logo_file_name"
     t.integer "revision", default: 0, null: false
     t.boolean "use_vpositions", default: false
@@ -125,8 +125,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "twitter"
     t.string "instagram"
     t.integer "conference_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "sponsor_email"
     t.string "mastodon"
     t.string "youtube"
@@ -138,13 +138,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "attempts", default: 0, null: false
     t.text "handler", null: false
     t.text "last_error"
-    t.datetime "run_at"
-    t.datetime "locked_at"
-    t.datetime "failed_at"
+    t.datetime "run_at", precision: nil
+    t.datetime "locked_at", precision: nil
+    t.datetime "failed_at", precision: nil
     t.string "locked_by"
     t.string "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.index ["priority", "run_at"], name: "delayed_jobs_priority"
   end
 
@@ -152,8 +152,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "title"
     t.text "description"
     t.string "color"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "program_id"
   end
 
@@ -167,8 +167,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.text "accepted_body"
     t.text "rejected_body"
     t.text "confirmed_without_registration_body"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "registration_subject"
     t.string "accepted_subject"
     t.string "rejected_subject"
@@ -203,9 +203,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "event_id"
     t.integer "schedule_id"
     t.integer "room_id"
-    t.datetime "start_time"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "start_time", precision: nil
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.boolean "enabled", default: true
     t.index ["event_id", "schedule_id"], name: "index_event_schedules_on_event_id_and_schedule_id", unique: true
     t.index ["event_id"], name: "index_event_schedules_on_event_id"
@@ -221,8 +221,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "color"
     t.string "description"
     t.integer "program_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "submission_instructions"
   end
 
@@ -231,8 +231,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "event_id"
     t.string "event_role", default: "participant", null: false
     t.string "comment"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "events", force: :cascade do |t|
@@ -243,15 +243,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "state", default: "new", null: false
     t.string "progress", default: "new", null: false
     t.string "language"
-    t.datetime "start_time"
+    t.datetime "start_time", precision: nil
     t.text "abstract"
     t.text "description"
     t.boolean "public", default: true
     t.text "proposal_additional_speakers"
     t.integer "track_id"
     t.integer "room_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.boolean "require_registration"
     t.integer "difficulty_level_id"
     t.integer "week"
@@ -263,13 +263,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.text "committee_review"
     t.boolean "superevent"
     t.integer "parent_id"
+    t.integer "presentation_mode"
   end
 
   create_table "events_registrations", force: :cascade do |t|
     t.integer "registration_id"
     t.integer "event_id"
     t.boolean "attended", default: false, null: false
-    t.datetime "created_at"
+    t.datetime "created_at", precision: nil
   end
 
   create_table "events_users", id: false, force: :cascade do |t|
@@ -285,9 +286,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "photo_file_name"
     t.string "photo_content_type"
     t.integer "photo_file_size"
-    t.datetime "photo_updated_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "photo_updated_at", precision: nil
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "website_link"
     t.integer "conference_id"
     t.string "picture"
@@ -298,8 +299,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "email"
     t.string "uid"
     t.integer "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "organizations", force: :cascade do |t|
@@ -316,14 +317,14 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "status", default: 0, null: false
     t.integer "user_id", null: false
     t.integer "conference_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "physical_tickets", force: :cascade do |t|
     t.integer "ticket_purchase_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.string "token"
     t.index ["token"], name: "index_physical_tickets_on_token", unique: true
   end
@@ -333,12 +334,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "rating", default: 0
     t.boolean "schedule_public", default: false
     t.boolean "schedule_fluid", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "languages"
     t.boolean "blind_voting", default: false
-    t.datetime "voting_start_date"
-    t.datetime "voting_end_date"
+    t.datetime "voting_start_date", precision: nil
+    t.datetime "voting_end_date", precision: nil
     t.integer "selected_schedule_id"
     t.integer "schedule_interval", default: 15, null: false
     t.index ["selected_schedule_id"], name: "index_programs_on_selected_schedule_id"
@@ -347,8 +348,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
   create_table "qanswers", force: :cascade do |t|
     t.integer "question_id"
     t.integer "answer_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "qanswers_registrations", id: false, force: :cascade do |t|
@@ -358,8 +359,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
 
   create_table "question_types", force: :cascade do |t|
     t.string "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "questions", force: :cascade do |t|
@@ -367,22 +368,22 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "question_type_id"
     t.integer "conference_id"
     t.boolean "global"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "registration_periods", force: :cascade do |t|
     t.integer "conference_id"
     t.date "start_date"
     t.date "end_date"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "registrations", force: :cascade do |t|
     t.integer "conference_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.text "other_special_needs"
     t.boolean "attended", default: false
     t.boolean "volunteer"
@@ -406,8 +407,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
 
   create_table "roles", force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "description"
     t.integer "resource_id"
     t.string "resource_type"
@@ -427,8 +428,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
 
   create_table "schedules", force: :cascade do |t|
     t.integer "program_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "track_id"
     t.index ["program_id"], name: "index_schedules_on_program_id"
     t.index ["track_id"], name: "index_schedules_on_track_id"
@@ -448,9 +449,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "banner_photo_file_name"
     t.string "banner_photo_content_type"
     t.integer "banner_photo_file_size"
-    t.datetime "banner_photo_updated_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "banner_photo_updated_at", precision: nil
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.boolean "include_cfp", default: false
     t.boolean "include_booths"
     t.boolean "shuffle_highlights", default: false, null: false
@@ -464,24 +465,24 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "logo_file_name"
     t.integer "sponsorship_level_id"
     t.integer "conference_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "picture"
   end
 
   create_table "sponsorship_levels", force: :cascade do |t|
     t.string "title"
     t.integer "conference_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "position"
   end
 
   create_table "subscriptions", force: :cascade do |t|
     t.integer "user_id"
     t.integer "conference_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "survey_questions", force: :cascade do |t|
@@ -498,26 +499,26 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "survey_question_id"
     t.integer "user_id"
     t.text "text"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "survey_submissions", force: :cascade do |t|
     t.integer "user_id"
     t.integer "survey_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "surveys", force: :cascade do |t|
-    t.datetime "start_date"
-    t.datetime "end_date"
+    t.datetime "start_date", precision: nil
+    t.datetime "end_date", precision: nil
     t.string "title"
     t.text "description"
     t.integer "surveyable_id"
     t.string "surveyable_type"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "target", default: 0
     t.index ["surveyable_type", "surveyable_id"], name: "index_surveys_on_surveyable_type_and_surveyable_id"
   end
@@ -526,7 +527,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "ticket_id"
     t.integer "conference_id"
     t.boolean "paid", default: false
-    t.datetime "created_at"
+    t.datetime "created_at", precision: nil
     t.integer "quantity", default: 1
     t.integer "user_id"
     t.integer "payment_id"
@@ -536,8 +537,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
 
   create_table "ticket_scannings", force: :cascade do |t|
     t.integer "physical_ticket_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "tickets", force: :cascade do |t|
@@ -547,8 +548,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "price_cents", default: 0, null: false
     t.string "price_currency", default: "USD", null: false
     t.boolean "registration_ticket", default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.boolean "visible", default: true
   end
 
@@ -557,8 +558,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "name", null: false
     t.text "description"
     t.string "color"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "program_id"
     t.string "short_name", null: false
     t.string "state", default: "new", null: false
@@ -578,19 +579,19 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at", precision: nil
+    t.datetime "remember_created_at", precision: nil
     t.integer "sign_in_count", default: 0
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
+    t.datetime "current_sign_in_at", precision: nil
+    t.datetime "last_sign_in_at", precision: nil
     t.string "current_sign_in_ip"
     t.string "last_sign_in_ip"
     t.string "confirmation_token"
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
+    t.datetime "confirmed_at", precision: nil
+    t.datetime "confirmation_sent_at", precision: nil
     t.string "unconfirmed_email"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "name"
     t.boolean "email_public", default: false
     t.text "biography"
@@ -599,7 +600,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "avatar_file_name"
     t.string "avatar_content_type"
     t.integer "avatar_file_size"
-    t.datetime "avatar_updated_at"
+    t.datetime "avatar_updated_at", precision: nil
     t.string "mobile"
     t.string "tshirt"
     t.string "languages"
@@ -630,8 +631,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "conference_id"
     t.date "day"
     t.text "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   create_table "venues", force: :cascade do |t|
@@ -639,8 +640,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "name"
     t.string "website"
     t.text "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.string "photo_file_name"
     t.string "street"
     t.string "postalcode"
@@ -659,7 +660,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.string "whodunnit"
     t.text "object"
     t.text "object_changes"
-    t.datetime "created_at"
+    t.datetime "created_at", precision: nil
     t.integer "conference_id"
     t.bigint "organization_id"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
@@ -669,8 +670,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
   create_table "votes", force: :cascade do |t|
     t.integer "event_id"
     t.integer "rating"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
     t.integer "user_id"
   end
 
@@ -678,8 +679,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_04_26_082022) do
     t.integer "conference_id"
     t.string "title", null: false
     t.text "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", precision: nil
+    t.datetime "updated_at", precision: nil
   end
 
   add_foreign_key "events", "events", column: "parent_id"

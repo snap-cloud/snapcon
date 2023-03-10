@@ -13,6 +13,7 @@
 #  is_highlight                 :boolean          default(FALSE)
 #  language                     :string
 #  max_attendees                :integer
+#  presentation_mode            :integer
 #  progress                     :string           default("new"), not null
 #  proposal_additional_speakers :text
 #  public                       :boolean          default(TRUE)
@@ -37,6 +38,7 @@
 #
 #  fk_rails_...  (parent_id => events.id)
 #
+# rubocop:disable Metrics/ClassLength
 class Event < ApplicationRecord
   include ActionView::Helpers::NumberHelper # for number_with_precision
   include ActionView::Helpers::SanitizeHelper
@@ -111,6 +113,8 @@ class Event < ApplicationRecord
   scope :canceled, -> { where(state: 'canceled') }
   scope :withdrawn, -> { where(state: 'withdrawn') }
   scope :highlighted, -> { where(is_highlight: true) }
+
+  enum :presentation_mode, { in_person: 0, online: 1 }
 
   state_machine initial: :new do
     state :new
@@ -296,6 +300,10 @@ class Event < ApplicationRecord
     speakers.map(&:email).join(', ')
   end
 
+  def self.display_presentation_modes
+    presentation_modes.transform_keys { |key| key.humanize.titlecase }
+  end
+
   ##
   #
   # Returns +Hash+
@@ -460,3 +468,4 @@ class Event < ApplicationRecord
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
