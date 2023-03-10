@@ -38,6 +38,7 @@
 #
 #  fk_rails_...  (parent_id => events.id)
 #
+# rubocop:disable Metrics/ClassLength
 class Event < ApplicationRecord
   include ActionView::Helpers::NumberHelper # for number_with_precision
   include ActionView::Helpers::SanitizeHelper
@@ -467,3 +468,4 @@ class Event < ApplicationRecord
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
