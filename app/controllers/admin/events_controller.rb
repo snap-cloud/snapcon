@@ -188,7 +188,7 @@ module Admin
       params.require(:event).permit(
         # Set also in proposals controller
         :title, :subtitle, :event_type_id, :abstract, :submission_text, :description, :require_registration, :difficulty_level_id,
-        :committee_review, :superevent, :parent_id,
+        :committee_review, :superevent, :parent_id, :presentation_mode,
         # Set only in admin/events controller
         :track_id, :state, :language, :is_highlight, :max_attendees,
         # Not used anymore?
@@ -221,7 +221,7 @@ module Admin
       @events = Event.where(program: Program.find_by(conference: Conference.find_by(short_title: params[:conference_id]))).includes(
         :submitter, :submitter_event_user, :speakers, :speaker_event_users, :volunteers,
         :volunteer_event_users, :program, :event_type, :track, :voters,
-        votes: [:user]
+        :presentation_mode, votes: [:user]
       )
     end
   end

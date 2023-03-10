@@ -113,7 +113,7 @@ class Event < ApplicationRecord
   scope :withdrawn, -> { where(state: 'withdrawn') }
   scope :highlighted, -> { where(is_highlight: true) }
 
-  enum :presentation_mode, [:in_person, :online]
+  enum :presentation_mode, { in_person: 0, online: 1 }
 
   state_machine initial: :new do
     state :new
