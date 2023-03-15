@@ -68,7 +68,7 @@ jobs:
       - name: spec/${{ matrix.suite }}
         run: |
           xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
-          $CCTR format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+          $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov
       # - name: coverage upload ${{ matrix.suite }}
       #   uses: codacy/codacy-coverage-reporter-action@v1
       #   if: github.ref == 'refs/heads/master' && always()
