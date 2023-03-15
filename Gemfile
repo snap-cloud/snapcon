@@ -266,7 +266,9 @@ group :test do
   gem 'rspec-rails'
   gem 'webdrivers'
   # for measuring test coverage
-  gem 'simplecov-cobertura'
+  gem 'simplecov', "0.21.2"
+  #try 0.20, 0.21, 0.22
+  
   # for describing models
   gem 'shoulda-matchers', require: false
   # for stubing/mocking models
