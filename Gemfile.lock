@@ -885,6 +885,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov (= 0.21.2)
   simplecov-cobertura
+  simplecov_json_formatter
   skylight (~> 5)
   sprockets-rails
   sqlite3
