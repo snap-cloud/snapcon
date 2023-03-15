@@ -266,7 +266,8 @@ group :test do
   gem 'rspec-rails'
   gem 'webdrivers'
   # for measuring test coverage
-  gem 'simplecov', "0.21.2"
+  gem 'simplecov', '0.21.2'
+  gem 'simplecov-cobertura'
   #try 0.20, 0.21, 0.22
   
   # for describing models
