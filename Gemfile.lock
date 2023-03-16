@@ -689,7 +689,6 @@ GEM
     simplecov-cobertura (1.4.2)
       simplecov (~> 0.8)
     simplecov-html (0.10.2)
-    simplecov_json_formatter (0.1.4)
     sixarm_ruby_unaccent (1.2.0)
     skylight (5.3.3)
       activesupport (>= 5.2.0)
@@ -884,7 +883,6 @@ DEPENDENCIES
   shoulda-matchers
   simplecov (< 0.18)
   simplecov-cobertura
-  simplecov_json_formatter
   skylight (~> 5)
   sprockets-rails
   sqlite3
