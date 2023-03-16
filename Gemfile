@@ -268,9 +268,6 @@ group :test do
   # for measuring test coverage
   gem 'simplecov', '<0.18'
   gem 'simplecov-cobertura'
-  gem 'simplecov_json_formatter'
-  # try 0.20, 0.21, 0.22
-  
   # for describing models
   gem 'shoulda-matchers', require: false
   # for stubing/mocking models
