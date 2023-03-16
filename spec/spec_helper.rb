@@ -4,8 +4,6 @@ ENV['RAILS_ENV'] ||= 'test'
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'simplecov'
-require "simplecov_json_formatter"
-SimpleCov.formatter = SimpleCov::Formatter::JSONFormatter
 
 if ENV['CI']
   require 'simplecov-cobertura'
