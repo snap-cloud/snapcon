@@ -9,10 +9,10 @@ require 'cucumber/rails'
 # frozen_string_literal: true
 
 
-require "simplecov"
+require 'simplecov'
 
 SimpleCov.start "rails" do
-  command_name "cucumber"
+  command_name 'cucumber'
 end
 # Capybara defaults to CSS3 selectors rather than XPath.
 # If you'd prefer to use XPath, just uncomment this line and adjust any
