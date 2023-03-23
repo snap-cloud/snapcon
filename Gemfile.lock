@@ -428,6 +428,8 @@ GEM
     next_rails (1.1.0)
       colorize (>= 0.8.1)
     nio4r (2.5.8)
+    nokogiri (1.14.2-arm64-darwin)
+      racc (~> 1.4)
     nokogiri (1.14.2-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.14.2-x86_64-linux)
@@ -680,15 +682,13 @@ GEM
     shoulda-matchers (5.1.0)
       activesupport (>= 5.2.0)
     simple_po_parser (1.1.6)
-    simplecov (0.22.0)
+    simplecov (0.17.1)
       docile (~> 1.1)
-      simplecov-html (~> 0.11)
-      simplecov_json_formatter (~> 0.1)
-    simplecov-cobertura (2.1.0)
-      rexml
-      simplecov (~> 0.19)
-    simplecov-html (0.12.3)
-    simplecov_json_formatter (0.1.4)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-cobertura (1.4.2)
+      simplecov (~> 0.8)
+    simplecov-html (0.10.2)
     sixarm_ruby_unaccent (1.2.0)
     skylight (5.3.3)
       activesupport (>= 5.2.0)
@@ -762,6 +762,7 @@ GEM
     zeitwerk (2.6.7)
 
 PLATFORMS
+  arm64-darwin-22
   x86_64-darwin-21
   x86_64-darwin-22
   x86_64-linux
@@ -880,6 +881,7 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   shoulda-matchers
+  simplecov (< 0.18)
   simplecov-cobertura
   skylight (~> 5)
   sprockets-rails
