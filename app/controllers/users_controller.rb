@@ -23,14 +23,15 @@ class UsersController < ApplicationController
   end
 
   def search
+    fields = %i[username id name]
+    fields << :email if current_user.is_admin?
     respond_to do |format|
       format.json do
         render json: { users:
                               User.active.where(
                                 'username ILIKE :search OR email ILIKE :search OR name ILIKE :search',
                                 search: "%#{params[:query]}%"
-                              ).as_json(only:
-            %i[username id name email], methods: :dropdwon_display) }
+                              ).as_json(only: fields, methods: :dropdwon_display) }
       end
     end
   end
