@@ -221,7 +221,7 @@ module Admin
       @events = Event.where(program: Program.find_by(conference: Conference.find_by(short_title: params[:conference_id]))).includes(
         :submitter, :submitter_event_user, :speakers, :speaker_event_users, :volunteers,
         :volunteer_event_users, :program, :event_type, :track, :voters,
-        :presentation_mode, votes: [:user]
+        votes: [:user]
       )
     end
   end

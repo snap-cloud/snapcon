@@ -8,9 +8,9 @@
 .form-group
   = f.label :subtitle
   = f.text_field :subtitle, class: 'form-control'
--# .form-group
--#   = f.label :presentation_mode
--#   = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode_for_database), { include_blank: true}, { class: 'select-help-toggle form-control' }
+.form-group
+  = f.label :presentation_mode
+  = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode_for_database), { include_blank: true}, { class: 'select-help-toggle form-control' }
 
 .form-group
   = f.label :speaker_ids, 'Speakers'
