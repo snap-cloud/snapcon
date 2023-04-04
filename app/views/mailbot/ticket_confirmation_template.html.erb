@@ -4,7 +4,8 @@
         Dear <%= @user.name %>,
 
         Thanks! You have successfully booked <%= @ticket_purchase.quantity %> <%= @ticket_purchase.ticket.title %> ticket(s) for the event <%= @conference.title %>. Your transaction id is <%= @ticket_purchase.id %>.
-
+        <%= @ticket_purchase.ticket.email_subject %>
+        <%= @ticket_purchase.ticket.email_body %>
         Please, find the ticket(s) pdf attached.
 
         Best wishes,
