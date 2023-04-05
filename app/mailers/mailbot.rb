@@ -35,8 +35,10 @@ class Mailbot < ApplicationMailer
     template_name = 'ticket_confirmation_template'
     template_name = 'young_thinkers_ticket_confirmation_template' if @ticket_purchase.ticket_id == YTLF_TICKET_ID
 
-    mail(subject:       "#{@conference.title} | Ticket Confirmation and PDF!",
+    mail(subject: "#{@ticket_purchase.ticket.email_subject} | Ticket Confirmation and PDF!",
          template_name: template_name)
+    # mail(subject:       "#{@conference.title} | Ticket Confirmation and PDF!",
+    #      template_name: template_name)
   end
 
   def acceptance_mail(event)
