@@ -6,6 +6,8 @@
 #
 #  id                  :bigint           not null, primary key
 #  description         :text
+#  email_body          :text
+#  email_subject       :string
 #  price_cents         :integer          default(0), not null
 #  price_currency      :string           default("USD"), not null
 #  registration_ticket :boolean          default(FALSE)
