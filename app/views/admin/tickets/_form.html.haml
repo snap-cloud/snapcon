@@ -8,10 +8,18 @@
     = f.text_area :description, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
   .form-group
     = f.label :email_subject
-    = f.text_field :email_subject, value: "#{@conference.title} | Ticket Confirmation and PDF!", class: 'form-control'
+    = f.text_field :email_subject, class: 'form-control'
   .form-group
   = f.label :email_body
-  = f.text_area :email_body, value: "Default email body".html_safe, rows: 10, cols: 20, class: 'form-control'
+  = f.text_area :email_body, rows: 10, cols: 20, class: 'form-control'
+  %a.btn.btn-link.control_label.load_template{ 'data-subject-input-id' => 'ticket_email_subject',
+  'data-subject-text' => '{conference} | Ticket Confirmation and PDF!',
+  'data-body-input-id' => 'ticket_email_body',
+  'data-body-text' => "Dear {user},\n\nThanks! You have successfully booked {ticket_quantity} {ticket_title} ticket(s) for the event {conference}. Your transaction id is {ticket_purchase_id}.\nPlease, find the ticket(s) pdf attached.\n\nBest wishes,\n{conference} Team"} Load Default
+  %a.btn.btn-link.control_label.template_help_link{ 'data-name' => 'accepted_help' } Show Help
+  = render partial: 'help', locals: { id: 'accepted_help', show_event_variables: true }
+  -# template here
+  -# booth not necessary
   .form-group
     = f.label :price
     = f.number_field :price, class: 'form-control'
