@@ -7,6 +7,12 @@
     = f.label :description
     = f.text_area :description, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
   .form-group
+    = f.label :email_subject
+    = f.text_field :email_subject, value: "#{@conference.title} | Ticket Confirmation and PDF!", class: 'form-control'
+  .form-group
+  = f.label :email_body
+  = f.text_area :email_body, value: "Default email body".html_safe, rows: 10, cols: 20, class: 'form-control'
+  .form-group
     = f.label :price
     = f.number_field :price, class: 'form-control'
   - if Ticket.where(conference: @conference).empty?
