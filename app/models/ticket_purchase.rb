@@ -16,7 +16,7 @@
 #  user_id       :integer
 #
 
-#add a currency field 
+#add a currency field
 class TicketPurchase < ApplicationRecord
   belongs_to :ticket
   belongs_to :user
@@ -118,6 +118,33 @@ def set_week
   self.week = created_at.strftime('%W')
   save!
 end
+
+def get_values(event = nil, booth = nil)
+  h = {
+    'name'                   => user.name,
+    'conference'             => conference.title,
+    'ticket_quantity'        => quantity,
+    'ticket_title'           => ticket.title,
+    'ticket_purchase_id'     => ticket.id
+  }
+
+end
+
+def generate_confirmation_mail(event_template)
+  parse_template(event_template, get_values)
+end
+
+def parse_template(text, values)
+  values.each do |key, value|
+    if value.is_a?(Date)
+      text = text.gsub "{#{key}}", value.strftime('%Y-%m-%d') if text.present?
+    else
+      text = text.gsub "{#{key}}", value unless text.blank? || value.blank?
+    end
+  end
+  text
+end
+
 
 def count_purchased_registration_tickets(conference, purchases)
   # TODO: WHAT CAUSED THIS???
