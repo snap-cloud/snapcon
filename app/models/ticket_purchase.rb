@@ -112,22 +112,15 @@ class TicketPurchase < ApplicationRecord
   end
 end
 
-private
-
-def set_week
-  self.week = created_at.strftime('%W')
-  save!
-end
-
 def get_values(event = nil, booth = nil)
   h = {
     'name'                   => user.name,
     'conference'             => conference.title,
-    'ticket_quantity'        => quantity,
+    'ticket_quantity'        => quantity.to_s,
     'ticket_title'           => ticket.title,
-    'ticket_purchase_id'     => ticket.id
+    'ticket_purchase_id'     => ticket.id.to_s
   }
-
+  return h
 end
 
 def generate_confirmation_mail(event_template)
@@ -145,6 +138,14 @@ def parse_template(text, values)
   text
 end
 
+public :generate_confirmation_mail
+
+private
+
+def set_week
+  self.week = created_at.strftime('%W')
+  save!
+end
 
 def count_purchased_registration_tickets(conference, purchases)
   # TODO: WHAT CAUSED THIS???
