@@ -37,27 +37,22 @@ class Mailbot < ApplicationMailer
       mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: template_name)
     end
 
-    default_template_name = 'ticket_confirmation_template'
-    custom_template_name = 'custom_ticket_confirmation_template'
-
-    default_email_subject = "#{@conference.title} | Ticket Confirmation and PDF!"
-
     # if email subject is empty, use custom template
     if @ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
       @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
-      @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
-      mail(subject: default_email_subject, template_name: custom_template_name)
+      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: 'custom_ticket_confirmation_template')
     # if email body is empty, use default template with subject
     elsif !@ticket_purchase.ticket.email_subject.empty? && @ticket_purchase.ticket.email_body.empty?
-      mail(subject: @ticket_purchase.ticket.email_subject, template_name: default_template_name)
+      @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
+      mail(subject: @ticket_purchase.ticket.email_subject, template_name: 'ticket_confirmation_template')
     # if both exist, use custom
     elsif !@ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
       @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
       @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
-      mail(subject: @ticket_purchase.ticket.email_subject, template_name: custom_template_name)
+      mail(subject: @ticket_purchase.ticket.email_subject, template_name: 'custom_ticket_confirmation_template')
     # if both empty, use default
     else
-      mail(subject: default_email_subject, template_name: default_template_name)
+      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: 'ticket_confirmation_template')
     end
   end
 

@@ -112,7 +112,7 @@ class TicketPurchase < ApplicationRecord
   end
 end
 
-def get_values
+def retrieve_values
   h = {
     'name'                   => user.name,
     'conference'             => conference.title,
@@ -154,7 +154,7 @@ def get_values
 end
 
 def generate_confirmation_mail(event_template)
-  parse_template(event_template, get_values)
+  parse_template(event_template, retrieve_values)
 end
 
 def parse_template(text, values)
