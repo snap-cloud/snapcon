@@ -132,6 +132,7 @@ def get_values
       conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
     )
   }
+  
   if conference.program.cfp
     h['cfp_start_date'] = conference.program.cfp.start_date
     h['cfp_end_date'] = conference.program.cfp.end_date
@@ -139,6 +140,7 @@ def get_values
     h['cfp_start_date'] = 'Unknown'
     h['cfp_end_date'] = 'Unknown'
   end
+
   if conference.venue
     h['venue'] = conference.venue.name
     h['venue_address'] = conference.venue.address
@@ -146,6 +148,7 @@ def get_values
     h['venue'] = 'Unknown'
     h['venue_address'] = 'Unknown'
   end
+
   if conference.registration_period
     h['registration_start_date'] = conference.registration_period.start_date
     h['registration_end_date'] = conference.registration_period.end_date
