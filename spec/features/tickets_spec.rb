@@ -28,6 +28,8 @@ describe Ticket do
       click_button 'Create Ticket'
       page.find('#flash')
       expect(flash).to eq('Ticket successfully created.')
+      expect(ticket.email_subject).to eq('Confirmation')
+      expect(ticket.email_body).to eq('Hi there! This email confirms that you made a business ticket purchase!')
       expect(Ticket.count).to eq(2)
     end
 
