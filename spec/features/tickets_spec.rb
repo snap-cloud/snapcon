@@ -22,14 +22,10 @@ describe Ticket do
       fill_in 'ticket_title', with: 'Business Ticket'
       fill_in 'ticket_description', with: 'The business ticket'
       fill_in 'ticket_price', with: '100'
-      fill_in 'ticket_email_subject', with: 'Confirmation'
-      fill_in 'ticket_email_body', with: 'Hi there! This email confirms that you made a business ticket purchase!'
 
       click_button 'Create Ticket'
       page.find('#flash')
       expect(flash).to eq('Ticket successfully created.')
-      expect(ticket.email_subject).to eq('Confirmation')
-      expect(ticket.email_body).to eq('Hi there! This email confirms that you made a business ticket purchase!')
       expect(Ticket.count).to eq(2)
     end
 
@@ -53,8 +49,6 @@ describe Ticket do
       fill_in 'ticket_title', with: 'Hidden Ticket'
       fill_in 'ticket_description', with: 'The hidden ticket'
       fill_in 'ticket_price', with: '100'
-      fill_in 'ticket_email_subject', with: 'Confirmation'
-      fill_in 'ticket_email_body', with: 'Hi there! This email confirms that you made a hidden ticket purchase!'
       uncheck 'ticket_visible'
 
       click_button 'Create Ticket'
@@ -73,6 +67,8 @@ describe Ticket do
 
         fill_in 'ticket_title', with: 'Event Ticket'
         fill_in 'ticket_price', with: '50'
+        fill_in 'ticket_email_subject', with: 'Confirmation'
+        fill_in 'ticket_email_body', with: 'Hi there! This email confirms that you made a business ticket purchase!'
 
         click_button 'Update Ticket'
 
@@ -81,6 +77,8 @@ describe Ticket do
         page.find('#flash')
         expect(flash).to eq('Ticket successfully updated.')
         expect(ticket.price).to eq(Money.new(50 * 100, 'USD'))
+        expect(ticket.email_subject).to eq('Confirmation')
+        expect(ticket.email_body).to eq('Hi there! This email confirms that you made a business ticket purchase!')
         expect(ticket.title).to eq('Event Ticket')
         expect(Ticket.count).to eq(2)
       end
