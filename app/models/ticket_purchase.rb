@@ -16,7 +16,7 @@
 #  user_id       :integer
 #
 
-#add a currency field
+# add a currency field
 class TicketPurchase < ApplicationRecord
   belongs_to :ticket
   belongs_to :user
@@ -112,20 +112,13 @@ class TicketPurchase < ApplicationRecord
   end
 end
 
-private
-
-def set_week
-  self.week = created_at.strftime('%W')
-  save!
-end
-
-def get_values(booth = nil)
+def get_values
   h = {
     'name'                   => user.name,
     'conference'             => conference.title,
-    'ticket_quantity'        => quantity,
+    'ticket_quantity'        => quantity.to_s,
     'ticket_title'           => ticket.title,
-    'ticket_purchase_id'     => ticket.id,
+    'ticket_purchase_id'     => ticket.id.to_s,
     'conference_start_date'  => conference.start_date,
     'conference_end_date'    => conference.end_date,
     'registrationlink'       => Rails.application.routes.url_helpers.conference_conference_registration_url(
@@ -139,7 +132,7 @@ def get_values(booth = nil)
       conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
     )
   }
-
+  
   if conference.program.cfp
     h['cfp_start_date'] = conference.program.cfp.start_date
     h['cfp_end_date'] = conference.program.cfp.end_date
@@ -160,7 +153,6 @@ def get_values(booth = nil)
     h['registration_start_date'] = conference.registration_period.start_date
     h['registration_end_date'] = conference.registration_period.end_date
   end
-
   h
 end
 
@@ -179,6 +171,14 @@ def parse_template(text, values)
   text
 end
 
+public :generate_confirmation_mail
+
+private
+
+def set_week
+  self.week = created_at.strftime('%W')
+  save!
+end
 
 def count_purchased_registration_tickets(conference, purchases)
   # TODO: WHAT CAUSED THIS???
