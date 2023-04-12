@@ -16,7 +16,7 @@
 #  user_id       :integer
 #
 
-#add a currency field
+# add a currency field
 class TicketPurchase < ApplicationRecord
   belongs_to :ticket
   belongs_to :user
@@ -112,7 +112,7 @@ class TicketPurchase < ApplicationRecord
   end
 end
 
-def get_values(event = nil, booth = nil)
+def get_values
   h = {
     'name'                   => user.name,
     'conference'             => conference.title,

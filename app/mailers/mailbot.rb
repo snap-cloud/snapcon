@@ -32,9 +32,9 @@ class Mailbot < ApplicationMailer
       attachments["ticket_for_#{@conference.short_title}_#{physical_ticket.id}.pdf"] = pdf.render
     end
 
-    if @ticket_purchase.ticket_id == YTLF_TICKET_ID 
+    if @ticket_purchase.ticket_id == YTLF_TICKET_ID
       template_name = 'young_thinkers_ticket_confirmation_template'
-      mail(subject:       "#{@conference.title} | Ticket Confirmation and PDF!", template_name: template_name)
+      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: template_name)
     end
 
     default_template_name = 'ticket_confirmation_template'
@@ -42,23 +42,20 @@ class Mailbot < ApplicationMailer
 
     default_email_subject = "#{@conference.title} | Ticket Confirmation and PDF!"
 
-    #if email subject is empty, use custom template
-    if @ticket_purchase.ticket.email_subject.empty? and !@ticket_purchase.ticket.email_body.empty?
-      puts "subject is empty"
+    # if email subject is empty, use custom template
+    if @ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
       @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
       @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
       mail(subject: default_email_subject, template_name: custom_template_name)
-    #if email body is empty, use default template with subject
-    elsif !@ticket_purchase.ticket.email_subject.empty? and @ticket_purchase.ticket.email_body.empty?
-      puts "body is empty"
+    # if email body is empty, use default template with subject
+    elsif !@ticket_purchase.ticket.email_subject.empty? && @ticket_purchase.ticket.email_body.empty?
       mail(subject: @ticket_purchase.ticket.email_subject, template_name: default_template_name)
-    #if both exist, use custom
-    elsif !@ticket_purchase.ticket.email_subject.empty? and !@ticket_purchase.ticket.email_body.empty?
-      puts "neither is empty"
+    # if both exist, use custom
+    elsif !@ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
       @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
       @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
       mail(subject: @ticket_purchase.ticket.email_subject, template_name: custom_template_name)
-    #if both empty, use default
+    # if both empty, use default
     else
       mail(subject: default_email_subject, template_name: default_template_name)
     end
