@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_23_200709) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_18_211400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -131,6 +131,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_200709) do
     t.string "mastodon"
     t.string "youtube"
     t.string "blog"
+  end
+
+  create_table "currency_conversions", force: :cascade do |t|
+    t.decimal "rate"
+    t.string "from_currency"
+    t.string "to_currency"
+    t.bigint "conference_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conference_id"], name: "index_currency_conversions_on_conference_id"
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -684,5 +694,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_200709) do
     t.datetime "updated_at"
   end
 
+  add_foreign_key "currency_conversions", "conferences"
   add_foreign_key "events", "events", column: "parent_id"
 end
