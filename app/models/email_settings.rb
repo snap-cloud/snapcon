@@ -51,30 +51,20 @@ class EmailSettings < ApplicationRecord
   has_paper_trail on: [:update], ignore: [:updated_at], meta: { conference_id: :conference_id }
 
   def generate_event_mail(event, event_template)
-    values = EmailTemplateParser.retrieve_values(event.program.conference, event.submitter, event)
-    EmailTemplateParser.parse_template(event_template, values)
+    parser = EmailTemplateParser.new
+    values = parser.retrieve_values(event.program.conference, event.submitter, event)
+    parser.parse_template(event_template, values)
   end
 
   def generate_email_on_conf_updates(conference, user, conf_update_template)
-    values = EmailTemplateParser.retrieve_values(conference, user)
-    EmailTemplateParser.parse_template(conf_update_template, values)
+    parser = EmailTemplateParser.new
+    values = parser.retrieve_values(conference, user)
+    parser.parse_template(conf_update_template, values)
   end
 
   def generate_booth_mail(booth, booth_template)
-    values = EmailTemplateParser.retrieve_values(booth.conference, booth.submitter, nil, booth)
-    EmailTemplateParser.parse_template(booth_template, values)
-  end
-
-  private
-
-  def parse_template(text, values)
-    values.each do |key, value|
-      if value.is_a?(Date)
-        text = text.gsub "{#{key}}", value.strftime('%Y-%m-%d') if text.present?
-      else
-        text = text.gsub "{#{key}}", value unless text.blank? || value.blank?
-      end
-    end
-    text
+    parser = EmailTemplateParser.new
+    values = parser.retrieve_values(booth.conference, booth.submitter, nil, booth)
+    parser.parse_template(booth_template, values)
   end
 end
