@@ -1,0 +1,19 @@
+%h1 Listing currency_conversions
+
+%table
+  %thead
+    %tr
+      %th
+      %th
+      %th
+
+  %tbody
+    - @currency_conversions.each do |currency_conversion|
+      %tr
+        %td= link_to 'Show', currency_conversion
+        %td= link_to 'Edit', edit_currency_conversion_path(currency_conversion)
+        %td= link_to 'Destroy', currency_conversion, method: :delete, data: { confirm: 'Are you sure?' }
+
+%br
+
+= link_to 'New Currency conversion', new_currency_conversion_path

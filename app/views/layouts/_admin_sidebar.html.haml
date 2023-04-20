@@ -117,12 +117,7 @@
           %li{class: active_nav_li(admin_conference_tickets_path(@conference.short_title)) }
             = link_to 'Tickets', admin_conference_tickets_path(@conference.short_title)
 
-<<<<<<< HEAD
-    %li
-      = link_to 'Currency', admin_currency_conversions_path
-=======
 
->>>>>>> d21715a84 (new curr conv model)
 
   - if can? :manage, @conference.booths.build
     %li
