@@ -126,6 +126,7 @@ Osem::Application.routes.draw do
       end
       resources :sponsors, except: [:show]
       resources :lodgings, except: [:show]
+      resources :currency_conversions, except: [:show]
       resources :emails, only: %i[show update index]
       resources :physical_tickets, only: [:index]
       resources :roles, except: %i[new create] do
