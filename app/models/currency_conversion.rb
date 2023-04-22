@@ -11,4 +11,5 @@
 #
 class CurrencyConversion < ApplicationRecord
   belongs_to :conference
+  validates :rate, numericality: { greater_than: 0 }
 end
