@@ -10,8 +10,8 @@ default: &default
   adapter: <%= ENV.fetch('OSEM_DB_ADAPTER', 'postgresql') %>
   encoding: <%= encoding %>
   host: <%= ENV.fetch('OSEM_DB_HOST', 'database') %>
-  port: <%= ENV.fetch('OSEM_DB_PORT', '5432')  %>
-  username: <%= ENV.fetch('OSEM_DB_USER', 'postgres') %>
+  port: <%= ENV.fetch('OSEM_DB_PORT', '5432') %>
+  username: <%= ENV.fetch('OSEM_DB_USER', ENV.fetch('USER', 'postgres')) %>
   password: <%= ENV.fetch('OSEM_DB_PASSWORD', 'mysecretpassword') %>
   database: <%= ENV.fetch('OSEM_DB_NAME', 'postgres') %>
   pool: 30
