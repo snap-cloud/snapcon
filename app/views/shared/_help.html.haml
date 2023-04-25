@@ -29,7 +29,7 @@
     %tr
       %td {conference_end_date}
       %td The end date of the conference
-    - if defined?(@conference.registration_dates_given?)
+    - if defined?(conference.registration_dates_given?)
       %tr
         %td {registration_start_date}
         %td The start date of the registration period
@@ -39,21 +39,21 @@
       %tr
         %td {registrationlink}
         %td A link to the registration page
-    - if defined?(@conference.venue)
+    - if defined?(conference.venue)
       %tr
         %td {venue}
         %td The name of the venue
       %tr
         %td {venue_address}
         %td The address of the venue
-    - unless @conference.program.cfp.blank? || @conference.program.cfp.start_date.blank? || @conference.program.cfp.end_date.blank?
+    - unless conference.program.cfp.blank? || conference.program.cfp.start_date.blank? || conference.program.cfp.end_date.blank?
       %tr
         %td {cfp_start_date}
         %td The call for papers start date
       %tr
         %td {cfp_end_date}
         %td The call for papers end date
-      - if @conference.program.schedule_public
+      - if conference.program.schedule_public
         %td {schedule_link}
         %td The link to complete schedule of the conference
     - if defined?(@conference.splashpage) && @conference.splashpage.public?

@@ -2,10 +2,11 @@ class EmailTemplateParser
   def initialize(conference, user)
     @conference = conference
     @user = user
-  end 
-  
+  end
+
   def retrieve_values(event = nil, booth = nil, quantity = nil, ticket = nil)
     h = {
+      'email'                  => @user.email,
       'name'                   => @user.name,
       'conference'             => @conference.title,
       'conference_start_date'  => @conference.start_date,
@@ -40,6 +41,7 @@ class EmailTemplateParser
       h['registration_end_date'] = @conference.registration_period.end_date
     end
     if event
+      puts("there is an event")
       h['eventtitle'] = event.title
       h['proposalslink'] = Rails.application.routes.url_helpers.conference_program_proposals_url(
         @conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
@@ -60,7 +62,7 @@ class EmailTemplateParser
     h
   end
 
-  def parse_template(text, values)
+  def self.parse_template(text, values)
     values.each do |key, value|
       if value.is_a?(Date)
         text = text.gsub "{#{key}}", value.strftime('%Y-%m-%d') if text.present?
