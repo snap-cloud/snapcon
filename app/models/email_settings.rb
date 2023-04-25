@@ -49,11 +49,10 @@ class EmailSettings < ApplicationRecord
   belongs_to :conference
 
   has_paper_trail on: [:update], ignore: [:updated_at], meta: { conference_id: :conference_id }
-  
+
   def get_values(conference, user, event = nil, booth = nil)
     parser = EmailTemplateParser.new(conference, user)
-    values = parser.retrieve_values(event, booth)
-    values
+    parser.retrieve_values(event, booth)
   end
 
   def generate_event_mail(event, event_template)

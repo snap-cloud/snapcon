@@ -41,7 +41,6 @@ class EmailTemplateParser
       h['registration_end_date'] = @conference.registration_period.end_date
     end
     if event
-      puts("there is an event")
       h['eventtitle'] = event.title
       h['proposalslink'] = Rails.application.routes.url_helpers.conference_program_proposals_url(
         @conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
