@@ -4,6 +4,7 @@ class EmailTemplateParser
     @user = user
   end
 
+  # rubocop:disable Metrics/AbcSize, Metrics/ParameterLists
   def retrieve_values(event = nil, booth = nil, quantity = nil, ticket = nil)
     h = {
       'email'                  => @user.email,
@@ -71,4 +72,5 @@ class EmailTemplateParser
     end
     text
   end
+  # rubocop:enable Metrics/AbcSize, Metrics/ParameterLists
 end
