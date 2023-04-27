@@ -25,7 +25,7 @@ describe CurrencyConversion do
 
     it 'add a currency conversion', feature: true do
       visit admin_conference_currency_conversions_path(conference.short_title)
-      click_button 'Add Currency Conversion'
+      click_link 'Add Currency Conversion'
 
 <<<<<<< HEAD
       fill_in 'currency_conversion_from_currency', with: 'USD'
@@ -74,7 +74,7 @@ describe CurrencyConversion do
       visit admin_conference_currency_conversions_path(conference.short_title)
 
       # Remove currency conversion
-      within('table tr:nth-of-type(1)') do
+      within('table#currency_conversions tr:nth-of-type(1)') do
         click_link 'Delete'
       end
       page.accept_alert
