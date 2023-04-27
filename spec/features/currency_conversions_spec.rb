@@ -25,7 +25,7 @@ describe CurrencyConversion do
 
     it 'add a currency conversion', feature: true do
       visit admin_conference_currency_conversions_path(conference.short_title)
-      click_link 'Add Currency Conversion'
+      click_button 'Add Currency Conversion'
 
 <<<<<<< HEAD
       fill_in 'currency_conversion_from_currency', with: 'USD'
