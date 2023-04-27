@@ -5,6 +5,7 @@ require 'spec_helper'
 describe CurrencyConversion do
   let!(:conference) { create(:conference, title: 'ExampleCon') }
 <<<<<<< HEAD
+<<<<<<< HEAD
   let!(:admin) { create(:admin) }
 
   context 'as an admin' do
@@ -17,6 +18,13 @@ describe CurrencyConversion do
     before do
       sign_in organizer
 >>>>>>> 306aded2d (row one for rspec)
+=======
+  let!(:admin) { create(:admin) }
+
+  context 'as a organizer' do
+    before do
+      sign_in admin
+>>>>>>> e01a54549 (login as admin for rspec tests)
     end
 
     after do
@@ -27,6 +35,7 @@ describe CurrencyConversion do
       visit admin_conference_currency_conversions_path(conference.short_title)
       click_link 'Add Currency Conversion'
 
+<<<<<<< HEAD
 <<<<<<< HEAD
       fill_in 'currency_conversion_from_currency', with: 'USD'
       fill_in 'currency_conversion_to_currency', with: 'EUR'
@@ -40,6 +49,13 @@ describe CurrencyConversion do
 
       click_button 'Create Currency Conversion'
 >>>>>>> 306aded2d (row one for rspec)
+=======
+      fill_in 'currency_conversion_from_currency', with: 'USD'
+      fill_in 'currency_conversion_to_currency', with: 'EUR'
+      fill_in 'currency_conversion_rate', with: '0.89'
+
+      click_button 'Create Currency conversion'
+>>>>>>> e01a54549 (login as admin for rspec tests)
       page.find('#flash')
       expect(flash).to eq('Currency conversion was successfully created.')
       within('table#currency_conversions') do
