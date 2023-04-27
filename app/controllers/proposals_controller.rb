@@ -30,6 +30,7 @@ class ProposalsController < ApplicationController
     @user = User.new
     @url = conference_program_proposals_path(@conference.short_title)
     @languages = @program.languages_list
+    @superevents = @program.super_events
   end
 
   def edit
