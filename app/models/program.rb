@@ -245,6 +245,10 @@ class Program < ApplicationRecord
     end
   end
 
+  def super_events
+    events.where(supervent: true)
+  end
+
   private
 
   def cache_key_for_schedule

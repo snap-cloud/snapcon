@@ -27,5 +27,6 @@
           currency: @total_amount_to_pay.currency,
           name: ENV.fetch('OSEM_NAME', 'OSEM'),
           description: "#{@conference.title} tickets",
-          key: ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key, locale: "auto"}}
+          key: ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key,
+          locale: "auto"}}
   = link_to 'Edit Purchase', conference_tickets_path(@conference.short_title), class: 'btn btn-default'

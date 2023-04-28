@@ -137,3 +137,5 @@ latest.dump*
 .ackrc
 spec/support/deprecation_shitlist.json
 .vs/*
+
+cc-test-reporter
