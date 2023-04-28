@@ -26,7 +26,7 @@ describe CurrencyConversion do
       click_button 'Create Currency conversion'
       page.find('#flash')
       expect(flash).to eq('Currency conversion was successfully created.')
-      within('table#currency_conversions') do
+      within('table#currency-conversions') do
         expect(page.has_content?('USD')).to be true
         expect(page.has_content?('EUR')).to be true
         expect(page.assert_selector('tbody tr', count: 1)).to be true
@@ -46,7 +46,7 @@ describe CurrencyConversion do
 
       # Validations
       expect(flash).to eq('Currency conversion was successfully deleted.')
-      within('table#currency_conversions') do
+      within('table#currency-conversions') do
         expect(page.assert_selector('tbody tr', count: 0)).to be true
       end
     end
