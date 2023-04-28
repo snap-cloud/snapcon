@@ -12,4 +12,5 @@
 class CurrencyConversion < ApplicationRecord
   belongs_to :conference
   validates :rate, numericality: { greater_than: 0 }
+  validates :from_currency, uniqueness: { scope: :to_currency }
 end
