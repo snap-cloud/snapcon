@@ -15,6 +15,8 @@
 #  ticket_id     :integer
 #  user_id       :integer
 #
+
+# add a currency field
 class TicketPurchase < ApplicationRecord
   belongs_to :ticket
   belongs_to :user
@@ -107,6 +109,12 @@ class TicketPurchase < ApplicationRecord
     if ticket.try(:registration_ticket?) && user.tickets.for_registration(conference).present?
       errors.add(:quantity, 'cannot be greater than one for registration tickets.')
     end
+  end
+
+  def generate_confirmation_mail(event_template)
+    parser = EmailTemplateParser.new(conference, user)
+    values = parser.retrieve_values(nil, nil, quantity, ticket)
+    parser.parse_template(event_template, values)
   end
 end
 
