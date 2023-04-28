@@ -26,7 +26,8 @@
       .tab-content
         .tab-pane.active{role: 'tabpanel', id: 'signup'}
           = form_for(@event, url: @url) do |f|
-            = render partial: 'devise/registrations/new_embedded'
+            = render 'devise/registrations/new_embedded'
             = render 'form', f: f
+            = render 'shared/user_selectize'
         .tab-pane{role: 'tabpanel', id: 'signin'}
-          = render partial: 'devise/sessions/new_embedded'
+          = render 'devise/sessions/new_embedded'
