@@ -34,7 +34,6 @@ describe CurrencyConversion do
       end
     end
 
-
     it 'edit a currency conversion', feature: true do
       conference.currency_conversions << create(:currency_conversion)
       visit admin_conference_currency_conversions_path(conference.short_title)
