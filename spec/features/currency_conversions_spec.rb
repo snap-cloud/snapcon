@@ -39,7 +39,7 @@ describe CurrencyConversion do
       conference.currency_conversions << create(:currency_conversion)
       visit admin_conference_currency_conversions_path(conference.short_title)
       within('table tbody tr:nth-of-type(1) td:nth-of-type(4)') do
-          click_link 'Edit'
+        click_link 'Edit'
       end
       fill_in 'currency_conversion_from_currency', with: 'USD'
       fill_in 'currency_conversion_to_currency', with: 'RMB'
