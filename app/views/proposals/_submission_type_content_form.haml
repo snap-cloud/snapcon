@@ -1,3 +1,6 @@
+%h2 Submission Type and Details
+%p Please select a submission type, then fill in the abstract and extended details.
+
 .form-group
   = f.label :event_type_id, 'Type'
   = f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
@@ -5,8 +8,7 @@
 - program.event_types.each do |event_type|
   .help-block.event_event_type_id.collapse{ id: "#{event_type.id}-help" }
     %strong Description
-    %div
-      = markdown(event_type.description)
+    = markdown(event_type.description)
 
 %h3 Submission Abstract
 %p
@@ -15,7 +17,7 @@
 
 = f.label :abstract, class: 'sr-only'
 = f.text_area :abstract, required: true, label: nil, rows: 5, data: { provide: 'markdown' }, class: 'form-control md-input'
-%span.help-block= markdown_hint
+.help-block= markdown_hint
 
 %p
   You have used
@@ -26,38 +28,30 @@
   %span#abstract-maximum-word-count 250
   words.
 
-%hr
-%h3 Submission Details
-%p
-  This part of the submission is intended only for the conference committee.
+%h3 Extended Information
+%p This part of the submission is intended only for the conference committee.
 
 - program.event_types.each do |event_type|
   .help-block.select-help-text.event_event_type_id.collapse{ id: "#{event_type.id}-instructions" }
     - if event_type.submission_instructions.blank?
       %p
         Use this space to include any additional inforrmation that is helpful in reviewing your
-        submission. If you have any co-presenters, please include them
-        below. After submission, you will have the opportunity to add them to the
-        speakers list. (However, they must have an active #{ENV['OSEM_NAME']} account.)
+        submission.
     - else
       %p
         Please use the following as the template for your submission. This will help the conference
-        committee review your submission with all the details they need. If you have any
-        co-presenters, please include them below. After submission, you will have the opportunity
-        to add them to the speakers list. (However, they must have an active #{ENV['OSEM_NAME']}
-        account.)
+        committee review your submission with all the details they need.
       .panel.panel-primary
-        .panel-heading
-          = event_type.name
-          Template
-        .panel-body
-          = markdown(event_type.submission_instructions)
+        .panel-heading= "#{event_type.name} Template"
+        .panel-body= markdown(event_type.submission_instructions)
         .panel-footer
           %button.btn.btn-warning.btn-xs.js-resetSubmissionText{ type: 'button',
             data: { confirm: 'Do you really want to reset your submission text to the provided template?' } }
             Reset Submission to Template
           %span.small You may want to use this if you have changed the submission type.
 
-= f.label :submission_text, class: 'sr-only'
-= f.text_area :submission_text, rows: 10, data: { provide: 'markdown' }, class: 'form-control md-input'
-%span.help-block= markdown_hint
+%hr
+.form-group
+  = f.label :submission_text, class: 'sr-only'
+  = f.text_area :submission_text, rows: 10, data: { provide: 'markdown' }, class: 'form-control md-input'
+  .help-block= markdown_hint
