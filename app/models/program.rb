@@ -246,7 +246,7 @@ class Program < ApplicationRecord
   end
 
   def super_events
-    events.where(supervent: true)
+    events.where(superevent: true)
   end
 
   private
