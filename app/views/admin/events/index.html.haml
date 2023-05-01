@@ -59,32 +59,22 @@
       %table.datatable
         %thead
           %tr
-            %th
-              %b ID
-            %th
-              %b Title
+            %th ID
+            %th Title
             - if @program.rating_enabled?
-              %th
-                %b Rating
-            %th
-              %b Submitter
-            %th
-              %b Speakers
+              %th Rating
+            %th Submitter
+            %th Speakers
             - if @program.languages.present?
-              %th
-                %b Language
-            %th
-              %b Requires Registration
-            %th
-              %b Highlight
-            %th
-              %b Type
-            %th
-              %b Track
-            %th
-              %b Difficulty
-            %th
-              %b State
+              %th Language
+            %th Requires Registration
+            %th Highlight
+            %th Type
+            - if @program.tracks.any?
+              %th Track
+            - if @program.difficulty_levels.any?
+              %th Difficulty
+            %th State
             %th
               .fa-solid.fa-comment
             %th Add Survey

@@ -1,7 +1,6 @@
 - cache ['admin', conference_id, program, event, current_user] do
   %tr{ id: "event-#{event.id}" }
-    %td
-      = event.id
+    %td= event.id
 
     %td
       = link_to event.title,
