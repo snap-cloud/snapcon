@@ -275,7 +275,7 @@ module EventsHelper
     return unless user
 
     role_map = roles.map { |role| { name: role, resource: conference } }
-    return unless user.is_admin || user.has_any_role?(role_map)
+    return unless user.is_admin || user.has_any_role?(*role_map)
 
     content_tag(:div, class: 'panel panel-info') do
       concat content_tag(:div, 'Conference Organizers', class: 'panel-heading')
