@@ -6,9 +6,9 @@
         = "(#{@events.length})" if @events.any?
 
         .btn-group.pull-right
-          %button.btn.btn-primary{ title: 'Mass import of materials for events',
+          %button.btn.btn-primary{ title: 'Mass import of commercials for events',
             data: { toggle: 'modal', target: '#mass-commercials-modal' } }
-            Add Materials
+            Add Commercials
 
           - if can? :create, Event
             = link_to 'Add Event',
@@ -28,14 +28,8 @@
   .modal-dialog
     .modal-content
       .modal-header
-        %h1 Add materials to events
-        .text-muted
-          Upload your file with data in the following format:
-          %b Event_ID:Commercial_Link
-          , eg.
-          %br
-          %code 11:https://youtube.com/myvideo
-
+        %h1
+          Add commercials to events
       .modal-body
         = form_for('', url: mass_upload_commercials_admin_conference_program_path(@conference.short_title), method: :post) do |f|
           .form-group
@@ -62,51 +56,48 @@
 .row
   .col-md-12
     .margin-event-table
-      %table.datatable.table
+      %table.datatable
         %thead
-          %th
-            %b ID
-          %th
-            %b Title
-          - if @program.rating_enabled?
+          %tr
             %th
-              %b Rating
-          %th
-            %b Submitter
-          %th
-            %b Speakers
-          %th
-            %b Volunteers
-          - if @program.languages.present?
+              %b ID
             %th
-              %b Language
-          %th
-            %b Requires Registration
-          %th
-            %b Highlight
-          - if @program.event_types.any?
+              %b Title
+            - if @program.rating_enabled?
+              %th
+                %b Rating
+            %th
+              %b Submitter
+            %th
+              %b Speakers
+            - if @program.languages.present?
+              %th
+                %b Language
+            %th
+              %b Requires Registration
+            %th
+              %b Highlight
             %th
               %b Type
-          - if @program.tracks.any?
             %th
               %b Track
-          - if @program.difficulty_levels.any?
             %th
               %b Difficulty
-          %th
-            %b State
-          %th
-            .fa-solid.fa-comment
-          %th Add Survey
-        - @events.each do |event|
-          = render 'datatable_row',
-            event: event,
-            conference_id: @conference.short_title,
-            program: @program,
-            rating_enabled: @program.rating_enabled?,
-            show_votes: @program.show_voting?,
-            max_rating: @program.rating,
-            event_types: @event_types,
-            tracks: @tracks,
-            difficulty_levels: @difficulty_levels,
-            email_settings: @conference.email_settings
+            %th
+              %b State
+            %th
+              .fa-solid.fa-comment
+            %th Add Survey
+        %tbody
+          - @events.each do |event|
+            = render 'datatable_row',
+              event: event,
+              conference_id: @conference.short_title,
+              program: @program,
+              rating_enabled: @program.rating_enabled?,
+              show_votes: @program.show_voting?,
+              max_rating: @program.rating,
+              event_types: @event_types,
+              tracks: @tracks,
+              difficulty_levels: @difficulty_levels,
+              email_settings: @conference.email_settings

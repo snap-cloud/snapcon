@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV.fetch('OSEM_RUBY_VERSION', '3.1.3')
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.1.4')
 
 # rails-assets requires >= 1.8.4
 abort 'Bundler version >= 1.8.4 is required' if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
@@ -225,13 +225,12 @@ gem 'bullet'
 # For collecting performance data
 gem 'skylight', '~> 5'
 
-gem 'nokogiri'
-
 # memcached binary connector
 gem 'dalli', require: false
 # Redis Cache
 gem 'redis'
 
+# to generate ical files
 gem 'icalendar'
 
 # for making external requests easier
@@ -240,7 +239,9 @@ gem 'httparty'
 # pagination
 gem 'pagy', '<4.0'
 
-# Use guard for testing in development
+# to tame logs
+gem 'lograge'
+
 group :development do
   # to launch specs when files are modified
   gem 'guard-rspec'

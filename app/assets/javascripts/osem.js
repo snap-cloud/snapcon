@@ -165,8 +165,8 @@ function replace_defaut_submission_text(input_selector, new_text, valid_defaults
 
 /* Wait for the DOM to be ready before attaching events to the elements */
 $( document ).ready(function() {
-    /* Set the minimum and maximum proposal abstract and submission text word length */
-    $("#event_event_type_id").change(function () {
+    /* Set the minimum and maximum proposal abstract word length */
+    function updateEventTypeRequirements() {
         var $selected = $("#event_event_type_id option:selected")
         var max = $selected.data("max-words");
         var min = $selected.data("min-words");
@@ -184,8 +184,9 @@ $( document ).ready(function() {
         $("#abstract-minimum-word-count").text(min);
         $("#submission-minimum-word-count").text(min);
         word_count($('#event_abstract').get(0), 'abstract-count', max);
-        word_count($('#event_submission_text').get(0), 'submission-count', max);
-    }).trigger('change');
+    }
+    $("#event_event_type_id").change(updateEventTypeRequirements);
+    updateEventTypeRequirements();
 
     /* Count the proposal abstract length */
     $("#event_abstract").on('input', function() {
@@ -220,7 +221,6 @@ window.build_dialog = function(selector, content) {
   // Close it and remove content if it's already open
   $("#" + selector).modal('hide');
   $("#" + selector).remove();
-  // Add new content and pops it up
-  $("body").append("<div id=\"" + selector + "\" class=\"modal fade\" role=\"dialog\">\n" + content + "</div>");
+  $("body").append(`<div id="${selector}" class="modal fade" role="dialog">${content}</div>`);
   $("#" + selector).modal();
 }

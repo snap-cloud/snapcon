@@ -84,7 +84,7 @@ describe Event do
       @event.accept!(@options)
     end
 
-    it 'not signed_in user submits proposal' do
+    scenario 'not signed_in user submits proposal', js: true do
       expected_count_event = Event.count + 1
       expected_count_user = User.count + 1
 
@@ -96,7 +96,9 @@ describe Event do
         fill_in 'user_password_confirmation', with: 'testuserpassword'
       end
       fill_in 'event_title', with: 'Example Proposal'
+      expect(page).to have_selector '.in', text: 'Presentation in lecture format'
       select('Example Event Type', from: 'event[event_type_id]')
+      expect(page).to have_selector '.in', text: 'This event type is an example.'
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'
       fill_in 'event_submission_text', with: 'Lorem ipsum submission'
 
@@ -119,8 +121,11 @@ describe Event do
       expect(page).to have_content 'Proposal Information'
     end
 
-    it 'update a proposal' do
+    scenario 'update a proposal', js: true do
       conference = create(:conference)
+      create :track, program:     conference.program,
+                     name:        'Example Track',
+                     description: 'This track is an *example*.'
       create(:cfp, program: conference.program)
       proposal = create(:event, program: conference.program)
 
@@ -129,7 +134,10 @@ describe Event do
       visit edit_conference_program_proposal_path(proposal.program.conference.short_title, proposal)
 
       fill_in 'event_subtitle', with: 'My event subtitle'
+      select 'Example Track', from: 'Track'
+      expect(page).to have_selector '.in', text: 'This track is an example.'
       select('Easy', from: 'event[difficulty_level_id]')
+      expect(page).to have_selector '.in', text: 'Events are understandable for everyone without knowledge of the topic.'
 
       click_button 'Update Proposal'
       page.find('#flash')
@@ -142,11 +150,10 @@ describe Event do
 
       visit conference_program_proposals_path(conference.short_title)
       click_link 'New Proposal'
-      expect(page).to have_selector(".in[id='#{find_field('event[event_type_id]').value}-help']") # End of animation
 
       fill_in 'event_title', with: 'Example Proposal'
       select('Example Event Type', from: 'event[event_type_id]')
-      expect(page).to have_selector(".in[id='#{find_field('event[event_type_id]').value}-help']") # End of animation
+      expect(page).to have_selector '.in', text: 'This event type is an example.'
 
       expect(page).to have_text('Example Event Description')
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'

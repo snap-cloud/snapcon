@@ -5,6 +5,23 @@
   = f.label :title
   %abbr{title: 'This field is required'} *
   = f.text_field :title, autofocus: true, required: true, class: 'form-control'
+<<<<<<< HEAD
+=======
+- if action_is_edit
+  .form-group
+    = f.label :subtitle
+    = f.text_field :subtitle, class: 'form-control'
+  .form-group
+    = f.select :speaker_ids, f.object.speakers.pluck(:username, :id), {}, {  multiple: true, class: "form-control", id: "users_selectize", placeholder: "Speakers" }
+    %span.help-block
+      The people responsible for the event, beside you. You can only select existing users.
+  - if @program.tracks.confirmed.cfp_active.any?
+    .form-group
+      = f.label :track_id, 'Track'
+      = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), { include_blank: '(Please select)' }, { class: 'form-control select-help-toggle' }
+      = render 'shared/select_help_text', f: f, for: :track_id, include_blank: true, options: @program.tracks.confirmed.cfp_active do |track|
+        = markdown(track.description)
+>>>>>>> osem-master
 .form-group
   = f.label :subtitle
   = f.text_field :subtitle, class: 'form-control'
@@ -51,6 +68,7 @@
 
 - if @program.languages.present?
   .form-group
+<<<<<<< HEAD
     = f.label :language
     = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
 
@@ -61,6 +79,65 @@
     - @conference.program.difficulty_levels.each do |difficulty_level|
       .help-block.select-help-text.collapse{ id: "#{difficulty_level.id}-help" }
         = difficulty_level.description
+=======
+  = f.label :language
+  = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
+= render 'shared/select_help_text', f: f, for: :event_type_id, options: @conference.program.event_types do |event_type|
+  = event_type.description
+- if action_is_edit
+  - if @conference.program.difficulty_levels.any?
+    = f.label :difficulty_level
+    = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
+    = render 'shared/select_help_text', f: f, for: :difficulty_level_id, options: @conference.program.difficulty_levels do |difficulty_level|
+      = difficulty_level.description
+.form-group
+  = f.label :abstract
+  = f.text_area :abstract, required: true, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
+  %span.help-block
+    = markdown_hint('[Tips to improve your presentations.](http://blog.hubspot.com/blog/tabid/6307/bid/5975/10-Rules-to-Instantly-Improve-Your-Presentations.aspx)')
+  %p
+    You have used
+    %span#abstract-count = @event.abstract_word_count
+    words.  Abstracts must be between
+    %span#abstract-minimum-word-count
+      0
+    and
+    %span#abstract-maximum-word-count
+      250
+    words.
+  - if display_registration && action_is_edit
+    %h4
+      Event Registration
+    %hr
+  - if display_registration
+    .checkbox
+      %label
+        = f.check_box :require_registration
+        Require participants to register to your event
+  - if display_registration && action_is_edit
+    .form-group
+      = f.number_field :max_attendees
+      %span.help-block
+        - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
+        = 'The maximum number of participants. ' + message
+  - if action_is_edit && current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
+    .checkbox
+      %label
+        = f.check_box :is_highlight
+        Is a highlight?
+  %p.text-right
+    = link_to '#description', 'data-toggle' => 'collapse' do
+      Do you require something special for your event?
+  #description{ class: "collapse #{ 'in' if @event.description.present? }" }
+    .form-group
+      = f.label :description, 'Requirements'
+      = f.text_area :description, rows: 5
+      %span.help-block
+        Eg. Whiteboard, printer, or something like that.
+  %p.text-right
+    - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
+    = f.submit submit_copy, class: 'btn btn-success'
+>>>>>>> osem-master
 
 - if @event.committee_review.present?
   %br
