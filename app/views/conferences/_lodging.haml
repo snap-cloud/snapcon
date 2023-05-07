@@ -23,13 +23,6 @@
                 - else
                   = image_tag lodging.picture.large.url,
                     class: 'img-responsive img-lodging'
-              - else
-                %p.text-center
-                  - if lodging.website_link.present?
-                    = link_to(lodging.website_link, class: 'thumbnail') do
-                      %i.fa-solid.fa-house.fa-5x
-                  - else
-                    %i.fa-solid.fa-house.fa-5x
               .caption
                 %h3.text-center
                   - if lodging.website_link.present?
