@@ -127,7 +127,7 @@ function starClicked(e) {
   if (e.stopPropagation) e.stopPropagation();
 
   var callback = function(data) {
-    $(e.target).toggleClass('fa-star fa-star-o');
+    $(e.target).toggleClass('fa-solid fa-regular');
   }
 
   var params = { favourite_user_id: $(e.target).data('user') };
@@ -159,7 +159,7 @@ function updateFavouriteStatus(options) {
   }
 
   options.events.forEach(function (id) {
-    $(`#eventFavourite-${id}`).removeClass('fa-star-o').addClass('fa-star');
+    $(`#eventFavourite-${id}`).removeClass('fa-regular').addClass('fa-solid');
   });
 }
 
