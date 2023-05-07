@@ -206,4 +206,9 @@ hint: options[:hint]
       block.call
     end
   end
+
+  def visible_conference_links
+    @visible_conference_links ||=
+      Conference.all.select(:id, :organization_id, :title, :short_title, :start_date).includes(:splashpage).select { |conf| can?(:show, conf) }.group_by(&:organization)
+  end
 end
