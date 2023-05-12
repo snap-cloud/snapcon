@@ -428,7 +428,7 @@ class User < ApplicationRecord
   # Check if biography has an allowed number of words. Used as validation.
   #
   def biography_limit
-    errors.add(:biography, 'is limited to 150 words.') if biography.present? && (biography.split.length > 150)
+    errors.add(:biography, 'is limited to 200 words.') if biography.present? && (biography.split.length > 200)
   end
 
   def send_devise_notification(notification, *args)

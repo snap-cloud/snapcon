@@ -1,8 +1,8 @@
 %span.js-toggleEvent{ style: 'padding: 8px;' }
   = link_to('#', onClick: 'starClicked();',
             'aria-label': "#{is_favourite ? 'un' : ''}favorite event #{event.title}") do
-    %i.fa.fa-2x{ style: "color: #{color}",
+    %i.fa-star.fa-2x{ style: "color: #{color}",
         id: "eventFavourite-#{event.id}",
-        class: is_favourite ? 'fa-star' : 'fa-star-o',
+        class: is_favourite ? 'fa-solid' : 'fa-regular',
         'aria-hidden': 'true',
         'data-url': toggle_favorite_conference_program_proposal_path(conference.short_title, event.id) }
