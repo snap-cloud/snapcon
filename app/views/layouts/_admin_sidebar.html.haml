@@ -116,6 +116,12 @@
         - if can? :update, @conference.tickets.build
           %li{class: active_nav_li(admin_conference_tickets_path(@conference.short_title)) }
             = link_to 'Tickets', admin_conference_tickets_path(@conference.short_title)
+        - if can? :update, @conference.currency_conversions.build
+          %li
+            = link_to 'Currency', admin_conference_currency_conversions_path(@conference.short_title)
+
+
+
   - if can? :manage, @conference.booths.build
     %li
       = link_to  admin_conference_booths_path(@conference.short_title) do
