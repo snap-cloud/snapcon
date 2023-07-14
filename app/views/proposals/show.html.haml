@@ -120,6 +120,12 @@
               .col-md-12
                 %dt Type:
                 %dd= @event.event_type&.title
+            - if @event.presentation_mode
+              .col-md-12
+                %dt Presented via:
+                %dd
+                  %span.fa-solid.fa-person-chalkboard
+                  = @event.presentation_mode
             - if @event.track
               .col-md-12
                 %dt Track:
