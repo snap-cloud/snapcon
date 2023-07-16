@@ -290,8 +290,8 @@ end
 group :development, :test, :linters do
   # as debugger
   gem 'byebug'
-  gem 'pry'
-  gem 'pry-byebug'
+  # gem 'pry'
+  # gem 'pry-byebug'
 
   # Linters and static analysis.
   gem 'faraday-retry', require: false
