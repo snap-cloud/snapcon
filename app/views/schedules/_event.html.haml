@@ -67,11 +67,11 @@
           %span.fa-solid.fa-road
           .label{ style: css_background_color(event.track.color) }
             = event.track.name
-        - if %event.presentation_mode
-          -# TODO: Use fa-podium pro icon
-          .label
-            %span.fa-solid.fa-person-chalkboard
-            = event.presentation_mode
+      - if event.presentation_mode
+        -# TODO: Use fa-podium pro icon
+        %span.fa-solid.fa-person-chalkboard
+        .label.label-info
+          = event.presentation_mode.humanize
       - if event.superevent && event.subevents.present?
         %br
         %br

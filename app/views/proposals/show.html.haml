@@ -125,7 +125,7 @@
                 %dt Presented via:
                 %dd
                   %span.fa-solid.fa-person-chalkboard
-                  = @event.presentation_mode
+                  = @event.presentation_mode.humanize
             - if @event.track
               .col-md-12
                 %dt Track:
