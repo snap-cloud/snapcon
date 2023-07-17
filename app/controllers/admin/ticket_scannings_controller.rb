@@ -14,7 +14,7 @@ module Admin
       authorize! :create, @ticket_scanning
       @ticket_scanning.save
       dest_path = conferences_path
-      if request.referer.match?(%r{admin/conferences})
+      if request.referer&.match?(%r{admin/conferences})
         dest_path = admin_conference_physical_tickets_path(@conference)
       end
       redirect_to dest_path,
