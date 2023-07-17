@@ -13,7 +13,11 @@ module Admin
       @ticket_scanning = TicketScanning.new(physical_ticket: @physical_ticket)
       authorize! :create, @ticket_scanning
       @ticket_scanning.save
-      redirect_to conferences_path,
+      dest_path = conferences_path
+      if request.referer.match?(/admin\/conferences/)
+        dest_path = admin_conference_physical_tickets_path(@conference)
+      end
+      redirect_to dest_path,
                   notice: "Ticket with token #{@physical_ticket.token} successfully scanned."
     end
   end
