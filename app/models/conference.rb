@@ -897,7 +897,7 @@ class Conference < ApplicationRecord
         next unless %i[confirmed unconfirmed].include?(state)
 
         result[state.to_s.capitalize] = {} unless result[state.to_s.capitalize]
-        result[state.to_s.capitalize][week.strftime('%W').to_i] = value
+        result[state.to_s.capitalize][DateTime.parse(week).strftime('%W').to_i] = value
       end
     end
 
