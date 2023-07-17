@@ -21,7 +21,7 @@ module DateTimeHelper
   def format_datetime(obj)
     return unless obj
 
-    obj = DateTime.parse(obj) unless ob.respond_to?(:strftime)
+    obj = DateTime.parse(obj) unless obj.respond_to?(:strftime)
 
     obj.strftime('%Y-%m-%d %H:%M')
   end
