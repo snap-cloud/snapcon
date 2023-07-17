@@ -517,9 +517,6 @@ GEM
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.9.0)
-      byebug (~> 11.0)
-      pry (~> 0.13.0)
     public_suffix (5.0.1)
     puma (6.3.0)
       nio4r (~> 2.0)
@@ -844,8 +841,6 @@ DEPENDENCIES
   pronto
   pronto-haml
   pronto-rubocop
-  pry
-  pry-byebug
   puma
   rails (~> 7.0)
   rails-assets-bootstrap!
