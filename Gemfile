@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV.fetch('OSEM_RUBY_VERSION', '3.1.3')
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.2.2')
 
 # rails-assets requires >= 1.8.4
 abort 'Bundler version >= 1.8.4 is required' if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
@@ -290,8 +290,8 @@ end
 group :development, :test, :linters do
   # as debugger
   gem 'byebug'
-  gem 'pry'
-  gem 'pry-byebug'
+  # gem 'pry'
+  # gem 'pry-byebug'
 
   # Linters and static analysis.
   gem 'faraday-retry', require: false

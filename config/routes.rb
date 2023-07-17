@@ -124,6 +124,7 @@ Osem::Application.routes.draw do
           post :give
         end
       end
+      resources :physical_tickets, only: %i[delete]
       resources :sponsors, except: [:show]
       resources :lodgings, except: [:show]
       resources :emails, only: %i[show update index]
