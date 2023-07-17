@@ -1,8 +1,24 @@
 %tr
   %td= physical_ticket.id
   %td= physical_ticket.ticket.title
-  %td= physical_ticket.user.email
+  %td= physical_ticket.ticket.registration_ticket? ? 'Yes' : 'No'
+  %td= physical_ticket.user&.email
   %td= humanized_money_with_symbol physical_ticket.ticket_purchase.amount_paid
+  %td
+    - if physical_ticket.ticket_scannings.present?
+      %span Checked in:
+      %br
+      = format_all_timestamps(physical_ticket.ticket_scannings.pluck(:created_at), conference)
+    = form_for(physical_ticket, url: admin_ticket_scanning_path, method: :post) do |f|
+      = f.hidden_field 'token'
+      = f.submit "Mark Present", { class: 'btn btn-success' }
+    -# %form{method: "post", action: admin_ticket_scanning_path}
+    -#   %input{type: "hidden", name: "token", value: physical_ticket.token}
+    -#   %input{type: "submit", class: 'btn btn-success', value: "Mark Present"}
+    -# = button_to('Mark Attended',
+    -#             admin_ticket_scanning_path(token: physical_ticket.token),
+    -#             method: :post,
+    -#             class: 'btn btn-success')
   %td
     .btn-group
       = link_to 'Show',
@@ -13,4 +29,4 @@
       conference_physical_ticket_path(conference.short_title,
                                       physical_ticket.token,
                                       format: :pdf),
-      class: 'button btn btn-default btn-info'
+      class: 'button btn btn-info'
