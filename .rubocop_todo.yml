@@ -47,6 +47,8 @@ Metrics/AbcSize:
 # IgnoredMethods: refine
 Metrics/BlockLength:
   Max: 226
+  Exclude:
+    - 'config/routes.rb'
 
 # Offense count: 14
 # Configuration parameters: CountComments, CountAsOne.
