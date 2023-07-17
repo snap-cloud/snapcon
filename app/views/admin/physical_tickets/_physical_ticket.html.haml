@@ -12,13 +12,6 @@
     = form_for(physical_ticket, url: admin_ticket_scanning_path, method: :post) do |f|
       = f.hidden_field 'token'
       = f.submit "Mark Present", { class: 'btn btn-success' }
-    -# %form{method: "post", action: admin_ticket_scanning_path}
-    -#   %input{type: "hidden", name: "token", value: physical_ticket.token}
-    -#   %input{type: "submit", class: 'btn btn-success', value: "Mark Present"}
-    -# = button_to('Mark Attended',
-    -#             admin_ticket_scanning_path(token: physical_ticket.token),
-    -#             method: :post,
-    -#             class: 'btn btn-success')
   %td
     .btn-group
       = link_to 'Show',
