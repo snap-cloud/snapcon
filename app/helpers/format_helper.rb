@@ -111,7 +111,7 @@ module FormatHelper
   end
 
   def word_pluralize(count, singular, plural = nil)
-    if count == 1 || count =~ /^1(\.0+)?$/
+    if count == 1 || (count > 0 && count < 2)
       singular
     else
       plural || singular.pluralize
