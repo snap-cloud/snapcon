@@ -15,7 +15,7 @@ module Admin
       @ticket_scanning.save
       dest_path = conferences_path
       if request.referer&.match?(%r{admin/conferences})
-        dest_path = admin_conference_physical_tickets_path(@conference)
+        dest_path = admin_conference_physical_tickets_path(conference_id: @conference.short_title)
       end
       redirect_to dest_path,
                   notice: "Ticket with token #{@physical_ticket.token} successfully scanned."
