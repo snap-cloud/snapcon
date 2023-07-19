@@ -89,7 +89,8 @@
               - @event.program_subevents.each do |subevent|
                 .col-xs-12.col-md-10
                   - subevent_schedule = subevent.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
-                  - cache [subevent_schedule, subevent, current_user, @event_schedule.happening_now?, '#scheduled#full#panel'] do
+                  - happening_now = @event_schedule&.happening_now? || 'unscheduled'
+                  - cache [subevent_schedule, subevent, current_user, happening_now, '#scheduled#full#panel'] do
                     = render 'schedules/event', event: subevent, event_schedule: subevent_schedule, is_brief: true
           %dl#proposal-info
             .col-md-12
