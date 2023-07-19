@@ -9,10 +9,6 @@
 .panel.panel-default
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
   .panel-heading{ style: "#{color_style} border-radius: 4px" }
-    -# %p
-      = canceled_replacement_event_label(event, event_schedule)
-      = replacement_event_notice(event_schedule, styles: color_style)
-
     %div{ style: 'display: flex; flex-direction: row;' }
       -# In the schedule view, favorited events show as false, until set by JS. (Caching perf)
       = render 'proposals/toggle_favorite_event',
@@ -38,6 +34,8 @@
       - if event.speakers.any?
         %h4
           = event.speaker_names
+      - else
+        %br
       - if !event.parent_event.present? && event_schedule.present?
         - if condensed_view
           - new_start_time = current_user ? convert_timezone(event_schedule.start_time, event.timezone, current_user.timezone) || event_schedule.start_time : event_schedule.start_time
