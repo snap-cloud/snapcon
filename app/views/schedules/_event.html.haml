@@ -53,26 +53,28 @@
       - if event_schedule.present?
         - new_start_time = convert_timezone(event_schedule.start_time, event.timezone, tz_object.timezone)
         - new_end_time = convert_timezone(event_schedule.end_time, event.timezone, tz_object.timezone)
-        = inyourtz(event_schedule.start_time, event.timezone) do
+        .track
           %span.fa-solid.fa-clock
+          = inyourtz(event_schedule.start_time, event.timezone) do
             .label.label-info
               = new_start_time.strftime('%l:%M %P')
               \-
               = "#{new_end_time.strftime('%l:%M %P')} #{timezone_text(tz_object)}"
-        %span.fa-solid.fa-location-dot
-          .label.label-info
-            = event_schedule.room.name
+        .track
+          %span.fa-solid.fa-location-dot
+          .label.label-info= event_schedule.room.name
+      - if event.presentation_mode
+        -# TODO: Use fa-podium pro icon
+        %span.fa-solid.fa-person-chalkboard
+        .label.label-info= event.presentation_mode.humanize
+      .track
+        .label{ style: css_background_color(event.event_type.color) }= event.event_type.name
       - if event.track
         .track
           %span.fa-solid.fa-road
           .label{ style: css_background_color(event.track.color) }
             = event.track.name
-      - if event.presentation_mode
-        -# TODO: Use fa-podium pro icon
-        %span.fa-solid.fa-person-chalkboard
-        .label.label-info
-          = event.presentation_mode.humanize
-      - if event.superevent && event.subevents.present?
+      - if event_schedule.present? && event.superevent && event.subevents.present?
         %br
         %br
         - event.program_subevents.each do |subevent|
