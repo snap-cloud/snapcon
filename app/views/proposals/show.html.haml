@@ -29,7 +29,7 @@
               = @event.subtitle
         - if @event.event_type.present?
           - color = css_background_color(@event.event_type&.color || '#f5f5f5')
-          %h3.label{ style: "#{color} margin: 4px; display: inline-block"}
+          .h3.label{ style: "#{color} margin: 4px; display: inline-block"}
             = @event.event_type.title
 
       = join_event_link(@event, @event_schedule, current_user)
@@ -87,7 +87,7 @@
                   - subevent_schedule = subevent.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
                   - happening_now = @event_schedule&.happening_now? || 'unscheduled'
                   - cache [subevent_schedule, subevent, current_user, happening_now, '#scheduled#full#panel'] do
-                    = render 'schedules/event', event: subevent, event_schedule: subevent_schedule, is_brief: true
+                    = render 'schedules/event_mini', event: subevent, event_schedule: subevent_schedule
           %dl#proposal-info
             .col-md-12
               %dt Date:
@@ -145,7 +145,7 @@
           - if @event.parent_event.present?
             .col-md-12
               %h3 This session is a part of:
-              = render 'schedules/event', event: @event.parent_event, is_brief: true, event_schedule: @event_schedules
+              = render 'schedules/event_mini', event: @event.parent_event, event_schedule: @event_schedules
 
           -# TODO-SNAPCON: This is currently disabled due to performance.
           - concurrent = [] # concurrent_events(@event)
