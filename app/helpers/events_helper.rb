@@ -213,13 +213,14 @@ module EventsHelper
   end
 
   def join_event_link(event, event_schedule, current_user, small: false)
-    return unless current_user && event_schedule
-    return if event.ended?
+    return if !event_schedule || event.ended?
 
     unless event_schedule.room_url.present?
-      return content_tag :span, class: 'label label-default' do
-        'In-person only'
-      end
+      return content_tag :span, 'In-person only', class: 'label label-default'
+    end
+
+    unless current_user
+      return content_tag :span, 'Log in to view join link', class: 'label label-default'
     end
 
     conference = event.conference
