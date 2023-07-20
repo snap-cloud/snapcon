@@ -8,7 +8,7 @@
 
 = content_for :about do
   #about
-    = markdown(conference.description, false)
+    = markdown(conference.description, false).html_safe
 
 %section#about-and-happening-now
   .container

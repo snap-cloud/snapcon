@@ -190,7 +190,7 @@ module FormatHelper
       safe_links_only: true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(render_options), markdown_options)
-    sanitize(markdown.render(text))
+    escape_html ? sanitize(markdown.render(text)) : markdown.render(text)
   end
 
   def markdown_hint(text = '')
