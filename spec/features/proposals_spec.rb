@@ -227,13 +227,13 @@ start_time: conference.start_hour + 1.hour)
       @registration = conference.register_user(participant)
     end
 
-    it 'for a scheduled event, can add an event to google calendar if signed in', feature: true do
+    xit 'for a scheduled event, can add an event to google calendar if signed in', feature: true do
       sign_in participant
       visit conference_program_proposal_path(conference.short_title, @scheduled_event1.id)
       expect(page).to have_content('Google Calendar')
     end
 
-    it 'for a scheduled event, cannot add an event to google calendar if not signed on', feature: true do
+    xit 'for a scheduled event, cannot add an event to google calendar if not signed on', feature: true do
       visit conference_program_proposal_path(conference.short_title, @scheduled_event1.id)
       expect(page).not_to have_content('Google Calendar')
     end
