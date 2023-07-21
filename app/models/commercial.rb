@@ -17,9 +17,7 @@
 class Commercial < ApplicationRecord
   require 'oembed'
 
-  belongs_to :commercialable, polymorphic: true
-
-  touch :commercialable
+  belongs_to :commercialable, polymorphic: true, touch: true
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
