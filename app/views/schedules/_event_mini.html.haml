@@ -28,5 +28,5 @@
         = truncate(markdown(event.abstract), length: 250, escape: false)
         - if event.subevents.present?
           %ul
-            - event.subevents.each do |subevent|
+            - event.program_subevents.each do |subevent|
               %li= link_to(subevent.title, conference_program_proposal_path(@conference.short_title, subevent.id))
