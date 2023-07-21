@@ -8,6 +8,9 @@
   .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
   .panel-heading{ style: "#{color_style} border-radius: 4px" }
     %div{ style: 'display: flex; flex-direction: row;' }
+      -# In the schedule view, favorited events show as false, until set by JS. (Caching perf)
+      = render 'proposals/toggle_favorite_event',
+              event: event, color: contrast_color(header_color), conference: @conference, is_favourite: false
       %h3.event-panel-title
         = link_to(event.title, conference_program_proposal_path(@conference.short_title, event.id),style: color_style)
   .trapezoid{ style: "color: #{header_color}; border-top-color: #{header_color}; top: 12px;" }
@@ -26,4 +29,4 @@
         - if event.subevents.present?
           %ul
             - event.subevents.each do |subevent|
-              %li= link_to(subevent)
+              %li= link_to(subevent.title, conference_program_proposal_path(@conference.short_title, subevent.id))

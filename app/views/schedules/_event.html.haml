@@ -65,6 +65,7 @@
           = event.track.name
     - if event_schedule.present? && event.superevent && event.subevents.present?
       %br
+      %br
       - event.program_subevents.each do |subevent|
         .col-12
           / TODO-SNAPCON: REDUCE THE QUERIES

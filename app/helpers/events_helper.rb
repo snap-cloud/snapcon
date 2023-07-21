@@ -239,7 +239,7 @@ module EventsHelper
                                   event_schedule.room.discussion_url,
                                   target: '_blank', class: "btn btn-info #{'btn-xs' if small}",
                                   'aria-label': "Join #{event.title}", rel: 'noopener')
-        content_tag(:div, join_btn + discussion_link, class: 'btn-group')
+        content_tag(:span, join_btn + discussion_link, class: 'btn-group')
       else
         join_btn
       end
