@@ -19,6 +19,8 @@ class Commercial < ApplicationRecord
 
   belongs_to :commercialable, polymorphic: true
 
+  touch :commercialable
+
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
   validates :url, presence: true, uniqueness: { scope: :commercialable }

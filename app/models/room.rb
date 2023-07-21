@@ -30,6 +30,8 @@ class Room < ApplicationRecord
 
   default_scope { order(order: :asc) }
 
+  after_update :touch_conference_program
+
   # Cache Busting on the events page, touch all events.
   after_update lambda {
     return unless previous_changes[:url]
@@ -58,5 +60,9 @@ class Room < ApplicationRecord
 
   def conference_id
     venue.conference_id
+  end
+
+  def touch_conference_program
+    conference.program.touch
   end
 end
