@@ -19,7 +19,6 @@
           - if event.subtitle.present?
             %br
             %small{style: color_style}= event.subtitle
-
       %span
         - event.speakers_ordered.each do |speaker|
           = image_tag speaker.profile_picture, class: 'img-circle', alt: speaker.name
