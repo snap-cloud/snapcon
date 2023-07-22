@@ -38,14 +38,17 @@ class Commercial < ApplicationRecord
   end
 
   def self.iframe_fallback(url)
-    "<iframe width=560 height=315 frameborder=0 allowfullscreen=true src=\"#{url}\"></iframe>".html_safe
+    url = EmbeddableURL.new(url).iframe_url
+    "<iframe width=560 height=315 frameborder=0 allowfullscreen #{optional_params} src=\"#{url}\"></iframe>".html_safe
   end
 
   def self.read_file(file)
+    require 'csv'
     errors = {}
     errors[:no_event] = []
     errors[:validation_errors] = []
 
+    file.
     file.read.each_line do |line|
       # Get the event id (text before :)
       id = line.match(/:/).pre_match.to_i
@@ -65,6 +68,12 @@ class Commercial < ApplicationRecord
   end
 
   private
+
+  def optional_params
+    return '' unless self.url.match(%r{snap.berkeley})
+
+    'allow="geolocation;microphone;camera"'
+  end
 
   def valid_url
     result = Commercial.render_from_url(url)
