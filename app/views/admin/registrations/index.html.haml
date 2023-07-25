@@ -28,8 +28,11 @@
             %th{ width: '25%' } Name
             %th{ width: '0' } E-Mail
             %th{ width: '0' } Ticket Type
-            %th{ width: '0' }
-              %abbr{ title: 'Code of Conduct' } CoC
+            %th{ width: '0' } Price
+            %th{ width: '0' } Attended
+            - if @code_of_conduct
+              %th{ width: '0' }
+                %abbr{ title: 'Code of Conduct' } CoC
             %th{ width: '0' } Actions
         %tbody
 
@@ -70,19 +73,27 @@
           "data": "ticket_type"
         },
         {
+          "data": "ticket_price",
+          "render": (data) => `$${data}`
+        },
+        {
+          "data": "attended"
+        },
+        {
           "data": "accepted_code_of_conduct",
           "className": "code-of-conduct text-center",
           "searchable": false,
+          // TODO: conditionally hide
         },
         {
           "data": "actions",
           "className": "actions",
           "searchable": false,
           "sortable": false,
-          "render":    function (data, type, row, meta) {
-            return '<div class="btn-group">'+
-                   '<a class="btn-primary" href="'+row.edit_url+'">Edit</a>'+
-                   '</div>';
+          "render": (data, type, row, meta) => {
+            return `<div class="btn-group">
+                      <a class="btn-primary" href="${row.edit_url}">Edit</a>
+                   </div>`;
           }
         }
       ]
