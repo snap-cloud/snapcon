@@ -73,13 +73,15 @@
         },
         {
           "data": "ticket_price",
-          "render": (data) => `$${data}`
+          "render": data => `$${data}`
         },
         {
           "data": "attended",
+          "search": data => data,
           "render": (data, _type, row) => {
             let js_url = "#{toggle_attendance_admin_conference_registration_path(@conference.short_title, id: 'ROW_ID')}";
             return `
+              <span class="sr-only">${data}</span>
               <input
                 type="checkbox"
                 class="switch-checkbox"
@@ -101,7 +103,7 @@
           "className": "actions",
           "searchable": false,
           "sortable": false,
-          "render": (data, type, row, meta) => {
+          "render": (data, type, row) => {
             return `<div class="btn-group">
                       <a class="btn-primary" href="${row.edit_url}">Edit</a>
                    </div>`;
