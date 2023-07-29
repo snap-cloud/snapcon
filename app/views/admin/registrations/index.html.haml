@@ -57,12 +57,12 @@
         {
           "data": "name",
           "className": "truncate",
-          "render": function(data, type, row) {
-            var content = '<span data-toggle="tooltip" title="' + data + '">' + data + '</span><br/>';
-            $.each(row.roles, function(index, role){
-              content += ' <span class="label label-info">' + role + '</span>'
-            });
-            return content;
+          "render": (data, type, row) => {
+            return `
+              <span data-toggle="tooltip" title="${data}">${data}</span>
+              <br/>
+              ${row.roles.map(role => ` <span class="label label-info">${role}</span>`)}
+            `;
           }
         },
         {
@@ -76,7 +76,19 @@
           "render": (data) => `$${data}`
         },
         {
-          "data": "attended"
+          "data": "attended",
+          "render": (data, _type, row) => {
+            let js_url = "#{toggle_attendance_admin_conference_registration_path(@conference.short_title, id: 'ROW_ID')}";
+            return `
+              <input
+                type="checkbox"
+                class="switch-checkbox"
+                ${data ? "checked" : ""}
+                name="#{@conference.short_title}_${row.id}"
+                url="${js_url.replace('ROW_ID', row.id)}?attended="
+              >
+            `;
+          }
         },
         {
           "data": "accepted_code_of_conduct",

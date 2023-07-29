@@ -57,9 +57,8 @@ class RegistrationDatatable < AjaxDatatablesRails::ActiveRecord
         accepted_code_of_conduct: !!record.accepted_code_of_conduct, # rubocop:disable Style/DoubleNegation
         ticket_type:              registration_ticket(record).title,
         ticket_price:             registration_ticket_price(record),
-        attended:                false,
+        attended:                 record.attended?,
         edit_url:                 edit_admin_conference_registration_path(conference, record),
-        # delete_url:               delete_admin_conference_registration_path(conference, record),
         DT_RowId:                 dom_id(record)
       }
     end
