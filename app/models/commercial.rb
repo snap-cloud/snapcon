@@ -48,18 +48,17 @@ class Commercial < ApplicationRecord
     errors[:no_event] = []
     errors[:validation_errors] = []
 
-    file.
-    file.read.each_line do |line|
-      # Get the event id (text before :)
-      id = line.match(/:/).pre_match.to_i
-      # Get the commercial url (text after :)
-      url = line.match(/:/).post_match
+    # parse file as a CSV with a header of id, title, url
+    CSV.parse(file, headers: true) do |row|
+      id = row['id'].to_i
+      title = row['title']
+      url = row['url']
       event = Event.find_by(id: id)
 
       # Go to next event, if the event is not found
       (errors[:no_event] << id) && next unless event
 
-      commercial = event.commercials.new(url: url)
+      commercial = event.commercials.new(url: url, title: title)
       unless commercial.save
         errors[:validation_errors] << ("Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')')
       end
