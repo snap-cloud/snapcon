@@ -16,6 +16,7 @@
 #
 class Commercial < ApplicationRecord
   require 'oembed'
+  require_relative '../lib/embeddable_url'
 
   belongs_to :commercialable, polymorphic: true, touch: true
 
@@ -32,14 +33,9 @@ class Commercial < ApplicationRecord
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
     rescue StandardError
-      { html: iframe_fallback(url) }
+      { html: EmbeddableURL.new(url).render_embed.html_safe }
       # { error: exception.message }
     end
-  end
-
-  def self.iframe_fallback(url)
-    url = EmbeddableURL.new(url).iframe_url
-    "<iframe width=560 height=315 frameborder=0 allowfullscreen #{optional_params} src=\"#{url}\"></iframe>".html_safe
   end
 
   def self.read_file(file)
@@ -60,19 +56,14 @@ class Commercial < ApplicationRecord
 
       commercial = event.commercials.new(url: url, title: title)
       unless commercial.save
-        errors[:validation_errors] << ("Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')')
+        errors[:validation_errors] <<
+          "Could not create materials for event with ID #{event.id} (#{commercial.errors.full_messages.to_sentence})"
       end
     end
     errors
   end
 
   private
-
-  def optional_params
-    return '' unless self.url.match(%r{snap.berkeley})
-
-    'allow="geolocation;microphone;camera"'
-  end
 
   def valid_url
     result = Commercial.render_from_url(url)

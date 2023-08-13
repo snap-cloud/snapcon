@@ -9,9 +9,21 @@ describe EmbeddableURL do
       expect(EmbeddableURL.new(url).iframe_url).to eq url
     end
 
-    it 'returns the transformed url if a transformation applies' do
-      url = 'https://docs.google.com'
-      expect(EmbeddableURL.new(url).iframe_url).to include '/embed'
+    it 'transforms a Google Drive URL' do
+      url = EmbeddableURL.new('https://docs.google.com/presentation/d/1eGbEQtcOPW2N2P5rKfBVfSo2zn4C307Sh6C7vpJsruE/edit#slide=id.g1088c029399_0_47').iframe_url
+      expect(url).to include '/embed'
+      expect(url).to_not include('/edit')
     end
-  end
+
+    it 'transforms a Dropbox URL' do
+      url = EmbeddableURL.new('https://www.dropbox.com/scl/fi/49gkp6ghfnxgqex64zvzd/Guzdial-SnapCon23.pdf?rlkey=ecwvmcmfscqtwfq21l3kzqcul&dl=1').iframe_url
+      expect(url).to include('raw=1')
+      expect(url).to_not include('dl=')
+    end
+
+    it 'transforms a Snap! Project URL' do
+      url = EmbeddableURL.new('').iframe_url
+      expect(url).to include('/embed')
+    end
+
 end
