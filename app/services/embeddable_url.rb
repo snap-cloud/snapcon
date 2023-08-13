@@ -33,7 +33,7 @@ class EmbeddableURL
     <<~HTML
       <div>
         <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="#{ENV.fetch('DROPBOX_APP_KEY', nil)}"></script>
-        <a href="#{dropbox(url)}"
+        <a href="#{url}"
         class="dropbox-embed" data-height="315px" data-width="560px"></a>
       </div>
     HTML
