@@ -55,8 +55,8 @@ class EmbeddableURL
   def dropbox(url)
     uri = URI.parse(url)
     query = CGI.parse(uri.query)
-    query.delete('dl')
-    query['raw'] = '1'
+    query.delete('raw')
+    query['dl'] = '0'
     uri.query = query.to_query
     uri.to_s
   end

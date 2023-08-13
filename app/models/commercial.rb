@@ -16,7 +16,7 @@
 #
 class Commercial < ApplicationRecord
   require 'oembed'
-  require_relative '../lib/embeddable_url'
+  # require_relative '../lib/embeddable_url'
 
   belongs_to :commercialable, polymorphic: true, touch: true
 
