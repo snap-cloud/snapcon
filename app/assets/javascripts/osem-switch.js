@@ -1,7 +1,5 @@
 function checkboxSwitch(selector){
-  $(selector).bootstrapSwitch(
-
-  );
+  $(selector).bootstrapSwitch();
 
   $(selector).on('switchChange.bootstrapSwitch', function(event, state) {
     var url = $(this).attr('url') + state;

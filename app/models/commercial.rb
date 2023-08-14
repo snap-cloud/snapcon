@@ -32,33 +32,31 @@ class Commercial < ApplicationRecord
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
     rescue StandardError
-      { html: iframe_fallback(url) }
+      { html: EmbeddableURL.new(url).render_embed.html_safe }
       # { error: exception.message }
     end
   end
 
-  def self.iframe_fallback(url)
-    "<iframe width=560 height=315 frameborder=0 allowfullscreen=true src=\"#{url}\"></iframe>".html_safe
-  end
-
   def self.read_file(file)
+    require 'csv'
     errors = {}
     errors[:no_event] = []
     errors[:validation_errors] = []
 
-    file.read.each_line do |line|
-      # Get the event id (text before :)
-      id = line.match(/:/).pre_match.to_i
-      # Get the commercial url (text after :)
-      url = line.match(/:/).post_match
+    # parse file as a CSV with a header of id, title, url
+    CSV.parse(file, headers: true) do |row|
+      id = row['id'].to_i
+      title = row['title']
+      url = row['url']
       event = Event.find_by(id: id)
 
       # Go to next event, if the event is not found
       (errors[:no_event] << id) && next unless event
 
-      commercial = event.commercials.new(url: url)
+      commercial = event.commercials.new(url: url, title: title)
       unless commercial.save
-        errors[:validation_errors] << ("Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')')
+        errors[:validation_errors] <<
+          "Could not create materials for event with ID #{event.id} (#{commercial.errors.full_messages.to_sentence})"
       end
     end
     errors
