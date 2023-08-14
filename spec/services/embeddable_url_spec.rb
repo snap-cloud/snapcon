@@ -25,5 +25,5 @@ describe EmbeddableURL do
       url = EmbeddableURL.new('https://snap.berkeley.edu/project?username=jedi_force&projectname=Autograder%2dlite').iframe_url
       expect(url).to include('/embed')
     end
-
+  end
 end
