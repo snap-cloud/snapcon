@@ -33,7 +33,7 @@ class EmbeddableURL
     <<~HTML
       <div>
         <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="#{ENV.fetch('DROPBOX_APP_KEY', nil)}"></script>
-        <a href="#{url}"
+        <a href="#{dropbox(url)}"
         class="dropbox-embed" data-height="315px" data-width="560px"></a>
       </div>
     HTML
@@ -53,11 +53,13 @@ class EmbeddableURL
   end
 
   def dropbox(url)
+    # debugger
     uri = URI.parse(url)
-    query = CGI.parse(uri.query)
-    query.delete('raw')
-    query['dl'] = '0'
-    uri.query = query.to_query
+    params = URI.decode_www_form(uri.query)
+    params.delete('raw')
+    params['dl'] = '0'
+    # params['rlkey'] = params['rlkey']
+    uri.query = params
     uri.to_s
   end
 
