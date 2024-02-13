@@ -893,7 +893,7 @@ class Conference < ApplicationRecord
 
     # Completed weeks
     events_per_week.each do |week, values|
-      week = week.respond_to?(:strftime) ? week : Date.parse(week)
+      week = Date.parse(week) unless week.respond_to?(:strftime)
       values.each do |state, value|
         next unless %i[confirmed unconfirmed].include?(state)
 
