@@ -3,9 +3,6 @@
 require 'redcarpet/render_strip'
 
 module FormatHelper
-  ##
-  # Includes functions related to formatting (like adding classes, colors)
-  ##
   def status_icon(object)
     case object.state
     when 'new', 'to_reject', 'to_accept'
@@ -80,30 +77,20 @@ module FormatHelper
   end
 
   def label_for(event_state)
-    result = ''
     case event_state
     when 'new'
-      result = 'label label-primary'
-    when 'withdrawn'
-      result = 'label label-danger'
-    when 'unconfirmed'
-      result = 'label label-success'
-    when 'confirmed'
-      result = 'label label-success'
+      'label label-primary'
+    when 'withdrawn', 'cancelled'
+      'label label-danger'
+    when 'unconfirmed', 'confirmed'
+      'label label-success'
     when 'rejected'
-      result = 'label label-warning'
-    when 'canceled'
-      result = 'label label-danger'
+      'label label-warning'
     end
-    result
   end
 
   def icon_for_todo(bool)
-    if bool
-      'fa-solid fa-check'
-    else
-      'fa-solid fa-xmark'
-    end
+    bool ? 'fa-solid fa-check' : 'fa-solid fa-xmark'
   end
 
   def class_for_todo(bool)
