@@ -110,7 +110,8 @@ describe Event do
       expect(page).to have_css(
         '#event_type_1-help',
         visible: :hidden,
-        text: EventType.find(1).description)
+        text:    EventType.find(1).description
+      )
       select('Example Event Type', from: 'event[event_type_id]')
       expect(page).to have_selector '.event_event_type_id', text: 'This event type is an example.'
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'
@@ -160,7 +161,7 @@ describe Event do
       expect(page).to have_content 'Proposal was successfully updated.'
     end
 
-    it 'signed_in user submits a valid proposal', feature: true, js: true, focus: true do
+    it 'signed_in user submits a valid proposal', feature: true, js: true do
       sign_in participant_without_bio
       expected_count = Event.count + 1
 
