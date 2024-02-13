@@ -140,7 +140,8 @@ gem 'leaflet-rails'
 gem 'gravtastic'
 
 # for country selects
-gem 'country_select', '< 7'
+# TODO-SNAPCON: Verify that this is no longer necessary.
+# gem 'country_select', '< 7'
 gem 'i18n_data'
 
 # as PDF generator
