@@ -27,7 +27,7 @@ describe Event do
       sign_in organizer
     end
 
-    it 'can preview a proposal if it is public', feature: true, js: true do
+    scenario 'can preview a proposal if it is public', feature: true, js: true do
       visit admin_conference_program_event_path(conference.short_title, @event)
       expect(page).to have_selector(:link_or_button, 'Preview')
       click_link 'Preview'
@@ -35,7 +35,7 @@ describe Event do
                                         ignore_query: true)
     end
 
-    it 'cannot preview a proposal if it is not public', feature: true, js: true do
+    scenario 'cannot preview a proposal if it is not public', feature: true, js: true do
       event = create(:event, program: conference.program, title: 'Example Proposal')
       event.public = false
       event.save!
@@ -43,7 +43,16 @@ describe Event do
       expect(page).not_to have_selector(:link_or_button, 'Preview')
     end
 
-    it 'rejects a proposal', feature: true, js: true do
+    scenario 'adds a proposal', feature: true, js: true do
+      visit admin_conference_program_events_path(conference.short_title)
+      click_on 'Add Event'
+      fill_in 'Title', with: 'Organizer-Created Proposal'
+      fill_in 'Abstract', with: 'This proposal was created by an organizer.'
+      click_button 'Create Proposal'
+      expect(flash).to eq('Event was successfully submitted.')
+    end
+
+    scenario 'rejects a proposal', feature: true, js: true do
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
 
@@ -66,7 +75,7 @@ describe Event do
       expect(@event.state).to eq('unconfirmed')
     end
 
-    it 'restarts review of a proposal', feature: true, js: true do
+    scenario 'restarts review of a proposal', feature: true, js: true do
       @event.reject!(@options)
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
@@ -110,7 +119,7 @@ describe Event do
       expect(User.count).to eq(expected_count_user)
     end
 
-    it 'edit proposal without cfp' do
+    scenario 'edit proposal without cfp' do
       conference = create(:conference)
       proposal = create(:event, program: conference.program)
 
