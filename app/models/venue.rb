@@ -42,6 +42,7 @@ class Venue < ApplicationRecord
   # TODO-SNAPCON: (mb) Fix this to use the country shortname?
   def country_name
     return unless country
+
     I18nData.countries[country]
   end
 
