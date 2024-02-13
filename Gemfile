@@ -310,3 +310,5 @@ group :development, :test do
   # to test new rails version
   gem 'next_rails'
 end
+
+gem "jemalloc", "~> 1.0"
