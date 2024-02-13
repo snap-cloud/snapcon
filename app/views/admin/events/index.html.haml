@@ -6,9 +6,9 @@
         = "(#{@events.length})" if @events.any?
 
         .btn-group.pull-right
-          %button.btn.btn-primary{ title: 'Mass import of commercials for events',
+          %button.btn.btn-primary{ title: 'Mass import of materials for events',
             data: { toggle: 'modal', target: '#mass-commercials-modal' } }
-            Add Commercials
+            Add Materials
 
           - if can? :create, Event
             = link_to 'Add Event',
@@ -29,7 +29,7 @@
     .modal-content
       .modal-header
         %h1
-          Add commercials to events
+          Add materials to events
       .modal-body
         = form_for('', url: mass_upload_commercials_admin_conference_program_path(@conference.short_title), method: :post) do |f|
           .form-group
