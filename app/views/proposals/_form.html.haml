@@ -1,9 +1,3 @@
-:ruby
-  action_is_edit = @event.persisted?
-  user_is_admin = current_user&.is_admin?
-  display_details = user_is_admin || action_is_edit
-  display_registration = user_is_admin || @program.cfp&.enable_registrations?
-
 %h4
   Proposal Information
 %hr
