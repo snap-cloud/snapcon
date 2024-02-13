@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   def update
     if @user.update(user_params)
-      redirect_to @user, notice: 'User was successfully updated.'
+      redirect_to user_path(@user), notice: 'User was successfully updated.'
     else
       flash.now[:error] = "An error prohibited your profile from being saved: #{@user.errors.full_messages.join('. ')}."
       render :edit
