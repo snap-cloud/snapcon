@@ -396,7 +396,8 @@ class User < ApplicationRecord
   end
 
   def dropdwon_display
-    "#{name} (#{username} #{email})"
+    more_info = email_public? ? username : "#{username} #{email}"
+    "#{name} (#{more_info})"
   end
 
   private
@@ -431,7 +432,7 @@ class User < ApplicationRecord
     errors.add(:biography, 'is limited to 200 words.') if biography.present? && (biography.split.length > 200)
   end
 
-  def send_devise_notification(notification, *args)
-    devise_mailer.send(notification, self, *args).deliver_later
+  def send_devise_notification(notification, *)
+    devise_mailer.send(notification, self, *).deliver_later
   end
 end

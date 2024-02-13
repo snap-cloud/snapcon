@@ -199,12 +199,10 @@ hint: options[:hint]
   # Timestamps are stored at UTC but in the real timezone.
   # We must convert then shift the time back to get the correct value.
   # TODO: just take in an object?
-  def inyourtz(time, timezone, &block)
+  def inyourtz(time, timezone, &)
     time = time.in_time_zone(timezone)
     time -= time.utc_offset
-    link_to "https://inyourtime.zone/t?#{time.to_i}", target: '_blank', rel: 'noopener' do
-      block.call
-    end
+    link_to("https://inyourtime.zone/t?#{time.to_i}", target: '_blank', rel: 'noopener', &)
   end
 
   def visible_conference_links

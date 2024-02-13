@@ -5,6 +5,9 @@ require 'webmock/rspec'
 driver_urls = Webdrivers::Common.subclasses.map do |driver|
   Addressable::URI.parse(driver.base_url).host
 end
+# Local chromedriver pings GitHub. :(
+driver_urls << 'googlechromelabs.github.io'
+driver_urls << 'edgedl.me.gvt1.com' # The fuck, Google?
 WebMock.disable_net_connect!(allow_localhost: true, allow: [*driver_urls, /stripe.com/])
 
 RSpec.configure do |config|

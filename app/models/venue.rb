@@ -39,12 +39,11 @@ class Venue < ApplicationRecord
     "#{street}, #{city}, #{country_name}"
   end
 
-  # TODO-SNAPCON: (mb) iso_short_name seems to fail in tests only...this makes no sense.
+  # TODO-SNAPCON: (mb) Fix this to use the country shortname?
   def country_name
     return unless country
 
-    name = ISO3166::Country[country]
-    name.try(:iso_short_name) || name.try(:name)
+    I18nData.countries[country]
   end
 
   def location?
@@ -65,7 +64,7 @@ class Venue < ApplicationRecord
     end
 
     # do not notify unless the mail content is set up
-    (conference.email_settings.venue_updated_subject.present? && conference.email_settings.venue_updated_body.present?)
+    conference.email_settings.venue_updated_subject.present? && conference.email_settings.venue_updated_body.present?
   end
 
   # TODO: create a module to be mixed into model to perform same operation

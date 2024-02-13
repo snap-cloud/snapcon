@@ -50,7 +50,7 @@ module Admin
     def room_params
       params.require(:room)
             .permit(:name, :size, :url, :order, :discussion_url)
-            .each { |_, value| value.try(:strip!) }
+            .each_value { |value| value.try(:strip!) }
     end
   end
 end

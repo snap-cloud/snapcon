@@ -53,7 +53,7 @@ class AdminAbility
     # even admin cannot create new users with ICHAIN enabled
     cannot %i[new create], User if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
     cannot :revert_object, PaperTrail::Version do |version|
-      (version.event == 'create' && %w[Conference User Event].include?(version.item_type))
+      version.event == 'create' && %w[Conference User Event].include?(version.item_type)
     end
     cannot :revert_attribute, PaperTrail::Version do |version|
       version.event != 'update' || version.item.nil?

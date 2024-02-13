@@ -27,7 +27,7 @@ describe Event do
       sign_in organizer
     end
 
-    it 'can preview a proposal if it is public', feature: true, js: true do
+    scenario 'can preview a proposal if it is public', feature: true, js: true do
       visit admin_conference_program_event_path(conference.short_title, @event)
       expect(page).to have_selector(:link_or_button, 'Preview')
       click_link 'Preview'
@@ -35,7 +35,7 @@ describe Event do
                                         ignore_query: true)
     end
 
-    it 'cannot preview a proposal if it is not public', feature: true, js: true do
+    scenario 'cannot preview a proposal if it is not public', feature: true, js: true do
       event = create(:event, program: conference.program, title: 'Example Proposal')
       event.public = false
       event.save!
@@ -43,7 +43,16 @@ describe Event do
       expect(page).not_to have_selector(:link_or_button, 'Preview')
     end
 
-    it 'rejects a proposal', feature: true, js: true do
+    scenario 'adds a proposal', feature: true, js: true do
+      visit admin_conference_program_events_path(conference.short_title)
+      click_on 'Add Event'
+      fill_in 'Title', with: 'Organizer-Created Proposal'
+      fill_in 'Abstract', with: 'This proposal was created by an organizer.'
+      click_button 'Create Proposal'
+      expect(flash).to eq('Event was successfully submitted.')
+    end
+
+    scenario 'rejects a proposal', feature: true, js: true do
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
 
@@ -66,7 +75,7 @@ describe Event do
       expect(@event.state).to eq('unconfirmed')
     end
 
-    it 'restarts review of a proposal', feature: true, js: true do
+    scenario 'restarts review of a proposal', feature: true, js: true do
       @event.reject!(@options)
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
@@ -84,7 +93,7 @@ describe Event do
       @event.accept!(@options)
     end
 
-    it 'not signed_in user submits proposal' do
+    scenario 'not signed_in user submits proposal', feature: true, js: true do
       expected_count_event = Event.count + 1
       expected_count_user = User.count + 1
 
@@ -96,7 +105,15 @@ describe Event do
         fill_in 'user_password_confirmation', with: 'testuserpassword'
       end
       fill_in 'event_title', with: 'Example Proposal'
+
+      select('Talk', from: 'event[event_type_id]')
+      expect(page).to have_css(
+        '#event_type_1-help',
+        visible: :hidden,
+        text:    EventType.find(1).description
+      )
       select('Example Event Type', from: 'event[event_type_id]')
+      expect(page).to have_selector '.event_event_type_id', text: 'This event type is an example.'
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'
       fill_in 'event_submission_text', with: 'Lorem ipsum submission'
 
@@ -108,7 +125,7 @@ describe Event do
       expect(User.count).to eq(expected_count_user)
     end
 
-    it 'edit proposal without cfp' do
+    scenario 'edit proposal without cfp' do
       conference = create(:conference)
       proposal = create(:event, program: conference.program)
 
@@ -119,8 +136,11 @@ describe Event do
       expect(page).to have_content 'Proposal Information'
     end
 
-    it 'update a proposal' do
+    scenario 'update a proposal', js: true do
       conference = create(:conference)
+      create(:track, program:     conference.program,
+                     name:        'Example Track',
+                     description: 'This track is an *example*.')
       create(:cfp, program: conference.program)
       proposal = create(:event, program: conference.program)
 
@@ -129,7 +149,12 @@ describe Event do
       visit edit_conference_program_proposal_path(proposal.program.conference.short_title, proposal)
 
       fill_in 'event_subtitle', with: 'My event subtitle'
+      select 'Example Track', from: 'Track'
+      # TODO-SNAPCON: Renable this after refacotoring proposals form.
+      # expect(page).to have_css('.track-description', visible: :hidden, text: 'This track is an example.')
       select('Easy', from: 'event[difficulty_level_id]')
+      # TODO-SNAPCON: Renable this after refacotoring proposals form.
+      # expect(page).to have_selector '.in', text: 'Events are understandable for everyone without knowledge of the topic.'
 
       click_button 'Update Proposal'
       page.find('#flash')
@@ -142,11 +167,10 @@ describe Event do
 
       visit conference_program_proposals_path(conference.short_title)
       click_link 'New Proposal'
-      expect(page).to have_selector(".in[id='#{find_field('event[event_type_id]').value}-help']") # End of animation
 
       fill_in 'event_title', with: 'Example Proposal'
       select('Example Event Type', from: 'event[event_type_id]')
-      expect(page).to have_selector(".in[id='#{find_field('event[event_type_id]').value}-help']") # End of animation
+      expect(page).to have_selector '.in', text: 'This event type is an example.'
 
       expect(page).to have_text('Example Event Description')
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'
@@ -208,6 +232,7 @@ describe Event do
       select(event_type.title, from: 'event[event_type_id]')
       fill_in 'event_submission_text', with: 'Lorem ipsum example submission text'
 
+      # TODO-SNAPCON: Renable this.
       # accept_confirm do
       #   click_button 'Reset Submission to Template'
       # end
@@ -372,6 +397,7 @@ start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
     end
 
     it 'only shows 3 events happening now because of pagination' do
+      Rails.configuration.conference[:events_per_page] = 3
       event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
 start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
       event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,

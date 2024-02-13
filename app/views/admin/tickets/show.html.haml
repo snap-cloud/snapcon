@@ -20,16 +20,17 @@
   .col-md-12
     %table.datatable
       %thead
-        %th ID
-        %th Name
-        %th Quantity
-        %th E-Mail
-        %th Affiliation
-        %th Paid
-        %th Date
-        %th
-          %span.sr-only Delete
-          ❌
+        %tr
+          %th ID
+          %th Name
+          %th Quantity
+          %th E-Mail
+          %th Affiliation
+          %th Paid
+          %th Date
+          %th
+            %span.sr-only Delete
+            ❌
       %tbody
         - @ticket.buyers.each_with_index do |buyer, index|
           - purchases = buyer.ticket_purchases.where(ticket_id: @ticket.id)
