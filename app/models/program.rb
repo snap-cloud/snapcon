@@ -189,7 +189,7 @@ class Program < ApplicationRecord
     return false unless schedule_public
 
     # do not notify unless the mail content is set up
-    (conference.email_settings.program_schedule_public_subject.present? && conference.email_settings.program_schedule_public_body.present?)
+    conference.email_settings.program_schedule_public_subject.present? && conference.email_settings.program_schedule_public_body.present?
   end
 
   def languages_list

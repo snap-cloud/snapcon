@@ -45,8 +45,8 @@ class Conference < ApplicationRecord
   resourcify :roles, dependent: :delete_all
 
   default_scope { order('start_date DESC') }
-  scope :upcoming, (-> { where('end_date >= ?', Date.current) })
-  scope :past, (-> { where('end_date < ?', Date.current) })
+  scope :upcoming, -> { where('end_date >= ?', Date.current) }
+  scope :past, -> { where('end_date < ?', Date.current) }
 
   belongs_to :organization
   delegate :code_of_conduct, to: :organization
@@ -711,7 +711,7 @@ class Conference < ApplicationRecord
     return false unless saved_change_to_start_date? || saved_change_to_end_date?
 
     # do not notify unless the mail content is set up
-    (email_settings.conference_dates_updated_subject.present? && email_settings.conference_dates_updated_body.present?)
+    email_settings.conference_dates_updated_subject.present? && email_settings.conference_dates_updated_body.present?
   end
 
   ##
@@ -728,7 +728,7 @@ class Conference < ApplicationRecord
     return false unless registration_period.saved_change_to_start_date? || registration_period.saved_change_to_end_date?
 
     # do not notify unless the mail content is set up
-    (email_settings.conference_registration_dates_updated_subject.present? && email_settings.conference_registration_dates_updated_body.present?)
+    email_settings.conference_registration_dates_updated_subject.present? && email_settings.conference_registration_dates_updated_body.present?
   end
 
   ##

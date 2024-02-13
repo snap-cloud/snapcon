@@ -64,7 +64,7 @@ class Venue < ApplicationRecord
     end
 
     # do not notify unless the mail content is set up
-    (conference.email_settings.venue_updated_subject.present? && conference.email_settings.venue_updated_body.present?)
+    conference.email_settings.venue_updated_subject.present? && conference.email_settings.venue_updated_body.present?
   end
 
   # TODO: create a module to be mixed into model to perform same operation
