@@ -132,9 +132,9 @@ describe Event do
 
     scenario 'update a proposal', js: true do
       conference = create(:conference)
-      create :track, program:     conference.program,
+      create(:track, program:     conference.program,
                      name:        'Example Track',
-                     description: 'This track is an *example*.'
+                     description: 'This track is an *example*.')
       create(:cfp, program: conference.program)
       proposal = create(:event, program: conference.program)
 

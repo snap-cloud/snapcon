@@ -6,7 +6,7 @@ describe ProposalsController do
   let(:user) { create(:user) }
   let(:conference) { create(:conference, :with_splashpage, short_title: 'lama101') }
   let(:event) { create(:event, program: conference.program) }
-  let(:event_type) { create :event_type }
+  let(:event_type) { create(:event_type) }
 
   context 'user is not signed in' do
     describe 'GET #new' do
