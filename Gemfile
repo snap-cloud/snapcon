@@ -294,7 +294,6 @@ group :development, :test, :linters do
 
   # for static code analisys
   gem 'rubocop', require: false
-  gem 'rubocop-faker', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-capybara', require: false
