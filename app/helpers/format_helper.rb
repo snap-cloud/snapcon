@@ -111,7 +111,7 @@ module FormatHelper
   end
 
   def word_pluralize(count, singular, plural = nil)
-    if count == 1 || count =~ /^1(\.0+)?$/
+    if count.positive? && count < 2
       singular
     else
       plural || singular.pluralize
@@ -190,14 +190,14 @@ module FormatHelper
       safe_links_only: true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(render_options), markdown_options)
-    sanitize(sanitize(markdown.render(text)), scrubber: Loofah::Scrubbers::NoFollow.new)
+    escape_html ? sanitize(sanitize(markdown.render(text)), scrubber: Loofah::Scrubbers::NoFollow.new) : markdown.render(text).html_safe
   end
 
   def markdown_hint(text = '')
-    markdown(
-      "#{text} Please look at #{link_to '**Markdown Syntax**', 'https://daringfireball.net/projects/markdown/syntax',
-                                        target: '_blank', rel: 'noopener'} to format your text", false
-    )
+    link = link_to('**Markdown Syntax**',
+                   'https://daringfireball.net/projects/markdown/syntax',
+                   target: '_blank', rel: 'noopener')
+    markdown("#{text} Please look at #{link} to format your text", false)
   end
 
   # Return a plain text markdown stripped of formatting.

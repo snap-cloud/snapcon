@@ -21,7 +21,15 @@ module DateTimeHelper
   def format_datetime(obj)
     return unless obj
 
+    obj = DateTime.parse(obj) unless obj.respond_to?(:strftime)
+
     obj.strftime('%Y-%m-%d %H:%M')
+  end
+
+  def format_all_timestamps(lst, conference)
+    lst.map do |ts|
+      "#{format_datetime(ts.in_time_zone(conference.timezone))} #{timezone_text(conference)}"
+    end.to_sentence
   end
 
   def show_time(length)

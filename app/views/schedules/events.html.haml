@@ -3,29 +3,30 @@
   %li
     = link_to('Schedule', events_conference_schedule_path(@conference))
 
-.container#program
-  = render partial: 'schedule_tabs', locals: { active: 'program' }
+.container#program{ style: 'width :92%' }
+  .row{style: 'padding-top: 1em'}
+    = render partial: 'schedule_tabs', locals: { active: 'program' }
 
-  %h1.text-center
-    - if @favourites && current_user
-      #{current_user.name}'s Program for #{@conference.title}
-    - else
-      Program for #{@conference.title}
+    %h1.text-center
+      - if @favourites && current_user
+        #{current_user.name}'s Program for #{@conference.title}
+      - else
+        Program for #{@conference.title}
 
-  = render 'date_event_types', conference: @conference, favourites: @favourites
+    = render 'date_event_types', conference: @conference, favourites: @favourites
 
-  .dropdown.program-dropdown
-    %button.btn.btn-default.dropdown-toggle{ type: "button", 'data-toggle': "dropdown" }
-      Dates
-      %span.caret
-    %ul.dropdown-menu
-      - @dates.each do |date|
-        %li.li-dropdown-program
-          - new_date = current_user ? convert_timezone(date.to_datetime.change(hour: @conference.start_hour), @conference.timezone, current_user.timezone) || date : date
-          = link_to new_date.strftime('%Y-%m-%d'), "##{new_date.strftime('%Y-%m-%d')}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
-      - if @unscheduled_events.any?
-        %li.li-dropdown-program
-          = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
+    .dropdown.program-dropdown
+      %button.btn.btn-default.dropdown-toggle{ type: "button", 'data-toggle': "dropdown" }
+        Dates
+        %span.caret
+      %ul.dropdown-menu
+        - @dates.each do |date|
+          %li.li-dropdown-program
+            - new_date = current_user ? convert_timezone(date.to_datetime.change(hour: @conference.start_hour), @conference.timezone, current_user.timezone) || date : date
+            = link_to new_date.strftime('%Y-%m-%d'), "##{new_date.strftime('%Y-%m-%d')}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
+        - if @unscheduled_events.any?
+          %li.li-dropdown-program
+            = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
 
   - if @favourites && current_user && @events_schedules.empty?
     .row
@@ -34,6 +35,7 @@
       %br
       %strong
         #{link_to 'View the full program', events_conference_schedule_path(@conference.short_title, favourites: false)} and add events to your schedule?
+
 
   .row
     / scheduled events

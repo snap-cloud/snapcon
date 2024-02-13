@@ -49,7 +49,7 @@ module Osem
     config.active_job.queue_adapter = :delayed_job
 
     config.conference = {
-      events_per_page:       ENV.fetch('EVENTS_PER_PAGE', 3),
+      events_per_page:       ENV.fetch('EVENTS_PER_PAGE', 5).to_i,
       default_logo_filename: ENV.fetch('DEFAULT_LOGO_FILENAME', 'snapcon_logo.png'),
       default_color:         ENV.fetch('DEFAULT_COLOR', '#0B3559')
     }

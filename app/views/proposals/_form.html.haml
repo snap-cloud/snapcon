@@ -27,7 +27,7 @@
   = f.text_field :subtitle, class: 'form-control'
 .form-group
   = f.label :presentation_mode
-  = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode_for_database), { include_blank: true}, { class: 'select-help-toggle form-control' }
+  = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode), { include_blank: true }, { class: 'select-help-toggle form-control' }
 
 .form-group
   = f.label :speaker_ids, 'Speakers'
@@ -47,7 +47,7 @@
       session, poster sessions, etc.
   .form-group
     = f.label :parent_id, 'Selet a Parent Event'
-    = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, {}, include_blank: 'Select a Parent Event', class: 'select-help-toggle form-control'
+    = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, {include_blank: 'Select a Parent Event'}, {class: 'select-help-toggle form-control'}
     .help-block
       Designate a parent event so that this event appears scheduled "inside"
       the parent event on the schedule.

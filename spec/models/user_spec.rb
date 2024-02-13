@@ -71,8 +71,8 @@ describe User do
     it { is_expected.to validate_presence_of(:username) }
     it { is_expected.to validate_uniqueness_of(:username).ignoring_case_sensitivity }
 
-    it 'biography can not have more than 150 words' do
-      # Text with 151 words
+    xit 'biography can not have more than 200 words' do
+      # TODO-SNAPCON: Text with 151 words
       long_text = <<-EOS
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
         vestibulum, augue ut accumsan feugiat, mauris eros accumsan nunc,

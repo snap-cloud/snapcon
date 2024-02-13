@@ -213,28 +213,44 @@ module EventsHelper
   end
 
   def join_event_link(event, event_schedule, current_user, small: false)
-    return unless current_user && event_schedule && event_schedule.room_url.present?
-    return if event.ended?
+    return if !event_schedule || event.ended?
+
+    unless event_schedule.room_url.present?
+      return content_tag :span, 'In-person only', class: 'label label-default'
+    end
+
+    unless current_user
+      return content_tag :span, 'Log in to view join link', class: 'label label-default'
+    end
 
     conference = event.conference
     is_now = event_schedule.happening_now? # 30 minute threshold.
     is_registered = conference.user_registered?(current_user)
-    admin = current_user.roles.where(id: conference.roles).any?
+    admin = current_user.roles.where(id: conference.roles).any? || current_user.is_admin
     # is_presenter = event.speakers.include?(current_user) || event.volunteers.include?(current_user)
 
     if admin || (is_now && is_registered)
-      link_to("Join Event Now #{'(Early)' unless is_now}",
-              join_conference_program_proposal_path(conference, event),
-              target: '_blank', class: "btn btn-primary #{'btn-xs' if small}",
-              'aria-label': "Join #{event.title}", rel: 'noopener')
+      join_btn = link_to("Join Event Now #{'(Early)' unless is_now}",
+                         join_conference_program_proposal_path(conference, event),
+                         target: '_blank', class: "btn btn-primary #{'btn-xs' if small}",
+                         'aria-label': "Join #{event.title}", rel: 'noopener')
+      if event_schedule.room.discussion_url.present?
+        discussion_link = link_to('Open Chat',
+                                  event_schedule.room.discussion_url,
+                                  target: '_blank', class: "btn btn-info #{'btn-xs' if small}",
+                                  'aria-label': "Join #{event.title}", rel: 'noopener')
+        content_tag(:span, join_btn + discussion_link, class: 'btn-group')
+      else
+        join_btn
+      end
     elsif is_registered
-      content_tag :span, class: 'btn btn-default btn-xs disabled' do
-        'Click to Join During Event'
+      content_tag :span, class: 'label label-primary' do
+        'Click to Join Online During Event'
       end
     else
       link_to('Register for the conference to join this event.',
               conference_conference_registration_path(conference),
-              class:        'btn btn-default btn-xs',
+              class:        'btn btn-info btn-xs',
               'aria-label': "Register for #{event.title}")
     end
   end

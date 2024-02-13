@@ -56,7 +56,7 @@ class EventSchedule < ApplicationRecord
   ##
   # True within `threshold` before and after the event.
   #
-  def happening_now?(threshold = 30.minutes)
+  def happening_now?(threshold = 15.minutes)
     # TODO: Save start_time with local timezone info when making an event schedule
     in_tz_start = start_time.in_time_zone(timezone)
     in_tz_end = end_time.in_time_zone(timezone)

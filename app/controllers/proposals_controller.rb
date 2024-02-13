@@ -120,7 +120,7 @@ class ProposalsController < ApplicationController
     if can_view_event
       current_user.mark_attendance_for_conference(@conference)
       current_user.mark_attendance_for_event(@event)
-      redirect_to @event.url
+      redirect_to @event.url, allow_other_host: true
     else
       redirect_to conference_program_proposal_path(@conference, @event),
                   error: 'You cannot join this event yet. Please try again closer to the start of the event.'

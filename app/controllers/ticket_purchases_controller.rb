@@ -57,6 +57,14 @@ class TicketPurchasesController < ApplicationController
     @unpaid_ticket_purchases = current_user.ticket_purchases.by_conference(@conference).unpaid
   end
 
+  def destroy
+    @ticket_purchase = TicketPurchase.find(params[:id])
+    authorize! :delete, @ticket_purchase
+    @ticket_purchase.delete
+    redirect_to admin_conference_ticket_path(@conference, @ticket_purchase.ticket.id),
+                notice: "Ticket for user #{@ticket_purchase.user.name} successfully removed."
+  end
+
   private
 
   def ticket_purchase_params

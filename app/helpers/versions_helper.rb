@@ -63,19 +63,35 @@ module VersionsHelper
   end
 
   def subscription_change_description(version)
-    user_id = current_or_last_object_state(version.item_type, version.item_id).user_id
+    user_id = current_or_last_object_state(version.item_type, version.item_id)&.user_id
+    unless user_id
+      if version.event == 'create'
+        return 'subscribed (unkown user) to'
+      else
+        return 'unsubscribed (unknown user) from'
+      end
+    end
     user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset[:name].second unless user_id.to_s == version.whodunnit
     version.event == 'create' ? "subscribed #{user_name} to" : "unsubscribed #{user_name} from"
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity:
   def registration_change_description(version)
     if version.item_type == 'Registration'
-      user_id = current_or_last_object_state(version.item_type, version.item_id).user_id
+      user_id = current_or_last_object_state(version.item_type, version.item_id)&.user_id
     elsif version.item_type == 'EventsRegistration'
       registration_id = current_or_last_object_state(version.item_type, version.item_id).registration_id
-      user_id = current_or_last_object_state('Registration', registration_id).user_id
+      user_id = current_or_last_object_state('Registration', registration_id)&.user_id
     end
     user_name = User.find_by(id: user_id).try(:name) || current_or_last_object_state('User', user_id).try(:name) || PaperTrail::Version.where(item_type: 'User', item_id: user_id).last.changeset[:name].second
+
+    unless user_id
+      case version.event
+      when 'create' then return 'registered to (unkown user)'
+      when 'update' then return 'updated (unkown user) of the registration for'
+      when 'destroy' then return 'unregistered from'
+      end
+    end
 
     if user_id.to_s == version.whodunnit
       case version.event
@@ -91,6 +107,7 @@ module VersionsHelper
       end
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity:
 
   def comment_change_description(version)
     user = current_or_last_object_state(version.item_type, version.item_id).user

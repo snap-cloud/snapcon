@@ -143,3 +143,8 @@ p.comment-body {
 .word_break {
   word-wrap: break-word;
 }
+
+// Override bootstrap 3...
+hr {
+  border-top: 1px solid #333;
+}
