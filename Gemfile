@@ -222,8 +222,6 @@ gem 'selectize-rails'
 
 # n+1 query logging
 gem 'bullet'
-# For collecting performance data
-gem 'skylight', '~> 5'
 
 gem 'nokogiri'
 
