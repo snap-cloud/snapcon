@@ -396,7 +396,8 @@ class User < ApplicationRecord
   end
 
   def dropdwon_display
-    "#{name} (#{username} #{email})"
+    more_info = email_public? ? username : "#{username} #{email}"
+    "#{name} (#{more_info})"
   end
 
   private
