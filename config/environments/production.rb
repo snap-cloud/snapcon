@@ -115,7 +115,7 @@ Rails.application.configure do
   end
 
   # Provide a default host for URLs
-  config.routes.default_url_options[:host] = ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+  Rails.application.routes.default_url_options[:host] = ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
   config.action_controller.default_url_options = Rails.application.routes.default_url_options
   config.action_mailer.default_url_options = Rails.application.routes.default_url_options
 

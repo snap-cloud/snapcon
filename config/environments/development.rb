@@ -57,7 +57,7 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   # Provide a default host for URLs
-  config.routes.default_url_options[:host] = ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+  Rails.application.routes.default_url_options[:host] = ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
   config.action_controller.default_url_options = Rails.application.routes.default_url_options
   config.action_mailer.default_url_options = Rails.application.routes.default_url_options
 
