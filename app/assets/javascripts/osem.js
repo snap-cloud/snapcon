@@ -48,9 +48,8 @@ $(function () {
         var id = $(this).attr('id');
         $('.' + id).collapse('hide');
 
-        $('#' + $(this).val() + '-help.' + id).collapse('show');
-        $('#' + $(this).val() + '-instructions.' + id).collapse('show');
-
+        $(`#event_type_${$(this).val()}-help.${id}`).collapse('show');
+        $(`#event_type_${$(this).val()}-instructions.${id}`).collapse('show');w
     });
     $('.dropdown-toggle').dropdown();
 
