@@ -301,7 +301,7 @@ class Event < ApplicationRecord
   end
 
   def self.display_presentation_modes
-    presentation_modes.map { |key, _value| [key.humanize.titlecase, key] }
+    presentation_modes.map { |key, _| [key.humanize.titlecase, key] }
   end
 
   ##

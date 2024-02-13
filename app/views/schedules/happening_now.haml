@@ -4,14 +4,15 @@
   %li
     = link_to('Schedule', events_conference_schedule_path(@conference))
 
-.container#program
-  = render 'schedule_tabs', active: 'now'
+.container#program{ style: 'width: 92%' }
+  .row{style: 'padding-top: 1em'}
+    = render 'schedule_tabs', active: 'now'
 
-  %h1.text-center
-    Happening Now at
-    = @conference.title
+    %h1.text-center
+      Happening Now at
+      = @conference.title
 
-  = render 'date_event_types', conference: @conference, favourites: @favourites
+    = render 'date_event_types', conference: @conference, favourites: @favourites
 
   .row
     .col-md-12

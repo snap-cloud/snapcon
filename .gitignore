@@ -46,24 +46,17 @@ capybara-*.html
 **.orig
 rerun.txt
 pickle-email-*.html
-*~
 /public/assets
 /bundle
 /doc/app
 .vagrant/
-.env
-.env.production
-.env.development
-.env.test
-.env.local
-.envrc
+.env*
 docker-compose.override.yml
-.DS_Store
+
 .byebug_history
 .buildconfig
 osem_development
 osem_test
-config/local_env.yml
 
 # From GitHub, for Ruby
 # https://github.com/github/gitignore/blob/master/Ruby.gitignore
@@ -77,10 +70,9 @@ config/local_env.yml
 /spec/examples.txt
 /test/tmp/
 /test/version_tmp/
-/tmp/
 
-# Used by dotenv library to load environment variables.
-# .env
+# ensure the folder exists for puma
+!tmp/pids/.keep
 
 # Ignore Byebug command history file.
 .byebug_history

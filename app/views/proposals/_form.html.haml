@@ -10,7 +10,7 @@
   = f.text_field :subtitle, class: 'form-control'
 .form-group
   = f.label :presentation_mode
-  = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode_for_database), { include_blank: true}, { class: 'select-help-toggle form-control' }
+  = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode), { include_blank: true }, { class: 'select-help-toggle form-control' }
 
 .form-group
   = f.label :speaker_ids, 'Speakers'
@@ -30,10 +30,19 @@
       session, poster sessions, etc.
   .form-group
     = f.label :parent_id, 'Selet a Parent Event'
-    = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, {}, include_blank: 'Select a Parent Event', class: 'select-help-toggle form-control'
+    = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, {include_blank: 'Select a Parent Event'}, {class: 'select-help-toggle form-control'}
     .help-block
       Designate a parent event so that this event appears scheduled "inside"
       the parent event on the schedule.
+  .form-group
+    = f.label :committee_review, 'Committee Feedback'
+    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }
+    .help-block= markdown_hint('This field is shared with the submission authors.')
+  .form-group
+    = f.label :is_highlight
+    = f.check_box :is_highlight, class: 'switch-checkbox'
+  .help-block This shows the event on the conference homepage.
+
 
 - if @program.tracks.confirmed.cfp_active.any?
   .form-group
@@ -42,15 +51,16 @@
 
 - if @program.languages.present?
   .form-group
-  = f.label :language
-  = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
+    = f.label :language
+    = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
 
 - if @conference.program.difficulty_levels.any?
-  = f.label :difficulty_level
-  = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
-  - @conference.program.difficulty_levels.each do |difficulty_level|
-    %span{ class: 'help-block select-help-text collapse event_difficulty_level_id', id: "#{difficulty_level.id}-help" }
-      = difficulty_level.description
+  .form-group
+    = f.label :difficulty_level
+    = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
+    - @conference.program.difficulty_levels.each do |difficulty_level|
+      .help-block.select-help-text.collapse{ id: "#{difficulty_level.id}-help" }
+        = difficulty_level.description
 
 - if @event.committee_review.present?
   %br
@@ -73,27 +83,11 @@
       The maximum number of participants.
       = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
 
-= committee_only_actions(current_user, @conference) do
-  .form-group
-    = f.label :committee_review, 'Committee Feedback'
-    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }
-    .help-block= markdown_hint('This field is shared with the submission authors.')
-  .form-group
-    = f.label :is_highlight
-    = f.check_box :is_highlight, class: 'switch-checkbox'
-  .help-block This shows the event on the conference homepage.
-
-.text-left
-  .form-group
-    %label Additional Information
-    %p
-      = link_to '#description', 'data-toggle' => 'collapse' do
-        Do you require something special for your event?
-      Please include any scheduling constraints.
-  #description.collapse.in
-    = f.label :description, 'Requirements and Scheduling'
-    = f.text_area :description, rows: 5, class: 'form-control'
-    .help-block e.g. Whiteboard, printer, or something like that.
+.form-group
+  = f.label :description, 'Requirements and Scheduling'
+  %p Please include any scheduling constraints.
+  = f.text_area :description, rows: 5, class: 'form-control'
+  .help-block e.g. Are you only attending certain days?
 
 %p.text-right
   = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'

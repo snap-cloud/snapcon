@@ -27,6 +27,9 @@
         %th Affiliation
         %th Paid
         %th Date
+        %th
+          %span.sr-only Delete
+          ❌
       %tbody
         - @ticket.buyers.each_with_index do |buyer, index|
           - purchases = buyer.ticket_purchases.where(ticket_id: @ticket.id)
@@ -45,6 +48,9 @@
               = @ticket.tickets_paid(buyer)
             %td
               = purchases.first.created_at
+            %td
+              - if purchases.length == 1
+                = button_to("Delete", conference_ticket_purchase_path(@conference, purchases.first.id), method: :delete, data: {confirm: "Are you sure?"}, class: 'btn btn-danger btn-sm')
 
 - content_for :modals do
   .modal.fade{ id: "modal-give-ticket-#{@ticket.id}" }

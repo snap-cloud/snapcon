@@ -31,12 +31,7 @@ class Room < ApplicationRecord
   default_scope { order(order: :asc) }
 
   # Cache Busting on the events page, touch all events.
-  after_update lambda {
-    return unless previous_changes[:url]
-
-    event_schedules.update_all(updated_at: Time.now)
-  }
-
+  after_update :touch_conference_program
   delegate :conference, to: :venue
 
   def embed_url
@@ -58,5 +53,9 @@ class Room < ApplicationRecord
 
   def conference_id
     venue.conference_id
+  end
+
+  def touch_conference_program
+    conference.program.touch
   end
 end
