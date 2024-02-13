@@ -140,7 +140,9 @@ gem 'leaflet-rails'
 gem 'gravtastic'
 
 # for country selects
-gem 'country_select', '< 7'
+# TODO-SNAPCON: Verify that this is no longer necessary.
+# gem 'country_select', '< 7'
+gem 'i18n_data'
 
 # as PDF generator
 gem 'prawn-qrcode'
@@ -222,16 +224,13 @@ gem 'selectize-rails'
 
 # n+1 query logging
 gem 'bullet'
-# For collecting performance data
-gem 'skylight', '~> 5'
-
-gem 'nokogiri'
 
 # memcached binary connector
 gem 'dalli', require: false
 # Redis Cache
 gem 'redis'
 
+# to generate ical files
 gem 'icalendar'
 
 # for making external requests easier
@@ -240,10 +239,10 @@ gem 'httparty'
 # pagination
 gem 'pagy', '<4.0'
 
-# Use guard for testing in development
+# to tame logs
+gem 'lograge'
+
 group :development do
-  # to launch specs when files are modified
-  gem 'guard-rspec'
   # to open mails
   gem 'letter_opener'
   # view mail at /letter_opener/
@@ -290,18 +289,23 @@ end
 group :development, :test, :linters do
   # as debugger
   gem 'byebug'
-  # gem 'pry'
-  # gem 'pry-byebug'
 
-  # Linters and static analysis.
+  # for static code analisys
+  gem 'rubocop', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-capybara', require: false
+  gem 'rubocop-performance', require: false
+  gem 'haml_lint'
+
   gem 'faraday-retry', require: false
+  # TODO-SNAPCON: figure out which haml-lint OR haml_lint is good.
   gem 'haml-lint', require: false
+
+  # Easily run linters
   gem 'pronto', require: false
   gem 'pronto-haml', require: false
   gem 'pronto-rubocop', require: false
-  gem 'rubocop-faker', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rspec', require: false
 end
 
 group :development, :test do
@@ -310,5 +314,3 @@ group :development, :test do
   # to test new rails version
   gem 'next_rails'
 end
-
-gem "jemalloc", "~> 1.0"

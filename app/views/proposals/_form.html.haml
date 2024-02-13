@@ -5,6 +5,7 @@
   = f.label :title
   %abbr{title: 'This field is required'} *
   = f.text_field :title, autofocus: true, required: true, class: 'form-control'
+
 .form-group
   = f.label :subtitle
   = f.text_field :subtitle, class: 'form-control'
@@ -48,6 +49,10 @@
   .form-group
     = f.label :track_id, 'Track'
     = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), { include_blank: '(Please select)' }, { class: 'form-control' }
+    - @program.tracks.confirmed.cfp_active.each do |track|
+      .help-block.select-help-text.track-description.collapse{ id: "#{track.id}-help" }
+        = track.description
+
 
 - if @program.languages.present?
   .form-group

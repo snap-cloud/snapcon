@@ -6,7 +6,7 @@
   = f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
 
 - program.event_types.each do |event_type|
-  .help-block.event_event_type_id.collapse{ id: "#{event_type.id}-help" }
+  .help-block.event_event_type_id.collapse{ id: "#{dom_id(event_type)}-help" }
     %strong Description
     = markdown(event_type.description)
 
@@ -32,7 +32,7 @@
 %p This part of the submission is intended only for the conference committee.
 
 - program.event_types.each do |event_type|
-  .help-block.select-help-text.event_event_type_id.collapse{ id: "#{event_type.id}-instructions" }
+  .help-block.select-help-text.event_event_type_id.collapse{ id: "#{dom_id(event_type)}-instructions" }
     - if event_type.submission_instructions.blank?
       %p
         Use this space to include any additional inforrmation that is helpful in reviewing your

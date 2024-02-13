@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   def update
     if @user.update(user_params)
-      redirect_to @user, notice: 'User was successfully updated.'
+      redirect_to user_path(@user), notice: 'User was successfully updated.'
     else
       flash.now[:error] = "An error prohibited your profile from being saved: #{@user.errors.full_messages.join('. ')}."
       render :edit
@@ -47,7 +47,7 @@ class UsersController < ApplicationController
   # Somewhat of a hack: users/current/edit
   # rubocop:disable Naming/MemoizedInstanceVariableName
   def load_user
-    @user ||= ((params[:id] && params[:id] != 'current' && User.find(params[:id])) || current_user)
+    @user ||= (params[:id] && params[:id] != 'current' && User.find(params[:id])) || current_user
   end
   # rubocop:enable Naming/MemoizedInstanceVariableName
 end

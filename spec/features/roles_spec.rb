@@ -48,7 +48,7 @@ describe Role do
     let!(:user_with_role) { create(:user, role_ids: [role.id]) }
     let!(:by_role) { Role.find_by(name: by_role_name, resource: conference) }
     let!(:user_to_sign_in) { create(:user, role_ids: [by_role.id]) }
-    let!(:user_with_no_role) { create :user }
+    let!(:user_with_no_role) { create(:user) }
 
     before do
       sign_in user_to_sign_in
@@ -84,7 +84,7 @@ describe Role do
     let!(:user_with_role) { create(:user, role_ids: [role.id]) }
     let!(:by_role) { Role.find_by(name: by_role_name, resource: conference) }
     let!(:user_to_sign_in) { create(:user, role_ids: [by_role.id]) }
-    let!(:user_with_no_role) { create :user }
+    let!(:user_with_no_role) { create(:user) }
 
     before do
       sign_in user_to_sign_in
@@ -108,7 +108,7 @@ describe Role do
     let!(:organization) { create(:organization) }
     let!(:org_admin_role) { Role.find_by(name: 'organization_admin', resource: organization) }
     let!(:organization_admin) { create(:user, role_ids: [org_admin_role.id]) }
-    let(:user_with_no_role) { create :user }
+    let(:user_with_no_role) { create(:user) }
     let!(:other_organization) { create(:organization) }
 
     before do
@@ -130,7 +130,7 @@ describe Role do
       it 'successfully removes role organization_admin' do
         click_link('Admins', href: admins_admin_organization_path(organization.id))
 
-        first('tr').find('.btn-danger').click
+        first('tbody > tr').find('.btn-danger').click
         organization_admin.reload
         expect(organization_admin.has_cached_role?('organization_admin', organization)).to be false
       end

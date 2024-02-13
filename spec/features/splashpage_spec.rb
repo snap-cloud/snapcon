@@ -156,14 +156,19 @@ start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
     end
 
     it 'only shows 3 events happening now because of pagination' do
-      event_schedule1 = create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
-start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule2 = create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
-start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule3 = create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
-start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
-      event_schedule4 = create(:event_schedule, event: scheduled_event4, schedule: selected_schedule,
-start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+      Rails.configuration.conference[:events_per_page] = 3
+      event_schedule1 = create(:event_schedule, event:      scheduled_event1,
+                                                schedule:   selected_schedule,
+                                                start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule2 = create(:event_schedule, event:      scheduled_event2,
+                                                schedule:   selected_schedule,
+                                                start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule3 = create(:event_schedule, event:      scheduled_event3,
+                                                schedule:   selected_schedule,
+                                                start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
+      event_schedule4 = create(:event_schedule, event:      scheduled_event4,
+                                                schedule:   selected_schedule,
+                                                start_time: current_time.strftime('%a, %d %b %Y %H:%M:%S'))
 
       visit conference_path(conference2.short_title)
       happening_now = page.find('#happening-now')
