@@ -39,12 +39,10 @@ class Venue < ApplicationRecord
     "#{street}, #{city}, #{country_name}"
   end
 
-  # TODO-SNAPCON: (mb) iso_short_name seems to fail in tests only...this makes no sense.
+  # TODO-SNAPCON: (mb) Fix this to use the country shortname?
   def country_name
     return unless country
-
-    name = ISO3166::Country[country]
-    name.try(:iso_short_name) || name.try(:name)
+    I18nData.countries[country]
   end
 
   def location?
