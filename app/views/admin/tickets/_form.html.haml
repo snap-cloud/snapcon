@@ -12,10 +12,12 @@
   .form-group
   = f.label :email_body
   = f.text_area :email_body, rows: 10, cols: 20, class: 'form-control'
-  %a.btn.btn-link.control_label.load_template{ 'data-subject-input-id' => 'ticket_email_subject',
-  'data-subject-text' => '{conference} | Ticket Confirmation and PDF!',
-  'data-body-input-id' => 'ticket_email_body',
-  'data-body-text' => "Dear {name},\n\nThanks! You have successfully booked {ticket_quantity} {ticket_title} ticket(s) for the event {conference}. Your transaction id is {ticket_purchase_id}.\nPlease, find the ticket(s) pdf attached.\n\nBest wishes,\n{conference} Team"} Load Default Email
+  - email_template = default_ticket_email_template
+  %a.btn.btn-link.control_label.load_template{'data-subject-input-id' => email_template[:subject_input_id],
+  'data-subject-text' => email_template[:subject_text],
+  'data-body-input-id' => email_template[:body_input_id],
+  'data-body-text' => email_template[:body_text]
+  } Load Default Email
   %a.btn.btn-link.control_label.template_help_link{ 'data-name' => 'accepted_help' } Show Help
   = render partial: 'shared/help', locals: { id: 'accepted_help', show_event_variables: true, show_ticket_variables: true}
   .form-group

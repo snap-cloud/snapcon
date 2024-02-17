@@ -11,10 +11,11 @@
   .col-md-12
     %table.table.table-hover#currency-conversions
       %thead
-        %th From Curr
-        %th To Curr
-        %th Rate
-        %th Actions
+        %tr
+          %th From Curr
+          %th To Curr
+          %th Rate
+          %th Actions
       %tbody
         - @conference.currency_conversions.each do |currency_conversion|
           %tr

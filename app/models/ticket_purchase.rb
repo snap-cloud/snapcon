@@ -16,7 +16,6 @@
 #  user_id       :integer
 #
 
-# add a currency field
 class TicketPurchase < ApplicationRecord
   belongs_to :ticket
   belongs_to :user

@@ -13,14 +13,14 @@ class EmailTemplateParser
       'conference_start_date'  => @conference.start_date,
       'conference_end_date'    => @conference.end_date,
       'registrationlink'       => Rails.application.routes.url_helpers.conference_conference_registration_url(
-        @conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+        @conference.short_title, host: Rails.application.routes.default_url_options[:host]
       ),
       'conference_splash_link' => Rails.application.routes.url_helpers.conference_url(
-        @conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+        @conference.short_title, host: Rails.application.routes.default_url_options[:host]
       ),
 
       'schedule_link'          => Rails.application.routes.url_helpers.conference_schedule_url(
-        @conference.short_title, host: ENV.fetch('OSEM_HOSTNAME', 'localhost:3000')
+        @conference.short_title, host: Rails.application.routes.default_url_options[:host]
       )
     }
     if @conference.program.cfp
