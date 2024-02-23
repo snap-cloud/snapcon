@@ -24,7 +24,7 @@
     %abbr{title: 'This field is required'} *
     = f.number_field :maximum_abstract_length, size: 3, required: true, class: 'form-control'
   .form-group
-    = f.label :submission_instructions
+    = f.label :submission_instructions, 'Submission Template'
     = f.text_area :submission_instructions, rows: 5, data: { provide: 'markdown' }
     .help-block= markdown_hint
   .form-group
