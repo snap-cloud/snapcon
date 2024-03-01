@@ -30,6 +30,8 @@ jobs:
     env:
       OSEM_DB_ADAPTER: sqlite3
       RAILS_ENV: test
+      CCTR: ./cc-test-reporter
+      CCTR_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     strategy:
       matrix:
         suite: [models, features, controllers, ability, leftovers, cucumber]
@@ -46,6 +48,11 @@ jobs:
       - run: sudo apt-get install xvfb
       - name: Install JavaScript libraries via npm
         run: npm install
+      - name: set up CodeClimate test-reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > $CCTR
+          chmod +x $CCTR
+          $CCTR before-build
       - name: Prepare spec
         run: |
           rm -f osem_test osem_development
@@ -54,7 +61,9 @@ jobs:
           bundle exec rake factory_bot:lint RAILS_ENV=test
         # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}
-        run: xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
+        run: |
+          xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
+          $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov
       # - name: coverage upload ${{ matrix.suite }}
       #   uses: codacy/codacy-coverage-reporter-action@v1
       #   if: github.ref == 'refs/heads/master' && always()
@@ -68,3 +77,10 @@ jobs:
           name: capybara-screenshots
           path: tmp/capybara/
           retention-days: 7
+
+      - name: Publish code coverage
+        run: |
+          export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
+          $CCTR sum-coverage coverage/codeclimate.*.json
+          $CCTR upload-coverage --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
+          $CCTR after-build --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"

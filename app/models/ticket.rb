@@ -6,6 +6,8 @@
 #
 #  id                  :bigint           not null, primary key
 #  description         :text
+#  email_body          :text
+#  email_subject       :string
 #  price_cents         :integer          default(0), not null
 #  price_currency      :string           default("USD"), not null
 #  registration_ticket :boolean          default(FALSE)
@@ -19,6 +21,7 @@ class Ticket < ApplicationRecord
   belongs_to :conference
   has_many :ticket_purchases, dependent: :destroy
   has_many :buyers, -> { distinct }, through: :ticket_purchases, source: :user
+  has_many :currency_conversions, through: :conferences
 
   has_paper_trail meta:   { conference_id: :conference_id },
                   ignore: %i[updated_at]

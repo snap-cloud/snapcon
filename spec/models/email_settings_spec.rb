@@ -53,6 +53,7 @@ describe EmailSettings do
   end
   let(:user) { create(:user, username: 'johnd', email: 'john@doe.com', name: 'John Doe') }
   let(:event) { create(:event, program: conference.program, title: 'Talk about talks', submitter: user) }
+  let(:emailtemplateparser) { create(:emailtemplateparser, conference: conference, user: user) }
   let(:expected_hash) do
     {
       'email'                  => 'john@doe.com',

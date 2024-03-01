@@ -9,11 +9,11 @@ The recommended setup steps are as follows:
 1. Run `bundle config set path vendor/bundle` to install gems to `vendor/bundle`.
 1. Run `bundle install` to install the necessary gems.
 1. Configure your environment variables.
-    1. Create `config/local_env.yml`.
+    1. Run `cp dotenv.example .env`
     1. At a bare minimum, you will likely need to provide credentials with which to access your PostgreSQL database. An example might be as follows:
         ```
-        OSEM_DB_USER: esobeck
-        OSEM_DB_PASSWORD: password123
+        OSEM_DB_USER= esobeck #this can be computer's username
+        OSEM_DB_PASSWORD= password123 #likely not necessary if using postgress with computer's username
         ```
     1. Other features will require more environment variables. See [Environment Variables](#environment-variables) and [INSTALL.md#configuration](INSTALL.md#configuration) for all the environment variables that may be set.
 1. Run `rake db:setup` (this command and all following commands may need to prefixed with `bundle exec`) to initialize the database.
