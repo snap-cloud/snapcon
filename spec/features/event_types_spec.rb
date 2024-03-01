@@ -23,7 +23,7 @@ describe EventType do
       fill_in 'event_type_title', with: 'Party'
       fill_in 'event_type_length', with: '240'
       fill_in 'event_type_description', with: '**Description**'
-      fill_in 'event_type_submission_instructions', with: '**Instructions**'
+      fill_in 'event_type_submission_template', with: '**Instructions**'
       fill_in 'event_type_minimum_abstract_length', with: '0'
       fill_in 'event_type_maximum_abstract_length', with: '13042'
       page.find('#event_type_color').set('#e4e4e4')
