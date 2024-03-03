@@ -4,7 +4,13 @@ module Admin
     load_and_authorize_resource :currency_conversion, through: :conference
 
     # GET /currency_conversions
-    def index; end
+    def index
+      @currency_conversion = @conference.currency_conversions
+      respond_to do |format|
+        format.html
+        format.json { render json: @currency_conversions }
+      end
+    end
 
     # GET /currency_conversions/1
     def show; end
