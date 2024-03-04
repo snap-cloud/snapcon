@@ -9,6 +9,9 @@
         %strong
           = @conference.title
       = form_tag(conference_ticket_purchases_path, method: :post) do |f|
+        .form-group
+          %label Currency:
+          = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control'
         %table.table.table-hover
           %thead
             %tr
