@@ -24,7 +24,7 @@
 
   %td.col-sm-1.col-md-1.text-center
     = ticket.price.symbol
-    %span{id: "price_#{ticket.id}"}
+    %span{id: "price_#{ticket.id}", 'data-original-price': humanized_money(ticket.price).to_s}
       = humanized_money ticket.price
   %td.col-sm-1.col-md-1.text-center
     %strong

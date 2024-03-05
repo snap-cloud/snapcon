@@ -1,10 +1,48 @@
+
+function update_currency_rates(data) {
+    data.forEach(function(conversion) {
+        var key = conversion.from_currency + "_to_" + conversion.to_currency;
+        window.currencyRates[key] = conversion.rate;
+    });
+    $('.quantity').each(function() {
+        update_price($(this));
+    });
+}
+
+function fetch_currency_rates(){
+    //todo get conference dynamically
+    $.ajax({
+        url: "/admin/conferences/osemdemo/currency_conversions", 
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            update_currency_rates(data);
+        },
+        error: function(xhr, status, error) {
+          console.error("Failed to fetch currency rates: " + error);
+        }
+      });
+}
+
 function update_price($this){
+
     var id = $this.data('id');
+
+    var selectedCurrency = $('#currency_selector').val();
+    var baseCurrency = "USD"; // todo fetch from controller
+    var conversionKey = baseCurrency + "_to_" + selectedCurrency;
+    var conversionRate = window.currencyRates[conversionKey] || 1;
+
+    var originalPrice = parseFloat($('#price_'+id).data('original-price'));
+    var convertedPrice = originalPrice*conversionRate;
+
 
     // Calculate price for row
     var value = $this.val();
-    var price = $('#price_' + id).text();
-    $('#total_row_' + id).text((value * price).toFixed(2));
+    $('#price_' + id).text(convertedPrice.toFixed(2));
+
+
+    $('#total_row_' + id).text((value * convertedPrice).toFixed(2));
 
     // Calculate total price
     var total = 0;
@@ -15,6 +53,11 @@ function update_price($this){
 }
 
 $( document ).ready(function() {
+
+    // Initialize currency conversion rates
+    window.currencyRates = {};
+    fetch_currency_rates(); 
+
     $('.quantity').each(function() {
         update_price($(this));
     });
@@ -24,5 +67,13 @@ $( document ).ready(function() {
     });
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
+    });
+    
+
+    // Add change event listener to currency selector
+    $('#currency_selector').change(function() {
+        $('.quantity').each(function() {
+            update_price($(this));
+        });
     });
 });
