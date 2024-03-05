@@ -55,7 +55,7 @@ module Admin
     # Received a file from user
     # Reads file and creates commercial for event
     # File content example:
-    # EventID:MyURL
+    # EventID, Title, URL
     def mass_upload
       errors = Commercial.read_file(params[:file]) if params[:file]
 
