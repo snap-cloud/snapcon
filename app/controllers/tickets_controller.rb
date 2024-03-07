@@ -11,8 +11,6 @@ class TicketsController < ApplicationController
   authorize_resource :conference_registrations, class: Registration
   before_action :check_load_resource, only: :index
 
-  
-
   def index
     # Clear out unpaid tickets so a user can reselect registration tickets.
     current_user.ticket_purchases.unpaid.delete_all

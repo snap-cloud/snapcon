@@ -5,17 +5,23 @@ class PaymentsController < ApplicationController
   load_and_authorize_resource
   load_resource :conference, find_by: :short_title
   authorize_resource :conference_registrations, class: Registration
+  before_action :load_currency_conversions, only: [:new, :create]
 
   def index
     @payments = current_user.payments
   end
 
   def new
-    @total_amount_to_pay = Ticket.total_price(@conference, current_user, paid: false)
+    # todo: use "base currency"
+
+    selected_currency = session[:selected_currency] || 'USD'
+
+    @total_amount_to_pay = calculate_total_in_currency(Ticket.total_price(@conference, current_user, paid: false), selected_currency)
     raise CanCan::AccessDenied.new('Nothing to pay for!', :new, Payment) if @total_amount_to_pay.zero?
 
     @has_registration_ticket = params[:has_registration_ticket]
     @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
+    @currency = selected_currency
   end
 
   def create
@@ -60,4 +66,21 @@ class PaymentsController < ApplicationController
       ticket_purchase.pay(@payment)
     end
   end
+
+  def load_currency_conversions
+    @currency_conversions = @conference.currency_conversions
+  end
+
+  def calculate_total_in_currency(amount, to_currency)
+    #TODO update this with base currency
+    from_currency = 'USD'
+    conversion = @currency_conversions.find_by(from_currency: from_currency, to_currency: to_currency)
+    if conversion
+      amount * conversion.rate
+    else
+      #If no conversion is found. Typically only possible if base to base. Maybe make this error out.
+      amount
+    end
+  end
+
 end
