@@ -11,8 +11,11 @@ function update_currency_rates(data) {
 
 function fetch_currency_rates(){
     //todo get conference dynamically
+    var conferencePathArray = window.location.pathname.split('/');
+    var conferenceIdentifier = conferencePathArray[2];
+    var requestUrl = "/admin/conferences/" + conferenceIdentifier + "/currency_conversions";
     $.ajax({
-        url: "/admin/conferences/osemdemo/currency_conversions", 
+        url: requestUrl, 
         type: "GET",
         dataType: "json",
         success: function(data) {
