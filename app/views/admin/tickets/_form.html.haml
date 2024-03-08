@@ -7,6 +7,20 @@
     = f.label :description
     = f.text_area :description, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
   .form-group
+    = f.label :email_subject
+    = f.text_field :email_subject, class: 'form-control'
+  .form-group
+  = f.label :email_body
+  = f.text_area :email_body, rows: 10, cols: 20, class: 'form-control'
+  - email_template = default_ticket_email_template
+  %a.btn.btn-link.control_label.load_template{'data-subject-input-id' => email_template[:subject_input_id],
+  'data-subject-text' => email_template[:subject_text],
+  'data-body-input-id' => email_template[:body_input_id],
+  'data-body-text' => email_template[:body_text]
+  } Load Default Email
+  %a.btn.btn-link.control_label.template_help_link{ 'data-name' => 'accepted_help' } Show Help
+  = render partial: 'shared/help', locals: { id: 'accepted_help', show_event_variables: true, show_ticket_variables: true}
+  .form-group
     = f.label :price
     = f.number_field :price, class: 'form-control'
   - if Ticket.where(conference: @conference).empty?

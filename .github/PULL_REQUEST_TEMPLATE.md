@@ -1,19 +1,31 @@
-**Checklist**
+### [Pivotal Tracker Link][tracker]
 
-- [ ] I have read the [Contribution & Best practices Guide](https://github.com/openSUSE/osem/blob/master/CONTRIBUTING.md).
-- [ ] My branch is up-to-date with the upstream `master` branch.
-- [ ] The tests pass locally with my changes.
-- [ ] I have added tests that prove my fix is effective or that my feature works(if appropriate).
-- [ ] I have added necessary documentation (if appropriate).
+<!-- Complete this section filling in the link to a tracker story. -->
+[tracker]: https://www.pivotaltracker.com/story/show/your-story-id
 
-**Short description of what this resolves/which [issues](https://github.com/openSUSE/osem/issues) does this fix?:**
+## What this PR does:
+<!-- Complete the following sentence: -->
 
-<!-- List the issue number resolved with this change; if there is no open issue, describe the problem this request solves -->
+This pull request fixes|implements (pick one...) ______.
 
--
+### Include screenshots, videos, etc.
 
-**Changes proposed in this pull request:**
+#### Who authored this PR?
+<!-- Tag the names of any other contributors -->
 
-<!-- Summarize the changes, using declarative language. -->
 
--
+### How should this PR be tested?
+
+* Is there a deploy we can view?
+* What do the specs/features test?
+* Are there edge cases to watch out for?
+
+#### Are there any complications to deploying this?
+
+<!-- Data migrations, upgrades, etc. -->
+
+### Checklist:
+
+- [ ] Has this been deployed to a staging environment or reviewed by a customer?
+- [ ] Tag someone for code review (either a coach / team member)
+- [ ] I have renamed the branch to match PivotTracker's suggested one (necessary for BlueJay)
