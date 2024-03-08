@@ -7,6 +7,7 @@
 #  id                 :bigint           not null, primary key
 #  amount             :integer
 #  authorization_code :string
+#  currency           :string
 #  last4              :string
 #  status             :integer          default("unpaid"), not null
 #  created_at         :datetime         not null
@@ -24,6 +25,7 @@ class Payment < ApplicationRecord
   validates :status, presence: true
   validates :user_id, presence: true
   validates :conference_id, presence: true
+  validates :currency, presence: true
 
   enum status: {
     unpaid:  0,
@@ -44,7 +46,7 @@ class Payment < ApplicationRecord
                                              receipt_email: stripe_customer_email,
                                              description:   stripe_description,
                                              amount:        amount_to_pay,
-                                             currency:      conference.tickets.first.price_currency
+                                             currency:      currency
 
     self.amount = gateway_response[:amount]
     self.last4 = gateway_response[:source][:last4]
