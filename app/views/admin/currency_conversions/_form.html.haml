@@ -1,10 +1,10 @@
 = form_for(@currency_conversion, url: (@currency_conversion.new_record? ? admin_conference_currency_conversions_path : admin_conference_currency_conversion_path(@conference.short_title, @currency_conversion))) do |f|
   .form-group
-    = f.label :from_currency
-    = f.text_field :from_currency, autofocus: true , required: true, class: 'form-control'
+    %label From Currency
+    = text_field_tag :from_currency, @currency_conversion.from_currency, disabled: true, class: 'form-control'
   .form-group
     = f.label :to_currency
-    = f.text_field :to_currency, autofocus: true , required: true, class: 'form-control'
+    = f.select :to_currency, options_for_select(@currency_options, selected: @currency_conversion.to_currency), {include_blank: 'Select a currency'}, {autofocus: true, required: true, class: 'form-control'}
   .form-group
     = f.label :rate
     = f.text_field :rate, autofocus: true, required: true, class: 'form-control', type: 'number', step: '0.01'

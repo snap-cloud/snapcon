@@ -2,6 +2,8 @@ module Admin
   class CurrencyConversionsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :currency_conversion, through: :conference
+    before_action :set_currency_options, only: [:new, :edit, :create]
+
 
     # GET /currency_conversions
     def index; end
@@ -12,6 +14,8 @@ module Admin
     # GET /currency_conversions/new
     def new
       @currency_conversion = @conference.currency_conversions.new(conference_id: @conference.short_title)
+      #change from @conference.tickets.first.price_currency to default conference currency when that is created
+      @currency_conversion.from_currency = @conference.tickets.first.price_currency
     end
 
     # GET /currency_conversions/1/edit
@@ -20,7 +24,8 @@ module Admin
     # POST /currency_conversions
     def create
       @currency_conversion = @conference.currency_conversions.new(currency_conversion_params)
-
+      #set from currency after the params are taken in by currency_conversion_params from form
+      @currency_conversion.from_currency = @conference.tickets.first.price_currency 
       if @currency_conversion.save
         redirect_to admin_conference_currency_conversions_path(@conference.short_title), notice: 'Currency conversion was successfully created.'
       else
@@ -52,7 +57,12 @@ module Admin
 
     # Only allow a list of trusted parameters through.
     def currency_conversion_params
-      params.require(:currency_conversion).permit(:from_currency, :to_currency, :rate)
+      params.require(:currency_conversion).permit(:to_currency, :rate)
+    end
+
+    def set_currency_options
+      from_currency = @conference.tickets.first.price_currency
+      @currency_options = CurrencyConversion::VALID_CURRENCIES.reject{|i| i == from_currency}.map{|i| [i, i]}
     end
   end
 end
