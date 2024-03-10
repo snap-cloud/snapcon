@@ -14,6 +14,9 @@
 #  commercial_id       :string
 #  commercialable_id   :integer
 #
+require 'csv'
+
+
 class Commercial < ApplicationRecord
   require 'oembed'
 
@@ -52,16 +55,11 @@ class Commercial < ApplicationRecord
       return errors
     end
 
-    file.read.each_line do |line|
-      # Split the line by comma
-      elements = line.strip.split(',')
-      id, title, url = elements[0].to_i, elements[1], elements[2]
-
-      # Validate presence of all parts
-      if elements.size != 3
-        errors[:validation_errors] << "Line format is incorrect. Should be ID, Title, URL."
-        next
-      end
+    CSV.foreach(file.path, headers: true) do |row|
+      # You can access columns by their names if headers are included in the file
+      id = row['Event_ID'].to_i
+      title = row['Title']
+      url = row['URL']
 
       event = Event.find_by(id: id)
 

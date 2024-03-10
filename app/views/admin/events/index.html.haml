@@ -36,11 +36,12 @@
             = f.file_field 'file', as: :file
             %span.help-block
               Upload your file.csv with data in the following format:
-              %b Event_ID, Title, Commercial_Link
+              %b Event_ID,Title,URL
               for instance:
               %pre
-                1, title, https://youtube.com/myvideo
-                2, title, https://vimeo.com/myvideo
+                Event_ID,Title,URL
+                1,title,https://youtube.com/myvideo
+                2,title,https://vimeo.com/myvideo
           .modal-footer
             = f.submit nil, class: 'btn btn-primary'
 .row
