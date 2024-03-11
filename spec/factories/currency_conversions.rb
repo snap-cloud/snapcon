@@ -4,10 +4,21 @@
 #
 # Table name: currency_conversions
 #
-#  rate          :decimal
+#  id            :bigint           not null, primary key
 #  from_currency :string
+#  rate          :decimal(, )
 #  to_currency   :string
-#  conference_id :integer
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  conference_id :bigint           not null
+#
+# Indexes
+#
+#  index_currency_conversions_on_conference_id  (conference_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (conference_id => conferences.id)
 #
 FactoryBot.define do
   factory :currency_conversion do

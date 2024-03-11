@@ -40,7 +40,7 @@ class UsersController < ApplicationController
 
   def user_params
     params[:user][:timezone] = params[:user][:timezone].presence || nil
-    params.require(:user).permit(:name, :biography, :nickname, :affiliation,
+    params.require(:user).permit(:name, :biography, :nickname, :affiliation, :default_currency,
                                  :picture, :picture_cache, :timezone)
   end
 
