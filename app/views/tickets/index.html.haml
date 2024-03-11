@@ -1,9 +1,20 @@
+%meta{name: 'conference-short-title', data: { short_title: @conference.short_title }}
 .container
   .row
     .col-md-8
       .page-header
         %h1
           Tickets
+  .row
+    .col-md-8
+      %p.lead
+        Please choose your tickets for
+        %strong
+          = @conference.title
+    .col-md-4.text-right
+      .form-group
+        %label{for: 'currency_selector'} Currency:
+        = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control', style: 'width: auto; display: inline-block;'
   = form_tag(conference_ticket_purchases_path, method: :post) do |f|
     .row
       .col-md-8

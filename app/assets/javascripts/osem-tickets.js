@@ -11,8 +11,8 @@ function update_currency_rates(data) {
 
 function fetch_currency_rates(){
     //todo get conference dynamically
-    var conferencePathArray = window.location.pathname.split('/');
-    var conferenceIdentifier = conferencePathArray[2];
+    var conferenceIdentifier = $('meta[name="conference-short-title"]').data('short-title');
+    if (typeof conferenceIdentifier !== 'undefined') {
     var requestUrl = "/admin/conferences/" + conferenceIdentifier + "/currency_conversions";
     $.ajax({
         url: requestUrl, 
@@ -24,7 +24,8 @@ function fetch_currency_rates(){
         error: function(xhr, status, error) {
           console.error("Failed to fetch currency rates: " + error);
         }
-      });
+    });
+    }
 }
 
 function update_price($this){
