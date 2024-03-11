@@ -13,7 +13,6 @@ class PaymentsController < ApplicationController
 
   def new
     # todo: use "base currency"
-    flash.now[:error] = params
     session[:selected_currency] = params[:currency] if params[:currency].present?
     selected_currency = session[:selected_currency] || 'USD'
 
