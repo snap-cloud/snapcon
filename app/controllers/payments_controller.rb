@@ -13,7 +13,8 @@ class PaymentsController < ApplicationController
 
   def new
     # todo: use "base currency"
-
+    flash.now[:error] = params
+    session[:selected_currency] = params[:currency] if params[:currency].present?
     selected_currency = session[:selected_currency] || 'USD'
 
     @total_amount_to_pay = calculate_total_in_currency(Ticket.total_price(@conference, current_user, paid: false), selected_currency)
@@ -25,7 +26,7 @@ class PaymentsController < ApplicationController
   end
 
   def create
-    @payment = Payment.new payment_params
+    @payment = Payment.new (payment_params.merge(currency: session[:selected_currency]))
 
     if @payment.purchase && @payment.save
       update_purchased_ticket_purchases
@@ -45,7 +46,7 @@ class PaymentsController < ApplicationController
                     notice: 'Thanks! Your ticket is booked successfully.'
       end
     else
-      @total_amount_to_pay = Ticket.total_price(@conference, current_user, paid: false)
+      @total_amount_to_pay = calculate_total_in_currency(Ticket.total_price(@conference, current_user, paid: false), selected_currency)
       @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
       flash.now[:error] = @payment.errors.full_messages.to_sentence + ' Please try again with correct credentials.'
       render :new

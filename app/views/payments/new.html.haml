@@ -3,7 +3,7 @@
     .col-xs-6.col-xs-offset-3
       %h1
         Payment Summary :
-        = humanized_money_with_symbol @total_amount_to_pay
+        = humanized_money_with_symbol Money.new(@total_amount_to_pay, @currency)
     .col-xs-8.col-xs-offset-2.well
       = render partial: 'payment'
   .row
