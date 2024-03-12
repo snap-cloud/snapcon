@@ -25,6 +25,13 @@ gem 'responders', '~> 3.0'
 # as supported databases
 gem 'pg'
 
+## RUBY 3.4.0 GEMS
+## These should be reevaluated after future releases
+gem 'base64' # used by activesupport
+gem 'mutex_m' # used by activesupport
+gem 'csv'
+gem 'drb' # used by zeitwerk
+
 # for tracking data changes
 gem 'paper_trail', '< 13'
 
@@ -231,7 +238,7 @@ group :test do
   gem 'database_cleaner'
   gem 'geckodriver-helper'
   gem 'rspec-rails'
-  gem 'webdrivers'
+  gem 'selenium-webdriver'
   # for measuring test coverage
   gem 'simplecov'
   gem 'simplecov-cobertura'
