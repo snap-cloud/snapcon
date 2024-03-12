@@ -57,7 +57,7 @@ jobs:
         run: |
           rm -f osem_test osem_development
           bundle exec rake db:setup --trace
-          bundle exec bin/rails webdrivers:chromedriver:update
+          # bundle exec bin/rails webdrivers:chromedriver:update
           bundle exec rake factory_bot:lint RAILS_ENV=test
         # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}

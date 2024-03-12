@@ -2,7 +2,7 @@
 
 # Mock external requests to youtube
 require 'webmock/rspec'
-driver_urls = Webdrivers::Common.subclasses.map do |driver|
+driver_urls = ::Selenium::WebDriver::Driver.subclasses.map do |driver|
   Addressable::URI.parse(driver.base_url).host
 end
 # Local chromedriver pings many sites. :(
