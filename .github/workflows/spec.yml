@@ -32,6 +32,7 @@ jobs:
       RAILS_ENV: test
       CCTR: ./cc-test-reporter
       CCTR_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
     strategy:
       matrix:
         suite: [models, features, controllers, ability, leftovers, cucumber]
@@ -57,19 +58,12 @@ jobs:
         run: |
           rm -f osem_test osem_development
           bundle exec rake db:setup --trace
-          # bundle exec bin/rails webdrivers:chromedriver:update
+          bundle exec bin/rails webdrivers:chromedriver:update
           bundle exec rake factory_bot:lint RAILS_ENV=test
-        # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}
         run: |
           xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
-          $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov
-      # - name: coverage upload ${{ matrix.suite }}
-      #   uses: codacy/codacy-coverage-reporter-action@v1
-      #   if: github.ref == 'refs/heads/master' && always()
-      #   with:
-      #     project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-      #     coverage-reports: coverage/coverage.xml
+          $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov --id $CCTR_ID
       - name: Upload Capybara Failure Screenshots
         uses: actions/upload-artifact@v3
         if: always()
