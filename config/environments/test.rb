@@ -59,6 +59,6 @@ Rails.application.configure do
 
   # Test mailbot settings
   config.mailbot = {
-    bcc_address:    'test@test.com'
+    bcc_address: 'test@test.com'
   }
 end

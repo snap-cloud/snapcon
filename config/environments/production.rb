@@ -144,7 +144,7 @@ Rails.application.configure do
 
   # Mailbot settings
   config.mailbot = {
-    bcc_address:    ENV.fetch('OSEM_MESSAGE_BCC_ADDRESS', nil)
+    bcc_address: ENV.fetch('OSEM_MESSAGE_BCC_ADDRESS', nil)
   }
 
   config.after_initialize do
