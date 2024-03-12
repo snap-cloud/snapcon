@@ -12,7 +12,6 @@ function update_currency_rates(data) {
 function fetch_currency_rates(){
     //todo get conference dynamically
     var conferenceIdentifier = $('meta[name="conference-short-title"]').data('short-title');
-    if (typeof conferenceIdentifier !== 'undefined') {
     var requestUrl = "/admin/conferences/" + conferenceIdentifier + "/currency_conversions";
     $.ajax({
         url: requestUrl, 
@@ -25,7 +24,7 @@ function fetch_currency_rates(){
           console.error("Failed to fetch currency rates: " + error);
         }
     });
-    }
+    
 }
 
 function update_price($this){
@@ -60,7 +59,10 @@ $( document ).ready(function() {
 
     // Initialize currency conversion rates
     window.currencyRates = {};
-    fetch_currency_rates(); 
+
+    if($('#currency_selector').length > 0) {
+        fetch_currency_rates();
+    }
 
     $('.quantity').each(function() {
         update_price($(this));
