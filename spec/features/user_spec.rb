@@ -9,6 +9,9 @@ feature User do
   shared_examples 'admin ability' do
     scenario 'edits a user', feature: true, js: true do
       visit admin_users_path
+      wait_for_ajax
+      # sleep 3
+      debugger
       within "tr#user_#{user.id}" do
         click_on 'Edit'
       end
