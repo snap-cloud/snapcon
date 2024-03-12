@@ -1,0 +1,76 @@
+.template-help{ id: id }
+  Valid attributes:
+  %table.table
+    %tr
+      %td {email}
+      %td The user's email address
+    %tr
+      %td {name}
+      %td The user's full name
+    %tr
+      %td {conference}
+      %td The full conference title
+    - if show_event_variables.present?
+      %tr
+        %td {proposalslink}
+        %td A link to the user's proposal page
+      %tr
+        %td {eventtitle}
+        %td The title of an accepted or rejected proposal
+      %tr
+        %td {committee_review}
+        %td The raw text in the committee review for the proposal
+      %tr
+        %td {committee_review_html}
+        %td The committee review markdown rendered as HTML.
+    %tr
+      %td {conference_start_date}
+      %td The start date of the conference
+    %tr
+      %td {conference_end_date}
+      %td The end date of the conference
+    - if @conference.registration_dates_given?
+      %tr
+        %td {registration_start_date}
+        %td The start date of the registration period
+      %tr
+        %td {registration_end_date}
+        %td The end date of the registration period
+      %tr
+        %td {registrationlink}
+        %td A link to the registration page
+    - if (@conference.venue.present?)
+      %tr
+        %td {venue}
+        %td The name of the venue
+      %tr
+        %td {venue_address}
+        %td The address of the venue
+    - unless @conference.program.cfp.blank? || @conference.program.cfp.start_date.blank? || @conference.program.cfp.end_date.blank?
+      %tr
+        %td {cfp_start_date}
+        %td The call for papers start date
+      %tr
+        %td {cfp_end_date}
+        %td The call for papers end date
+      - if @conference.program.schedule_public
+        %td {schedule_link}
+        %td The link to complete schedule of the conference
+    - if (@conference.splashpage.present?) && @conference.splashpage.public?
+      %tr
+        %td {conference_splash_link}
+        %td The link to conference splash page
+    - if show_ticket_variables
+      %tr
+        %td {ticket_quantity}
+        %td The quantity of tickets purchased
+      %tr
+        %td {ticket_title}
+        %td The ticket title
+      %tr
+        %td {ticket_purchase_id}
+        %td The id of the ticket purchase transaction
+    - if @conference.booths
+      %tr
+        %td {booth_title}
+        %td Booth's title

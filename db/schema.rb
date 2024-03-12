@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_26_175634) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -133,6 +134,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
     t.string "blog"
   end
 
+  create_table "currency_conversions", force: :cascade do |t|
+    t.decimal "rate"
+    t.string "from_currency"
+    t.string "to_currency"
+    t.bigint "conference_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conference_id"], name: "index_currency_conversions_on_conference_id"
+  end
+
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer "priority", default: 0, null: false
     t.integer "attempts", default: 0, null: false
@@ -223,7 +234,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
     t.integer "program_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-    t.text "submission_instructions"
+    t.text "submission_template"
   end
 
   create_table "event_users", force: :cascade do |t|
@@ -551,6 +562,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.boolean "visible", default: true
+    t.string "email_subject"
+    t.text "email_body"
   end
 
   create_table "tracks", force: :cascade do |t|
@@ -683,5 +696,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_09_012731) do
     t.datetime "updated_at", precision: nil
   end
 
+  add_foreign_key "currency_conversions", "conferences"
   add_foreign_key "events", "events", column: "parent_id"
 end

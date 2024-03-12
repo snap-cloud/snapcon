@@ -50,7 +50,7 @@ module Admin
 
     def event_type_params
       params.require(:event_type).permit(:title, :length, :minimum_abstract_length, :maximum_abstract_length,
-                                         :submission_instructions, :color, :conference_id, :description)
+                                         :submission_template, :color, :conference_id, :description)
     end
   end
 end
