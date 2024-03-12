@@ -49,7 +49,7 @@ $(function () {
         $('.' + id).collapse('hide');
 
         $(`#event_type_${$(this).val()}-help.${id}`).collapse('show');
-        $(`#event_type_${$(this).val()}-instructions.${id}`).collapse('show');w
+        $(`#event_type_${$(this).val()}-instructions.${id}`).collapse('show');
     });
     $('.dropdown-toggle').dropdown();
 
