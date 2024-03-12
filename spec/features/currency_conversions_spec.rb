@@ -22,7 +22,6 @@ describe CurrencyConversion do
       fill_in 'currency_conversion_from_currency', with: 'USD'
       fill_in 'currency_conversion_to_currency', with: 'EUR'
       fill_in 'currency_conversion_rate', with: '0.89'
-
       click_button 'Create Currency conversion'
       page.find('#flash')
       expect(flash).to eq('Currency conversion was successfully created.')
