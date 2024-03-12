@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV.fetch('OSEM_RUBY_VERSION', '3.2.2')
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.3.0')
 
 # as web framework
 if next?
