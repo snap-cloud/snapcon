@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.2
+          ruby-version: 3.3.0
           bundler-cache: true
       # - name: Run Pronto
       #   run: bundle exec pronto run
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.2
+          ruby-version: 3.3.0
           bundler-cache: true
       - name: Use Node.js
         uses: actions/setup-node@v1
