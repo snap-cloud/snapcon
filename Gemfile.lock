@@ -637,9 +637,9 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
-    sqlite3 (1.6.3-arm64-darwin)
-    sqlite3 (1.6.3-x86_64-darwin)
-    sqlite3 (1.6.3-x86_64-linux)
+    sqlite3 (1.7.2-arm64-darwin)
+    sqlite3 (1.7.2-x86_64-darwin)
+    sqlite3 (1.7.2-x86_64-linux)
     ssrf_filter (1.1.2)
     stripe (5.55.0)
     stripe-ruby-mock (3.1.0)
@@ -820,7 +820,7 @@ DEPENDENCIES
   whenever
 
 RUBY VERSION
-   ruby 3.2.2
+   ruby 3.3.0p0
 
 BUNDLED WITH
    2.5.6
