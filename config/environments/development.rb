@@ -66,7 +66,6 @@ Rails.application.configure do
 
   # Test mailbot settings
   config.mailbot = {
-    ytlf_ticket_id: 50,
     bcc_address:    'test@test.com'
   }
 

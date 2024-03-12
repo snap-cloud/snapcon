@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-YTLF_TICKET_ID = Rails.configuration.mailbot[:ytlf_ticket_id]
-
 class Mailbot < ApplicationMailer
   helper ApplicationHelper
   helper ConferenceHelper
@@ -30,11 +28,6 @@ class Mailbot < ApplicationMailer
       pdf = TicketPdf.new(@conference, @user, physical_ticket, @conference.ticket_layout.to_sym,
                           "ticket_for_#{@conference.short_title}_#{physical_ticket.id}")
       attachments["ticket_for_#{@conference.short_title}_#{physical_ticket.id}.pdf"] = pdf.render
-    end
-
-    if @ticket_purchase.ticket_id == YTLF_TICKET_ID
-      template_name = 'young_thinkers_ticket_confirmation_template'
-      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: template_name)
     end
 
     # if email subject is empty, use custom template
