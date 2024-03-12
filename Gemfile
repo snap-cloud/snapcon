@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV.fetch('OSEM_RUBY_VERSION', '3.2.2')
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.3.0')
 
 # as web framework
 if next?
@@ -24,6 +24,13 @@ gem 'responders', '~> 3.0'
 
 # as supported databases
 gem 'pg'
+
+## RUBY 3.4.0 GEMS
+## These should be reevaluated after future releases
+gem 'base64' # used by activesupport
+gem 'mutex_m' # used by activesupport
+gem 'csv'
+gem 'drb' # used by zeitwerk
 
 # for tracking data changes
 gem 'paper_trail', '< 13'
@@ -225,15 +232,17 @@ end
 
 group :test do
   # as test framework
+  gem 'rspec-rails'
+
   gem 'capybara'
   gem 'cucumber-rails', require: false
-  gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
-  gem 'database_cleaner'
-  gem 'geckodriver-helper'
-  gem 'rspec-rails'
+  gem 'selenium-webdriver'
   gem 'webdrivers'
+
+  gem 'database_cleaner'
+
   # for measuring test coverage
-  gem 'simplecov', '<0.18'
+  gem 'simplecov'
   gem 'simplecov-cobertura'
   # for describing models
   gem 'shoulda-matchers', require: false

@@ -15,7 +15,7 @@ require File.expand_path('../config/environment', __dir__)
 
 require 'rspec/rails'
 require 'shoulda/matchers'
-require 'webdrivers'
+require 'selenium-webdriver'
 
 # To avoid confusion on missed migrations - use Rails 4 checker to ensure
 # all migrations applied
@@ -57,36 +57,38 @@ RSpec.configure do |config|
 
   Capybara.disable_animation = true
 
-  Capybara.register_driver :firefox do |app|
-    Capybara::Selenium::Driver.new(app, browser: :firefox)
-  end
+  # Capybara.register_driver :firefox do |app|
+  #   Capybara::Selenium::Driver.new(app, browser: :firefox)
+  # end
 
-  Capybara.register_driver :chrome do |app|
-    Capybara::Selenium::Driver.new(app, browser: :chrome)
-  end
+  # Capybara.register_driver :chrome do |app|
+  #   Capybara::Selenium::Driver.new(app, browser: :chrome)
+  # end
 
-  Capybara.register_driver :firefox_headless do |app|
-    options = Selenium::WebDriver::Firefox::Options.new
-    options.args << '--headless'
-    options.args << '--window-size=1920,1080'
-    Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
-  end
+  # Capybara.register_driver :firefox_headless do |app|
+  #   options = Selenium::WebDriver::Firefox::Options.new
+  #   options.args << '--headless'
+  #   options.args << '--window-size=1920,1080'
+  #   Capybara::Selenium::Driver.new(app, browser: :firefox, options: options)
+  # end
 
-  Capybara.register_driver :chrome_headless do |app|
-    options = ::Selenium::WebDriver::Chrome::Options.new
-    options.args << '--window-size=1920x1080'
-    options.args << '--headless'
-    options.args << '--no-sandbox'
-    options.args << '--disable-gpu'
-    Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
-  end
+  # Capybara.register_driver :chrome_headless do |app|
+  #   options = ::Selenium::WebDriver::Chrome::Options.new
+  #   options.args << '--window-size=1920x1080'
+  #   options.args << '--headless'
+  #   options.args << '--no-sandbox'
+  #   options.args << '--disable-gpu'
+  #   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+  # end
 
   Capybara.default_max_wait_time = 10 # seconds
 
   # use a real browser for JS tests
-  Capybara.javascript_driver = (
-    ENV.fetch('OSEM_TEST_DRIVER', 'chrome_headless').to_sym
-  )
+  Capybara.default_driver = :selenium_chrome_headless
+  Capybara.javascript_driver = :selenium_chrome_headless
+  # Capybara.default_driver = (
+  #   ENV.fetch('OSEM_TEST_DRIVER', 'selenium_chrome_headless').to_sym
+  # )
 
   # Includes helpers and connect them to specific types of tests
   config.include FactoryBot::Syntax::Methods
