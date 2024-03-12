@@ -77,9 +77,11 @@ class PaymentsController < ApplicationController
     conversion = @currency_conversions.find_by(from_currency: from_currency, to_currency: to_currency)
     if conversion
       amount * conversion.rate
+      @rate = conversion.rate
     else
       #If no conversion is found. Typically only possible if base to base. Maybe make this error out.
       amount
+      @rate = 1
     end
   end
 
