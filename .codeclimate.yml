@@ -3,4 +3,8 @@ plugins:
   rubocop:
     enabled: true
     channel: rubocop-1-56-3
-
+exclude_patterns:
+  - "vendor/**/*"
+  - "public/*"
+  - "lib/tasks/*"
+  - "bin/*"
