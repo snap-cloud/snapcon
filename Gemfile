@@ -233,7 +233,7 @@ group :test do
   gem 'rspec-rails'
   gem 'webdrivers'
   # for measuring test coverage
-  gem 'simplecov', '<0.18'
+  gem 'simplecov'
   gem 'simplecov-cobertura'
   # for describing models
   gem 'shoulda-matchers', require: false
