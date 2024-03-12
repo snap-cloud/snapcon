@@ -26,7 +26,7 @@ class RegistrationsController < Devise::RegistrationsController
   end
 
   def account_update_params
-    user_attributes = [:email, :name, :password, :password_confirmation, :current_password, :email_public]
+    user_attributes = %i[email name password password_confirmation current_password email_public]
     user_attributes << :is_admin if current_user.is_admin?
     params.require(:user).permit(user_attributes)
   end

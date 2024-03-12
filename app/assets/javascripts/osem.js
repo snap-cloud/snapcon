@@ -4,7 +4,7 @@ $(function () {
     * releases a key on the keyboard
      */
     $("#user_biography").bind('keyup', function() {
-        word_count(this, 'bio_length', 150);
+        word_count(this, 'bio-length', 150);
     } );
 
     /**
@@ -48,7 +48,8 @@ $(function () {
         var id = $(this).attr('id');
         $('.' + id).collapse('hide');
 
-        $('#' + $(this).val() + '-help.' + id).collapse('show');
+        $(`#event_type_${$(this).val()}-help.${id}`).collapse('show');
+        $(`#event_type_${$(this).val()}-instructions.${id}`).collapse('show');w
     });
     $('.dropdown-toggle').dropdown();
 
@@ -142,13 +143,84 @@ function word_count(text, divId, maxcount) {
     });
 };
 
+function replace_defaut_submission_text(input_selector, new_text, valid_defaults) {
+    let $area = $(input_selector);
+    let current_text = $area.val();
+
+    if (!current_text) {
+        $area.val(new_text);
+        $area.trigger('change');
+        return;
+    }
+
+    valid_defaults.some(default_text => {
+        if (current_text == default_text) {
+            $area.val(new_text);
+            $area.trigger('change');
+            return true;
+        }
+    });
+}
+
+// TODO-SNAPCON: Verify what is on the proposals _from from upstream
+/* Wait for the DOM to be ready before attaching events to the elements */
+$( document ).ready(function() {
+    /* Set the minimum and maximum proposal abstract word length */
+    function updateEventTypeRequirements() {
+        var $selected = $("#event_event_type_id option:selected")
+        var max = $selected.data("max-words");
+        var min = $selected.data("min-words");
+
+        // We replace the default text only if the current field is empty,
+        // or is set to the default text of another event type.
+        replace_defaut_submission_text(
+            '#event_submission_text',
+            $selected.data("instructions"),
+            $("#event_event_type_id option").toArray().map(e => $(e).data('instructions'))
+        );
+
+        $("#abstract-maximum-word-count").text(max);
+        $("#submission-maximum-word-count").text(max);
+        $("#abstract-minimum-word-count").text(min);
+        $("#submission-minimum-word-count").text(min);
+        word_count($('#event_abstract').get(0), 'abstract-count', max);
+    }
+    $("#event_event_type_id").change(updateEventTypeRequirements);
+    updateEventTypeRequirements();
+
+    /* Count the proposal abstract length */
+    $("#event_abstract").on('input', function() {
+        var $selected = $("#event_event_type_id option:selected")
+        var max = $selected.data("max-words");
+        word_count(this, 'abstract-count', max);
+    } );
+
+    /* Count the submission text length */
+    $("#event_submission_text").bind('change keyup paste input', function() {
+        var $selected = $("event_event_type_id option:selected")
+        var max = $selected.data("max-words");
+        word_count(this, 'submission-count', max);
+    });
+
+    /* Listen for reset template button, wait for confirm, and reset. */
+    $('.js-resetSubmissionText').click((e) => {
+        let $selected = $("#event_event_type_id option:selected");
+        let $this = $(e.target);
+        let affirm = confirm($this.data('confirm'));
+        if (affirm) {
+            let sub_text = $('#event_submission_text');
+            sub_text.val($selected.data('instructions'));
+            sub_text.trigger('change');
+        }
+    });
+});
+
 /* Commodity function for modal windows */
 
 window.build_dialog = function(selector, content) {
   // Close it and remove content if it's already open
   $("#" + selector).modal('hide');
   $("#" + selector).remove();
-  // Add new content and pops it up
-  $("body").append("<div id=\"" + selector + "\" class=\"modal fade\" role=\"dialog\">\n" + content + "</div>");
+  $("body").append(`<div id="${selector}" class="modal fade" role="dialog">${content}</div>`);
   $("#" + selector).modal();
 }

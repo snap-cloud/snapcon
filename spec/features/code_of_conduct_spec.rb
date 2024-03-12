@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-feature 'Code of Conduct:' do
+describe 'Code of Conduct:' do
   let!(:organization) { create(:organization) }
   let!(:conference) { create(:full_conference, organization: organization) }
   let(:admin) { create(:admin) }

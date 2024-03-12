@@ -1,12 +1,22 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: sponsorship_levels
+#
+#  id            :bigint           not null, primary key
+#  position      :integer
+#  title         :string
+#  created_at    :datetime
+#  updated_at    :datetime
+#  conference_id :integer
+#
 require 'spec_helper'
 
 describe SponsorshipLevel do
   describe 'validation' do
-
     it 'is not valid without a title' do
-      should validate_presence_of(:title)
+      expect(subject).to validate_presence_of(:title)
     end
   end
 

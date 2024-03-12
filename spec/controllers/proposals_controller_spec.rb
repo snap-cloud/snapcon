@@ -4,9 +4,9 @@ require 'spec_helper'
 
 describe ProposalsController do
   let(:user) { create(:user) }
-  let(:conference) { create(:conference, short_title: 'lama101') }
+  let(:conference) { create(:conference, :with_splashpage, short_title: 'lama101') }
   let(:event) { create(:event, program: conference.program) }
-  let(:event_type) { create :event_type }
+  let(:event_type) { create(:event_type) }
 
   context 'user is not signed in' do
     describe 'GET #new' do
@@ -89,7 +89,7 @@ describe ProposalsController do
               post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                       conference_id: conference.short_title,
                                       user:          attributes_for(:user) }
-            end.to change{ Event.count }.by 1
+            end.to change { Event.count }.by 1
           end
         end
 
@@ -115,7 +115,7 @@ describe ProposalsController do
               post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                       conference_id: conference.short_title,
                                       user:          attributes_for(:user) }
-            end.not_to change{ Event.count }
+            end.not_to change { Event.count }
           end
         end
       end
@@ -154,6 +154,13 @@ describe ProposalsController do
             expect(flash[:error]).to match "Could not save user: #{user.errors.full_messages.join(', ')}"
           end
         end
+      end
+    end
+
+    describe 'GET #join' do
+      it 'redirects to #login with no user' do
+        get :join, params: { id: event.id, conference_id: conference.short_title }
+        expect(response).to redirect_to new_user_session_path
       end
     end
   end
@@ -264,7 +271,7 @@ describe ProposalsController do
           expect do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title }
-          end.to change{ Event.count }.by 1
+          end.to change { Event.count }.by 1
         end
       end
 
@@ -288,13 +295,12 @@ describe ProposalsController do
           expect do
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title }
-          end.not_to change{ Event.count }
+          end.not_to change { Event.count }
         end
       end
     end
 
     describe 'PATCH #update' do
-
       it 'assigns url variable' do
         patch :update, params: { event:         attributes_for(:event, title: 'some title', event_type_id: event_type.id),
                                  conference_id: conference.short_title,
@@ -347,7 +353,6 @@ describe ProposalsController do
     end
 
     describe 'PATCH #withdraw' do
-
       it 'assigns url variable' do
         patch :withdraw, params: { conference_id: conference.short_title, id: event.id }
         expect(assigns(:url)).to eq "/conferences/lama101/program/proposals/#{event.id}"
@@ -419,7 +424,7 @@ describe ProposalsController do
 
       context 'confirmed successfully' do
         describe 'when require_registration is set' do
-          before :each do
+          before do
             event.require_registration = true
             event.max_attendees = nil
             event.save!

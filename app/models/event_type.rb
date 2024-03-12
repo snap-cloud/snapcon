@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: event_types
+#
+#  id                      :bigint           not null, primary key
+#  color                   :string
+#  description             :string
+#  length                  :integer          default(30)
+#  maximum_abstract_length :integer          default(500)
+#  minimum_abstract_length :integer          default(0)
+#  submission_template     :text
+#  title                   :string           not null
+#  created_at              :datetime
+#  updated_at              :datetime
+#  program_id              :integer
+#
 class EventType < ApplicationRecord
   belongs_to :program, touch: true
   has_many :events, dependent: :restrict_with_error
@@ -8,7 +24,7 @@ class EventType < ApplicationRecord
                   ignore: %i[updated_at]
 
   validates :title, presence: true
-  validates :length, numericality: {greater_than: 0}
+  validates :length, numericality: { greater_than: 0 }
   validates :minimum_abstract_length, presence: true
   validates :maximum_abstract_length, presence: true
   validate :length_step
@@ -24,7 +40,10 @@ class EventType < ApplicationRecord
   # Check if length is a divisor of program schedule cell size. Used as validation.
   #
   def length_step
-    errors.add(:length, "must be a divisor of #{program.schedule_interval}") if program && length % program.schedule_interval != 0
+    if program && length % program.schedule_interval != 0
+      errors.add(:length,
+                 "must be a divisor of #{program.schedule_interval}")
+    end
   end
 
   def capitalize_color

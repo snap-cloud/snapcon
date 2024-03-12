@@ -1,9 +1,32 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: programs
+#
+#  id                   :bigint           not null, primary key
+#  blind_voting         :boolean          default(FALSE)
+#  languages            :string
+#  rating               :integer          default(0)
+#  schedule_fluid       :boolean          default(FALSE)
+#  schedule_interval    :integer          default(15), not null
+#  schedule_public      :boolean          default(FALSE)
+#  voting_end_date      :datetime
+#  voting_start_date    :datetime
+#  created_at           :datetime
+#  updated_at           :datetime
+#  conference_id        :integer
+#  selected_schedule_id :integer
+#
+# Indexes
+#
+#  index_programs_on_selected_schedule_id  (selected_schedule_id)
+#
 require 'spec_helper'
 
 describe Program do
   subject { create(:program) }
+
   let!(:conference) { create(:conference, end_date: Date.current + 3) }
   let!(:program) { conference.program }
 
@@ -25,9 +48,13 @@ describe Program do
   end
 
   describe 'validation' do
-    it { is_expected.to validate_numericality_of(:rating).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10).only_integer }
+    it {
+      expect(subject).to validate_numericality_of(:rating).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(10).only_integer
+    }
 
-    it { is_expected.to validate_numericality_of(:schedule_interval).is_greater_than_or_equal_to(5).is_less_than_or_equal_to(60) }
+    it {
+      expect(subject).to validate_numericality_of(:schedule_interval).is_greater_than_or_equal_to(1).is_less_than_or_equal_to(60)
+    }
 
     describe 'schedule_interval_divisor_60' do
       it 'is valid, when schedule_interval is divisor of 60' do
@@ -35,7 +62,7 @@ describe Program do
       end
 
       it 'is not valid, when schedule_interval is not divisor of 60' do
-        expect(build(:program, schedule_interval: 35)).to_not be_valid
+        expect(build(:program, schedule_interval: 35)).not_to be_valid
       end
     end
 
@@ -49,7 +76,7 @@ describe Program do
       end
 
       it 'is not valid, when voting_start_date is after voting_end_date' do
-        expect(build(:program, voting_start_date: Date.today, voting_end_date: Date.today - 1)).to_not be_valid
+        expect(build(:program, voting_start_date: Date.today, voting_end_date: Date.today - 1)).not_to be_valid
       end
     end
 
@@ -59,20 +86,21 @@ describe Program do
       end
 
       it 'is invalid, when voting_start_date is not set' do
-        expect(build(:program, voting_end_date: Date.today)).to_not be_valid
+        expect(build(:program, voting_end_date: Date.today)).not_to be_valid
       end
 
       it 'is invalid, when voting_end_date is not set' do
-        expect(build(:program, voting_start_date: Date.today)).to_not be_valid
+        expect(build(:program, voting_start_date: Date.today)).not_to be_valid
       end
     end
   end
 
   describe '#show_voting?' do
     context 'blind voting is disabled' do
-      before :each do
+      before do
         program.blind_voting = false
       end
+
       it 'returns true if blind_voting is disabled' do
         program.blind_voting = false
         expect(program.show_voting?).to be true
@@ -80,7 +108,7 @@ describe Program do
     end
 
     context 'blind voting is enabled' do
-      before :each do
+      before do
         program.blind_voting = true
       end
 
@@ -102,7 +130,7 @@ describe Program do
     end
 
     shared_examples 'voting period' do |voting_start_date, voting_end_date, returns|
-      scenario 'returns true or false' do
+      it 'returns true or false' do
         program.voting_start_date = voting_start_date
         program.voting_end_date = voting_end_date
         program.save!
@@ -113,9 +141,9 @@ describe Program do
 
     context 'voting dates are set' do
       it_behaves_like 'voting period', Date.today - 1, Date.today + 1, true
-      it_behaves_like 'voting period', Date.today - 1, Time.current + 1.hour, true
+      it_behaves_like 'voting period', Date.today - 1, 1.hour.from_now, true
       it_behaves_like 'voting period', Date.today - 2, Date.today - 1, false
-      it_behaves_like 'voting period', Date.today - 1, Time.current - 1.minute, false
+      it_behaves_like 'voting period', Date.today - 1, 1.minute.ago, false
     end
   end
 
@@ -177,7 +205,8 @@ describe Program do
   describe 'excecutes after_save functions' do
     it 'and unschedule unfit events if schedule interval was changed' do
       start_date = program.conference.start_date.to_datetime.change(hour: program.conference.start_hour)
-      create(:event_schedule, event: create(:event, program: program), start_time: start_date.change(min: program.schedule_interval))
+      create(:event_schedule, event:      create(:event, program: program),
+                              start_time: start_date.change(min: program.schedule_interval))
       create(:event_schedule, event: create(:event, program: program), start_time: start_date)
       expect(program.event_schedules.count).to eq 2
 
@@ -231,17 +260,18 @@ describe Program do
   describe '#languages_list' do
     it 'returns the list of readable languages' do
       program.languages = 'en,de,fr,ru,zh'
-      expect(program.languages_list).to eq %w(English German French Russian Chinese)
+      expect(program.languages_list).to eq %w[English German French Russian Chinese]
     end
   end
 
   describe '#any_event_for_this_date?' do
-
-    let(:event){ create(:event, program: program) }
+    let(:event) { create(:event, program: program) }
 
     context 'when no schedule is selected for the conference' do
       let(:schedule) { create(:schedule, program: program) }
-      let!(:event_schedule) { create(:event_schedule, event: event, schedule: schedule, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc) }
+      let!(:event_schedule) do
+        create(:event_schedule, event: event, schedule: schedule, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc)
+      end
 
       it 'returns false irrespective of any date' do
         expect(program.any_event_for_this_date?(Date.current + 1)).to be false
@@ -258,9 +288,11 @@ describe Program do
 
     context 'when schedule is selected for the conference' do
       let(:schedule) { create(:schedule, program: program) }
-      let!(:event_schedule) { create(:event_schedule, event: event, schedule: schedule, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc) }
+      let!(:event_schedule) do
+        create(:event_schedule, event: event, schedule: schedule, start_time: DateTime.parse("#{Date.current + 1} 10:00").utc)
+      end
 
-      before :each do
+      before do
         program.selected_schedule = event_schedule.schedule
         program.save!
       end
@@ -323,7 +355,7 @@ describe Program do
 
     it 'returns all the possible cfp types when there is no cfp' do
       expect(program.remaining_cfp_types).to eq(Cfp::TYPES)
-      expect(program.remaining_cfp_types). to eq(%w[events booths tracks])
+      expect(program.remaining_cfp_types).to eq(%w[events booths tracks])
     end
   end
 end

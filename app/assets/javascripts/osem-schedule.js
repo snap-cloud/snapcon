@@ -1,3 +1,5 @@
+// ADMIN SCHEDULE
+
 var url; // Should be initialize in Schedule.initialize
 var schedule_id; // Should be initialize in Schedule.initialize
 
@@ -114,18 +116,57 @@ $(document).ready( function() {
   });
 });
 
-function eventClicked(e, element){
+
+// PUBLIC SCHEDULE
+
+function starClicked(e) {
+  // stops the click from propagating
+  if (!e) var e = window.event;
+  e.preventDefault();
+  e.cancelBubble = true;
+  if (e.stopPropagation) e.stopPropagation();
+
+  var callback = function(data) {
+    $(e.target).toggleClass('fa-solid fa-regular');
+  }
+
+  var params = { favourite_user_id: $(e.target).data('user') };
+
+  $.ajax({
+    url: $(e.target).data('url'),
+    type: 'PATCH',
+    data: params,
+    success: callback,
+    dataType : 'json'
+  });
+}
+
+function eventClicked(e, element) {
+  if (e.target.href) {
+    return;
+  }
   var url = $(element).data('url');
-  if(e.ctrlKey)
-    window.open(url,'_blank');
-  else
+  if (e.ctrlKey || e.metaKey) {
+    window.open(url, '_blank');
+  } else {
     window.location = url;
+  }
+}
+
+function updateFavouriteStatus(options) {
+  if (options.loggedIn === false) {
+    $('.js-toggleEvent').hide();
+  }
+
+  options.events.forEach(function (id) {
+    $(`#eventFavourite-${id}`).removeClass('fa-regular').addClass('fa-solid');
+  });
 }
 
 /* Links inside event-panel (to make ctrl + click work for these links):
  = link_to text, '#', onClick: 'insideLinkClicked();', 'data-url' => url
 */
-function insideLinkClicked(event){
+function insideLinkClicked(event) {
   // stops the click from propagating
   if (!event) // for IE
     var event = window.event;
@@ -133,7 +174,7 @@ function insideLinkClicked(event){
   if (event.stopPropagation) event.stopPropagation();
 
   var url = $(event.target).data('url');
-  if(event.ctrlKey)
+  if(event.ctrlKey || e.metaKey)
     window.open(url,'_blank');
   else
     window.location = url;

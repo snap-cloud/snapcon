@@ -3,7 +3,21 @@
     = f.label :name
     %abbr{title: 'This field is required'} *
     = f.text_field :name, autofocus: true, required: true, class: 'form-control'
+  .form-group
     = f.label :size, 'Capacity'
     = f.number_field :size, size: 5, class: 'form-control'
+  .form-group
+    = f.label :order
+    = f.number_field :order, size: 5, class: 'form-control'
+    .help-bloc Force the order of rooms in the schedule.
+  .form-group
+    = f.label :url, 'URL'
+    = f.url_field :url, class: 'form-control'
+    .help-block The URL is only visible to registered attendees.
+  .form-group
+    = f.label :discussion_url, 'Discussion URL'
+    = f.url_field :discussion_url, class: 'form-control'
+    .help-block A link to live chat during sessions in this room.
+
   %p.text-right
     = f.submit nil, class: 'btn btn-primary'

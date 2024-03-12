@@ -1,7 +1,3 @@
-= content_for :splash_nav do
-  %li
-    %a.smoothscroll{ href: '#lodging' } Lodging
-
 - cache [venue, lodgings, '#splash#lodging'] do
   %section#lodging
     .container
@@ -17,25 +13,22 @@
 
       .row.row-centered
         - lodgings.each do |lodging|
-          .col-md-4.col-sm-4.col-centered.col-top
+          .col-md-6.col-sm-4.col-centered.col-top
             .thumbnail
               - if lodging.picture?
                 - if lodging.website_link.present?
-                  = link_to(lodging.website_link, class: 'thumbnail') do
+                  = link_to(lodging.website_link) do
                     = image_tag lodging.picture.large.url,
                       class: 'img-responsive img-lodging'
                 - else
                   = image_tag lodging.picture.large.url,
                     class: 'img-responsive img-lodging'
-              - else
-                %p.text-center
-                  - if lodging.website_link.present?
-                    = link_to(lodging.website_link, class: 'thumbnail') do
-                      %i.fa-solid.fa-house.fa-5x
-                  - else
-                    %i.fa-solid.fa-house.fa-5x
               .caption
                 %h3.text-center
-                  = lodging.name
+                  - if lodging.website_link.present?
+                    = link_to(lodging.name, lodging.website_link)
+                  - else
+                    = lodging.name
                 - if lodging.description.present?
                   = markdown(lodging.description)
+    .trapezoid

@@ -19,7 +19,8 @@ module UsersHelper
       unless Rails.application.secrets.send(provider_key).blank? || Rails.application.secrets.send(provider_secret).blank?
         providers << provider
       end
-      providers << provider if ENV.fetch("OSEM_#{provider.upcase}_KEY", nil).present? && ENV.fetch("OSEM_#{provider.upcase}_SECRET", nil).present?
+      providers << provider if ENV.fetch("OSEM_#{provider.upcase}_KEY",
+                                         nil).present? && ENV.fetch("OSEM_#{provider.upcase}_SECRET", nil).present?
     end
 
     providers.uniq
@@ -29,6 +30,6 @@ module UsersHelper
   # Outputs the roles of a user, including the conferences for which the user has the roles
   # Eg. organizer(oSC13, oSC14), cfp(oSC12, oSC13)
   def show_roles(roles)
-    roles.map{ |x| x[0].titleize + ' (' + x[1].join(', ') + ')' }.join ', '
+    roles.map { |x| x[0].titleize + ' (' + x[1].join(', ') + ')' }.join ', '
   end
 end

@@ -1,38 +1,73 @@
-.panel.panel-default.event-panel{ onClick: 'eventClicked(event, this);', "data-url" => "#{url_for(conference_program_proposal_path(@conference.short_title, event.id))}" }
+:ruby
+  header_color = event.event_type&.color || '#f5f5f5'
+  color_style = css_background_color(header_color)
+  program = event.conference.program
+  tz_object = current_user&.timezone.present? ? current_user : event
+
+.panel.panel-default
+  .trapezoid{ style: 'color: white; top: 12px; z-index: 100;' }
+  .panel-heading{ style: "#{color_style} border-radius: 4px" }
+    %div{ style: 'display: flex; flex-direction: row;' }
+      -# In the schedule view, favorited events show as false, until set by JS. (Caching perf)
+      = render 'proposals/toggle_favorite_event',
+              event: event, color: contrast_color(header_color), conference: @conference, is_favourite: false
+
+      %h3.event-panel-title
+        = link_to conference_program_proposal_path(@conference.short_title, event.id),
+                  style: color_style do
+          = event.title
+          - if event.subtitle.present?
+            %br
+            %small{style: color_style}= event.subtitle
+      %span
+        - event.speakers_ordered.each do |speaker|
+          = image_tag speaker.profile_picture, class: 'img-circle', alt: speaker.name
+
+  .trapezoid{ style: "color: #{header_color}; border-top-color: #{header_color}; top: 12px;" }
+
   .panel-body
-    - event.speakers_ordered.each do |speaker|
-      = image_tag speaker.gravatar_url, :class => "img-circle pull-right all-speaker-pic", |
-                                        :alt => speaker.name, |
-                                        :title => speaker.name |
+    %div{ onClick: 'eventClicked(event, this);', 'data-url': conference_program_proposal_url(@conference.short_title, event.id) }
+      - if event.speakers.any?
+        %h4= event.speaker_names
+      - else
+        %br
+      - if !event.parent_event.present? && event_schedule.present?
+        = join_event_link(event, event_schedule, current_user)
+      %p
+        = truncate(markdown(event.abstract), length: 400, escape: false) do
+          %br
+          = link_to 'view more', conference_program_proposal_path(@conference.short_title, event.id)
 
-    %p
-      = canceled_replacement_event_label(event, event_schedule)
-      = replacement_event_notice(event_schedule)
-
-    %span.h3
-      = event.title
-      %br
-      %small
-        = event.subtitle
-    %h4
-      - if(event.speakers.any?)
-        presented by #{event.speaker_names}
-    %p
-      = markdown(truncate(event.abstract, length: 400))
-      = link_to 'more', conference_program_proposal_path(@conference.short_title, event.id) if event.abstract.length > 400
     - if event_schedule.present?
-      %span.track
+      - new_start_time = convert_timezone(event_schedule.start_time, event.timezone, tz_object.timezone)
+      - new_end_time = convert_timezone(event_schedule.end_time, event.timezone, tz_object.timezone)
+      .track
         %span.fa-solid.fa-clock
-        %span.label{ style: "background-color: grey" }
-          = event_schedule.start_time.strftime('%H:%M')
-          \-
-          = event_schedule.end_time.strftime('%H:%M')
-      %span.track
+        = inyourtz(event_schedule.start_time, event.timezone) do
+          .label.label-success
+            = new_start_time.strftime('%l:%M %P')
+            \-
+            = "#{new_end_time.strftime('%l:%M %P')} #{timezone_text(tz_object)}"
+      .track
         %span.fa-solid.fa-location-dot
-        %span.label{ style: "background-color: grey" }
-          = event_schedule.room.name
+        .label.label-info= event_schedule.room.name
+    - if event.presentation_mode
+      -# TODO: Use fa-podium pro icon
+      %span.fa-solid.fa-person-chalkboard
+      .label.label-info= event.presentation_mode.humanize
+    .track
+      .label{ style: css_background_color(event.event_type.color) }= event.event_type.name
     - if event.track
-      %span.track
+      .track
         %span.fa-solid.fa-road
-        %span.label{ style: "background-color: #{event.track.color}; color: #{ contrast_color(event.track.color) }" }
+        .label{ style: css_background_color(event.track.color) }
           = event.track.name
+    - if event_schedule.present? && event.superevent && event.subevents.present?
+      %br
+      %br
+      - event.program_subevents.each do |subevent|
+        .col-12
+          / TODO-SNAPCON: REDUCE THE QUERIES
+          - subevent_schedule = subevent.event_schedules.find_by(schedule_id: program.selected_schedule_id)
+          - cache [program, subevent_schedule, subevent, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+            = render 'schedules/event_mini', event: subevent, event_schedule: subevent_schedule

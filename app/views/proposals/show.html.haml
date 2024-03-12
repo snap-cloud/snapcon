@@ -4,127 +4,202 @@
   %meta{ property: "og:description", content: @event.abstract }
   %meta{ property: "og:site_name", content: ENV.fetch('OSEM_NAME', 'OSEM') }
   - if @speakers_ordered.any?
-    %meta{ property: "og:image", content: @speakers_ordered.first.gravatar_url }
-    %meta{ property: "og:image:secure_url", content: @speakers_ordered.first.gravatar_url }
+    %meta{ property: "og:image", content: @speakers_ordered.first.profile_picture }
+    %meta{ property: "og:image:secure_url", content: @speakers_ordered.first.profile_picture }
+
+- provide :title, "#{@event.title} #{@conference.title}"
+
+= content_for :splash_nav do
+  %li
+    = link_to('Schedule', events_conference_schedule_path(@conference))
 
 .container
-  .row
-    .col-md-12.page-header
-      %h2
-        = @event.title
-        - if @event.subtitle
-          %br
-          %small
-            = @event.subtitle
-        .btn-group.pull-right
-          - if can? :update, @event
-            = link_to 'Registrations', registrations_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-success'
-          - if can? :edit, @event
-            = link_to "Edit", edit_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-mini btn-primary'
-          - if can? :schedule, @conference
-            = link_to "Schedule", conference_schedule_path(@conference.short_title), class: 'btn btn-success'
+  .row.page-header
+    .col-md-10{ style: 'display: flex; flex-direction: row;' }
+      = render 'proposals/toggle_favorite_event',
+               event: @event, color: '#000000', conference: @conference,
+               is_favourite: event_favourited?(@event, current_user)
+
+      .div{ style: 'margin: 3px; flex: 1' }
+        %h2{ style: 'margin: 0' }
+          = @event.title
+          - if @event.subtitle.present?
+            %br
+            %small
+              = @event.subtitle
+        .div{ style: 'margin: 3px; flex: 1' }
+          - if @event.event_type.present?
+            - color = css_background_color(@event.event_type&.color || '#f5f5f5')
+            %span.h3
+              .label{ style: "#{color} margin: 4px; display: inline-block"}
+                = @event.event_type.title
+          = join_event_link(@event, @event_schedule, current_user)
+
+    .btn-group
+      - if can?(:update, @event) && @event.require_registration?
+        = link_to 'Registrations', registrations_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-success'
+      - if can? :schedule, @conference
+        = link_to "Schedule", conference_schedule_path(@conference.short_title), class: 'btn btn-success'
+      - if can?(:edit, @event)
+        = link_to "Edit", edit_conference_program_proposal_path(@conference.short_title, @event), class: 'btn btn-primary'
 
   .row
     .col-md-3
-      %h3
       - if @event.speakers.any?
-        Presented by:
+        %h3
+          Presented by:
         - @speakers_ordered.each do |speaker|
-          .speakerinfo
-            .row
-              .col-md-4
-                = image_tag speaker.gravatar_url(:size => 120), class: 'img-responsive img-rounded'
-              .col-md-8
-                %h4
-                  = link_to speaker.name, user_path(speaker.id)
-                  %br
-                  - if speaker.email_public?
-                    = mail_to "#{ speaker.email }" do
-                      %i.fa-solid.fa-envelope.fa-2x
-                - if speaker.affiliation?
-                  .text-muted
-                    from
-                    = speaker.affiliation
-            -if speaker.biography?
-              .row.speakerbio
-                .col-md-12
-                  = markdown(speaker.biography)
-    .col-md-9
-      .row
-        .col-md-12
-          .lead
-            = canceled_replacement_event_label(@event, @event_schedule)
-            = replacement_event_notice(@event_schedule)
+          = render 'speaker_info', speaker: speaker, show_bio: true, cache: true
 
-          - if @event.commercials.empty?
-            %h5.text-warning
-              No video of the event yet, sorry!
+      - if @event.volunteers.any?
+        %h3
+          Volunteer Hosts
+          %br
+          %small Thanks for helping with #{@conference.title}!
+        - @event.volunteers.each do |volunteer|
+          = render 'speaker_info', speaker: volunteer, show_bio: false
+
+    %section{class: @happening_now ? 'col-md-6' : 'col-md-9'}
+      - cache [@conference, @event, @event_schedule, '#events#main-panel'] do
+        .row
+          .col-md-12
+            .lead
+              = canceled_replacement_event_label(@event, @event_schedule)
+              = replacement_event_notice(@event_schedule)
+
+            - if @event.commercials.empty?
+              %h5.text-warning
+                No materials for the event yet, sorry!
+                - unless @conference.commercials.empty?
+                  Meanwhile...
               - unless @conference.commercials.empty?
-                Meanwhile...
-            - unless @conference.commercials.empty?
-              = render partial: 'shared/media_items', locals: { commercials: @conference.commercials }
-          - else
-            %p
-            = render partial: 'shared/media_items', locals: { commercials: @event.commercials }
-      .row
-        .col-md-12
-          %p
+                = render 'shared/media_items', commercials: @conference.commercials, cache: true
+            - else
+              %p
+              = render 'shared/media_items', commercials: @event.commercials
+        .row
+          .col-md-12
             = markdown(@event.abstract)
-        %dl#proposal-info
-          .col-md-12
-            %dt Date:
-            %dd= @event_schedule.start_time.strftime("%Y %B %e - %H:%M") if @event_schedule
-          .col-md-12
-            %dt Duration:
-            %dd= show_time(@event.event_type.length)
-          .col-md-12
-            %dt Room:
-            %dd
-              - if @event.room
-                = @event.room.name
-          .col-md-12
-            %dt Conference:
-            %dd= link_to @event.program.conference.title, conference_path(@conference)
-          .col-md-12
-            %dt Language:
-            %dd= @event.language if @event.language
-          .col-md-12
-            %dt Track:
-            %dd
-              - if @event.track
-                %span.label{style: "background-color: #{@event.track.color}; color: #{ contrast_color(@event.track.color) }"}
-                  = @event.track.name
-          .col-md-12
-            %dt Difficulty:
-            %dd
-              - if @event.difficulty_level
-                %span.label{style: "background-color: #{@event.difficulty_level.color}; color: #{ contrast_color(@event.difficulty_level.color) };"}
-                  = @event.difficulty_level.title
-
-          - if @event.require_registration
+          - if @event.superevent && @event.subevents.present?
             .col-md-12
-              %dt Requires Registration:
+              %h3 This session will feature:
+              - @event.program_subevents.each do |subevent|
+                .col-xs-12.col-md-10
+                  - subevent_schedule = subevent.event_schedules.find_by(schedule_id: @program.selected_schedule_id)
+                  - happening_now = @event_schedule&.happening_now? || 'unscheduled'
+                  - cache [subevent_schedule, subevent, current_user, happening_now, '#scheduled#full#panel'] do
+                    = render 'schedules/event_mini', event: subevent, event_schedule: subevent_schedule
+          %dl#proposal-info
+            .col-md-12
+              %dt Date:
               %dd
-                = link_to "Yes (#{registered_text(@event)})", new_conference_conference_registration_path(@conference.short_title), class: 'btn btn-xs btn-danger', disabled: !@event.registration_possible?
-          - if concurrent_events(@event).present?
+                - if @event_schedule.present?
+                  - tz_object = current_user&.timezone ? current_user : @conference
+                  - start_time = convert_timezone(@event_schedule.start_time, @conference.timezone, tz_object.timezone)
+                  = inyourtz(@event_schedule.start_time, @conference.timezone) do
+                    = start_time.strftime('%Y %B %e - %H:%M') + ' ' + timezone_text(tz_object)
+                - else
+                  Unscheduled
+            .col-md-12
+              %dt Duration:
+              %dd= show_time(@event.event_type.length)
+            .col-md-12
+              %dt Room:
+              %dd
+                = @event.room&.name
+            .col-md-12
+              %dt Conference:
+              %dd= link_to @event.program.conference.title, conference_path(@conference)
+            - if @event.language
+              .col-md-12
+                %dt Language:
+                %dd= @event.language
+            - if @event.event_type
+              .col-md-12
+                %dt Type:
+                %dd= @event.event_type&.title
+            - if @event.presentation_mode
+              .col-md-12
+                %dt Presented via:
+                %dd
+                  %span.fa-solid.fa-person-chalkboard
+                  = @event.presentation_mode.humanize
+            - if @event.track
+              .col-md-12
+                %dt Track:
+                %dd
+                  %span.label{style: "background-color: #{@event.track.color}; color: #{ contrast_color(@event.track.color) }"}
+                    = @event.track.name
+            - if @event.difficulty_level
+              .col-md-12
+                %dt Difficulty:
+                %dd
+                  %span.label{style: "background-color: #{@event.difficulty_level.color}; color: #{ contrast_color(@event.difficulty_level.color) };"}
+                    = @event.difficulty_level.title
+
+            - if @event.require_registration
+              .col-md-12
+                %dt Requires Registration:
+                %dd
+                  = link_to "Yes (#{registered_text(@event)})", new_conference_conference_registration_path(@conference.short_title), class: 'btn btn-xs btn-danger', disabled: !@event.registration_possible?
+
+          - if @event.parent_event.present?
+            .col-md-12
+              %h3 This session is a part of:
+              = render 'schedules/event_mini', event: @event.parent_event, event_schedule: @event_schedules
+
+          -# TODO-SNAPCON: This is currently disabled due to performance.
+          - concurrent = [] # concurrent_events(@event)
+          - if concurrent.present?
             .col-md-12
               %hr
               %h4 Happening at the same time:
               %ol
-                - concurrent_events(@event).each do |event|
+                - concurrent.each do |event|
                   %li
                     = link_to conference_program_proposal_path(@conference.short_title, event.id) do
                       = event.title
                   %dl
                     %dt Start Time:
                     %dd
-                      = event.program.selected_event_schedules.find { |es| es.event == event }.start_time.strftime("%Y %B %e %H:%M")
+                      - event_schedule = event.program.selected_event_schedules.find { |es| es.event == event }
+                      = inyourtz(event_schedule.start_time, @conference.timezone) do
+                        = event_schedule.start_time.strftime("%Y %B %e %H:%M")
                     %br
                       %dt Room:
-                      %dd
-                        = event.room.name
+                      %dd= event.room&.name
+
       .row
         .col-md-12
           - if @surveys_after_event.any? && @event.ended?
             .page-header
             = render partial: 'surveys/list', locals: { surveys: @surveys_after_event, conference: @conference }
+
+    - if @happening_now
+      .col-md-3
+        #happening-now
+          = render 'conferences/happening_now', conference: @conference,
+            events_schedules: @events_schedules, pagy: @pagy,
+            events_schedules_length: @events_schedules_length,
+            events_schedules_limit: @events_schedules_limit,
+            is_happening_next: @is_happening_next
+
+  / TODO: Cache this with current_user or at least can edit
+  - if @event.committee_review.present? || @event.submission_text.present? && can?(:edit, @event)
+    %hr
+    %p Information for event authors only:
+    .panel.panel-info
+      .panel-heading
+        Committee Feedback
+        %button.btn.btn-primary.btn-xs{ type: "button", 'data-toggle': "collapse", 'data-target': "#committee-panel", 'aria-expanded': "false", 'aria-controls': "committee-panel" }
+          Toggle
+      .panel-body#committee-panel{ class: @event.committee_review.present? ? 'collapse' : '' }
+        = markdown(@event.committee_review)
+
+    .panel.panel-info
+      .panel-heading
+        Submission Details
+        %button.btn.btn-primary.btn-xs{ type: "button", 'data-toggle': "collapse", 'data-target': "#submission-panel", 'aria-expanded': "false", 'aria-controls': "submission-panel" }
+          Toggle
+      .panel-body.collapse#submission-panel
+        = markdown(@event.submission_text)

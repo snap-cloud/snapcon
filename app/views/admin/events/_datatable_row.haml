@@ -1,7 +1,6 @@
 - cache ['admin', conference_id, program, event, current_user] do
   %tr{ id: "event-#{event.id}" }
-    %td
-      = event.id
+    %td= event.id
 
     %td
       = link_to event.title,
@@ -34,6 +33,10 @@
         .small
           No Speaker
 
+    %td
+      - if event.speakers.any?
+        = volunteer_links(event)
+
     - if @program.languages.present?
       %td
         = event.language
@@ -49,16 +52,19 @@
     %td.text-center{ data: { order: event.is_highlight.to_s } }
       = event_switch_checkbox(event, :is_highlight, conference_id)
 
-    %td
-      = event_type_dropdown(event, event_types, conference_id)
+    - if @program.event_types.any?
+      %td{ data: { search: event.event_type.try(:title) || 'Type' } }
+        = event_type_dropdown(event, event_types, conference_id)
 
-    %td
-      = track_dropdown(event, tracks, conference_id)
+    - if @program.tracks.any?
+      %td{ data: { search: event.track.try(:name) || 'Track' } }
+        = track_dropdown(event, tracks, conference_id)
 
-    %td
-      = difficulty_dropdown(event, difficulty_levels, conference_id)
+    - if @program.difficulty_levels.any?
+      %td{ data: { search: event.difficulty_level.try(:title) || 'Difficulty Level' } }
+        = difficulty_dropdown(event, difficulty_levels, conference_id)
 
-    %td
+    %td{ data: { search: event.state.humanize } }
       = state_dropdown(event, conference_id, email_settings)
 
     %td.text-center

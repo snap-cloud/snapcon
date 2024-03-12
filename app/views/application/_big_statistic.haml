@@ -1,13 +1,13 @@
 - reverse ||= false
 - variant = variant_from_delta(delta, reverse: reverse)
-.dashbox.text-center
-  %span
-    = icon('fa-solid', icon)
-    = value
-  %p.text-nowrap
-    %small
-      = subtitle.pluralize(value)
-      %span.label{ class: "label-#{variant}" }
-        = delta
-        since you last logged in
-
+.dashbox.panel.panel-primary
+  .paenl-body.text-center
+    %span
+      = icon('fa-solid', icon)
+      = value
+    %p.text-nowrap
+      %small
+        = subtitle.pluralize(value)
+        .label{ class: "label-#{variant}" }
+          = delta || 0
+          since last log in

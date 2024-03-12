@@ -8,14 +8,15 @@
   - if @antiquated and @antiquated.any?
     .row
       .col-md-12
-        %p.text-right
+        .page-header
           %button{ type: 'button', class: 'btn btn-link btn-sm', 'data-toggle' => 'collapse', 'data-target' => '#antiquated', 'aria-expanded' => 'true', 'aria-controls' => 'antiquated'}
-            Older conferences
-            %span.notranslate
-              = "(#{@antiquated.count})"
-            %i.fa-solid.fa-chevron-right
-            %i.fa-solid.fa-chevron-down{ style: 'display: none' }
-    #antiquated.collapse
+            %h2
+              Past Conferences
+              %span.notranslate
+                = "(#{@antiquated.count})"
+                %i.fa-solid.fa-chevron-right{ style: 'display: none' }
+                %i.fa-solid.fa-chevron-down
+    #antiquated
       - @antiquated.each do |conference|
         = render '/conferences/conference_details', conference: conference
   %p

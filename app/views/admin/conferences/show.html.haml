@@ -3,16 +3,16 @@
   Dashboard for #{@conference.title}
 %hr
 .row
-  .col-sm-3.col-xs-3
+  .col-sm-3.col-xs-6
     = render "big_statistic",
       icon: "user", subtitle: "Registration", value: @total_reg, delta: @new_reg
-  .col-sm-3.col-xs-3
+  .col-sm-3.col-xs-6
     = render "big_statistic",
       icon: "square-check", subtitle: "Submission", value: @total_submissions, delta: @new_submissions
-  .col-sm-3.col-xs-3
+  .col-sm-3.col-xs-6
     = render "big_statistic",
       icon: "file-lines", subtitle: "Hour", value: @program_length, delta: @new_program_length
-  .col-sm-3.col-xs-3
+  .col-sm-3.col-xs-6
     = render "big_statistic",
       icon: "box-archive", subtitle: "Withdrawn", value: @total_withdrawn, delta: @new_withdrawn
 
@@ -29,8 +29,20 @@
             = render 'line_chart',
               title: 'Submissions per week', data: @submissions
       .col-md-4
-        = render 'todo_list',
-          conference_progress: @conference_progress, conference: @conference
+        - unless @conference.ended?
+          = render 'todo_list',
+            conference_progress: @conference_todo_list, conference: @conference
+        - else
+          .list-group
+            .list-group-item
+              %h4
+                Conference Progress
+              .progress
+                .progress-bar{ role: 'progressbar', 'aria-valuenow': 100,
+                              'aria-valuemin': 0, 'aria-valuemax': 100,
+                              style: 'width: 100%;' }
+                  Conference Complete!
+
       .row#tickets
         .col-md-8
           = render 'line_chart',
@@ -43,14 +55,15 @@
         %a{ href: '#distribution_all', 'data-toggle' => 'tab' }
           %span.fa-solid.fa-star
           All
-      %li
-        %a{ href: '#distribution_confirmed', 'data-toggle' => 'tab' }
-          %span.fa-solid.fa-comment
-          Confirmed
-      %li
-        %a{ href: '#distribution_withdrawn', 'data-toggle' => 'tab' }
-          %span.fa-solid.fa-box-archive
-          Withdrawn
+      -# TODO-SNAPCON: Disabled for Snap!Con
+        %li
+          %a{ href: '#distribution_confirmed', 'data-toggle' => 'tab' }
+            %span.fa-solid.fa-comment
+            Confirmed
+        %li
+          %a{ href: '#distribution_withdrawn', 'data-toggle' => 'tab' }
+            %span.fa-solid.fa-box-archive
+            Withdrawn
     .tab-content
       .tab-pane.active#distribution_all
         .row
@@ -63,7 +76,18 @@
           .col-md-4
             = render 'donut_chart', title: 'Tracks',
               combined_data: @tracks_distribution
-      .tab-pane#distribution_confirmed
+      -# .tab-pane#distribution_withdrawn
+        .row
+          .col-md-4
+            = render 'donut_chart', title: 'Event types',
+              combined_data: @event_type_distribution_withdrawn
+          .col-md-4
+            = render 'donut_chart', title: 'Difficulty levels',
+              combined_data: @difficulty_levels_distribution
+          .col-md-4
+            = render 'donut_chart', title: 'Tracks',
+              combined_data: @tracks_distribution
+      -# .tab-pane#distribution_confirmed
         .row
           .col-md-4
             = render 'donut_chart', title: 'Event types',
@@ -74,17 +98,6 @@
           .col-md-4
             = render 'donut_chart', title: 'Tracks',
               combined_data: @tracks_distribution_confirmed
-      .tab-pane#distribution_withdrawn
-        .row
-          .col-md-4
-            = render 'donut_chart', title: 'Event types',
-              combined_data: @event_type_distribution_withdrawn
-          .col-md-4
-            = render 'donut_chart', title: 'Difficulty levels',
-              combined_data: @difficulty_levels_distribution_withdrawn
-          .col-md-4
-            = render 'donut_chart', title: 'Tracks',
-              combined_data: @tracks_distribution_withdrawn
 
 .row
   .col-md-8
@@ -99,11 +112,11 @@
           Recent Submissions
     .tab-content
       .tab-pane.active#recent_reg
-        = render partial: 'recent_registrations', locals: {recent_registrations: @recent_registrations}
+        = render 'recent_registrations', recent_registrations: @recent_registrations
       .tab-pane#recent_submissions
-        = render partial: 'recent_submissions', locals: {recent_events: @recent_events}
+        = render 'recent_submissions', recent_events: @recent_events
   .col-md-4
-    = render partial: 'top_submitter', locals: {top_submitter: @top_submitter}
+    = render 'top_submitter', top_submitter: @top_submitter
 
 :javascript
   $('#recentTable a').click(function (e) {

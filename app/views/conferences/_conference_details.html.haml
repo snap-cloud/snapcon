@@ -2,11 +2,13 @@
   .col-md-12
     .well
       .row
-        .col-md-4.text-center
-          = image_tag(conference.picture_url, class: 'img-responsive') if conference.picture?
-        .col-md-6
+        .col-md-10
+          .row
+            .col-md-5
+            .col-md-2
+              = image_tag(conference.picture_url, class: 'img-responsive') if conference.picture?
           %h3
-            = conference.title
+            = conference.title.html_safe
             %small
               %b
               = date_string(conference.start_date, conference.end_date)
@@ -18,14 +20,14 @@
               %span>= conference.country_name
           - unless conference.description.blank?
             %p
-              = markdown(conference.description)
+              = markdown(truncate(conference.description, length: 1000, separator: "\n", escape: false), escape_html=false)
         .col-md-2
           .btn-group-vertical
             - if !@conference || @conference != conference
               - if conference.splashpage && conference.splashpage.public
                 = link_to "View Conference", conference_path(conference.short_title), class: 'btn btn-default'
             - if conference.program and conference.program.schedule_public
-              = link_to "Schedule", conference_schedule_path(conference.short_title), class: 'btn btn-default'
+              = link_to "Schedule", vertical_schedule_conference_schedule_path(conference.short_title), class: 'btn btn-default'
             - unless conference.code_of_conduct.blank?
               = link_to "Code of Conduct",
                 [:code_of_conduct, conference.organization],

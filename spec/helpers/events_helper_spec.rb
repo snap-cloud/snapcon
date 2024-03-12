@@ -5,11 +5,12 @@ require 'spec_helper'
 describe EventsHelper, type: :helper do
   let(:conference) { create(:conference) }
   let(:event) { create(:event_full, program: conference.program) }
+  let(:event_schedule) { create(:event_schedule) }
   let(:my_vote) { 3 }
   let(:max_rating) { 5 }
   let(:fraction) { my_vote.to_s + '/' + max_rating.to_s }
 
-  setup do
+  before do
     allow(event).to receive(:average_rating) { my_vote }
   end
 
@@ -28,12 +29,35 @@ describe EventsHelper, type: :helper do
     end
   end
 
+  describe '#canceled_replacement_event_label' do
+    describe 'returns nothing' do
+      it "when the event isn't cancelled and is not a replacement" do
+        event.state = 'confirmed'
+        expect(canceled_replacement_event_label(event, nil, 'text-class')).to be_nil
+      end
+
+      it 'when the event is canceled' do
+        event.state = 'canceled'
+        expect(canceled_replacement_event_label(event, nil,
+                                                'test-class')).to eq '<span class="label label-danger test-class">CANCELED</span>'
+      end
+
+      it 'when the event is a replacement but is not canceled' do
+        event.state = 'confirmed'
+        allow(event_schedule).to receive(:replacement?).and_return(true)
+        expect(canceled_replacement_event_label(event, event_schedule,
+                                                'tent-class')).to eq '<span class="label label-info tent-class">REPLACEMENT</span>'
+      end
+    end
+  end
+
   describe '#rating_tooltip' do
     let(:vote_count) { pluralize(event.voters.length, 'vote') }
 
     it 'includes the average rating' do
       expect(rating_tooltip(event, max_rating)).to match(fraction)
     end
+
     it 'includes the vote count' do
       expect(rating_tooltip(event, max_rating)).to match(vote_count)
     end
@@ -64,17 +88,17 @@ describe EventsHelper, type: :helper do
       event_switch_checkbox(event, :is_highlight, conference.short_title)
     end
 
-    it 'should build a switch checkbox' do
+    it 'builds a switch checkbox' do
       expect(result).to include(
         '<input type="checkbox"',
         'class="switch-checkbox"'
       )
     end
 
-    it 'should use the admin event url' do
+    it 'uses the admin event url' do
       expect(result).to include(
         "url=\"/admin/conferences/#{conference.short_title}/program" \
-          "/events/#{event.id}?event%5Bis_highlight%5D=\""
+        "/events/#{event.id}?event%5Bis_highlight%5D=\""
       )
     end
   end
@@ -174,8 +198,8 @@ describe EventsHelper, type: :helper do
     let(:conference_id) { conference.short_title }
     let(:email_settings) { conference.email_settings }
 
-    setup do
-      allow(event).to receive(:transition_possible?).at_least(:once) { false }
+    before do
+      allow(event).to receive(:transition_possible?).at_least(:once).and_return(false)
     end
 
     it 'builds a bootstrap dropdown list of event states' do
@@ -190,20 +214,20 @@ describe EventsHelper, type: :helper do
 
     it 'handles the accept transition' do
       tag = '<li><a rel="nofollow" data-method="patch" ' \
-        "href=\"/admin/conferences/#{conference_id}/program/" \
-        "events/#{event.id}/accept\">" \
-        'Accept</a></li>'
+            "href=\"/admin/conferences/#{conference_id}/program/" \
+            "events/#{event.id}/accept\">" \
+            'Accept</a></li>'
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).not_to include(tag)
 
-      expect(event).to receive(:transition_possible?).with(:accept) { true }
+      expect(event).to receive(:transition_possible?).with(:accept).and_return(true)
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).to include(tag)
     end
 
     it 'handles the accept transition without email' do
-      expect(event).to receive(:transition_possible?).with(:accept) { true }
-      expect(email_settings).to receive(:send_on_accepted?) { true }
+      expect(event).to receive(:transition_possible?).with(:accept).and_return(true)
+      expect(email_settings).to receive(:send_on_accepted?).and_return(true)
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).to include(
         '<li><a rel="nofollow" data-method="patch" ' \
@@ -215,20 +239,20 @@ describe EventsHelper, type: :helper do
 
     it 'handles the reject transition' do
       tag = '<li><a rel="nofollow" data-method="patch" ' \
-        "href=\"/admin/conferences/#{conference_id}/program/" \
-        "events/#{event.id}/reject\">" \
-        'Reject</a></li>'
+            "href=\"/admin/conferences/#{conference_id}/program/" \
+            "events/#{event.id}/reject\">" \
+            'Reject</a></li>'
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).not_to include(tag)
 
-      expect(event).to receive(:transition_possible?).with(:reject) { true }
+      expect(event).to receive(:transition_possible?).with(:reject).and_return(true)
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).to include(tag)
     end
 
     it 'handles the reject transition without email' do
-      expect(event).to receive(:transition_possible?).with(:reject) { true }
-      expect(email_settings).to receive(:send_on_rejected?) { true }
+      expect(event).to receive(:transition_possible?).with(:reject).and_return(true)
+      expect(email_settings).to receive(:send_on_rejected?).and_return(true)
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).to include(
         '<li><a rel="nofollow" data-method="patch" ' \
@@ -240,39 +264,39 @@ describe EventsHelper, type: :helper do
 
     it 'handles the restart transition' do
       tag = '<li><a rel="nofollow" data-method="patch" ' \
-        "href=\"/admin/conferences/#{conference_id}/program/" \
-        "events/#{event.id}/restart\">" \
-        'Start review</a></li>'
+            "href=\"/admin/conferences/#{conference_id}/program/" \
+            "events/#{event.id}/restart\">" \
+            'Start review</a></li>'
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).not_to include(tag)
 
-      expect(event).to receive(:transition_possible?).with(:restart) { true }
+      expect(event).to receive(:transition_possible?).with(:restart).and_return(true)
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).to include(tag)
     end
 
     it 'handles the confirm transition' do
       tag = '<li><a rel="nofollow" data-method="patch" ' \
-        "href=\"/admin/conferences/#{conference_id}/program/" \
-        "events/#{event.id}/confirm\">" \
-        'Confirm</a></li>'
+            "href=\"/admin/conferences/#{conference_id}/program/" \
+            "events/#{event.id}/confirm\">" \
+            'Confirm</a></li>'
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).not_to include(tag)
 
-      expect(event).to receive(:transition_possible?).with(:confirm) { true }
+      expect(event).to receive(:transition_possible?).with(:confirm).and_return(true)
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).to include(tag)
     end
 
     it 'handles the cancel transition' do
       tag = '<li><a rel="nofollow" data-method="patch" ' \
-        "href=\"/admin/conferences/#{conference_id}/program/" \
-        "events/#{event.id}/cancel\">" \
-        'Cancel</a></li>'
+            "href=\"/admin/conferences/#{conference_id}/program/" \
+            "events/#{event.id}/cancel\">" \
+            'Cancel</a></li>'
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).not_to include(tag)
 
-      expect(event).to receive(:transition_possible?).with(:cancel) { true }
+      expect(event).to receive(:transition_possible?).with(:cancel).and_return(true)
       result = state_dropdown(event, conference_id, email_settings)
       expect(result).to include(tag)
     end

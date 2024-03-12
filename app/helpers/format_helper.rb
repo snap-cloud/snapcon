@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
+require 'redcarpet/render_strip'
+
 module FormatHelper
-  ##
-  # Includes functions related to formatting (like adding classes, colors)
-  ##
   def status_icon(object)
     case object.state
     when 'new', 'to_reject', 'to_accept'
@@ -42,26 +41,24 @@ module FormatHelper
 
   def target_progress_color(progress)
     progress = progress.to_i
-    result =
-    case
-    when progress >= 90 then 'green'
-    when progress < 90 && progress >= 80 then 'orange'
-    else 'red'
+    if progress >= 90
+      'green'
+    elsif progress < 90 && progress >= 80
+      'orange'
+    else
+      'red'
     end
-
-    result
   end
 
   def days_left_color(days_left)
     days_left = days_left.to_i
     if days_left > 30
-      result = 'green'
+      'green'
     elsif days_left < 30 && days_left > 10
-      result = 'orange'
+      'orange'
     else
-      result = 'red'
+      'red'
     end
-    result
   end
 
   def bootstrap_class_for(flash_type)
@@ -80,48 +77,32 @@ module FormatHelper
   end
 
   def label_for(event_state)
-    result = ''
     case event_state
     when 'new'
-      result = 'label label-primary'
-    when 'withdrawn'
-      result = 'label label-danger'
-    when 'unconfirmed'
-      result = 'label label-success'
-    when 'confirmed'
-      result = 'label label-success'
+      'label label-primary'
+    when 'withdrawn', 'cancelled'
+      'label label-danger'
+    when 'unconfirmed', 'confirmed'
+      'label label-success'
     when 'rejected'
-      result = 'label label-warning'
-    when 'canceled'
-      result = 'label label-danger'
+      'label label-warning'
     end
-    result
   end
 
   def icon_for_todo(bool)
-    if bool
-      'fa-solid fa-check'
-    else
-      'fa-solid fa-xmark'
-    end
+    bool ? 'fa-solid fa-check' : 'fa-solid fa-xmark'
   end
 
   def class_for_todo(bool)
-    if bool
-      'todolist-ok'
-    else
-      'todolist-missing'
-    end
+    bool ? 'todolist-ok' : 'todolist-missing'
   end
 
   def word_pluralize(count, singular, plural = nil)
-    word = if (count == 1 || count =~ /^1(\.0+)?$/)
-             singular
-           else
-             plural || singular.pluralize
-           end
-
-    word
+    if count.positive? && count < 2
+      singular
+    else
+      plural || singular.pluralize
+    end
   end
 
   # Returns black or white deppending on what of them contrast more with the
@@ -133,7 +114,7 @@ module FormatHelper
     g = hexcolor[3..4].to_i(16)
     b = hexcolor[5..6].to_i(16)
     yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000
-    (yiq >= 128) ? 'black' : 'white'
+    yiq >= 128 ? 'black' : 'white'
   end
 
   def td_height(rooms)
@@ -173,40 +154,43 @@ module FormatHelper
     speaker_height(rooms) - 4
   end
 
-  def carousel_item_class(number, carousel_number, num_cols, col)
-    item_class = 'item'
-    item_class += ' first' if number == 0
-    item_class += ' last' if number == (carousel_number - 1)
-    if (col && ((col / num_cols) == number)) || (!col && number == 0)
-      item_class += ' active'
-    end
-    item_class
-  end
-
   def selected_scheduled?(schedule)
-    (schedule == @selected_schedule) ? 'Yes' : 'No'
+    schedule == @selected_schedule ? 'Yes' : 'No'
   end
 
-  def markdown(text, escape_html=true)
+  def markdown(text, escape_html = true)
     return '' if text.nil?
 
     markdown_options = {
       autolink:                     true,
       space_after_headers:          true,
-      no_intra_emphasis:            true,
+      # no_intra_emphasis:            true, # SNAPCON
       fenced_code_blocks:           true,
-      disable_indented_code_blocks: true
+      disable_indented_code_blocks: true,
+      tables:                       true, # SNAPCON
+      strikethrough:                true, # SNAPCON
+      footnotes:                    true, # SNAPCON
+      superscript:                  true # SNAPCON
     }
     render_options = {
       escape_html:     escape_html,
       safe_links_only: true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(render_options), markdown_options)
-    sanitize(sanitize(markdown.render(text)), scrubber: Loofah::Scrubbers::NoFollow.new)
+    rendered = sanitize(markdown.render(text))
+    escape_html ? sanitize(rendered, scrubber: Loofah::Scrubbers::NoFollow.new) : rendered.html_safe
   end
 
-  def markdown_hint(text='')
-    markdown("#{text} Please look at #{link_to '**Markdown Syntax**', 'https://daringfireball.net/projects/markdown/syntax', target: '_blank'} to format your text", false)
+  def markdown_hint(text = '')
+    link = link_to('**Markdown Syntax**',
+                   'https://daringfireball.net/projects/markdown/syntax',
+                   target: '_blank', rel: 'noopener')
+    markdown("#{text} Please look at #{link} to format your text", false)
+  end
+
+  # Return a plain text markdown stripped of formatting.
+  def plain_text(content)
+    Redcarpet::Markdown.new(Redcarpet::Render::StripDown).render(content)
   end
 
   def quantity_left_of(resource)

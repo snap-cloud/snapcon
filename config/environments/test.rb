@@ -53,7 +53,13 @@ Rails.application.configure do
 
   config.after_initialize do
     # Set Time.now to May 1, 2014 00:01:00 AM (at this instant), but allow it to move forward
-    t = Time.local(2014, 05, 01, 00, 01, 00)
+    t = Time.local(2014, 5, 1, 0, 1, 0)
     Timecop.travel(t)
   end
+
+  # Test mailbot settings
+  config.mailbot = {
+    ytlf_ticket_id: 50,
+    bcc_address:    'test@test.com'
+  }
 end

@@ -1,6 +1,18 @@
 # frozen_string_literal: true
 
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# == Schema Information
+#
+# Table name: rooms
+#
+#  id             :bigint           not null, primary key
+#  discussion_url :string
+#  guid           :string           not null
+#  name           :string           not null
+#  order          :integer
+#  size           :integer
+#  url            :string
+#  venue_id       :integer          not null
+#
 FactoryBot.define do
   factory :room do
     name { "Room #{Faker::Address.country}" }

@@ -1,5 +1,3 @@
-// get current_date
-var today = new Date().toISOString().slice(0, 10);
 $(function () {
   $("input[id^='datetimepicker']").datetimepicker({
     useCurrent: false,
@@ -24,9 +22,6 @@ $(function () {
        ignoreReadonly: true,
        format: "YYYY-MM-DD"
    });
-
-   // today <= start_registration <= end_registration <= end_conference
-   var end_conference = $('form').data('end-conference');
 
    $('#registration-period-start-datepicker').datetimepicker({
        format: 'YYYY-MM-DD'

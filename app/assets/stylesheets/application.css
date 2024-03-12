@@ -1,10 +1,18 @@
 /*
  *= require strap-on
- *= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
+ *= require datatables/dataTables.bootstrap
+ *= require datatables/extensions/Buttons/buttons.dataTables
+ *= require datatables/extensions/Buttons/buttons.bootstrap
+
+ *= require selectize
+ *= require selectize.bootstrap3
+ *= require bootstrap-markdown
+ *= require bootstrap-datetimepicker
+ *= require bootstrap-select
+
  *= require osem
  *= require osem-rating
  *= require osem-schedule
- *= require osem-schedule-print
  *= require osem-dashboard
  *= require osem-splash
  *= require osem-fonts
@@ -18,4 +26,6 @@
  *= require selectize.bootstrap3
  *= require bootstrap-select
  *= require conferences
+
+ *= require fullcalendar-scheduler/main.css
 */

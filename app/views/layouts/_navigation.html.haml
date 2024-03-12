@@ -1,7 +1,6 @@
-.navbar.navbar-default.navbar-fixed-top.nav-osem{role: 'navigation'}
+%nav.navbar.navbar-default.navbar-fixed-top.nav-osem{role: 'navigation'}
   .container
     .navbar-header
-
       - if controller.class.name.split("::").first=="Admin"
         %button{ "data-target"=>"#side-nav", "data-toggle"=>"collapse", class: 'navbar-toggle side-nav-btn', type: 'button' }
           %span.sr-only Toggle navigation
@@ -14,62 +13,35 @@
         %span.icon-bar
         %span.icon-bar
         %span.icon-bar
-      = nav_root_link_for conference
+      = nav_root_link_for(conference)
 
     .collapse.navbar-collapse#main-nav
-      - if content_for :splash_nav
-        %ul.nav.navbar-nav#splash-nav
+      %ul.nav.navbar-nav#splash-nav
+        - if content_for :splash_nav
           = content_for :splash_nav
+        = render 'layouts/snapcon_nav'
       -if user_signed_in?
         .btn-group.pull-right
           %ul.nav.navbar-nav.navbar-right
             %li.dropdown
               %a.dropdown-toggle{"data-toggle" => "dropdown", href: '#', id: "current-user-detail"}
                 = current_user.name
-                = image_tag(current_user.gravatar_url(size: '18'), title: "Yo #{current_user.name}!", alt: '')
+                = image_tag(current_user.profile_picture(size: '18'), class: 'profile-thumbnail', alt: '')
                 %b.caret
               %ul.dropdown-menu
                 = render 'layouts/user_menu'
       - else
         %ul.nav.navbar-nav.navbar-right
           - if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
-            %li{class: "#{active_nav_li(new_ichain_registration_path('user'))}"}
-              = link_to(new_ichain_registration_path('user')) do
-                %span.fa-solid.fa-heart
-                Sign Up
+            - reg_path = new_ichain_registration_path('user')
           - else
-            %li{class: "#{active_nav_li(new_registration_path('user'))}"}
-              = link_to(new_registration_path('user')) do
-                %span.fa-solid.fa-heart
-                Sign Up
-          %li.dropdown.visible-desktop
-            %a.dropdown-toggle{"data-toggle" => "dropdown", href: '#'}
-              %span.fa-solid.fa-user
+            - reg_path = new_registration_path('user')
+          %li
+            = link_to(reg_path) do
+              %span.fa-solid.fa-heart
+              Sign Up
+          %li
+            = link_to(sign_in_path) do
+              %span.fa.fa-user
               Sign In
-              %span.caret
-            .dropdown-menu
-              - if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
-                = form_tag User.ichain_login_url do
-                  = text_field_tag 'username', nil, id: 'user_ichain_email_dd', class: 'form-control', placeholder: 'Username'
-                  = password_field_tag 'password', nil, id: 'user_ichain_password_dd', class: 'form-control', placeholder: 'Password'
-                  %button.btn.btn-success.btn-block Sign in
-              - else
-                = form_tag new_user_session_path do
-                  = text_field_tag 'user[login]', nil, id: 'user_login_dd', class: 'form-control', placeholder: 'Username / E-Mail'
-                  = password_field_tag 'user[password]', nil, id: 'user_password_dd', class: 'form-control', placeholder: 'Password'
-                  %p.text-right
-                    %small
-                      %label{for: 'user_remember_me'} Remember me
-                      = check_box_tag 'user[remember_me]'
-                  %button.btn.btn-success.btn-block Sign in
-                  - unless omniauth_configured.empty?
-                    .divider
-                    %h6.text-center
-                      or
-                    = render 'devise/shared/openid_links'
-                  %p.text-right
-                    %br
-                    %a.small.btn.btn-xs.btn-default{"data-toggle" => "collapse", "data-target" =>  "#navbar-devise-help"}
-                      Need Help?
-                    #navbar-devise-help.collapse
-                      = render 'devise/shared/links'
+  .trapezoid

@@ -13,20 +13,32 @@
           %tr
             %th Name
             %th Capacity
+            %th Order
+            %th URL
             %th Actions
         %tbody
           - @rooms.each_with_index do |room, index|
             %tr
-              %td
+              %th
                 = room.name
               %td
                 = room.size
               %td
-                = link_to 'Edit', edit_admin_conference_venue_room_path(@conference.short_title, room.id),
-                method: :get, class: 'btn btn-primary'
-                = link_to 'Delete', admin_conference_venue_room_path(@conference.short_title, room.id),
-                method: :delete, class: 'btn btn-danger',
-                data: { confirm: "Do you really want to delete #{room.name}? Attention: This room will be removed from all Events that have it set"}
+                = room.order
+              %td
+                Meeting:
+                = link_to(room.url, room.url, target: '_blank')
+                - if room.discussion_url.present?
+                  %br
+                  Discussion:
+                  = link_to(room.discussion_url, room.discussion_url, target: '_blank')
+              %td
+                .btn-group
+                  = link_to 'Edit', edit_admin_conference_venue_room_path(@conference.short_title, room.id), class: 'btn btn-primary'
+                  = link_to('Delete',
+                      admin_conference_venue_room_path(@conference.short_title, room.id),
+                      method: :delete, class: 'btn btn-danger',
+                      data: { confirm: "Do you really want to delete #{room.name}? Attention: This room will be removed from all Events that have it set"})
 .row
   .col-md-12.text-right
     = link_to 'Add Room', new_admin_conference_venue_room_path(@conference.short_title), class: 'btn btn-primary'

@@ -1,5 +1,41 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: conferences
+#
+#  id                 :bigint           not null, primary key
+#  booth_limit        :integer          default(0)
+#  color              :string
+#  custom_css         :text
+#  custom_domain      :string
+#  description        :text
+#  end_date           :date             not null
+#  end_hour           :integer          default(20)
+#  events_per_week    :text
+#  guid               :string           not null
+#  logo_file_name     :string
+#  picture            :string
+#  registration_limit :integer          default(0)
+#  revision           :integer          default(0), not null
+#  short_title        :string           not null
+#  start_date         :date             not null
+#  start_hour         :integer          default(9)
+#  ticket_layout      :integer          default("portrait")
+#  timezone           :string           not null
+#  title              :string           not null
+#  use_vdays          :boolean          default(FALSE)
+#  use_volunteers     :boolean
+#  use_vpositions     :boolean          default(FALSE)
+#  created_at         :datetime
+#  updated_at         :datetime
+#  organization_id    :integer
+#
+# Indexes
+#
+#  index_conferences_on_organization_id  (organization_id)
+#
+# rubocop:disable Metrics/ClassLength
 class Conference < ApplicationRecord
   include RevisionCount
   require 'uri'
@@ -9,13 +45,13 @@ class Conference < ApplicationRecord
   resourcify :roles, dependent: :delete_all
 
   default_scope { order('start_date DESC') }
-  scope :upcoming, (-> { where('end_date >= ?', Date.current) })
-  scope :past, (-> { where('end_date < ?', Date.current) })
+  scope :upcoming, -> { where('end_date >= ?', Date.current) }
+  scope :past, -> { where('end_date < ?', Date.current) }
 
   belongs_to :organization
   delegate :code_of_conduct, to: :organization
 
-  has_paper_trail ignore: %i(updated_at guid revision events_per_week), meta: { conference_id: :id }
+  has_paper_trail ignore: %i[updated_at guid revision events_per_week], meta: { conference_id: :id }
 
   has_and_belongs_to_many :questions
 
@@ -25,7 +61,8 @@ class Conference < ApplicationRecord
   has_one :email_settings, dependent: :destroy
   has_one :program, dependent: :destroy
   has_one :venue, dependent: :destroy
-  delegate :city, :country_name, to: :venue, allow_nil: true
+
+  delegate :city, :country_name, :rooms, to: :venue, allow_nil: true
   delegate :name, :street, to: :venue, prefix: true, allow_nil: true
 
   has_many :ticket_purchases, dependent: :destroy
@@ -33,6 +70,7 @@ class Conference < ApplicationRecord
   has_many :payments, dependent: :destroy
   has_many :supporters, through: :ticket_purchases, source: :user
   has_many :tickets, dependent: :destroy
+  has_many :registration_tickets, -> { for_registration }, class_name: 'Ticket'
   has_many :resources, dependent: :destroy
   has_many :booths, dependent: :destroy
   has_many :confirmed_booths, -> { where(state: 'confirmed') }, class_name: 'Booth'
@@ -55,6 +93,7 @@ class Conference < ApplicationRecord
            through: :program,
            source:  :events
   has_many :event_types, through: :program
+  has_many :currency_conversions
 
   has_many :surveys, as: :surveyable, dependent: :destroy do
     def for_registration
@@ -100,7 +139,7 @@ class Conference < ApplicationRecord
   after_create :create_free_ticket
   after_update :delete_event_schedules
 
-  enum ticket_layout: [:portrait, :landscape]
+  enum ticket_layout: { portrait: 0, landscape: 1 }
 
   ##
   # Checks if the user is registered to the conference
@@ -110,8 +149,35 @@ class Conference < ApplicationRecord
   # ====Returns
   # * +false+ -> If the user is registered
   # * +true+ - If the user isn't registered
-  def user_registered? user
-    user.present? && registrations.where(user_id: user.id).count > 0
+  def user_registered?(user)
+    user.present? && registrations.where(user_id: user.id).present?
+  end
+
+  ##
+  # True when there is at least one ticket marked as "registration"
+  # A user must get a registration ticket before registering.
+  def registration_ticket_required?
+    registration_tickets.any?
+  end
+
+  ##
+  # Creates a registration to the conference for the user
+  #
+  # ====Args
+  # * +user+ -> The user we check for
+  # ====Returns
+  # * +false+ -> If the user is registered
+  # * +true+ - If the user isn't registered
+  def register_user(user)
+    registration = registrations.new
+    registration.user = user
+    if registration.save
+      MailblusterEditLeadJob.perform_later(
+        user.id, add_tags: ["#{organization.name}-#{short_title}"]
+      )
+      return registration
+    end
+    false
   end
 
   ##
@@ -121,8 +187,8 @@ class Conference < ApplicationRecord
     if saved_change_to_start_hour? || saved_change_to_end_hour?
       event_schedules = program.event_schedules.select do |event_schedule|
         event_schedule.start_time.hour < start_hour ||
-        event_schedule.end_time.hour > end_hour ||
-        (event_schedule.end_time.hour == end_hour && event_schedule.end_time.minute > 0)
+          event_schedule.end_time.hour > end_hour ||
+          (event_schedule.end_time.hour == end_hour && event_schedule.end_time.min > 0)
       end
       event_schedules.each(&:destroy)
     end
@@ -201,9 +267,9 @@ class Conference < ApplicationRecord
   #  * +Array+ -> e.g. [0, 3, 3, 5] -> first week 0, second week 3 registrations
   def get_registrations_per_week
     return [] unless registrations &&
-      registration_period &&
-      registration_period.start_date &&
-      registration_period.end_date
+                     registration_period &&
+                     registration_period.start_date &&
+                     registration_period.end_date
 
     reg = registrations.group(:week).order(:week).count
     start_week = get_registration_start_week
@@ -269,9 +335,9 @@ class Conference < ApplicationRecord
     result = 0
     weeks = 0
     if registration_period&.start_date &&
-        registration_period&.end_date
+       registration_period&.end_date
       weeks = Date.new(registration_period.start_date.year, 12, 31)
-          .strftime('%W').to_i
+                  .strftime('%W').to_i
 
       result = get_registration_end_week - get_registration_start_week + 1
     end
@@ -368,8 +434,8 @@ class Conference < ApplicationRecord
   # * +hash+ -> user: submissions
   def get_top_submitter(limit = 5)
     submitter = EventUser.joins(:event).select(:user_id)
-        .where('event_role = ? and program_id = ?', 'submitter', Conference.find(id).program.id)
-        .limit(limit).group(:user_id)
+                         .where('event_role = ? and program_id = ?', 'submitter', Conference.find(id).program.id)
+                         .limit(limit).group(:user_id)
     counter = submitter.order('count_all desc').count(:all)
     Conference.calculate_user_submission_hash(submitter, counter)
   end
@@ -579,12 +645,12 @@ class Conference < ApplicationRecord
   # * +ActiveRecord+
   def self.get_active_conferences_for_dashboard
     result = Conference.where('start_date > ?', Time.now)
-        .select('id, short_title, color, start_date, organization_id')
+                       .select('id, short_title, color, start_date, organization_id')
 
     if result.empty?
       result = Conference
-          .select('id, short_title, color, start_date, organization_id').limit(2)
-          .order(start_date: :desc)
+               .select('id, short_title, color, start_date, organization_id').limit(2)
+               .order(start_date: :desc)
     end
     result
   end
@@ -626,9 +692,7 @@ class Conference < ApplicationRecord
         result[state.name] = count
       end
 
-      unless conference.events_per_week
-        conference.events_per_week = {}
-      end
+      conference.events_per_week = {} unless conference.events_per_week
 
       # Write to database
       conference.events_per_week[week] = result
@@ -648,7 +712,7 @@ class Conference < ApplicationRecord
     return false unless saved_change_to_start_date? || saved_change_to_end_date?
 
     # do not notify unless the mail content is set up
-    (email_settings.conference_dates_updated_subject.present? && email_settings.conference_dates_updated_body.present?)
+    email_settings.conference_dates_updated_subject.present? && email_settings.conference_dates_updated_body.present?
   end
 
   ##
@@ -665,7 +729,7 @@ class Conference < ApplicationRecord
     return false unless registration_period.saved_change_to_start_date? || registration_period.saved_change_to_end_date?
 
     # do not notify unless the mail content is set up
-    (email_settings.conference_registration_dates_updated_subject.present? && email_settings.conference_registration_dates_updated_body.present?)
+    email_settings.conference_registration_dates_updated_subject.present? && email_settings.conference_registration_dates_updated_body.present?
   end
 
   ##
@@ -752,8 +816,8 @@ class Conference < ApplicationRecord
   # the color. We make use of big prime numbers to avoid repetition and to make
   # consecutive colors clearly different.
   def next_color_component(component, i)
-    big_prime_numbers = {r: 113, g: 67, b: 151}
-    ((i * big_prime_numbers[component]) % 239 + 16).to_s(16)
+    big_prime_numbers = { r: 113, g: 67, b: 151 }
+    (((i * big_prime_numbers[component]) % 239) + 16).to_s(16)
   end
 
   after_create do
@@ -767,7 +831,8 @@ class Conference < ApplicationRecord
   # after the conference has been successfully created
   # Will create 1 new record for 'free' ticket
   def create_free_ticket
-    tickets.where(title: 'Free Access', price_cents: 0).first_or_create!(description: 'Get free access tickets for the conference.')
+    tickets.where(title:       'Free Access',
+                  price_cents: 0).first_or_create!(description: 'Get free access tickets for the conference.')
   end
 
   ##
@@ -775,10 +840,12 @@ class Conference < ApplicationRecord
   # after the conference has been successfully created
   # Will create 4 new records for roles
   def create_roles
-    Role.where(name: 'organizer', resource: self).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
+    Role.where(name:     'organizer',
+               resource: self).first_or_create(description: 'For the organizers of the conference (who shall have full access)')
     Role.where(name: 'cfp', resource: self).first_or_create(description: 'For the members of the CfP team')
     Role.where(name: 'info_desk', resource: self).first_or_create(description: 'For the members of the Info Desk team')
-    Role.where(name: 'volunteers_coordinator', resource: self).first_or_create(description: 'For the people in charge of volunteers')
+    Role.where(name:     'volunteers_coordinator',
+               resource: self).first_or_create(description: 'For the people in charge of volunteers')
   end
 
   ##
@@ -827,13 +894,12 @@ class Conference < ApplicationRecord
 
     # Completed weeks
     events_per_week.each do |week, values|
+      week = Date.parse(week) unless week.respond_to?(:strftime)
       values.each do |state, value|
-        if %i(confirmed unconfirmed).include?(state)
-          unless result[state.to_s.capitalize]
-            result[state.to_s.capitalize] = {}
-          end
-          result[state.to_s.capitalize][week.strftime('%W').to_i] = value
-        end
+        next unless %i[confirmed unconfirmed].include?(state)
+
+        result[state.to_s.capitalize] = {} unless result[state.to_s.capitalize]
+        result[state.to_s.capitalize][week.strftime('%W').to_i] = value
       end
     end
 
@@ -890,9 +956,7 @@ class Conference < ApplicationRecord
   # * +Array+
   def pad_left(first_week, start_week)
     left = []
-    if first_week > start_week
-      left = Array.new(first_week - start_week - 1, 0)
-    end
+    left = Array.new(first_week - start_week - 1, 0) if first_week > start_week
     left
   end
 
@@ -905,11 +969,9 @@ class Conference < ApplicationRecord
   def assert_keys_are_continuously(hash)
     keys = hash.keys
     (keys.min..keys.max).each do |key|
-      unless hash[key]
-        hash[key] = 0
-      end
+      hash[key] = 0 unless hash[key]
     end
-    Hash[hash.sort]
+    hash.sort.to_h
   end
 
   ##
@@ -1015,12 +1077,12 @@ class Conference < ApplicationRecord
 
     grouped.each do |event|
       object = event.send(symbol)
-      if object
-        result[object.title] = {
-          'value' => counter[object.id],
-          'color' => object.color
-        }
-      end
+      next unless object
+
+      result[object.title] = {
+        'value' => counter[object.id],
+        'color' => object.color
+      }
     end
     result
   end
@@ -1034,12 +1096,12 @@ class Conference < ApplicationRecord
   def calculate_track_distribution_hash(tracks_grouped, tracks_counter)
     result = {}
     tracks_grouped.each do |event|
-      if event.track
-        result[event.track.name] = {
-          'value' => tracks_counter[event.track_id],
-          'color' => event.track.color
-        }
-      end
+      next unless event.track
+
+      result[event.track.name] = {
+        'value' => tracks_counter[event.track_id],
+        'color' => event.track.color
+      }
     end
     result
   end
@@ -1093,12 +1155,10 @@ class Conference < ApplicationRecord
   def self.calculate_event_distribution_hash(counts)
     return {} if counts.values.sum == 0
 
-    Hash[
-      Event.state_machine.states.collect do |state|
-        state_name = state.name.to_s
-        [state_name.capitalize, counts[state_name] || 0]
-      end
-    ]
+    Event.state_machine.states.collect do |state|
+      state_name = state.name.to_s
+      [state_name.capitalize, counts[state_name] || 0]
+    end.to_h
   end
 
   ##
@@ -1111,9 +1171,7 @@ class Conference < ApplicationRecord
     counter.each do |key, value|
       # make PG happy by including the user_id in ORDER
       submitter = submitters.where(user_id: key).order(:user_id).first
-      if submitter
-        result[submitter.user] = value
-      end
+      result[submitter.user] = value if submitter
     end
     result
   end
@@ -1130,9 +1188,9 @@ class Conference < ApplicationRecord
   #
   def generate_guid
     guid = SecureRandom.urlsafe_base64
-#     begin
-#       guid = SecureRandom.urlsafe_base64
-#     end while User.where(:guid => guid).exists?
+    #     begin
+    #       guid = SecureRandom.urlsafe_base64
+    #     end while User.where(:guid => guid).exists?
     self.guid = guid
   end
 
@@ -1140,19 +1198,17 @@ class Conference < ApplicationRecord
   # Adds a random color to the conference
   #
   def add_color
-    unless color
-      self.color = get_color
-    end
+    self.color = get_color unless color
   end
 
   def get_color
-    %w(
-        #000000 #0000FF #00FF00 #FF0000 #FFFF00 #9900CC
-        #CC0066 #00FFFF #FF00FF #C0C0C0 #00008B #FFD700
-        #FFA500 #FF1493 #FF00FF #F0FFFF #EE82EE #D2691E
-        #C0C0C0 #A52A2A #9ACD32 #9400D3 #8B008B #8B0000
-        #87CEEB #808080 #800080 #008B8B #006400
-      ).sample
+    %w[
+      #000000 #0000FF #00FF00 #FF0000 #FFFF00 #9900CC
+      #CC0066 #00FFFF #FF00FF #C0C0C0 #00008B #FFD700
+      #FFA500 #FF1493 #FF00FF #F0FFFF #EE82EE #D2691E
+      #C0C0C0 #A52A2A #9ACD32 #9400D3 #8B008B #8B0000
+      #87CEEB #808080 #800080 #008B8B #006400
+    ].sample
   end
 
   # Calculates items per week from a hash.
@@ -1171,9 +1227,7 @@ class Conference < ApplicationRecord
 
     items.each do |key, value|
       # Padding
-      if last_key < (key.to_i - 1)
-        result += Array.new(key.to_i - last_key - 1, sum)
-      end
+      result += Array.new(key.to_i - last_key - 1, sum) if last_key < (key.to_i - 1)
 
       sum += value
       result.push(sum)
@@ -1181,16 +1235,13 @@ class Conference < ApplicationRecord
     end
 
     # Padding right
-    if result.length < weeks
-      result += Array.new(weeks - result.length, sum)
-    end
+    result += Array.new(weeks - result.length, sum) if result.length < weeks
 
     add_week_indices(result)
   end
 
   def add_week_indices(values)
-    Hash[
-      values.collect.with_index { |value, index| ["Wk #{index + 1}", value] }
-    ]
+    values.collect.with_index { |value, index| ["Wk #{index + 1}", value] }.to_h
   end
 end
+# rubocop:enable Metrics/ClassLength

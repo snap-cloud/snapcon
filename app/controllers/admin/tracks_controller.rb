@@ -128,7 +128,10 @@ module Admin
         end
       else
         respond_to do |format|
-          format.js { render json: { errors: "The selected schedule couldn't be updated #{@track.errors.to_a.join('. ')}" }, status: 422 }
+          format.js do
+            render json:   { errors: "The selected schedule couldn't be updated #{@track.errors.to_a.join('. ')}" },
+                   status: :unprocessable_entity
+          end
         end
       end
     end
@@ -136,7 +139,8 @@ module Admin
     private
 
     def track_params
-      params.require(:track).permit(:name, :description, :color, :short_name, :cfp_active, :start_date, :end_date, :room_id)
+      params.require(:track).permit(:name, :description, :color, :short_name, :cfp_active, :start_date, :end_date,
+                                    :room_id)
     end
 
     def update_state(transition, notice)

@@ -12,7 +12,7 @@
             event),
             class: 'thumbnail') do
             - if speaker
-              = image_tag speaker.gravatar_url(size: 300),
+              = image_tag speaker.profile_picture(size: 300),
                 class: ['img-responsive', 'img-circle'],
                 title: speaker.name
             .caption

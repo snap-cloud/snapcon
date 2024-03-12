@@ -5,8 +5,7 @@ module Admin
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :lodging, through: :conference
 
-    def index
-    end
+    def index; end
 
     def new
       @lodging = @conference.lodgings.new
@@ -42,7 +41,7 @@ module Admin
       else
         redirect_to admin_conference_lodgings_path(conference_id: @conference.short_title),
                     error: 'Deleting lodging failed.' \
-                    "#{@lodging.errors.full_messages.join('. ')}."
+                           "#{@lodging.errors.full_messages.join('. ')}."
       end
     end
 

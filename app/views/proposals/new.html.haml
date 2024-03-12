@@ -2,12 +2,13 @@
   .row
     .col-md-12
       .page-header
-        %h1 New Proposal
+        %h1 New #{@conference.title} Proposal
   - if @program.cfp_open?
     - if @program.cfp.description.present?
+      %h2 Call for Proposals
       .row
         .col-md-12
-          = markdown(@program.cfp.description)
+          = markdown(@program.cfp.description, escape_html=false)
   .row
     .col-md-12
       = render partial: 'encouragement_text'
@@ -16,16 +17,17 @@
       - unless current_user
         %legend
           %span
-            =link_to('#signup', role: 'tab', 'aria-controls' => 'home', 'data-toggle' => 'tab') do
-              = ENV.fetch('OSEM_NAME', 'OSEM')
-              Account
+            = link_to('#signup', role: 'tab', 'aria-controls' => 'home', 'data-toggle' => 'tab') do
+              Create a Snap!Con Account
+
           %span.pull-right#account-already
-            =link_to('#signin', role: 'tab', 'aria-controls' => 'home', 'data-toggle' => 'tab') do
-              Already have an account?
+            = link_to('#signin', role: 'tab', 'aria-controls' => 'home', 'data-toggle' => 'tab') do
+              Already have a Snap!Con account?
       .tab-content
         .tab-pane.active{role: 'tabpanel', id: 'signup'}
           = form_for(@event, url: @url) do |f|
-            = render partial: 'devise/registrations/new_embedded'
-            = render partial: 'form', locals: { f: f }
+            = render 'devise/registrations/new_embedded'
+            = render 'form', f: f
+            = render 'shared/user_selectize'
         .tab-pane{role: 'tabpanel', id: 'signin'}
-          = render partial: 'devise/sessions/new_embedded'
+          = render 'devise/sessions/new_embedded'

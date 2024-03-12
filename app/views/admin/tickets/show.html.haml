@@ -7,7 +7,13 @@
           Ticket
           %small
             = humanized_money_with_symbol @ticket.price
-          = link_to 'Edit Ticket', edit_admin_conference_ticket_path, class: 'btn btn-primary pull-right'
+        = link_to 'Edit Ticket', edit_admin_conference_ticket_path, class: 'btn btn-primary pull-right'
+        - if can? :give, Ticket
+          .pull-right
+            = link_to 'Give a Ticket', '#',
+              data: { toggle: 'modal', target: "#modal-give-ticket-#{@ticket.id}" },
+              class: 'button btn btn-default btn-info'
+
       %p.text-muted
         People who bought this ticket
 .row
@@ -15,24 +21,56 @@
     %table.datatable
       %thead
         %tr
-          %th #
+          %th ID
           %th Name
           %th Quantity
           %th E-Mail
           %th Affiliation
           %th Paid
+          %th Date
+          %th
+            %span.sr-only Delete
+            ❌
       %tbody
         - @ticket.buyers.each_with_index do |buyer, index|
+          - purchases = buyer.ticket_purchases.where(ticket_id: @ticket.id)
           %tr
             %td
-              = index + 1
+              = purchases.length == 1 ? purchases.first.id : purchases.map(&:id)
             %td
               = buyer.name
             %td
-              = buyer.ticket_purchases.where(ticket_id: @ticket.id).sum('quantity')
+              = purchases.sum('quantity')
             %td
               = buyer.email
             %td
               = buyer.affiliation
             %td
               = @ticket.tickets_paid(buyer)
+            %td
+              = purchases.first.created_at
+            %td
+              - if purchases.length == 1
+                = button_to("Delete", conference_ticket_purchase_path(@conference, purchases.first.id), method: :delete, data: {confirm: "Are you sure?"}, class: 'btn btn-danger btn-sm')
+
+- content_for :modals do
+  .modal.fade{ id: "modal-give-ticket-#{@ticket.id}" }
+    .modal-dialog
+      .modal-content
+        = form_for(@ticket.ticket_purchases.new,
+          url: give_admin_conference_ticket_path(@conference, @ticket)) do |f|
+          .modal-header
+            %button.close{ data: { dismiss: 'modal' } }
+              %i.fa.fa-close
+            %h3.modal-title
+              Give a #{@ticket.title} Ticket
+          .modal-body
+            .form-group
+              = f.label :user_id, 'Search Users'
+              = f.select :user_id, [], {}, { multiple: false, class: "select-help-toggle js-userSelector form-control", placeholder: "Search users..." }
+              %span.help-block
+                Search for a user by name, email, or username.
+          .modal-footer
+            = f.submit 'Give Ticket', class: 'btn btn-primary'
+
+= render partial: 'shared/user_selectize'

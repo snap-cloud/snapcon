@@ -1,6 +1,7 @@
-- if commercial.url
-  = Commercial.render_from_url(commercial.url)[:html]
-- else
+- if commercial.title.present?
+  .panel-heading= commercial.title
+
+.flexvideo
   - if commercial.commercial_type == 'SlideShare'
     %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', src: "https://www.slideshare.net/slideshow/embed_code/#{commercial.commercial_id}"}
   - elsif commercial.commercial_type == 'Flickr'
@@ -11,5 +12,10 @@
     %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', src: "https://speakerdeck.com/player/#{commercial.commercial_id}?"}
   - elsif commercial.commercial_type == 'Instagram'
     %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', scrolling: 'no', allowtransparency: 'true', src: "//instagram.com/p/#{commercial.commercial_id}/embed/"}
-  - else
+  - elsif commercial.commercial_type == 'YouTube'
     %iframe{width: '560', height: '315', frameborder: '0', allowfullscreen: 'true', src: "https://www.youtube.com/embed/#{commercial.commercial_id}?rel=0"}
+  - elsif commercial.url
+    = Commercial.render_from_url(commercial.url)[:html]
+- if commercial.url
+  = link_to('Open in a new tab', commercial.url, target: '_blank', class: 'btn btn-info btn-xs')
+  %br

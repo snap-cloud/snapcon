@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+DEFAULT_LOGO = Rails.configuration.conference[:default_logo_filename]
+
+# TODO-SNAPCON: Refactor this module. Move chunks to a dates_help, some events_helper
 module ApplicationHelper
+  include Pagy::Frontend
   # Returns a string build from the start and end date of the given conference.
   #
   # If the conference is only one day long
@@ -31,8 +35,7 @@ module ApplicationHelper
       endstr = end_date.strftime('%B %d, %Y')
     end
 
-    result = startstr + endstr
-    result
+    startstr + endstr
   end
 
   # Returns time with conference timezone
@@ -46,15 +49,18 @@ module ApplicationHelper
   end
 
   def add_association_link(association_name, form_builder, div_class, html_options = {})
-    link_to_add_association 'Add ' + association_name.to_s.singularize, form_builder, div_class, html_options.merge(class: 'assoc btn btn-success')
+    link_to_add_association 'Add ' + association_name.to_s.singularize, form_builder, div_class,
+                            html_options.merge(class: 'assoc btn btn-success')
   end
 
   def remove_association_link(association_name, form_builder)
-    link_to_remove_association('Remove ' + association_name.to_s.singularize, form_builder, class: 'assoc btn btn-danger') + tag(:hr)
+    link_to_remove_association('Remove ' + association_name.to_s.singularize, form_builder,
+                               class: 'assoc btn btn-danger') + tag.hr
   end
 
   def dynamic_association(association_name, title, form_builder, options = {})
-    render 'shared/dynamic_association', association_name: association_name, title: title, f: form_builder, hint: options[:hint]
+    render 'shared/dynamic_association', association_name: association_name, title: title, f: form_builder,
+hint: options[:hint]
   end
 
   def tracks(conference)
@@ -75,24 +81,25 @@ module ApplicationHelper
   # Output will be 'title, description and conference'
   def updated_attributes(version)
     version.changeset
-      .reject{ |_, values| values[0].blank? && values[1].blank? }
-      .keys.map{ |key| key.gsub('_id', '').tr('_', ' ')}.join(', ')
-      .reverse.sub(',', ' dna ').reverse
+           .reject { |_, values| values[0].blank? && values[1].blank? }
+           .keys.map { |key| key.gsub('_id', '').tr('_', ' ') }.join(', ')
+           .reverse.sub(',', ' dna ').reverse
   end
 
   def normalize_array_length(hashmap, length)
     hashmap.each_value do |value|
-      if value.length < length
-        value.fill(value[-1], value.length...length)
-      end
+      value.fill(value[-1], value.length...length) if value.length < length
     end
   end
 
+  # TODO: Move to the event model.
   def concurrent_events(event)
     return nil unless event.scheduled? && event.program.selected_event_schedules
 
     event_schedule = event.program.selected_event_schedules.find { |es| es.event == event }
-    other_event_schedules = event.program.selected_event_schedules.reject { |other_event_schedule| other_event_schedule == event_schedule }
+    other_event_schedules = event.program.selected_event_schedules.reject do |other_event_schedule|
+      other_event_schedule == event_schedule
+    end
     concurrent_events = []
 
     event_time_range = (event_schedule.start_time.strftime '%Y-%m-%d %H:%M')...(event_schedule.end_time.strftime '%Y-%m-%d %H:%M')
@@ -100,15 +107,19 @@ module ApplicationHelper
       next unless other_event_schedule.event.confirmed?
 
       other_event_time_range = (other_event_schedule.start_time.strftime '%Y-%m-%d %H:%M')...(other_event_schedule.end_time.strftime '%Y-%m-%d %H:%M')
-      if (event_time_range.to_a & other_event_time_range.to_a).present?
-        concurrent_events << other_event_schedule.event
-      end
+      concurrent_events << other_event_schedule.event if (event_time_range.to_a & other_event_time_range.to_a).present?
     end
-    concurrent_events
+    concurrent_events.sort_by { |schedule| schedule.room&.order }
   end
 
   def speaker_links(event)
-    safe_join(event.speakers.map{ |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
+    safe_join(event.speakers.map { |speaker| link_to speaker.name, admin_user_path(speaker) }, ',')
+  end
+
+  def volunteer_links(event)
+    safe_join(event.volunteers.map do |volunteer|
+      link_to(volunteer.name, admin_user_path(volunteer))
+    end, ', ')
   end
 
   def event_types_sentence(conference)
@@ -138,16 +149,35 @@ module ApplicationHelper
     'hidden' if Date.today > conference.end_date
   end
 
-  def nav_root_link_for(conference)
-    link_text = (
-      conference.try(:organization).try(:name) || ENV.fetch('OSEM_NAME', 'OSEM')
-    )
+  # TODO-SNAPCON: Replace this with a search for a conference logo.
+  # TODO: If conference is defined, the alt text should be conference name.
+  def nav_root_link_for(conference = nil)
+    path = conference&.id.present? ? conference_path(conference) : root_path
     link_to(
-      link_text,
-      root_path,
+      image_tag(conference_logo_url(conference), alt: nav_link_text(conference)),
+      path,
       class: 'navbar-brand',
-      title: 'Open Source Event Manager'
+      title: nav_link_text(conference)
     )
+  end
+
+  # TODO-SNAPCON: This should be the conference title.
+  def nav_link_text(conference = nil)
+    conference.try(:organization).try(:name) || ENV.fetch('OSEM_NAME', 'OSEM')
+  end
+
+  # TODO: Consider Renaming this?
+  # TODO: Allow passing in an organization
+  def conference_logo_url(conference = nil)
+    return DEFAULT_LOGO unless conference
+
+    if conference.picture.present?
+      conference.picture.thumb.url
+    elsif conference.organization&.picture.present?
+      conference.organization.picture.thumb.url
+    else
+      DEFAULT_LOGO
+    end
   end
 
   # returns the url to be used for logo on basis of sponsorship level position
@@ -163,5 +193,20 @@ module ApplicationHelper
     else
       object.picture.large.url
     end
+  end
+
+  # Embed links with a localized timezone URL
+  # Timestamps are stored at UTC but in the real timezone.
+  # We must convert then shift the time back to get the correct value.
+  # TODO: just take in an object?
+  def inyourtz(time, timezone, &)
+    time = time.in_time_zone(timezone)
+    time -= time.utc_offset
+    link_to("https://inyourtime.zone/t?#{time.to_i}", target: '_blank', rel: 'noopener', &)
+  end
+
+  def visible_conference_links
+    @visible_conference_links ||=
+      Conference.all.select(:id, :organization_id, :title, :short_title, :start_date).includes(:splashpage, :organization).select { |conf| can?(:show, conf) }.group_by(&:organization)
   end
 end

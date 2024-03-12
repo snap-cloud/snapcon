@@ -5,6 +5,5 @@ class SetRegistrationDefaultsToFalse < ActiveRecord::Migration
     change_column :registrations, :using_affiliated_lodging, :boolean, default: false
   end
 
-  def down
-  end
+  def down; end
 end

@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 describe Admin::VersionsController do
-
   let!(:conference) { create(:conference, short_title: 'exampletitle', description: 'Example Description') }
   let(:admin) { create(:admin) }
   let(:role_organizer) { conference.roles.find_by(name: 'organizer') }
@@ -12,7 +11,7 @@ describe Admin::VersionsController do
 
   with_versioning do
     describe 'GET #revert' do
-      before :each do
+      before do
         sign_in admin
       end
 
@@ -57,7 +56,7 @@ describe Admin::VersionsController do
     end
 
     describe 'GET #revert_attribute' do
-      before :each do
+      before do
         sign_in admin
       end
 
@@ -114,7 +113,7 @@ describe Admin::VersionsController do
       end
 
       context 'with conference' do
-        before :each do
+        before do
           @user = create(:user)
 
           conference.update(short_title: 'testtitle', description: 'Some random text')

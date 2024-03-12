@@ -1,4 +1,13 @@
 = form_for(@splashpage, url: admin_conference_splashpage_path) do |f|
+  .row
+    .col-md-12
+    %label{for: "banner_photo"} Banner Photo
+    %br
+    - if @splashpage.banner_photo.present?
+      = image_tag @splashpage.banner_photo.thumb.url
+    = f.file_field :banner_photo
+    = f.hidden_field :banner_photo_cache
+
   .checkbox
     %label
       = f.check_box :include_cfp
@@ -11,6 +20,11 @@
     %label
       = f.check_box :include_tracks
       Include confirmed tracks in the program?
+  .checkbox
+    %label
+      = f.check_box :include_happening_now
+      Include events happening now?
+
   .checkbox
     %label
       = f.check_box :include_booths

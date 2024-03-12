@@ -43,7 +43,7 @@
             = link_to 'Contact', edit_admin_conference_contact_path(@conference.short_title)
         - if can? :index, @conference.commercials.build
           %li{class: "#{active_nav_li(admin_conference_commercials_path(@conference.short_title))}"}
-            = link_to 'Commercials', admin_conference_commercials_path(@conference.short_title)
+            = link_to 'Materials', admin_conference_commercials_path(@conference.short_title)
         - if can? :update, @conference
           %li{class: active_nav_li(edit_admin_conference_splashpage_path(@conference.short_title))}
             = link_to 'Splashpage', admin_conference_splashpage_path(@conference.short_title)
@@ -116,6 +116,13 @@
         - if can? :update, @conference.tickets.build
           %li{class: active_nav_li(admin_conference_tickets_path(@conference.short_title)) }
             = link_to 'Tickets', admin_conference_tickets_path(@conference.short_title)
+        - if can? :update, @conference.currency_conversions.build
+          %li
+            = link_to 'Currency', admin_conference_currency_conversions_path(@conference.short_title)
+        - if can? :update, @conference.tickets.build
+          %li{class: active_nav_li(admin_conference_physical_tickets_path(@conference.short_title)) }
+            = link_to 'Ticket Purchases', admin_conference_physical_tickets_path(@conference.short_title)
+
   - if can? :manage, @conference.booths.build
     %li
       = link_to  admin_conference_booths_path(@conference.short_title) do

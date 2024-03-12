@@ -1,11 +1,29 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: cfps
+#
+#  id                   :bigint           not null, primary key
+#  cfp_type             :string
+#  description          :text
+#  enable_registrations :boolean          default(FALSE)
+#  end_date             :date             not null
+#  start_date           :date             not null
+#  created_at           :datetime
+#  updated_at           :datetime
+#  program_id           :integer
+#
 require 'spec_helper'
 
 describe Cfp do
   subject { create(:cfp) }
+
   let!(:conference) { create(:conference, end_date: Date.today) }
-  let!(:cfp) { create(:cfp, cfp_type: 'events', start_date: Date.today - 2, end_date: Date.today - 1, program_id: conference.program.id) }
+  let!(:cfp) do
+    create(:cfp, cfp_type: 'events', start_date: Date.today - 2, end_date: Date.today - 1,
+   program_id: conference.program.id)
+  end
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:cfp_type) }
@@ -68,7 +86,7 @@ describe Cfp do
   end
 
   describe '#notify_on_cfp_date_update?' do
-    before :each do
+    before do
       email_settings = conference.email_settings
       email_settings.send_on_cfp_dates_updated = true
       email_settings.cfp_dates_updated_subject = 'subject'

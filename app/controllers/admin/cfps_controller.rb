@@ -49,8 +49,8 @@ module Admin
       if @cfp.destroy
         redirect_to admin_conference_program_cfps_path, notice: 'Call for Papers was successfully deleted.'
       else
-        redirect_to admin_conference_program_cfps_path, error: 'An error prohibited this Call for Papers from being destroyed: '\
-        "#{@cfp.errors.full_messages.join('. ')}."
+        redirect_to admin_conference_program_cfps_path, error: 'An error prohibited this Call for Papers from being destroyed: ' \
+                                                               "#{@cfp.errors.full_messages.join('. ')}."
       end
     end
 

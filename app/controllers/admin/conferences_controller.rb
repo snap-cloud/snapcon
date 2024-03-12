@@ -24,11 +24,11 @@ module Admin
 
       @total_withdrawn = Event.where(state: :withdrawn).count
       @new_withdrawn = Event
-          .where('state = ? and created_at > ?', 'withdrawn', current_user.last_sign_in_at).count
+                       .where('state = ? and created_at > ?', 'withdrawn', current_user.last_sign_in_at).count
 
       @active_conferences = Conference.get_active_conferences_for_dashboard # pending or the last two
       @deactive_conferences = Conference
-          .get_conferences_without_active_for_dashboard(@active_conferences) # conferences without active
+                              .get_conferences_without_active_for_dashboard(@active_conferences) # conferences without active
       @conferences = @active_conferences + @deactive_conferences
 
       @recent_users = User.limit(5).order(created_at: :desc)
@@ -97,7 +97,7 @@ module Admin
       else
         redirect_to edit_admin_conference_path(id: short_title),
                     error: 'Updating conference failed. ' \
-                    "#{@conference.errors.full_messages.join('. ')}."
+                           "#{@conference.errors.full_messages.join('. ')}."
       end
     end
 
@@ -111,20 +111,19 @@ module Admin
       @all_events = @program.events
 
       @total_submissions = @all_events.count
-      @new_submissions = @all_events
-          .where('created_at > ?', current_user.last_sign_in_at).count
+      # @new_submissions = @all_events
+      #     .where('created_at > ?', current_user.last_sign_in_at).count
 
       @program_length = @conference.current_program_hours
-      @new_program_length = @conference.new_program_hours(current_user.last_sign_in_at)
+      # @new_program_length = @conference.new_program_hours(current_user.last_sign_in_at)
 
       @total_withdrawn = @all_events.where(state: :withdrawn).count
-      @new_withdrawn = @all_events.where(state: :withdrawn).where(
-        'events.created_at > ?',
-        current_user.last_sign_in_at
-      ).count
+      # @new_withdrawn = @all_events.where(state: :withdrawn).where(
+      #   'events.created_at > ?',
+      #   current_user.last_sign_in_at
+      # ).count
 
-      #  Step by step list
-      @conference_progress = @conference.get_status
+      @conference_todo_list = @conference.get_status
 
       # Line charts
       @registrations = @conference.get_registrations_per_week
@@ -133,22 +132,23 @@ module Admin
 
       # Doughnut charts
       @event_type_distribution = @conference.event_type_distribution
-      @event_type_distribution_confirmed = @conference.event_type_distribution(:confirmed)
-      @event_type_distribution_withdrawn = @conference.event_type_distribution(:withdrawn)
+      # @event_type_distribution_confirmed = @conference.event_type_distribution(:confirmed)
+      # @event_type_distribution_withdrawn = @conference.event_type_distribution(:withdrawn)
 
       @difficulty_levels_distribution = @conference.difficulty_levels_distribution
-      @difficulty_levels_distribution_confirmed = @conference
-          .difficulty_levels_distribution(:confirmed)
-      @difficulty_levels_distribution_withdrawn = @conference
-          .difficulty_levels_distribution(:withdrawn)
+      # @difficulty_levels_distribution_confirmed = @conference
+      #     .difficulty_levels_distribution(:confirmed)
+      # @difficulty_levels_distribution_withdrawn = @conference
+      #     .difficulty_levels_distribution(:withdrawn)
 
       @tracks_distribution = @conference.tracks_distribution
-      @tracks_distribution_confirmed = @conference.tracks_distribution(:confirmed)
-      @tracks_distribution_withdrawn = @conference.tracks_distribution(:withdrawn)
+      # @tracks_distribution_confirmed = @conference.tracks_distribution(:confirmed)
+      # @tracks_distribution_withdrawn = @conference.tracks_distribution(:withdrawn)
 
       # Recent actions information
-      @recent_events = @conference.program.events.limit(5).order(created_at: :desc)
-      @recent_registrations = @conference.registrations.limit(5).order(created_at: :desc)
+      @recent_events = @conference.program.events.includes(%i[submitter_event_user submitter
+                                                              program]).limit(5).order(created_at: :desc)
+      @recent_registrations = @conference.registrations.includes([:user]).limit(5).order(created_at: :desc)
 
       @top_submitter = @conference.get_top_submitter
 
@@ -181,7 +181,7 @@ module Admin
                                          :vpositions_attributes, :use_volunteers, :color,
                                          :sponsorship_levels_attributes, :sponsors_attributes,
                                          :registration_limit, :organization_id, :ticket_layout,
-                                         :booth_limit)
+                                         :booth_limit, :custom_css)
     end
   end
 end

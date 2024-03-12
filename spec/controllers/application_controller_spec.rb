@@ -6,9 +6,9 @@ describe ApplicationController, type: :controller do
   let(:conference) { create(:conference) }
 
   describe 'user is signed in' do
-
     describe 'as admin' do
       let(:admin) { create(:admin) }
+
       before { sign_in(admin) }
 
       it 'redirects to the admin homepage' do
@@ -18,6 +18,7 @@ describe ApplicationController, type: :controller do
 
     describe 'as regular user' do
       let(:user) { create(:user) }
+
       before { sign_in(user) }
 
       context 'with no return_to value in the session' do

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class ConferenceRegistrationsController < ApplicationController
-  before_action :authenticate_user!, except: [:new, :create]
+  before_action :authenticate_user!, except: %i[new create]
   load_resource :conference, find_by: :short_title
-  authorize_resource :conference_registrations, class: Registration, except: [:new, :create]
-  before_action :set_registration, only: [:edit, :update, :destroy, :show]
+  authorize_resource :conference_registrations, class: Registration, except: %i[new create]
+  before_action :set_registration, only: %i[edit update destroy show]
 
   def new
     @registration = Registration.new(conference_id: @conference.id)
@@ -53,20 +53,23 @@ class ConferenceRegistrationsController < ApplicationController
 
     if @registration.save
       # Sign in the new user
-      unless current_user
-        sign_in(@registration.user)
-      end
+      sign_in(@registration.user) unless current_user
 
-      if @conference.tickets.any? && !current_user.supports?(@conference)
+      MailblusterEditLeadJob.perform_later(@user.id, add_tags: ["snapcon-#{@conference.short_title}"])
+
+      if @conference.tickets.visible.any? && !current_user.supports?(@conference)
         redirect_to conference_tickets_path(@conference.short_title),
                     notice: 'You are now registered and will be receiving E-Mail notifications.'
       else
         redirect_to conference_conference_registration_path(@conference.short_title),
                     notice: 'You are now registered and will be receiving E-Mail notifications.'
       end
+    elsif @conference.registration_ticket_required? && !current_user&.supports?(@conference)
+      redirect_to conference_tickets_path(@conference.short_title),
+                  notice: 'You must buy a registration ticket before registering.'
     else
-      flash.now[:error] = "Could not create your registration for #{@conference.title}: "\
-                        "#{@registration.errors.full_messages.join('. ')}."
+      flash.now[:error] = "Could not create your registration for #{@conference.title}: " \
+                          "#{@registration.errors.full_messages.join('. ')}."
       render :new
     end
   end
@@ -76,20 +79,21 @@ class ConferenceRegistrationsController < ApplicationController
       redirect_to  conference_conference_registration_path(@conference.short_title),
                    notice: 'Registration was successfully updated.'
     else
-      flash.now[:error] = "Could not update your registration for #{@conference.title}: "\
-                        "#{@registration.errors.full_messages.join('. ')}."
+      flash.now[:error] = "Could not update your registration for #{@conference.title}: " \
+                          "#{@registration.errors.full_messages.join('. ')}."
       render :edit
     end
   end
 
   def destroy
     if @registration.destroy
+      MailblusterEditLeadJob.perform_later(current_user.id, remove_tags: ["snapcon-#{@conference.short_title}"])
       redirect_to root_path,
                   notice: "You are not registered for #{@conference.title} anymore!"
     else
       redirect_to conference_conference_registration_path(@conference.short_title),
-                  error: "Could not delete your registration for #{@conference.title}: "\
-                  "#{@registration.errors.full_messages.join('. ')}."
+                  error: "Could not delete your registration for #{@conference.title}: " \
+                         "#{@registration.errors.full_messages.join('. ')}."
     end
   end
 
@@ -109,14 +113,15 @@ class ConferenceRegistrationsController < ApplicationController
 
   def registration_params
     params.require(:registration)
-        .permit(
-          :conference_id,
-          :volunteer, :accepted_code_of_conduct,
-          vchoice_ids: [], qanswer_ids: [],
-          qanswers_attributes: [],
-          event_ids: [],
-          user_attributes: [
-            :username, :email, :name, :password, :password_confirmation]
-    )
+          .permit(
+            :conference_id,
+            :volunteer, :accepted_code_of_conduct,
+            vchoice_ids: [], qanswer_ids: [],
+            qanswers_attributes: [],
+            event_ids: [],
+            user_attributes: %i[
+              username email name password password_confirmation
+            ]
+          )
   end
 end

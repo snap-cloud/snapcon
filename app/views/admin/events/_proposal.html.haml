@@ -7,6 +7,8 @@
         %small
           = @event.subtitle
         .btn-group.pull-right
+          - if @event.public
+            = link_to 'Preview', conference_program_proposal_path(@conference.short_title, @event.id), class: 'btn btn-mini btn-primary'
           = link_to 'Registrations', registrations_admin_conference_program_event_path(@conference.short_title, @event), class: 'btn btn-success'
           = link_to 'Edit', edit_admin_conference_program_event_path(@conference.short_title, @event), class: 'btn btn-mini btn-primary'
 
@@ -28,6 +30,22 @@
             %b State
           %td
             = state_dropdown(@event, @conference.short_title, @conference.email_settings)
+        %tr
+          %td
+            %b Is Parent Event?
+          %td
+            = event_switch_checkbox(@event, :superevent, @conference.short_title)
+        %tr
+          %td
+            %b Parent Event
+          %td
+            - if @event.parent_event.present?
+              = link_to(@event.parent_event.title, admin_conference_program_event_path(@conference, @event.parent_event))
+            - else
+              = '(None)'
+        %tr
+          %th Presentation Mode
+          %td= @event.presentation_mode&.humanize
         %tr
           %td
             %b Track
@@ -69,11 +87,12 @@
           %td
             %b Submitter
           %td
-            = link_to @event.submitter.name, admin_user_path(@event.submitter)
-            - if @event.submitter.email_public
-              (
-              = link_to @event.submitter.email, "mailto: #{@event.submitter.email}"
-              )
+            - if @event.submitter
+              = link_to @event.submitter.name, admin_user_path(@event.submitter)
+              - if @event.submitter.email_public
+                (#{mail_to(@event.submitter.email)})
+            - else
+              %span.text-danger Unkown Submitter
         %tr
           %td
             %b Speakers
@@ -82,9 +101,12 @@
               %div
                 = link_to speaker.name, admin_user_path(speaker)
                 - if speaker.email_public
-                  (
-                  = link_to speaker.email, "mailto: #{speaker.email}"
-                  )
+                  (#{mail_to(speaker.email)})
+        %tr
+          %td
+            %b Volunteers
+          %td
+            = volunteer_links(@event)
         %tr
           %td
             %b Biographies
@@ -108,8 +130,18 @@
           %td= markdown(@event.abstract)
         %tr
           %td
+            %b Submission Description
+          %td= markdown(@event.submission_text)
+
+        %tr
+          %td
             %b Requirements
           %td= simple_format(@event.description)
+
+        %tr
+          %td
+            %b Committee Feedback
+          %td= markdown(@event.committee_review)
 
         - if @conference.program.rating_enabled?
           = render 'voting',
@@ -137,4 +169,3 @@
             = f.text_area :body, class: 'form-control'
           .text-right
             = f.submit nil, class: 'btn btn-primary'
-

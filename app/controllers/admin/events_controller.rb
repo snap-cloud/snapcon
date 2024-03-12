@@ -2,6 +2,7 @@
 
 module Admin
   class EventsController < Admin::BaseController
+    before_action :load_events_with_data, only: :index
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :program, through: :conference, singleton: true
     load_and_authorize_resource :event, through: :program
@@ -9,7 +10,7 @@ module Admin
     # For some reason this doesn't work, so a workaround is used
     # load_and_authorize_resource :track, through: :program, only: [:index, :show, :edit]
 
-    before_action :assign_tracks, only: [:index, :show, :edit]
+    before_action :assign_tracks, only: %i[index show edit]
 
     def index
       @difficulty_levels = @program.difficulty_levels
@@ -20,7 +21,7 @@ module Admin
       @scheduled_event_distribution = @conference.scheduled_event_distribution
       @file_name = "events_for_#{@conference.short_title}"
       @event_export_option = params[:event_export_option]
-      @export_formats = [:pdf, :csv, :xlsx]
+      @export_formats = %i[pdf csv xlsx]
 
       respond_to do |format|
         format.html
@@ -45,10 +46,15 @@ module Admin
       @votes = @event.votes.includes(:user)
       @difficulty_levels = @program.difficulty_levels
       @versions = @event.versions |
-                  PaperTrail::Version.where(item_type: 'Commercial').where('object LIKE ?', "%commercialable_id: #{@event.id}\ncommercialable_type: Event%") |
-                  PaperTrail::Version.where(item_type: 'Commercial').where('object_changes LIKE ?', "%commercialable_id:\n- \n- #{@event.id}\ncommercialable_type:\n- \n- Event%") |
-                  PaperTrail::Version.where(item_type: 'Vote').where('object_changes LIKE ?', "%\nevent_id:\n- \n- #{@event.id}\n%") |
-                  PaperTrail::Version.where(item_type: 'Vote').where('object LIKE ?', "%\nevent_id: #{@event.id}\n%")
+                  PaperTrail::Version.where(item_type: 'Commercial').where('object LIKE ?',
+                                                                           "%commercialable_id: #{@event.id}\ncommercialable_type: Event%") |
+                  PaperTrail::Version.where(item_type: 'Commercial').where('object_changes LIKE ?',
+                                                                           "%commercialable_id:\n- \n- #{@event.id}\ncommercialable_type:\n- \n- Event%") |
+                  PaperTrail::Version.where(item_type: 'Vote').where('object_changes LIKE ?',
+                                                                     "%\nevent_id:\n- \n- #{@event.id}\n%") |
+                  PaperTrail::Version.where(item_type: 'Vote').where('object LIKE ?', "%\nevent_id: #{@event.id}\n%") |
+                  PaperTrail::Version.where(item_type: 'EventUser').where('object_changes LIKE ?',
+                                                                          "%\nevent_id:\n-\n- #{@event.id}\n%")
     end
 
     def edit
@@ -58,6 +64,7 @@ module Admin
       @user = @event.submitter
       @url = admin_conference_program_event_path(@conference.short_title, @event)
       @languages = @program.languages_list
+      @superevents = @program.events.where(superevent: true)
     end
 
     def comment
@@ -78,7 +85,7 @@ module Admin
           render js: 'index'
         else
           flash[:notice] = "Successfully updated event with ID #{@event.id}."
-          redirect_back_or_to(admin_conference_program_event_path(@conference.short_title, @event))
+          redirect_to admin_conference_program_event_path(@conference.short_title, @event)
         end
       else
         @url = admin_conference_program_event_path(@conference.short_title, @event)
@@ -91,9 +98,11 @@ module Admin
       @url = admin_conference_program_events_path(@conference.short_title, @event)
       @languages = @program.languages_list
       @event.submitter = current_user
+      @superevents = @program.events.where(superevent: true)
 
       if @event.save
-        redirect_to admin_conference_program_events_path(@conference.short_title), notice: 'Event was successfully submitted.'
+        redirect_to admin_conference_program_events_path(@conference.short_title),
+                    notice: 'Event was successfully submitted.'
       else
         flash.now[:error] = "Could not submit proposal: #{@event.errors.full_messages.join(', ')}"
         render action: 'new'
@@ -103,6 +112,7 @@ module Admin
     def new
       @url = admin_conference_program_events_path(@conference.short_title, @event)
       @languages = @program.languages_list
+      @superevents = @program.events.where(superevent: true)
     end
 
     def accept
@@ -118,8 +128,10 @@ module Admin
     def cancel
       update_state(:cancel, 'Event canceled!')
       selected_schedule = @event.program.selected_schedule
-      event_schedule = EventSchedule.unscoped.where(event: @event).find_by(schedule: selected_schedule) if selected_schedule
-      Rails.logger.debug "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}"
+      if selected_schedule
+        event_schedule = EventSchedule.unscoped.where(event: @event).find_by(schedule: selected_schedule)
+      end
+      Rails.logger.debug { "schedule: #{selected_schedule.inspect} and event_schedule #{event_schedule.inspect}" }
       if selected_schedule && event_schedule
         event_schedule.enabled = false
         event_schedule.save
@@ -174,13 +186,15 @@ module Admin
 
     def event_params
       params.require(:event).permit(
-                                    # Set also in proposals controller
-                                    :title, :subtitle, :event_type_id, :abstract, :description, :require_registration, :difficulty_level_id,
-                                    # Set only in admin/events controller
-                                    :track_id, :state, :language, :is_highlight, :max_attendees,
-                                    # Not used anymore?
-                                    :proposal_additional_speakers, :user, :users_attributes,
-                                    speaker_ids: [])
+        # Set also in proposals controller
+        :title, :subtitle, :event_type_id, :abstract, :submission_text, :description, :require_registration, :difficulty_level_id,
+        :committee_review, :superevent, :parent_id, :presentation_mode,
+        # Set only in admin/events controller
+        :track_id, :state, :language, :is_highlight, :max_attendees,
+        # Not used anymore?
+        :proposal_additional_speakers, :user, :users_attributes,
+        speaker_ids: [], volunteer_ids: []
+      )
     end
 
     def comment_params
@@ -195,12 +209,20 @@ module Admin
         redirect_back_or_to(admin_conference_program_events_path(conference_id: @conference.short_title)) && return
       else
         flash[:error] = alert
-        return redirect_back_or_to(admin_conference_program_events_path(conference_id: @conference.short_title)) && return
+        redirect_back_or_to(admin_conference_program_events_path(conference_id: @conference.short_title)) && return
       end
     end
 
     def assign_tracks
       @tracks = Track.accessible_by(current_ability).where(program: @program).confirmed
+    end
+
+    def load_events_with_data
+      @events = Event.where(program: Program.find_by(conference: Conference.find_by(short_title: params[:conference_id]))).includes(
+        :submitter, :submitter_event_user, :speakers, :speaker_event_users, :volunteers,
+        :volunteer_event_users, :program, :event_type, :track, :voters,
+        votes: [:user]
+      )
     end
   end
 end

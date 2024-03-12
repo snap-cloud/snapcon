@@ -21,9 +21,11 @@ class UserDatatable < AjaxDatatablesRails::ActiveRecord
       confirmed_at: { source: 'User.confirmed_at', searchable: false },
       email:        { source: 'User.email' },
       name:         { source: 'User.name' },
+      username:     { source: 'User.username' },
       attended:     { source: 'attended_count', searchable: false },
       roles:        { source: 'Role.name' },
-      actions:      { source: 'User.id', searchable: false, orderable: false }
+      actions:      { source: 'User.id', searchable: false, orderable: false },
+      confirmed:    { source: 'User.confirmed_at', searchable: false }
     }
   end
 
@@ -36,11 +38,13 @@ class UserDatatable < AjaxDatatablesRails::ActiveRecord
         confirmed_at: record.confirmed_at,
         email:        record.email,
         name:         record.name,
+        username:     record.username,
         attended:     record.attended_count,
         roles:        record.roles.any? ? show_roles(record.get_roles) : 'None',
         view_url:     admin_user_path(record),
         edit_url:     edit_admin_user_path(record),
-        DT_RowId:     dom_id(record)
+        DT_RowId:     dom_id(record),
+        confirmed:    record.confirmed_at.present?
       }
     end
   end
@@ -48,9 +52,9 @@ class UserDatatable < AjaxDatatablesRails::ActiveRecord
   # rubocop:disable Naming/AccessorMethodName
   def get_raw_records
     User.left_outer_joins(:registrations, :roles)
-      .distinct
-      .select("users.*, COUNT(CASE WHEN registrations.attended = 't' THEN 1 END) AS attended_count")
-      .group('users.id')
+        .distinct
+        .select("users.*, COUNT(CASE WHEN registrations.attended = 't' THEN 1 END) AS attended_count")
+        .group('users.id')
   end
   # rubocop:enable Naming/AccessorMethodName
 

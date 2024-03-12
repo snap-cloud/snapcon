@@ -13,7 +13,8 @@
       = @event_type.program.schedule_interval
   .form-group
     = f.label :description
-    = f.text_field :description, class: 'form-control'
+    = f.text_area :description, class: 'form-control', rows: 5, data: { provide: 'markdown' }
+    .help-block= markdown_hint
   .form-group
     = f.label :minimum_abstract_length
     %abbr{title: 'This field is required'} *
@@ -22,6 +23,10 @@
     = f.label :maximum_abstract_length
     %abbr{title: 'This field is required'} *
     = f.number_field :maximum_abstract_length, size: 3, required: true, class: 'form-control'
+  .form-group
+    = f.label :submission_template
+    = f.text_area :submission_template, rows: 5, data: { provide: 'markdown' }
+    .help-block= markdown_hint
   .form-group
     = f.label :color
     = f.color_field :color, class: 'form-control'

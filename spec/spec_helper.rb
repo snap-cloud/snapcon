@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
+ENV['RAILS_ENV'] ||= 'test'
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'simplecov'
 
-if ENV['GITHUB_ACTIONS']
+if ENV['CI']
   require 'simplecov-cobertura'
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
 SimpleCov.start 'rails'
 
-ENV['RAILS_ENV'] ||= 'test'
-require File.expand_path('../../config/environment', __FILE__)
+require File.expand_path('../config/environment', __dir__)
 
 require 'rspec/rails'
 require 'shoulda/matchers'
@@ -24,7 +25,6 @@ ActiveRecord::Migration.maintain_test_schema!
 # makes it easier to control when PaperTrail is enabled during testing.
 require 'paper_trail/frameworks/rspec'
 
-# Make htmlescape() available
 require 'erb'
 include ERB::Util
 
@@ -125,6 +125,9 @@ RSpec.configure do |config|
   # use the config to use
   # t('some.locale.key') instead of always having to type I18n.t
   config.include AbstractController::Translation
+
+  # enable debugging with --only-failures
+  config.example_status_persistence_file_path = 'tmp/spec_failures.txt'
 end
 
 OmniAuth.config.test_mode = true

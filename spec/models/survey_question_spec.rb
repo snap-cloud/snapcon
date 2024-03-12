@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: survey_questions
+#
+#  id               :bigint           not null, primary key
+#  kind             :integer          default("boolean")
+#  mandatory        :boolean          default(FALSE)
+#  max_choices      :integer
+#  min_choices      :integer
+#  possible_answers :text
+#  title            :string
+#  survey_id        :integer
+#
 require 'spec_helper'
 
 describe SurveyQuestion do
@@ -62,7 +75,8 @@ describe SurveyQuestion do
     end
 
     it 'not nil, when choice question' do
-      boolean_question = create(:survey_question, kind: :choice, possible_answers: 'Yes, No', min_choices: 3, max_choices: 4)
+      boolean_question = create(:survey_question, kind: :choice, possible_answers: 'Yes, No', min_choices: 3,
+max_choices: 4)
       expect(boolean_question.min_choices).to eq 3
     end
   end
@@ -84,7 +98,7 @@ describe SurveyQuestion do
     end
 
     shared_examples 'is nil' do |question_kind, field|
-      scenario "when question is #{question_kind} and field is #{field}" do
+      it "when question is #{question_kind} and field is #{field}" do
         question = create(:survey_question, kind: question_kind.to_sym, field => 3)
         expect(question.send(field)).to be_nil
       end

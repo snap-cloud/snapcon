@@ -3,7 +3,7 @@
 module Admin
   class CommercialsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
-    load_and_authorize_resource through: :conference, except: [:new, :create]
+    load_and_authorize_resource through: :conference, except: %i[new create]
 
     def index
       @commercials = @conference.commercials
@@ -17,11 +17,11 @@ module Admin
 
       if @commercial.save
         redirect_to admin_conference_commercials_path,
-                    notice: 'Commercial was successfully created.'
+                    notice: 'Materials were successfully created.'
       else
         redirect_to admin_conference_commercials_path,
-                    error: 'An error prohibited this Commercial from being saved: '\
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                    error: 'An error prohibited materials from being saved: ' \
+                           "#{@commercial.errors.full_messages.join('. ')}."
 
       end
     end
@@ -29,23 +29,23 @@ module Admin
     def update
       if @commercial.update(commercial_params)
         redirect_to admin_conference_commercials_path,
-                    notice: 'Commercial was successfully updated.'
+                    notice: 'Materials were successfully updated.'
       else
         redirect_to admin_conference_commercials_path,
-                    error: 'An error prohibited this Commercial from being saved: '\
-                    "#{@commercial.errors.full_messages.join('. ')}."
+                    error: 'An error prohibited materials from being saved: ' \
+                           "#{@commercial.errors.full_messages.join('. ')}."
       end
     end
 
     def destroy
       @commercial.destroy
-      redirect_to admin_conference_commercials_path, notice: 'Commercial was successfully destroyed.'
+      redirect_to admin_conference_commercials_path, notice: 'Materials were successfully removed.'
     end
 
     def render_commercial
       result = Commercial.render_from_url(params[:url])
       if result[:error]
-        render plain: result[:error], status: 400
+        render plain: result[:error], status: :bad_request
       else
         render plain: result[:html]
       end
@@ -60,13 +60,15 @@ module Admin
       errors = Commercial.read_file(params[:file]) if params[:file]
 
       if !params[:file]
-        flash[:error] = 'Empty file detected while adding commercials to Event'
+        flash[:error] = 'Empty file detected while adding materials to Event'
       elsif errors.all? { |_k, v| v.blank? }
-        flash[:notice] = 'Successfully added commercials.'
+        flash[:notice] = 'Successfully added materials.'
       else
         errors_text = ''
         errors_text += 'Unable to find event with ID: ' + errors[:no_event].join(', ') + '. ' if errors[:no_event].any?
-        errors_text += 'There were some errors: ' + errors[:validation_errors].join('. ') if errors[:validation_errors].any?
+        if errors[:validation_errors].any?
+          errors_text += 'There were some errors: ' + errors[:validation_errors].join('. ')
+        end
 
         flash[:error] = errors_text
       end
@@ -76,7 +78,7 @@ module Admin
     private
 
     def commercial_params
-      params.require(:commercial).permit(:url)
+      params.require(:commercial).permit(:title, :url)
     end
   end
 end

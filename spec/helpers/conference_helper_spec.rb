@@ -67,4 +67,64 @@ describe ConferenceHelper, type: :helper do
       expect(sponsorship_mailto(conference)).to match conference.short_title
     end
   end
+
+  describe '#conference_color' do
+    let(:conference2) { create(:conference, color: '#000000') }
+
+    it 'gives the correct conference color' do
+      expect(conference_color(conference2)).to eq('#000000')
+
+      conference2.color = ''
+      expect(conference_color(conference2)).to eq('#0B3559')
+    end
+  end
+
+  describe '#get_happening_next_events_schedules' do
+    let!(:conference2) do
+      create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
+    end
+    let!(:program) { conference2.program }
+    let!(:selected_schedule) { create(:schedule, program: program) }
+    let!(:scheduled_event1) do
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
+    end
+    let!(:current_time) { Time.now.in_time_zone(conference2.timezone) }
+    let!(:event_schedule1) do
+      create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
+     start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+    end
+    let!(:scheduled_event2) do
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
+    end
+    let!(:event_schedule2) do
+      create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
+     start_time: (current_time + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+    end
+    let!(:scheduled_event3) do
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
+    end
+    let!(:event_schedule3) do
+      create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
+     start_time: (current_time - 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+    end
+    let!(:scheduled_event4) do
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
+    end
+    let!(:event_schedule4) do
+      create(:event_schedule, event: scheduled_event4, schedule: selected_schedule,
+     start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
+    end
+
+    it 'returns all the events happening at the earliest time in the future but not later or in the past' do
+      events_schedules = get_happening_next_events_schedules(conference2)
+      expect(events_schedules).to include(event_schedule1)
+      expect(events_schedules).to include(event_schedule2)
+      expect(events_schedules).not_to include(event_schedule3)
+      expect(events_schedules).not_to include(event_schedule4)
+    end
+  end
 end

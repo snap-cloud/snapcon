@@ -1,10 +1,10 @@
 - content_for :head do
   %meta{ property: "og:title", content: @conference.title }
   %meta{ property: "og:site_name", content: ENV.fetch('OSEM_NAME', 'OSEM') }
-  %meta{ property: "og:description", content: @conference.description }
+  %meta{ property: "og:description", content: plain_text(@conference.description) }
   %meta{ property: "og:url", content: conference_url(@conference.short_title) }
   %meta{ property: "twitter:title", content: (@conference.title) }
-  %meta{ property: "twitter:description", content: @conference.description }
+  %meta{ property: "twitter:description", content: plain_text(@conference.description) }
   - if @conference.picture?
     %meta{ property: "og:image", content: @image_url }
     %meta{ property: "og:image:secure_url", content: @image_url }
@@ -13,72 +13,80 @@
   - else
     %meta{ property: "twitter:card", content: "summary" }
 
-= content_for :title do
-  = @conference.title
+- provide :title, @conference.title
 
+= content_for :additional_messages do
+  - if user_signed_in? && @conference.registration_tickets.any? && current_user.ticket_purchases.by_conference(@conference).empty?
+    .alert.alert-dismissable.alert-info.text-center#no-tickets{ role: 'alert' }
+      %button.button.close{ "data-dismiss": "alert", "aria-label": "close" }
+        &times;
+      You have not booked any tickets for this conference yet.
+      = link_to "Book your tickets now!", "#tickets", class: 'btn btn-info btn-lg'
+
+  - if @unpaid_tickets
+    .alert.alert-dismissable.alert-info.text-center#unpaid-tickets{ role: 'alert' }
+      %button.button.close{ "data-dismiss" => "alert", "aria-label"=>"close" }
+        &times;
+      You have unpaid tickets. Please complete your purchase.
+      = link_to('Purchase Tickets', new_conference_payment_path(@conference), class: 'btn btn-success btn-lg')
+
+  - if @user_needs_to_register
+    .alert.alert-dismissable.alert-warning.text-center#no-reg{ role: 'alert' }
+      %button.button.close{ "data-dismiss" => "alert", 'aria-label': 'close' }
+        &times;
+      You still need to complete your registration for #{@conference.title}.
+      = link_to('Complete Registration', new_conference_conference_registration_path(@conference), class: 'btn btn-success btn-lg')
 
 #splash
+  -# - cache [@conference, @splashpage, @conference.program, current_user, '#splash#main'] do
   - if @conference.code_of_conduct.present?
     = render 'code_of_conduct', organization: @conference.organization
 
-  -# header/description
-  = render 'header', conference: @conference, venue: @conference.venue
+  -# header
+  = render 'header', conference: @conference, venue: @conference.venue, splashpage: @splashpage, cached: true
+
+  -# description / happening now
+  - if @conference.splashpage.include_happening_now || @conference.description.present?
+    = render 'about_and_happening_now', conference: @conference,
+      events_schedules: @events_schedules, pagy: @pagy,
+      events_schedules_length: @events_schedules_length,
+      events_schedules_limit: @events_schedules_limit,
+      is_happening_next: @is_happening_next
 
   -# calls for content, or program
-  - if @conference.splashpage.include_cfp
+  - if @conference.splashpage.include_cfp?
     = render 'call_for_content', conference: @conference,
       call_for_events: @call_for_events, call_for_tracks: @call_for_tracks,
       call_for_booths: @call_for_booths,
       event_types: @event_types, tracks: @track_names
 
-  - if @conference.splashpage.include_program
+  - if @conference.splashpage.include_program?
     = render 'program', conference: @conference, tracks: @tracks,
-      highlights: @highlights, booths: @booths
+      highlights: @highlights, booths: @booths, cached: true
 
   -# attendance/registration
-  - if @conference.splashpage.include_registrations
+  - if @conference.splashpage.include_registrations?
     - if @conference.registration_open?
       = render 'registration', conference: @conference,
         registration_period: @conference.registration_period,
         tickets: @tickets, conference_id: @conference.short_title
   - if @conference.splashpage.include_tickets && @conference.tickets.any?
-    = render 'tickets', conference: @conference, tickets: @tickets
+    = render 'tickets', conference: @conference, tickets: @tickets, cached: true
 
   -# geo
-  - if @conference.splashpage.include_venue && @conference.venue
+  - if @conference.splashpage.include_venue? && @conference.venue
     = render 'venue', conference: @conference, venue: @conference.venue,
       commercial: @conference.venue.commercial
   - if @conference.splashpage.include_lodgings && @conference.lodgings.any?
     = render 'lodging', venue: @conference.venue, lodgings: @lodgings
 
   -# sponsorship
-  - if @conference.splashpage.include_sponsors
+  - if @conference.splashpage.include_sponsors?
     = render 'sponsors', conference: @conference,
       sponsorship_levels: @sponsorship_levels,
       sponsors: @sponsors
 
-
   -# footer
-  - if @conference.splashpage.include_social_media
-    - if @conference.contact.has_social_media?
-      = render 'social_media', contact: @conference.contact
-  = render 'footer'
-
-- content_for :script_head do
-  :javascript
-    var triangle_tcs = tinycolor("#{h(@conference.color)}").monochromatic();
-    var triangle_colors = triangle_tcs.map(function(t) {
-      return t.toHexString();
-    });
-    $(function () {
-      $(document).ready(function() {
-        var triangle_width = document.body.clientWidth;
-        var triangle_height = ($( "#banner" ).height() + 200 );
-        var pattern = Trianglify({ width: triangle_width,
-                                   height: triangle_height,
-                                   cell_size: 100,
-                                   x_colors: triangle_colors
-                                  });
-        $('#banner').css('background-image', 'url("' + pattern.png() + '")');
-      });
-    });
+  - if @conference.splashpage.include_social_media? && @conference.contact.has_social_media?
+    = render 'social_media', contact: @conference.contact, cached: true
+  -# = render 'footer', cached: true

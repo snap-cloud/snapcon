@@ -1,0 +1,20 @@
+- if events_schedules.present? && events_schedules.any?
+  .row
+    %h3.text-left{ style: 'margin-bottom:30px; padding-left:20px' }
+      - if is_happening_next
+        Upcoming Events
+      - else
+        Events Happening Now
+  - events_schedules.each do |event_schedule|
+    = render 'schedules/event_mini', conference: conference, event_schedule: event_schedule, event: event_schedule.event
+  - if events_schedules_length > events_schedules_limit
+    .container{ style: 'width:100%; text-align:center' }
+      != pagy_bootstrap_nav_js(pagy)
+- else
+  .row
+    %h3.text-center There are no upcoming events.
+
+:javascript
+  $(document).ready(function(){
+    updateFavouriteStatus({ events: #{@favourited_events || []}, loggedIn: #{current_user.present?} });
+  });

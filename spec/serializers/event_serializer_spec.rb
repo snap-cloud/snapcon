@@ -1,5 +1,43 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: events
+#
+#  id                           :bigint           not null, primary key
+#  abstract                     :text
+#  comments_count               :integer          default(0), not null
+#  committee_review             :text
+#  description                  :text
+#  guid                         :string           not null
+#  is_highlight                 :boolean          default(FALSE)
+#  language                     :string
+#  max_attendees                :integer
+#  presentation_mode            :integer
+#  progress                     :string           default("new"), not null
+#  proposal_additional_speakers :text
+#  public                       :boolean          default(TRUE)
+#  require_registration         :boolean
+#  start_time                   :datetime
+#  state                        :string           default("new"), not null
+#  submission_text              :text
+#  subtitle                     :string
+#  superevent                   :boolean
+#  title                        :string           not null
+#  week                         :integer
+#  created_at                   :datetime
+#  updated_at                   :datetime
+#  difficulty_level_id          :integer
+#  event_type_id                :integer
+#  parent_id                    :integer
+#  program_id                   :integer
+#  room_id                      :integer
+#  track_id                     :integer
+#
+# Foreign Keys
+#
+#  fk_rails_...  (parent_id => events.id)
+#
 require 'spec_helper'
 describe EventSerializer, type: :serializer do
   let(:conference) { create(:conference, timezone: 'UTC') }
@@ -39,7 +77,7 @@ describe EventSerializer, type: :serializer do
     before do
       event.language = 'English'
       event.speakers = [speaker]
-      create(:event_schedule, event: event, room: room, start_time: Date.new(2014, 03, 04) + 9.hours)
+      create(:event_schedule, event: event, room: room, start_time: Date.new(2014, 3, 4) + 9.hours)
       event.track = track
     end
 

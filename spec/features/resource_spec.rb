@@ -2,17 +2,17 @@
 
 require 'spec_helper'
 
-feature Resource do
+describe Resource do
   let!(:conference) { create(:conference) }
   let!(:admin) { create(:admin) }
   let!(:resource) { create(:resource, conference: conference) }
 
   context 'as an admin' do
-    before(:each) do
+    before do
       sign_in admin
     end
 
-    scenario 'create a new resource' do
+    it 'create a new resource' do
       visit admin_conference_resources_path(conference.short_title)
       click_link 'Add Resource'
 
@@ -27,7 +27,7 @@ feature Resource do
       expect(flash).to eq('Resource successfully created.')
     end
 
-    scenario 'edit an existing resource' do
+    it 'edit an existing resource' do
       visit admin_conference_resources_path(conference.short_title)
       click_link('Edit')
       fill_in 'resource_name', with: 'changed_name'
@@ -38,7 +38,7 @@ feature Resource do
       expect(resource.name).to eq('changed_name')
     end
 
-    scenario 'destroy a resource' do
+    it 'destroy a resource' do
       visit admin_conference_resources_path(conference.short_title)
       click_link('Delete', href: admin_conference_resource_path(conference.short_title, resource.id))
 

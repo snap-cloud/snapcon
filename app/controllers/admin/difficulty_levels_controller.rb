@@ -7,7 +7,7 @@ module Admin
     load_and_authorize_resource through: :program
 
     def index
-#       authorize! :index, DifficultyLevel.new(program_id: @program.id)
+      #       authorize! :index, DifficultyLevel.new(program_id: @program.id)
     end
 
     def edit; end
@@ -43,8 +43,8 @@ module Admin
                     notice: 'Difficulty level successfully deleted.'
       else
         redirect_to admin_conference_program_difficulty_levels_path(conference_id: @conference.short_title),
-                    error: 'Deleting difficulty level type failed! '\
-                    "#{@difficulty_level.errors.full_messages.join('. ')}."
+                    error: 'Deleting difficulty level type failed! ' \
+                           "#{@difficulty_level.errors.full_messages.join('. ')}."
       end
     end
 

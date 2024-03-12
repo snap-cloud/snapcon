@@ -13,6 +13,14 @@
 - if @splashpage
   .row
     .col-md-12
+      %strong Banner Image
+      - if @splashpage.banner_photo.present?
+        = image_tag @splashpage.banner_photo.thumb.url
+      - else
+        %p None Set
+      %hr
+  .row
+    .col-md-12
       %ul.fa-ul
         %li
           %i{ class: "fa-li #{icon_for_todo @splashpage.include_cfp?}" }
@@ -27,6 +35,9 @@
             %li
               %i{ class: "fa-li #{icon_for_todo @splashpage.include_booths?}" }
               Include confirmed #{(t'booth').pluralize}
+            %li
+              %i{ class: "fa-li #{icon_for_todo @splashpage.include_happening_now}" }
+              Include events happening now
         %li
           %i{ class: "fa-li #{icon_for_todo @splashpage.include_registrations?}" }
           Display the registration period
@@ -46,7 +57,7 @@
           %i{ class: "fa-li #{icon_for_todo @splashpage.include_social_media?}" }
           Display social media links
         %li
-          - if @conference.splashpage && @conference.splashpage.public
+          - if @conference.splashpage && @conference.splashpage.public?
             %i{ class: "fa-li #{icon_for_todo @splashpage.public?}" }
             %text-muted.publicorprivate  Public
           - else

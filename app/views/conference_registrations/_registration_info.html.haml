@@ -17,6 +17,11 @@
   %h4
     Pre-registration required for the following:
   - @registration.events_ordered.each do |event|
+    %p
+      You are registered for #{pluralize(@registration.events.count, 'event')}.
+      They are at the end of this list.
+    - @registration.events_ordered.each do |event|
+      = render 'conference_registrations/event', event: event, event_schedule: event.event_schedules.first, conference: @conference, registration: @registration
     %label
       = hidden_field_tag "registration[event_ids][]", nil
       = check_box_tag "registration[event_ids][]", event.id, event.registrations.include?(@registration)

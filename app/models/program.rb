@@ -1,6 +1,27 @@
 # frozen_string_literal: true
 
-# cannot delete program if there are events submitted
+# == Schema Information
+#
+# Table name: programs
+#
+#  id                   :bigint           not null, primary key
+#  blind_voting         :boolean          default(FALSE)
+#  languages            :string
+#  rating               :integer          default(0)
+#  schedule_fluid       :boolean          default(FALSE)
+#  schedule_interval    :integer          default(15), not null
+#  schedule_public      :boolean          default(FALSE)
+#  voting_end_date      :datetime
+#  voting_start_date    :datetime
+#  created_at           :datetime
+#  updated_at           :datetime
+#  conference_id        :integer
+#  selected_schedule_id :integer
+#
+# Indexes
+#
+#  index_programs_on_selected_schedule_id  (selected_schedule_id)
+#
 
 class Program < ApplicationRecord
   has_paper_trail on: [:update], ignore: [:updated_at], meta: { conference_id: :conference_id }
@@ -12,7 +33,6 @@ class Program < ApplicationRecord
   has_many :tracks, dependent: :destroy
   has_many :difficulty_levels, dependent: :destroy
   has_many :schedules, dependent: :destroy
-  has_many :event_schedules, through: :schedules
   belongs_to :selected_schedule, class_name: 'Schedule'
   has_many :events, dependent: :destroy do
     def require_registration
@@ -20,7 +40,7 @@ class Program < ApplicationRecord
     end
 
     def with_registration_open
-      select { |e| e if e.registration_possible? }
+      select { |e| e if e.registration_possible? }.sort
     end
 
     # All confirmed events of the conference with attribute require_registration
@@ -44,7 +64,7 @@ class Program < ApplicationRecord
   has_many :event_schedules, through: :events
 
   has_many :event_users, through: :events
-  has_many :program_events_speakers, -> {where(event_role: 'speaker')}, through: :events, source: :event_users
+  has_many :program_events_speakers, -> { where(event_role: 'speaker') }, through: :events, source: :event_users
   has_many :speakers, -> { distinct }, through: :program_events_speakers, source: :user do
     def confirmed
       joins(:events).where(events: { state: :confirmed })
@@ -63,9 +83,9 @@ class Program < ApplicationRecord
   accepts_nested_attributes_for :tracks, reject_if: proc { |r| r['name'].blank? }, allow_destroy: true
   accepts_nested_attributes_for :difficulty_levels, allow_destroy: true
 
-#   validates :conference_id, presence: true, uniqueness: true
+  # validates :conference_id, presence: true, uniqueness: true
   validates :rating, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10, only_integer: true }
-  validates :schedule_interval, numericality: { greater_than_or_equal_to: 5, less_than_or_equal_to: 60 }, presence: true
+  validates :schedule_interval, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 60 }, presence: true
   validate :schedule_interval_divisor_60
   validate :voting_start_date_before_end_date
   validate :voting_dates_exist
@@ -80,23 +100,23 @@ class Program < ApplicationRecord
   def selected_event_schedules(includes: [:event])
     event_schedules = []
     event_schedules = selected_schedule.event_schedules.includes(*includes).order(start_time: :asc) if selected_schedule
+
     tracks.self_organized.confirmed.includes(selected_schedule: { event_schedules: includes }).order(start_date: :asc).each do |track|
       next unless track.selected_schedule
 
       event_schedules += track.selected_schedule.event_schedules
     end
-    event_schedules.sort_by(&:start_time)
+    event_schedules.sort_by(&:sortable_timestamp)
   end
 
   ##
-  # Checks if blind_voting is enabled and if voting period is over
+  # Checks if blind_voting is enabled or if voting period is over
   # ====Returns
   # * +true+ -> If we can show voting details
   # * +false+ -> If we cannot show voting details
   def show_voting?
-    return true unless blind_voting
-
-    Time.current > voting_end_date
+    # TODO-SNAPCON: Figure out if this is the best behavior?
+    !blind_voting || Time.current > voting_end_date
   end
 
   ##
@@ -115,9 +135,15 @@ class Program < ApplicationRecord
   # ====Returns
   # Errors when the condition is not true
   def voting_dates_exist
-    errors.add(:voting_start_date, 'must be set, when blind voting is enabled') if blind_voting && !voting_start_date && !voting_end_date
+    if blind_voting && !voting_start_date && !voting_end_date
+      errors.add(:voting_start_date,
+                 'must be set, when blind voting is enabled')
+    end
 
-    errors.add(:voting_end_date, 'must be set, when blind voting is enabled') if blind_voting && !voting_start_date && !voting_end_date
+    if blind_voting && !voting_start_date && !voting_end_date
+      errors.add(:voting_end_date,
+                 'must be set, when blind voting is enabled')
+    end
 
     errors.add(:voting_end_date, 'must be set, when voting_start_date is set') if voting_start_date && !voting_end_date
 
@@ -129,7 +155,10 @@ class Program < ApplicationRecord
   # ====Returns
   # Errors when the condition is not true
   def voting_start_date_before_end_date
-    errors.add(:voting_start_date, 'must be before voting end date') if voting_start_date && voting_end_date && voting_start_date > voting_end_date
+    if voting_start_date && voting_end_date && voting_start_date > voting_end_date
+      errors.add(:voting_start_date,
+                 'must be before voting end date')
+    end
   end
 
   ##
@@ -160,11 +189,11 @@ class Program < ApplicationRecord
     return false unless schedule_public
 
     # do not notify unless the mail content is set up
-    (!conference.email_settings.program_schedule_public_subject.blank? && !conference.email_settings.program_schedule_public_body.blank?)
+    conference.email_settings.program_schedule_public_subject.present? && conference.email_settings.program_schedule_public_body.present?
   end
 
   def languages_list
-    languages.split(',').map {|l| ISO_639.find(l).english_name} if languages.present?
+    languages.split(',').map { |l| ISO_639.find(l).english_name } if languages.present?
   end
 
   ##
@@ -174,6 +203,7 @@ class Program < ApplicationRecord
   # * +True+ -> If there is any event for the given date
   # * +False+ -> If there is not any event for the given date
   def any_event_for_this_date?(date)
+    return false if date.nil? || date == ''
     return false unless selected_schedule.present?
 
     parsed_date = DateTime.parse("#{date} 00:00").utc
@@ -199,7 +229,31 @@ class Program < ApplicationRecord
     Cfp::TYPES - cfps.pluck(:cfp_type)
   end
 
+  def event_schedule_for_fullcalendar
+    Rails.cache.fetch("#{cache_key_for_schedule}}/fullcalendar=X") do
+      selected_event_schedules(includes: [:event, :room,
+                                          { event: %i[event_type track program parent_event] }])
+    end
+  end
+
+  def event_schedule_program_view
+    Rails.cache.fetch("#{cache_key_for_schedule}}/program") do
+      selected_event_schedules(includes: [:event, :room,
+                                          { event: %i[event_type speakers speaker_event_users
+                                                      submitter submitter_event_user
+                                                      track program] }])
+    end
+  end
+
+  def super_events
+    events.where(superevent: true)
+  end
+
   private
+
+  def cache_key_for_schedule
+    "#{cache_key_with_version}#{selected_schedule&.cache_key_with_version}"
+  end
 
   ##
   # Creates default EventTypes for this Conference. Used as before_create.
@@ -238,11 +292,15 @@ class Program < ApplicationRecord
     self.languages = languages.delete(' ').downcase
     errors.add(:languages, 'must be two letters separated by commas') && return unless
     languages.match(/^$|(\A[a-z][a-z](,[a-z][a-z])*\z)/).present?
+
     languages_array = languages.split(',')
     # We check that languages are not repeated
     errors.add(:languages, "can't be repeated") && return unless languages_array.uniq!.nil?
+
     # We check if every language is a valid ISO 639-1 language
-    errors.add(:languages, 'must be ISO 639-1 valid codes') unless languages_array.select{ |x| ISO_639.find(x).nil? }.empty?
+    errors.add(:languages, 'must be ISO 639-1 valid codes') unless languages_array.none? do |x|
+                                                                     ISO_639.find(x).nil?
+                                                                   end
   end
 
   ##

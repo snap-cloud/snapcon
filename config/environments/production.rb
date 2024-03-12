@@ -1,4 +1,4 @@
-require "active_support/core_ext/integer/time"
+require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -19,6 +19,11 @@ Rails.application.configure do
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
   # config.require_master_key = true
+
+  # TODO-SNAPCON: Figure out if these are necessary.
+  # config.assets.css_compressor = :sass
+  # config.assets.js_compressor = Uglifier.new(harmony: true)
+  # config.assets.gzip = true
 
   # Set the secret_key_base from the env, if not set by any other means
   config.secret_key_base ||= ENV.fetch('SECRET_KEY_BASE', nil)
@@ -43,9 +48,12 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true if ENV['FORCE_SSL'].present?
 
-  # Include generic and useful information about system operation, but avoid logging too much
-  # information to avoid inadvertent exposure of personally identifiable information (PII).
-  config.log_level = :info
+  # Disable view rendering logs.
+  config.action_view.logger = nil
+
+  # Disable serving static files from the `/public` folder by default since
+  # Apache or NGINX already handles this.
+  config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
@@ -53,6 +61,23 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
+  if ENV['OSEM_REDIS_CACHE_STORE']
+    config.cache_store = :redis_cache_store, {
+      url:                ENV['OSEM_REDIS_CACHE_STORE'],
+      reconnect_attempts: 1, # Defaults to 0
+      error_handler:      lambda do |method:, returning:, exception:|
+        # Report errors to Sentry as warnings
+        Raven.capture_exception(
+          exception,
+          level: 'warning',
+          tags:  { method: method, returning: returning }
+        )
+      end
+    }
+  end
+
+  # Enable serving of images, stylesheets, and JavaScripts from an asset server
+  # config.action_controller.asset_host = "http://assets.example.com"
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
@@ -102,12 +127,12 @@ Rails.application.configure do
     password:             ENV.fetch('OSEM_SMTP_PASSWORD', nil),
     authentication:       ENV.fetch('OSEM_SMTP_AUTHENTICATION', 'plain').try(:to_sym),
     domain:               ENV.fetch('OSEM_SMTP_DOMAIN', nil),
-    enable_starttls_auto: ENV.fetch('OSEM_SMTP_ENABLE_STARTTLS_AUTO', nil),
+    enable_starttls_auto: ENV.fetch('OSEM_SMTP_ENABLE_STARTTLS_AUTO', 'false').downcase == 'true',
     openssl_verify_mode:  ENV.fetch('OSEM_SMTP_OPENSSL_VERIFY_MODE', nil)
   }.compact
 
   # Use memcache cluster as cache store in production
-  if ENV["OSEM_MEMCACHED_SERVERS"]
+  if ENV['OSEM_MEMCACHED_SERVERS']
     config.cache_store = :mem_cache_store, ENV['OSEM_MEMCACHED_SERVERS'].split(','), {
       username: ENV.fetch('OSEM_MEMCACHED_USERNAME', nil),
       password: ENV.fetch('OSEM_MEMCACHED_PASSWORD', nil)
@@ -116,4 +141,15 @@ Rails.application.configure do
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
+
+  # Mailbot settings
+  config.mailbot = {
+    ytlf_ticket_id: ENV.fetch('YTLF_TICKET_ID', 50),
+    bcc_address:    ENV.fetch('OSEM_MESSAGE_BCC_ADDRESS', nil)
+  }
+
+  config.after_initialize do
+    Bullet.enable = false
+    Bullet.sentry = false
+  end
 end

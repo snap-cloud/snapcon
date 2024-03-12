@@ -16,7 +16,7 @@ namespace :data do
       config_yml = Rails.root.join('config', 'config.yml')
       begin
         CONFIG = YAML.load_file(config_yml)[Rails.env]
-      rescue
+      rescue StandardError
         CONFIG = {}
       end
 
@@ -25,7 +25,9 @@ namespace :data do
       dot_env.puts "OSEM_NAME=\"#{CONFIG['name']}\""
       dot_env.puts "OSEM_HOSTNAME=\"#{CONFIG['url_for_emails']}\""
       dot_env.puts "OSEM_EMAIL_ADDRESS=\"#{CONFIG['sender_for_emails']}\""
-      dot_env.puts "OSEM_ICHAIN_ENABLED=\"#{CONFIG['authentication']['ichain']['enabled']}\"" if CONFIG.has_key?(:authentication)
+      if CONFIG.has_key?(:authentication)
+        dot_env.puts "OSEM_ICHAIN_ENABLED=\"#{CONFIG['authentication']['ichain']['enabled']}\""
+      end
       dot_env.puts "OSEM_TRANSIFEX_APIKEY=\"#{CONFIG['transifex_live_api_key']}\""
       dot_env.puts "OSEM_ERRBIT_HOST=\"#{CONFIG['errbit_host']}\""
       dot_env.puts "OSEM_SMTP_ADDRESS=\"#{CONFIG['mail_address']}\""

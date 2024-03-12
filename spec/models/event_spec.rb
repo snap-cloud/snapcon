@@ -1,9 +1,48 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: events
+#
+#  id                           :bigint           not null, primary key
+#  abstract                     :text
+#  comments_count               :integer          default(0), not null
+#  committee_review             :text
+#  description                  :text
+#  guid                         :string           not null
+#  is_highlight                 :boolean          default(FALSE)
+#  language                     :string
+#  max_attendees                :integer
+#  presentation_mode            :integer
+#  progress                     :string           default("new"), not null
+#  proposal_additional_speakers :text
+#  public                       :boolean          default(TRUE)
+#  require_registration         :boolean
+#  start_time                   :datetime
+#  state                        :string           default("new"), not null
+#  submission_text              :text
+#  subtitle                     :string
+#  superevent                   :boolean
+#  title                        :string           not null
+#  week                         :integer
+#  created_at                   :datetime
+#  updated_at                   :datetime
+#  difficulty_level_id          :integer
+#  event_type_id                :integer
+#  parent_id                    :integer
+#  program_id                   :integer
+#  room_id                      :integer
+#  track_id                     :integer
+#
+# Foreign Keys
+#
+#  fk_rails_...  (parent_id => events.id)
+#
 require 'spec_helper'
 
 describe Event do
   subject { create(:event) }
+
   let(:conference) { create(:conference) }
   let(:event) { create(:event, program: conference.program) }
   let(:new_event) { create(:event) }
@@ -24,7 +63,7 @@ describe Event do
     it { is_expected.to validate_presence_of(:event_type) }
 
     describe 'max_attendees_no_more_than_room_size' do
-      before :each do
+      before do
         unless (venue = event.program.conference.venue)
           venue = create(:venue, conference: event.program.conference)
         end
@@ -32,14 +71,14 @@ describe Event do
         event.require_registration = true
       end
 
-      it 'it is valid, if max_attendees is less than room size' do
+      it 'is valid, if max_attendees is less than room size' do
         event.max_attendees = 2
 
         expect(event.valid?).to be true
         expect(event.errors.full_messages).to eq []
       end
 
-      it 'it is not valid, if max_attendees attribute is bigger than size of room' do
+      it 'is not valid, if max_attendees attribute is bigger than size of room' do
         event.max_attendees = 4
 
         expect(event.valid?).to be false
@@ -48,7 +87,7 @@ describe Event do
     end
 
     describe '#abstract_limit' do
-      before :each do
+      before do
         event.event_type.maximum_abstract_length = 2
         event.event_type.minimum_abstract_length = 2
       end
@@ -70,6 +109,21 @@ describe Event do
       context 'is valid' do
         it 'when abstract length is within limits' do
           event.abstract = 'Test abstract'
+          expect(event.valid?).to be true
+          expect(event.errors.size).to eq 0
+        end
+      end
+    end
+
+    describe '#submission_limit' do
+      before do
+        event.event_type.maximum_abstract_length = 3
+        event.event_type.minimum_abstract_length = 2
+      end
+
+      context 'is valid' do
+        it 'when submission text is within limts' do
+          event.abstract = 'the magic three'
           expect(event.valid?).to be true
           expect(event.errors.size).to eq 0
         end
@@ -166,6 +220,7 @@ describe Event do
 
   describe '#scheduled?' do
     it { expect(event.scheduled?).to be false }
+
     it 'returns true if the event is scheduled' do
       create(:event_schedule, event: event)
       expect(event.scheduled?).to be true
@@ -174,7 +229,7 @@ describe Event do
 
   describe '#registration_possible?' do
     describe 'when the event requires registration' do
-      before :each do
+      before do
         event.state = 'confirmed'
         event.require_registration = true
         event.max_attendees = 3
@@ -263,7 +318,7 @@ describe Event do
     end
 
     context 'returns the average voting' do
-      before :each do
+      before do
         another_user = create(:user)
         create(:vote, user: user, event: event, rating: 1)
         create(:vote, user: another_user, event: event, rating: 3)
@@ -297,20 +352,25 @@ describe Event do
       end
     end
 
-    states = [:new, :withdrawn, :unconfirmed, :confirmed, :canceled, :rejected]
-    transitions = [:restart, :withdraw, :accept, :confirm, :cancel, :reject]
+    states = %i[new withdrawn unconfirmed confirmed canceled rejected]
+    transitions = %i[restart withdraw accept confirm cancel reject]
 
-    states_transitions = { new:         { restart: false, withdraw: true, accept: true, confirm: false, cancel: false, reject: true},
-                           withdrawn:   { restart: true, withdraw: false, accept: false, confirm: false, cancel: false, reject: false},
-                           unconfirmed: { restart: false, withdraw: true, accept: false, confirm: true, cancel: true, reject: false},
-                           confirmed:   { restart: false, withdraw: true, accept: false, confirm: false, cancel: true, reject: false},
-                           canceled:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false, reject: false},
-                           rejected:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false, reject: false}
-                         }
+    states_transitions = { new:         { restart: false, withdraw: true, accept: true, confirm: false, cancel: false, reject: true },
+                           withdrawn:   { restart: true, withdraw: false, accept: false, confirm: false, cancel: false,
+reject: false },
+                           unconfirmed: { restart: false, withdraw: true, accept: false, confirm: true, cancel: true,
+reject: false },
+                           confirmed:   { restart: false, withdraw: true, accept: false, confirm: false, cancel: true,
+reject: false },
+                           canceled:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false,
+reject: false },
+                           rejected:    { restart: true, withdraw: false, accept: false, confirm: false, cancel: false,
+reject: false } }
 
     states.each do |state|
       transitions.each do |transition|
-        it_behaves_like 'transition_possible?(transition)', state, transition, states_transitions[state.to_sym][transition.to_sym]
+        it_behaves_like 'transition_possible?(transition)', state, transition,
+                        states_transitions[state.to_sym][transition.to_sym]
       end
     end
   end
@@ -359,7 +419,7 @@ describe Event do
   end
 
   describe '#selected_schedule_id' do
-    before :each do
+    before do
       conference.program.selected_schedule = create(:schedule, program: conference.program)
     end
 
@@ -380,6 +440,16 @@ describe Event do
         event.track = create(:track, :self_organized, program: conference.program, state: 'confirmed')
         event.track.selected_schedule = create(:schedule, program: conference.program, track: event.track)
         expect(event.send(:selected_schedule_id)).to eq event.track.selected_schedule_id
+      end
+    end
+  end
+
+  describe '#serializable_hash' do
+    let(:event2) { create(:event, program: conference.program, abstract: '`markdown`') }
+
+    context 'serializes event correctly' do
+      it 'contains rendered markdown in HTML' do
+        expect(event2.serializable_hash['rendered_abstract']).to include('<code>markdown</code>')
       end
     end
   end

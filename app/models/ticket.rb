@@ -1,9 +1,27 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: tickets
+#
+#  id                  :bigint           not null, primary key
+#  description         :text
+#  email_body          :text
+#  email_subject       :string
+#  price_cents         :integer          default(0), not null
+#  price_currency      :string           default("USD"), not null
+#  registration_ticket :boolean          default(FALSE)
+#  title               :string           not null
+#  visible             :boolean          default(TRUE)
+#  created_at          :datetime
+#  updated_at          :datetime
+#  conference_id       :integer
+#
 class Ticket < ApplicationRecord
   belongs_to :conference
   has_many :ticket_purchases, dependent: :destroy
   has_many :buyers, -> { distinct }, through: :ticket_purchases, source: :user
+  has_many :currency_conversions, through: :conferences
 
   has_paper_trail meta:   { conference_id: :conference_id },
                   ignore: %i[updated_at]
@@ -19,6 +37,8 @@ class Ticket < ApplicationRecord
   validates :price_cents, :price_currency, :title, presence: true
 
   validates :price_cents, numericality: { greater_than_or_equal_to: 0 }
+
+  scope :visible, -> { where(visible: true) }
 
   def bought?(user)
     buyers.include?(user)
@@ -57,12 +77,12 @@ class Ticket < ApplicationRecord
     rescue Money::Bank::UnknownRate
       result = Money.new(-1, 'USD')
     end
-    result ? result : Money.new(0, 'USD')
+    result || Money.new(0, 'USD')
   end
 
   def self.total_price_user(conference, user, paid: false)
     tickets = TicketPurchase.where(conference: conference, user: user, paid: paid)
-    tickets.inject(0){ |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
+    tickets.inject(0) { |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
   end
 
   def tickets_turnover_total(id)
@@ -83,7 +103,7 @@ class Ticket < ApplicationRecord
     tickets = Ticket.where(conference_id: conference_id)
     return if tickets.count.zero? || (tickets.count == 1 && self == tickets.first)
 
-    unless tickets.all?{|t| t.price_currency == price_currency }
+    unless tickets.all? { |t| t.price_currency == price_currency }
       errors.add(:price_currency, 'is different from the existing tickets of this conference.')
     end
   end

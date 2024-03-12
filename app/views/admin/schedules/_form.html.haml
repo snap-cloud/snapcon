@@ -9,4 +9,3 @@
       .form-group
         = f.select :track, Track.accessible_by(current_ability).where(program: @program).confirmed.pluck(:name, :id), { include_blank: false }, { class: 'form-control' }
       = f.submit nil, class: 'btn btn-primary'
-

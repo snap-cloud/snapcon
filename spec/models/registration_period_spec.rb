@@ -1,19 +1,32 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: registration_periods
+#
+#  id            :bigint           not null, primary key
+#  end_date      :date
+#  start_date    :date
+#  created_at    :datetime
+#  updated_at    :datetime
+#  conference_id :integer
+#
 require 'spec_helper'
 
 describe RegistrationPeriod do
   let!(:conference) { create(:conference, start_date: Date.today, end_date: Date.today + 6) }
   let!(:registration_ticket) { create(:registration_ticket, conference: conference) }
-  let!(:registration_period) { create(:registration_period, start_date: Date.today - 2, end_date: Date.today - 1, conference: conference) }
+  let!(:registration_period) do
+    create(:registration_period, start_date: Date.today - 2, end_date: Date.today - 1, conference: conference)
+  end
 
   describe 'validations' do
     it 'is not valid without a start_date' do
-      should validate_presence_of(:start_date)
+      expect(subject).to validate_presence_of(:start_date)
     end
 
     it 'is not valid without an end_date' do
-      should validate_presence_of(:end_date)
+      expect(subject).to validate_presence_of(:end_date)
     end
   end
 

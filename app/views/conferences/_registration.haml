@@ -1,7 +1,3 @@
-= content_for :splash_nav do
-  %li
-    %a.smoothscroll{ href: '#registration' } Registration
-
 - cache [conference, registration_period, tickets, '#splash#registration'] do
   %section#registration
     .container
@@ -37,3 +33,4 @@
                 = link_to('Register Now',
                   new_conference_conference_registration_path(conference_id),
                   class: 'btn btn-lg btn-success')
+    .trapezoid

@@ -1,14 +1,34 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: event_schedules
+#
+#  id          :bigint           not null, primary key
+#  enabled     :boolean          default(TRUE)
+#  start_time  :datetime
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  event_id    :integer
+#  room_id     :integer
+#  schedule_id :integer
+#
+# Indexes
+#
+#  index_event_schedules_on_event_id                  (event_id)
+#  index_event_schedules_on_event_id_and_schedule_id  (event_id,schedule_id) UNIQUE
+#  index_event_schedules_on_room_id                   (room_id)
+#  index_event_schedules_on_schedule_id               (schedule_id)
+#
 require 'spec_helper'
 
 describe EventSchedule do
   let(:conference) { create(:conference) }
 
   describe 'association' do
-    it { should belong_to(:schedule) }
-    it { should belong_to(:event) }
-    it { should belong_to(:room) }
+    it { is_expected.to belong_to(:schedule) }
+    it { is_expected.to belong_to(:event) }
+    it { is_expected.to belong_to(:room) }
   end
 
   describe 'validation' do
@@ -20,7 +40,8 @@ describe EventSchedule do
     describe '#start_after_end_hour' do
       context 'is invalid' do
         it 'when event schedule start_time is after the conference end_hour, and returns an error message' do
-          new_scheduled_event = build(:event_scheduled, program: conference.program, hour: conference.start_date + conference.end_hour.hours + 1.hour)
+          new_scheduled_event = build(:event_scheduled, program: conference.program,
+                                                        hour:    conference.start_date + conference.end_hour.hours + 1.hour)
           expect(new_scheduled_event.valid?).to be false
           expect(new_scheduled_event.event_schedules.first.errors[:start_time]).to eq ["can't be after the conference end hour (#{conference.end_hour})"]
         end
@@ -28,7 +49,8 @@ describe EventSchedule do
 
       context 'is valid' do
         it 'when event schedule start_time is between the conference end_hour and start_hour' do
-          new_scheduled_event = build(:event_scheduled, program: conference.program, hour: conference.start_date + conference.end_hour.hours - 1.hour)
+          new_scheduled_event = build(:event_scheduled, program: conference.program,
+                                                        hour:    conference.start_date + conference.end_hour.hours - 1.hour)
           expect(new_scheduled_event.valid?).to be true
         end
       end
@@ -45,7 +67,7 @@ describe EventSchedule do
     end
 
     describe '#same_room_as_track' do
-      before :each do
+      before do
         conference = create(:conference)
         conference.venue = create(:venue)
         @room = create(:room, venue: conference.venue)
@@ -77,11 +99,12 @@ describe EventSchedule do
     end
 
     describe '#during_track' do
-      before :each do
+      before do
         conference = create(:conference, start_date: Date.current - 1.day, start_hour: 0, end_hour: 24)
         conference.venue = create(:venue)
         @room = create(:room, venue: conference.venue)
-        @track = create(:track, program: conference.program, room: @room, start_date: Date.current, end_date: Date.current)
+        @track = create(:track, program: conference.program, room: @room, start_date: Date.current,
+end_date: Date.current)
         @event = create(:event, program: conference.program, track: @track)
       end
 
@@ -100,7 +123,8 @@ describe EventSchedule do
         end
 
         it 'when event ends after the track\'s end date' do
-          event_schedule = build(:event_schedule, event: @event, room: @room, start_time: Date.current + 1.day - 10.minutes)
+          event_schedule = build(:event_schedule, event: @event, room: @room,
+start_time: Date.current + 1.day - 10.minutes)
           expect(event_schedule.valid?).to be false
           expect(event_schedule.errors[:end_time]).to eq ["can't be after the track's end date (#{@track.end_date})"]
         end
@@ -108,10 +132,11 @@ describe EventSchedule do
     end
 
     describe '#valid_schedule' do
-      before :each do
+      before do
         conference.venue = create(:venue)
         @room = create(:room, venue: conference.venue)
-        track = create(:track, :self_organized, program: conference.program, room: @room, state: 'confirmed', name: 'My awesome track')
+        track = create(:track, :self_organized, program: conference.program, room: @room, state: 'confirmed',
+name: 'My awesome track')
         @event = create(:event, program: conference.program, track: track)
       end
 
@@ -139,6 +164,44 @@ describe EventSchedule do
           expect(event_schedule.errors[:schedule]).to eq ['must be one of My awesome track track\'s schedules']
         end
       end
+    end
+  end
+
+  describe 'happening_later' do
+    let!(:conference2) do
+      create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
+    end
+    let!(:program) { conference2.program }
+    let!(:selected_schedule) { create(:schedule, program: program) }
+    let!(:scheduled_event1) do
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed', abstract: '`markdown`')
+    end
+    let!(:event_schedule1) do
+      create(:event_schedule, event: scheduled_event1, schedule: selected_schedule,
+     start_time: (Time.now.in_time_zone(conference2.timezone) + 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+    end
+    let!(:scheduled_event2) do
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
+    end
+    let!(:event_schedule2) do
+      create(:event_schedule, event: scheduled_event2, schedule: selected_schedule,
+     start_time: (Time.now.in_time_zone(conference2.timezone) + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
+    end
+    let!(:scheduled_event3) do
+      program.update!(selected_schedule: selected_schedule)
+      create(:event, program: program, state: 'confirmed')
+    end
+    let!(:event_schedule3) do
+      create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
+     start_time: (Time.now.in_time_zone(conference2.timezone) - 1.hour).strftime('%a, %d %b %Y %H:%M:%S'))
+    end
+
+    it 'returns true if the event is happening in the future' do
+      expect(event_schedule1.happening_later?).to be true
+      expect(event_schedule2.happening_later?).to be true
+      expect(event_schedule3.happening_later?).to be false
     end
   end
 end

@@ -1,11 +1,11 @@
 .row
   .col-md-12
     .page-header
-      %h1 Commercials
+      %h1 #{@conference.title} Materials
       %p.text-muted
-        Conference commercials will be displayed on the events in the
-        = link_to 'schedule,', conference_schedule_path(@conference.short_title)
-        if the event speaker didn't add an event commercial.
+        Conference materials will be displayed on the events in the
+        = link_to 'schedule,', vertical_schedule_conference_schedule_path(@conference.short_title)
+        if the event speaker didn't add any event materials.
 - if can? :create, @conference.commercials.new
   .row
     .col-md-6
@@ -15,11 +15,14 @@
     .col-md-6
       = form_for(@commercial, url: admin_conference_commercials_path(conference_id: @conference.short_title)) do |f|
         .form-group
-          = f.label :url
+          = f.label :title
+          = f.text_field :title, class: 'form-control'
+        .form-group
+          = f.label :url, 'URL'
           = f.url_field :url, required: 'required', autofocus: true, class: 'form-control'
         %span.help-block
           Just paste the url of your video/photo provider. YouTube, Vimeo, SpeakerDeck, SlideShare, Instagram, Flickr.
-        = f.submit nil, { class: 'btn btn-primary pull-right', id: 'commercial_submit_action', disabled: true }
+        = f.submit 'Save Materials', { class: 'btn btn-primary pull-right', id: 'commercial_submit_action', disabled: true }
   %hr
 
 - @commercials.each_slice(3) do |slice|
@@ -27,18 +30,22 @@
     - slice.each do |commercial|
       - if commercial.persisted?
         .col-md-4
-          .thumbnail
-            .flexvideo{ id: "resource-content-#{commercial.id}" }
-              = render partial: 'shared/media_item', locals: { commercial: commercial }
-            .caption
+          .panel.panel-default
+            %div{ id: "resource-content-#{commercial.id}" }
+              = render 'shared/media_item', commercial: commercial
+            .caption.panel-footer
               - if can? :update, commercial
                 = form_for commercial, url: admin_conference_commercial_path(conference_id: @conference.short_title, id: commercial) do |f|
                   .form-group
-                    = f.label :url
-                    = f.url_field :url, id: "commercial_url_#{commercial.id}", required: 'required'
+                    = f.label :title
+                    = f.text_field :title, class: 'form-control'
+                  .form-group
+                    = f.label :url, 'URL'
+                    %abbr{title: 'This field is required'} *
+                    = f.url_field :url, class: 'form-control', id: "commercial_url_#{commercial.id}", required: 'required'
                     %span.help-block
                       Just paste the url of your video/photo provider
-                  = f.submit nil, { class: 'btn btn-success' }
+                  = f.submit 'Update', class: 'btn btn-success'
                   - if can? :destroy, commercial
                     = link_to 'Delete', admin_conference_commercial_path(@conference.short_title, commercial.id),
                       method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'

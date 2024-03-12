@@ -2,17 +2,17 @@
 
 require 'spec_helper'
 
-feature Survey do
+describe Survey do
   let(:conference) { create(:conference) }
 
   context 'as an organizer' do
     let(:organizer) { create(:organizer, resource: conference) }
 
-    before :each do
+    before do
       sign_in organizer
     end
 
-    scenario 'create a survey', feature: true, js: true do
+    it 'create a survey', feature: true, js: true do
       visit admin_conference_path(conference)
       click_link 'Surveys'
       click_link 'New'
@@ -30,15 +30,15 @@ feature Survey do
   context 'as an attendee' do
     let(:attendee) { create(:user) }
 
-    before :each do
+    before do
       sign_in attendee
     end
 
-    scenario 'respond to a survey during registration', feature: true, js: true do
-      create :registration_period, conference: conference
-      create :registration, conference: conference, user: attendee
+    it 'respond to a survey during registration', feature: true, js: true do
+      create(:registration_period, conference: conference)
+      create(:registration, conference: conference, user: attendee)
       survey = create(:survey, surveyable: conference, target: :during_registration)
-      create :boolean_mandatory, survey: survey
+      create(:boolean_mandatory, survey: survey)
 
       visit conference_conference_registration_path(conference)
       expect(find(:link, survey.title).sibling('.fa-solid')[:title]).to eq('Please fill out the survey')

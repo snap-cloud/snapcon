@@ -6,10 +6,18 @@ module Admin
     load_and_authorize_resource class: PaperTrail::Version
 
     def index
-      @conferences_with_role = current_user.is_admin? ? Conference.pluck(:short_title) : Conference.with_role([:organizer, :cfp, :info_desk], current_user).pluck(:short_title)
+      @conferences_with_role = if current_user.is_admin?
+                                 Conference.pluck(:short_title)
+                               else
+                                 Conference.with_role(
+                                   %i[organizer cfp info_desk], current_user
+                                 ).pluck(:short_title)
+                               end
 
       if current_user.has_cached_role? :organization_admin, :any
-        @conferences_with_role = Organization.with_role('organization_admin', current_user).map { |org| org.conferences.pluck :short_title }.flatten
+        @conferences_with_role = Organization.with_role('organization_admin', current_user).map do |org|
+          org.conferences.pluck :short_title
+        end.flatten
       end
       @conferences_with_role.uniq!
 
@@ -19,7 +27,9 @@ module Admin
     end
 
     def revert_attribute
-      if params[:attribute] && @version.changeset.reject{ |_, values| values[0].blank? && values[1].blank? }.keys.include?(params[:attribute])
+      if params[:attribute] && @version.changeset.reject do |_, values|
+           values[0].blank? && values[1].blank?
+         end.keys.include?(params[:attribute])
         if @version.item[params[:attribute]] == @version.changeset[params[:attribute]][0]
           flash[:error] = 'The item is already in the state that you are trying to revert it back to'
 
@@ -28,7 +38,8 @@ module Admin
           if @version.item.save
             flash[:notice] = 'The selected change was successfully reverted'
           else
-            flash[:error] = "An error prohibited this change from being reverted: #{@version.item.errors.full_messages.join('. ')}."
+            flash[:error] =
+              "An error prohibited this change from being reverted: #{@version.item.errors.full_messages.join('. ')}."
           end
         end
 
@@ -44,7 +55,8 @@ module Admin
         if @version.reify.save
           flash[:notice] = 'The selected change was successfully reverted'
         else
-          flash[:error] = "An error prohibited this change from being reverted: #{@version.reify.errors.full_messages.join('. ')}."
+          flash[:error] =
+            "An error prohibited this change from being reverted: #{@version.reify.errors.full_messages.join('. ')}."
         end
 
       elsif @version.event == 'create' && @version.item

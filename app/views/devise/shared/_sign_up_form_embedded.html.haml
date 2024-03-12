@@ -1,0 +1,15 @@
+- unless current_user
+  %p
+    %strong Create an account directly for Snap!Con, or sign in using Google.
+  %p
+    You may sign in via Snap!, but the first time you try, you
+    %em might not
+    be redirected back to Snap!Con. If that happens, try a second time and the login will work.
+    We're trying to fix this issue. Thanks!
+  = semantic_fields_for @user do |u|
+    = u.input :username, input_html: { required: 'required', autocomplete: 'off' }
+    = u.input :email, input_html: { required: 'required', autocomplete: 'off' }
+    = u.input :password, input_html: { required: 'required', autocomplete: 'off', id: 'password_inline' }
+    = u.input :password_confirmation, input_html: { required: 'required', autocomplete: 'off' }
+  = render partial: 'devise/shared/openid'
+  = render partial: 'devise/shared/help'

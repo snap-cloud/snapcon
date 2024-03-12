@@ -1,0 +1,4 @@
+spec/**/*.rb
+features/step_definitions/*.rb
+features/support/*.rb
+lib/**/*.rake

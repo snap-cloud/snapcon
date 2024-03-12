@@ -1,14 +1,4 @@
-#schedule-content .carousel-control{
-  width: 12%;
-}
-
-@media (min-width: 768px){
-  #schedule-content .carousel-control{
-    width: 5%;
-  }
-}
-
-.room-name{
+.room-name {
   font-weight: bold;
   padding:10px;
   margin-top: 30px;
@@ -24,7 +14,7 @@
   overflow: hidden;
 }
 
-.schedule-room-slot{
+.schedule-room-slot {
   padding: 2px 3px;
   border: 1px solid #848484;
   height: 58px;
@@ -32,21 +22,43 @@
   font-size: 13px;
 }
 
-.schedule-event{
+.schedule-event {
   padding: 7px;
   border: 2px solid #151515;
   position:relative;
   z-index:1;
-  cursor:move;
+  cursor: move;
+
+  a {
+    color: black;
+  }
 }
 
+.schedule-room-slot.compact {
+  line-height: 12px;
+  font-size: 10px;
+  padding: 1px;
+}
+
+// When an event is in a room.
 .schedule-room-slot .schedule-event.compact {
-  margin-top: -23px;
-  margin-left: 20%;
-  width: 80%;
+  margin-top: -14px;
+  width: 85%;
+  margin-left: 15%;
 }
 
-.schedule-event-text{
+.schedule-event.compact {
+  font-size: 75%;
+  padding: 0;
+  border-width: 1px;
+
+  .schedule-event-text {
+    line-height: 12px;
+    overflow: hidden;
+  }
+}
+
+.schedule-event-text {
   display: -webkit-box;
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
@@ -54,25 +66,21 @@
   overflow: hidden;
 }
 
+.schedule-event.compact {
+  .schedule-event-delete-button {
+    padding: 1px;
+    margin-right: 3px;
+  }
+}
+
 .schedule-event-delete-button {
-    font-weight:bold;
+    font-weight: bold;
     cursor: pointer;
-    padding: 0px 3px;
-    border: 1px solid grey;
+    padding: 0 3px;
     margin-right: 5px;
+    color: black;
 }
 
-#schedule td.event {
-    background-image: linear-gradient(to top, rgb(247,250,242) 24%, rgb(194,232,190) 97%, rgb(194,232,190) 100%);
-
-cursor: pointer;
-padding: 3px 2px;
-}
-
-#schedule td.event:hover
-{
-    background-image: linear-gradient(to top, rgb(247,250,242) 24%, rgb(83,171,74) 97%, rgb(83,171,74) 100%);
-}
 
 .flexvideo {
     position: relative;
@@ -96,29 +104,16 @@ padding: 3px 2px;
     margin-top: 10px;
 }
 
-.schedule-title, .schedule-subtitle, .schedule-speaker, .schedule-track {
-    clear: none;
-    display: block;
-}
 
-.schedule-subtitle {
-    color: rgb(185, 74, 72);
-}
-
-a.unstyled-link {
-  text-decoration: none;
-  color: #333333;
-  outline: 0;
- }
-
-.program-dropdown, .schedule-dropdown{
+.program-dropdown {
   margin-left: 20%;
   margin-right: 20%;
-  margin-top: 40px;
+  margin-top: 10px;
   margin-bottom: 20px;
 }
 
-.schedule-dropdown > button, .program-dropdown > button, .program-dropdown > .dropdown-menu, .schedule-dropdown > .dropdown-menu{
+.program-dropdown > button,
+.program-dropdown > .dropdown-menu {
   width: 100%;
 }
 
@@ -146,42 +141,6 @@ a.unstyled-link {
    hyphens: auto;
 }
 
-.room, .event-title{
-  font-size: 11px;
-  line-height: 17px;
-  overflow: hidden;
-}
-
-td.room{
-  width: 15%;
-  padding: 3px !important;
-  max-width:15%;
-}
-
-th.date{
-  font-size: 12px;
-  padding: 4px 0px 4px 2px !important;
-}
-
-.speaker-pic{
-  padding: 4px 2px;
-}
-
-.schedule-table{
-  width: 100%;
-  margin:0px;
-  padding:0px;
-}
-
-td.no-padding{
-  padding:0px !important;
-}
-
-.all-events-title{
-  margin-top: 40px;
-  border-bottom: 1px solid #848484;
-}
-
 .date-title{
   font-size: 23px;
   font-weight: bold;
@@ -189,136 +148,40 @@ td.no-padding{
   display:inline-block;
 }
 
-.start-time{
-  font-size: 16px;
-  padding-left: 30px;
-  margin-top: 32px;
-}
-
-.new-time-event{
-  margin-top: 20px;
-}
-
-.date-content{
+.date-content {
   border-bottom: 1px solid #6E6E6E;
-  margin-top: 30px;
+  margin: 30px 0 20px;
 }
 
 .unscheduled-event{
   margin-top: 8px;
 }
 
-.all-speaker-pic{
-  padding: 20px 10px 20px 10px;
-}
-
-.track{
+.track {
    padding: 0px 5px 0px 5px;
    display: inline-block;
  }
 
-.event-panel{
-   cursor: pointer;
- }
-
-.program-dropdown{
-  margin-left: 20%;
-  margin-right: 20%;
-  margin-top: 40px;
-}
-
-.program-dropdown > button{
-  width: 100%;
-}
-
-.program-dropdown > .dropdown-menu{
-  width: 100%;
-}
-
-.no-events-day{
+.no-events-day {
   color:  #D8D8D8 !important;
-}
-
-.schedule-label{
-  height: 14px;
-  line-height: 11px;
-  overflow: hidden;
-  display: inline-block;
-  white-space: normal;
-  padding-left: 1px;
-  padding-right: 1px;
-  font-size: 7px;
 }
 
 .non_schedulable{
   opacity: 0.5;
 }
 
-/* Small devices (tablets, 768px and up) */
-@media (min-width: 768px) {
-  .room, .event-title{
-    font-size: 12px;
-  }
+.event-panel-title {
+  margin: auto 3px;
+  flex: 1;
+  line-height: 1.4;
 
-  td.room{
-    width: 12%;
-    max-width:12%;
-  }
-
-  th.date{
-    font-size: 13px;
-  }
-
-  td.event{
-    padding: 3px 3px !important;
-  }
-
-  .schedule-label{
-    padding-left: 2px;
-    padding-right: 3px;
+  // Override some bootstrap
+  small {
+    line-height: 1.6;
   }
 }
 
-/* Medium devices (desktops, 992px and up) */
-@media (min-width: 992px) {
-  .room, .event-title{
-    font-size: 13px;
-  }
-
-  td.room{
-    width: 10%;
-    max-width: 10%;
-  }
-
-  .schedule-label{
-    height: 15px;
-    line-height: 12px;
-    font-size: 7px;
-  }
-}
-
-/* Large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {
-  .room, .event-title{
-    font-size: 14px;
-  }
-
-  .schedule-label{
-    padding-left: 2px;
-    padding-right: 2px;
-    font-size: 8px;
-  }
-
-  td.room{
-    width: 9%;
-    max-width: 9%;
-  }
-
-  td.event{
-    padding: 3px 6px !important;
-  }
-
-  th.date{
-    font-size: 14px;
-  }
+// Override Boostrap setting.
+h3.event-panel-title small {
+  line-height: 1.4;
 }

@@ -1,10 +1,32 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: event_schedules
+#
+#  id          :bigint           not null, primary key
+#  enabled     :boolean          default(TRUE)
+#  start_time  :datetime
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  event_id    :integer
+#  room_id     :integer
+#  schedule_id :integer
+#
+# Indexes
+#
+#  index_event_schedules_on_event_id                  (event_id)
+#  index_event_schedules_on_event_id_and_schedule_id  (event_id,schedule_id) UNIQUE
+#  index_event_schedules_on_room_id                   (room_id)
+#  index_event_schedules_on_schedule_id               (schedule_id)
+#
 class EventSchedule < ApplicationRecord
   default_scope { where(enabled: true) }
-  belongs_to :schedule
-  belongs_to :event
+
+  belongs_to :schedule, touch: true
+  belongs_to :event, touch: true
   belongs_to :room
+  delegate :url, to: :room, prefix: true, allow_nil: true
 
   has_paper_trail ignore: [:updated_at], meta: { conference_id: :conference_id }
 
@@ -23,9 +45,40 @@ class EventSchedule < ApplicationRecord
   scope :canceled, -> { joins(:event).where('state = ?', 'canceled') }
   scope :withdrawn, -> { joins(:event).where('state = ?', 'withdrawn') }
 
-  scope :with_event_states, ->(*states){ joins(:event).where('events.state IN (?)', states) }
+  scope :with_event_states, ->(*states) { joins(:event).where('events.state IN (?)', states) }
 
   delegate :guid, to: :room, prefix: true
+
+  def timezone
+    event.conference.timezone
+  end
+
+  ##
+  # True within `threshold` before and after the event.
+  #
+  def happening_now?(threshold = 15.minutes)
+    # TODO: Save start_time with local timezone info when making an event schedule
+    in_tz_start = start_time.in_time_zone(timezone)
+    in_tz_end = end_time.in_time_zone(timezone)
+    in_tz_start -= in_tz_start.utc_offset
+    in_tz_end -= in_tz_end.utc_offset
+
+    return false if in_tz_end < Time.now
+
+    begin_range = Time.now - threshold
+    end_range = Time.now + threshold
+    event_time_range = in_tz_start..in_tz_end
+    now_range = begin_range..end_range
+    event_time_range.overlaps?(now_range)
+  end
+
+  def happening_later?
+    # TODO: Save start_time with local timezone info when making an event schedule
+    in_tz_start = start_time.in_time_zone(timezone)
+    in_tz_start -= in_tz_start.utc_offset
+
+    in_tz_start >= Time.now
+  end
 
   def self.withdrawn_or_canceled_event_schedules(schedule_ids)
     EventSchedule
@@ -42,6 +95,20 @@ class EventSchedule < ApplicationRecord
   end
 
   ##
+  # Returns if the event is in the past.
+  #
+  def ended?
+    !happening_now? && end_time_in_conference_timezone < time_in_conference_timezone(Time.current)
+  end
+
+  ##
+  # Returns a time + room number string for sorting.
+  #
+  def sortable_timestamp
+    "#{start_time.to_i}-#{room&.order}"
+  end
+
+  ##
   # Returns event schedules that are scheduled in the same room and start_time as event
   #
   def intersecting_event_schedules
@@ -52,7 +119,7 @@ class EventSchedule < ApplicationRecord
   end
 
   # event_schedule_source is a cached enumerable object that helps
-  # avoid repetitive EXISTS queries when rendering the schedule carousel partial
+  # avoid repetitive EXISTS queries when rendering the schedule partial
   def replacement?(event_schedule_source = nil)
     return false unless event.state == 'confirmed'
     return replaced_event_schedules.exists? unless event_schedule_source
@@ -75,6 +142,14 @@ class EventSchedule < ApplicationRecord
       other.schedule_id == schedule_id
   end
 
+  def start_time_in_conference_timezone
+    time_in_conference_timezone(start_time)
+  end
+
+  def end_time_in_conference_timezone
+    time_in_conference_timezone(end_time)
+  end
+
   private
 
   def replaced_event_schedules
@@ -84,13 +159,21 @@ class EventSchedule < ApplicationRecord
   def start_after_end_hour
     return unless event && start_time && event.program && event.program.conference && event.program.conference.end_hour
 
-    errors.add(:start_time, "can't be after the conference end hour (#{event.program.conference.end_hour})") if start_time.hour >= event.program.conference.end_hour
+    if start_time.hour >= event.program.conference.end_hour
+      errors.add(:start_time,
+                 "can't be after the conference end hour (#{event.program.conference.end_hour})")
+    end
   end
 
   def start_before_start_hour
-    return unless event && start_time && event.program && event.program.conference && event.program.conference.start_hour
+    unless event && start_time && event.program && event.program.conference && event.program.conference.start_hour
+      return
+    end
 
-    errors.add(:start_time, "can't be before the conference start hour (#{event.program.conference.start_hour})") if start_time.hour < event.program.conference.start_hour
+    if start_time.hour < event.program.conference.start_hour
+      errors.add(:start_time,
+                 "can't be before the conference start hour (#{event.program.conference.start_hour})")
+    end
   end
 
   def conference_id
@@ -127,6 +210,15 @@ class EventSchedule < ApplicationRecord
   def valid_schedule
     return unless event.try(:track).try(:self_organized?) && schedule
 
-    errors.add(:schedule, "must be one of #{event.track.name} track's schedules") unless event.track.schedules.include?(schedule)
+    unless event.track.schedules.include?(schedule)
+      errors.add(:schedule,
+                 "must be one of #{event.track.name} track's schedules")
+    end
+  end
+
+  def time_in_conference_timezone(time)
+    time_in_tz = time.in_time_zone(timezone)
+    time_in_tz -= time_in_tz.utc_offset
+    time_in_tz
   end
 end

@@ -1,0 +1,57 @@
+%h2 Submission Type and Details
+%p Please select a submission type, then fill in the abstract and extended details.
+
+.form-group
+  = f.label :event_type_id, 'Type'
+  = f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
+
+- program.event_types.each do |event_type|
+  .help-block.event_event_type_id.collapse{ id: "#{dom_id(event_type)}-help" }
+    %strong Description
+    = markdown(event_type.description)
+
+%h3 Submission Abstract
+%p
+  The abstract is reviewed by the committee and included in the conference program.
+  You are encouraged to include links or other references as appropriate.
+
+= f.label :abstract, class: 'sr-only'
+= f.text_area :abstract, required: true, label: nil, rows: 5, data: { provide: 'markdown' }, class: 'form-control md-input'
+.help-block= markdown_hint
+
+%p
+  You have used
+  %span#abstract-count 0
+  words. Abstracts must be between
+  %span#abstract-minimum-word-count 0
+  and
+  %span#abstract-maximum-word-count 250
+  words.
+
+%h3 Extended Information
+%p This part of the submission is intended only for the conference committee.
+
+- program.event_types.each do |event_type|
+  .help-block.select-help-text.event_event_type_id.collapse{ id: "#{dom_id(event_type)}-instructions" }
+    - if event_type.submission_template.blank?
+      %p
+        Use this space to include any additional inforrmation that is helpful in reviewing your
+        submission.
+    - else
+      %p
+        Please use the following as the template for your submission. This will help the conference
+        committee review your submission with all the details they need.
+      .panel.panel-primary
+        .panel-heading= "#{event_type.name} Template"
+        .panel-body= markdown(event_type.submission_template)
+        .panel-footer
+          %button.btn.btn-warning.btn-xs.js-resetSubmissionText{ type: 'button',
+            data: { confirm: 'Do you really want to reset your submission text to the provided template?' } }
+            Reset Submission to Template
+          %span.small You may want to use this if you have changed the submission type.
+
+%hr
+.form-group
+  = f.label :submission_text, class: 'sr-only'
+  = f.text_area :submission_text, rows: 10, data: { provide: 'markdown' }, class: 'form-control md-input'
+  .help-block= markdown_hint

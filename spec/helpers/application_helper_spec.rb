@@ -21,17 +21,20 @@ describe ApplicationHelper, type: :helper do
     end
 
     it 'when conference ends in another month, of a different year' do
-      expect(date_string('Sun, 19 Feb 2017'.to_time, 'Sun, 12 March 2018'.to_time)).to eq 'February 19, 2017 - March 12, 2018'
+      expect(date_string('Sun, 19 Feb 2017'.to_time,
+                         'Sun, 12 March 2018'.to_time)).to eq 'February 19, 2017 - March 12, 2018'
     end
   end
 
   describe '#concurrent_events' do
-    before :each do
+    before do
       @other_event = create(:event, program: conference.program, state: 'confirmed')
       schedule = create(:schedule, program: conference.program)
       conference.program.update_attribute(:selected_schedule, schedule)
-      @event_schedule = create(:event_schedule, event: event, start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
-      @other_event_schedule = create(:event_schedule, event: @other_event, start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
+      @event_schedule = create(:event_schedule, event: event,
+start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
+      @other_event_schedule = create(:event_schedule, event: @other_event,
+start_time: conference.start_date + conference.start_hour.hours, room: create(:room), schedule: schedule)
     end
 
     describe 'does return correct concurrent events' do
@@ -62,14 +65,31 @@ describe ApplicationHelper, type: :helper do
       end
     end
 
-    describe 'navigation title link' do
-      it 'should default to OSEM' do
+    describe 'navigation image link' do
+      it 'defaults to OSEM' do
         ENV.delete('OSEM_NAME')
-        expect(nav_root_link_for(nil)).to match 'OSEM'
+        expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: 'OSEM')
       end
 
-      it 'should use the conference organization name' do
-        expect(nav_root_link_for(conference)).to match h(conference.organization.name)
+      it 'uses the conference organization name' do
+        expect(nav_root_link_for(conference)).to include image_tag(conference.picture.thumb.url,
+                                                                   alt: conference.organization.name)
+      end
+    end
+
+    describe 'navigation link title text' do
+      it 'defaults to OSEM' do
+        ENV.delete('OSEM_NAME')
+        expect(nav_link_text(nil)).to match 'OSEM'
+      end
+
+      it 'uses the environment variable' do
+        ENV['OSEM_NAME'] = Faker::Company.name + "'"
+        expect(nav_link_text(nil)).to match ENV.fetch('OSEM_NAME', nil)
+      end
+
+      it 'uses the conference organization name' do
+        expect(nav_link_text(conference)).to match conference.organization.name
       end
     end
   end
@@ -112,6 +132,27 @@ describe ApplicationHelper, type: :helper do
       it 'returns correct url' do
         expect(get_logo(conference)).to match %r{.*(\blarge/#{conference.logo_file_name}\b)}
       end
+    end
+  end
+
+  describe '#conference_logo_url' do
+    let(:organization) { create(:organization) }
+    let(:conference2) { create(:conference, organization: organization) }
+
+    it 'gives the correct logo url' do
+      expect(conference_logo_url(conference2)).to eq('snapcon_logo.png')
+
+      File.open('spec/support/logos/1.png') do |file|
+        organization.picture = file
+      end
+
+      expect(conference_logo_url(conference2)).to include(organization.picture.thumb.url)
+
+      File.open('spec/support/logos/2.png') do |file|
+        conference2.picture = file
+      end
+
+      expect(conference_logo_url(conference2)).to include('2.png')
     end
   end
 end

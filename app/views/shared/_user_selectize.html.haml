@@ -1,13 +1,11 @@
 :javascript
   $(document).ready(function() {
-    $('#users_selectize').selectize({
-      persist: false,
-      create: false,
+    $('.js-userSelector, #users_selectize').selectize({
+      plugins: ['remove_button'],
       valueField: 'id',
-      labelField: 'username',
-      searchField: 'username',
+      labelField: 'dropdwon_display',
+      searchField: ['username', 'name', 'email'],
       load: function(query, callback) {
-        if (!query.length) return callback();
         $.ajax({
           url: "#{search_users_path}.json",
           type: 'GET',
@@ -16,12 +14,9 @@
             query: query,
           },
           error: function(res) {
-            console.log("selectize error");
             callback();
           },
           success: function(res) {
-            console.log("selectize success");
-            // console.log(res);
             callback(res.users);
           }
         });

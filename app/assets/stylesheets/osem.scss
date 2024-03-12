@@ -1,3 +1,4 @@
+@import "osem-variables";
 @import "bootstrap/mixins";
 
 html {
@@ -6,14 +7,31 @@ html {
 }
 
 body {
+  // Specifically remove Helevtica Neue from BS3 stack.
+  font-family: sans-serif;
   /* Margin bottom by 2 times the footer height */
-  margin-bottom: 60px;
-  /* Margin bottom by navbar height */
+  margin-bottom: 85px;
   padding-top: 60px;
+  font-size: 16px;
 }
 
 #content {
   padding-bottom: 60px;
+}
+
+// Designed to be the last element in a section / nav
+// Makes a little "puzzle piece" connector.
+.trapezoid {
+    position: relative;
+    margin-left: 60px;
+    border-top: $trapezoid-height solid;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    height: 0;
+    width: 64px;
+    margin-top: -1 * $trapezoid-height;
+    top: $trapezoid-height;
+    z-index: 1000;
 }
 
 #footer {
@@ -124,4 +142,9 @@ p.comment-body {
 
 .word_break {
   word-wrap: break-word;
+}
+
+// Override bootstrap 3...
+hr {
+  border-top: 1px solid #333;
 }

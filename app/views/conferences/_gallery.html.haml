@@ -1,17 +1,14 @@
-<!-- Modal -->
-%div{ class: "modal fade", id: "gallery", tabindex: "-1", role: "dialog", "aria-labelledby" => "myLargeModalLabel", "aria-hidden"=> "true" }
-  %div{ class: "modal-dialog modal-lg" }
-    %div{ class: "modal-content" }
-      %div{ class: "modal-body" }
-        %div{ id: "carousel-example-generic", class: "carousel slide", "data-ride" => "carousel" }
-          <!-- Wrapper for slides -->
-          %div{ class: "carousel-inner" }
+.modeal.fade#gallery{ tabindex: "-1", role: "dialog", "aria-labelledby": "myLargeModalLabel", "aria-hidden": true }
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-body
+        .carousel.slide#carousel-example-generic{ "data-ride": "carousel" }
+          .carousel-inner
 
-          <!-- Controls -->
-          %a{ class: "left carousel-control", href: "#carousel-example-generic", role: "button", "data-slide" => "prev" }
-            %span.fa-solid.fa-chevron-left
-          %a{ class: "right carousel-control", href: "#carousel-example-generic", role: "button", "data-slide" => "next" }
-            %span.fa-solid.fa-chevron-right
+          %a.left.carousel-control{ href: "#carousel-example-generic", "data-slide": "prev" }
+            %span.fa-solid.fa-chevron-left{"aria-label": 'Previous Item'}
+          %a.right.carousel-control{ href: "#carousel-example-generic", "data-slide": "next" }
+            %span.fa-solid.fa-chevron-right{'aria-label': 'Next Item'}
 
 
 :javascript
@@ -20,7 +17,7 @@
     $('#gallery-btn').click(function(){
       if(count == 0){
         $('#gallery').modal('show');
-        $('#gallery .modal-body').append('<i class="fa fa-spinner fa-spin fa-4x"></i>');
+        $('#gallery .modal-body').append('<i class="fa-solid fa-spinner fa-spin fa-4x"></i>');
         count +=1;
       }
       else{

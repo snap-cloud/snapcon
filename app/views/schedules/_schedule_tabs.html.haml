@@ -1,7 +1,12 @@
-%div{ role: "tabpanel" }
-  / Nav tabs
-  %ul.nav.nav-tabs{ role: "tablist" }
-    %li{ class: "schedule #{ 'active' if active == 'schedule' }", role: "presentation" }
-      = link_to('Schedule', conference_schedule_path(@conference.short_title))
-    %li{ class: "program #{ 'active' if active == 'program' }", role: "presentation" }
-      = link_to('All events', events_conference_schedule_path(@conference.short_title))
+%div{ role: 'tabpanel' }
+  %ul.nav.nav-tabs{ role: 'tablist' }
+    %li.program{ class: ('active' if active == 'program'), role: 'presentation' }
+      = link_to('All events', events_conference_schedule_path(@conference.short_title, favourites: @favourites))
+    %li.program{ class: ('active' if active == 'now'), role: 'presentation' }
+      = link_to('Happening Now', happening_now_conference_schedule_path(@conference.short_title))
+    %li.schedule{ class: ('active' if active == 'vertical_schedule'), role: 'presentation' }
+      = link_to('Schedule', vertical_schedule_conference_schedule_path(@conference.short_title, favourites: @favourites))
+    .pull-right
+      - if current_user
+        = link_to (@favourites ? 'All events' : 'My Personal Schedule'),
+                  "#{request.path}?favourites=#{!@favourites}", class: 'btn btn-success'

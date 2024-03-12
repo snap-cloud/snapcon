@@ -37,8 +37,8 @@ module Admin
       if @splashpage.destroy
         redirect_to admin_conference_splashpage_path, notice: 'Splashpage was successfully destroyed.'
       else
-        redirect_to admin_conference_splashpage_path, error: 'An error prohibited this Splashpage from being destroyed: '\
-        "#{@splashpage.errors.full_messages.join('. ')}."
+        redirect_to admin_conference_splashpage_path, error: 'An error prohibited this Splashpage from being destroyed: ' \
+                                                             "#{@splashpage.errors.full_messages.join('. ')}."
       end
     end
 
@@ -46,11 +46,12 @@ module Admin
 
     def splashpage_params
       params.require(:splashpage).permit(:public,
+                                         :banner_photo, :banner_photo_cache,
                                          :include_tracks, :include_program, :include_cfp,
                                          :include_venue, :include_registrations,
                                          :include_tickets, :include_lodgings,
                                          :include_sponsors, :include_social_media,
-                                         :include_booths)
+                                         :include_booths, :include_happening_now)
     end
   end
 end

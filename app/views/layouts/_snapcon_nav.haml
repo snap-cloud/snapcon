@@ -1,0 +1,17 @@
+%li
+  = link_to 'https://snap.berkeley.edu', target: '_blank' do
+    Snap
+    %em> !
+%li
+  = link_to 'Forum', 'https://forum.snap.berkeley.edu', target: '_blank'
+%li.dropdown
+  %a.dropdown-toggle{ 'data-toggle': 'dropdown', href: '#', id: 'all-events' }
+    All Events
+    %b.caret
+  %ul.dropdown-menu
+    - visible_conference_links.each_with_index do |(org, confs), index|
+      %li.dropdown-header= org.name
+      - confs.sort_by(&:start_date).each do |conf|
+        %li= link_to(conf.title, conference_path(conf.short_title))
+      - if index < visible_conference_links.length - 1
+        %li.divider

@@ -1,6 +1,52 @@
 # frozen_string_literal: true
 
-# Read about factories at https://github.com/thoughtbot/factory_bot
+# == Schema Information
+#
+# Table name: users
+#
+#  id                     :bigint           not null, primary key
+#  affiliation            :string
+#  avatar_content_type    :string
+#  avatar_file_name       :string
+#  avatar_file_size       :integer
+#  avatar_updated_at      :datetime
+#  biography              :text
+#  confirmation_sent_at   :datetime
+#  confirmation_token     :string
+#  confirmed_at           :datetime
+#  current_sign_in_at     :datetime
+#  current_sign_in_ip     :string
+#  email                  :string           default(""), not null
+#  email_public           :boolean          default(FALSE)
+#  encrypted_password     :string           default(""), not null
+#  is_admin               :boolean          default(FALSE)
+#  is_disabled            :boolean          default(FALSE)
+#  languages              :string
+#  last_sign_in_at        :datetime
+#  last_sign_in_ip        :string
+#  mobile                 :string
+#  name                   :string
+#  nickname               :string
+#  picture                :string
+#  remember_created_at    :datetime
+#  reset_password_sent_at :datetime
+#  reset_password_token   :string
+#  sign_in_count          :integer          default(0)
+#  timezone               :string
+#  tshirt                 :string
+#  unconfirmed_email      :string
+#  username               :string
+#  volunteer_experience   :text
+#  created_at             :datetime
+#  updated_at             :datetime
+#
+# Indexes
+#
+#  index_users_on_confirmation_token    (confirmation_token) UNIQUE
+#  index_users_on_email                 (email) UNIQUE
+#  index_users_on_reset_password_token  (reset_password_token) UNIQUE
+#  index_users_on_username              (username) UNIQUE
+#
 
 # It is a feature of our app that first signed up user is admin. This property
 # is set in a before create callback `setup_role` in user model.
@@ -35,8 +81,11 @@ FactoryBot.define do
     last_sign_in_at { Date.today }
     is_disabled { false }
 
+    # Called by every user creation
+
     after(:create) do |user|
       user.is_admin = false
+
       # save with bang cause we want change in DB and not just in object instance
       user.save!
     end
@@ -67,6 +116,17 @@ FactoryBot.define do
 
   factory :user_xss, parent: :user do
     biography { '<div id="divInjectedElement"></div>' }
+  end
+
+  factory :organization_admin, parent: :user do
+    transient do
+      organization { create(:organization) }
+    end
+
+    after(:create) do |user, evaluator|
+      user.roles << Role.find_or_create_by(name: 'organization_admin', resource: evaluator.organization)
+      user.save!
+    end
   end
 
   factory :organizer, parent: :user do

@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
 def next?
-  File.basename(__FILE__) == "Gemfile.next"
+  File.basename(__FILE__) == 'Gemfile.next'
 end
 
 source 'https://rubygems.org'
 
-ruby ENV.fetch('OSEM_RUBY_VERSION', '3.1.4')
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.2.2')
 
 # as web framework
 if next?
-  gem 'rails', '~> 7.1'
+  gem 'rails', '~> 7'
 else
   gem 'rails', '~> 7.0'
 end
@@ -23,16 +23,17 @@ gem 'puma'
 gem 'responders', '~> 3.0'
 
 # as supported databases
-gem 'mysql2'
 gem 'pg'
 
 # for tracking data changes
-gem 'paper_trail'
+gem 'paper_trail', '< 13'
 
 # for upload management
 gem 'carrierwave'
 gem 'carrierwave-bombshelter'
 gem 'mini_magick'
+# for uploading images to the cloud
+gem 'cloudinary'
 
 # for internationalizing
 gem 'rails-i18n'
@@ -41,8 +42,8 @@ gem 'rails-i18n'
 gem 'devise'
 gem 'devise_ichain_authenticatable'
 
-# for openID authentication
 gem 'omniauth'
+gem 'omniauth-discourse', github: 'snap-cloud/omniauth-discourse'
 gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
@@ -62,7 +63,7 @@ gem 'rolify'
 gem 'unobtrusive_flash', '>=3'
 
 # as state machine
-gem 'transitions', :require => %w( transitions active_record/transitions )
+gem 'transitions', require: %w[transitions active_record/transitions]
 
 # for comments
 gem 'acts_as_commentable_with_threading'
@@ -83,6 +84,7 @@ gem 'bootstrap-sass', '~> 3.4.0'
 gem 'cocoon'
 
 # as the JavaScript library
+# TODO: Consolidate with the rails-assets below or move to webpack...
 gem 'jquery-rails'
 gem 'jquery-ui-rails', '~> 6.0.1'
 
@@ -94,7 +96,7 @@ gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
 # data tables
 gem 'ajax-datatables-rails'
-gem 'jquery-datatables-rails'
+gem 'jquery-datatables'
 
 # for charts
 gem 'chartkick'
@@ -106,6 +108,8 @@ gem 'leaflet-rails'
 gem 'gravtastic'
 
 # for country selects
+# TODO-SNAPCON: Verify that this is no longer necessary.
+# gem 'country_select', '< 7'
 gem 'i18n_data'
 
 # as PDF generator
@@ -125,8 +129,10 @@ gem 'rqrcode'
 # to render XLS spreadsheets
 gem 'caxlsx_rails'
 
-# as error catcher
+# Application Monitoring
+gem 'sentry-delayed_job'
 gem 'sentry-rails'
+gem 'sentry-ruby'
 
 # to make links faster
 gem 'turbolinks'
@@ -142,7 +148,7 @@ gem 'redcarpet'
 
 # for recurring jobs
 gem 'delayed_job_active_record'
-gem 'whenever', :require => false
+gem 'whenever', require: false
 
 # to run scripts
 gem 'daemons'
@@ -159,9 +165,6 @@ gem 'bootstrap-switch-rails', '3.3.3' # Locked pending Bttstrp/bootstrap-switch#
 # for parsing OEmbed data
 gem 'ruby-oembed'
 
-# for uploading images to the cloud
-gem 'cloudinary'
-
 # for setting app configuration in the environment
 gem 'dotenv-rails'
 
@@ -170,7 +173,7 @@ gem 'dotenv-rails'
 gem 'feature'
 
 # For countable.js
-gem "countable-rails"
+gem 'countable-rails'
 
 # Both are not in a group as we use it also for rake data:demo
 # for fake data
@@ -187,43 +190,50 @@ gem 'sprockets-rails'
 # for multiple speakers select on proposal/event forms
 gem 'selectize-rails'
 
-# For collecting performance data
-gem 'skylight'
+# n+1 query logging
+gem 'bullet'
 
 # memcached binary connector
-gem 'dalli'
+gem 'dalli', require: false
+# Redis Cache
+gem 'redis'
 
 # to generate ical files
 gem 'icalendar'
+
+# for making external requests easier
+gem 'httparty'
+
+# pagination
+gem 'pagy', '<4.0'
 
 # to tame logs
 gem 'lograge'
 
 group :development do
-  # for static code analisys
-  gem 'rubocop', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-capybara', require: false
-  gem 'rubocop-performance', require: false
-  gem 'haml_lint'
   # to open mails
   gem 'letter_opener'
+  # view mail at /letter_opener/
   gem 'letter_opener_web'
   # as deployment system
   gem 'mina'
   # as debugger on error pages
   gem 'web-console'
+  # prepend models with db schema
+  gem 'annotate'
 end
 
 group :test do
   # as test framework
   gem 'capybara'
+  gem 'cucumber-rails', require: false
+  gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
   gem 'database_cleaner'
   gem 'geckodriver-helper'
   gem 'rspec-rails'
   gem 'webdrivers'
   # for measuring test coverage
+  gem 'simplecov', '<0.18'
   gem 'simplecov-cobertura'
   # for describing models
   gem 'shoulda-matchers', require: false
@@ -242,12 +252,32 @@ group :test do
   # For managing the environment
   gem 'climate_control'
   # For PDFs
-  gem 'pdf-inspector', require: "pdf/inspector"
+  gem 'pdf-inspector', require: 'pdf/inspector'
+end
+
+group :development, :test, :linters do
+  # as debugger
+  gem 'byebug'
+
+  # for static code analisys
+  gem 'rubocop', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-capybara', require: false
+  gem 'rubocop-performance', require: false
+  gem 'haml_lint'
+
+  gem 'faraday-retry', require: false
+  # TODO-SNAPCON: figure out which haml-lint OR haml_lint is good.
+  gem 'haml-lint', require: false
+
+  # Easily run linters
+  gem 'pronto', require: false
+  gem 'pronto-haml', require: false
+  gem 'pronto-rubocop', require: false
 end
 
 group :development, :test do
-  # as debugger
-  gem 'byebug'
   # as development/test database
   gem 'sqlite3'
   # to test new rails version

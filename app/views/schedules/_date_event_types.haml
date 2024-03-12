@@ -1,0 +1,16 @@
+%p.text-center
+  - selected_timezone = current_user&.timezone.presence || conference.timezone
+  All events are currently displayed in #{timezone_mapping(selected_timezone)}.
+  - if selected_timezone != conference.timezone
+    The conference timezone is #{timezone_mapping(conference.timezone)}.
+  - if current_user
+    Visit your #{link_to('user profile page', edit_user_path(current_user.id))} to set your timezone.
+- if current_user
+  %p.text-center
+    Click the star next to each event to add or remove it from
+    = link_to 'your personal schedule.', events_conference_schedule_path(conference.short_title, favourites: true)
+
+= render 'event_types_key', event_types: conference.program.event_types,
+  conference: conference, favourites: favourites
+%p.text-center
+  Select an event type to filter the list of events.

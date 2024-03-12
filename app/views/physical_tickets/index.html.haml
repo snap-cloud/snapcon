@@ -9,6 +9,18 @@
       .text-muted
         Your tickets for the conference
 
+    -# TODO: And if they have a registration ticket?
+    - if !@conference.user_registered?(@user) && @has_registration_ticket
+      .col-md-12
+        .alert.alert-success{ role: 'alert' }
+          = link_to 'Complete Registration',
+            new_conference_conference_registration_path(@conference),
+            class: 'btn btn-info pull-right btn-lg'
+          %h3
+            🎉 Thanks for getting a #{@conference.title} ticket! One last step...
+          %strong
+            You are not yet registered for the conference.
+
     .col-md-12
       - if @physical_tickets.present?
         %table.table.table-bordered.table-striped.table-hover#roles
@@ -17,6 +29,7 @@
               %th ID
               %th Type
               %th User
+              %th Registration?
               %th Actions
           %tbody
             - @physical_tickets.each do |physical_ticket|
@@ -24,6 +37,7 @@
                 %td= physical_ticket.id
                 %td= physical_ticket.ticket.title
                 %td= physical_ticket.user.name
+                %td= physical_ticket.ticket.registration_ticket? ? 'Yes' : 'No'
                 %td
                   .btn-group
                     = link_to 'Show',

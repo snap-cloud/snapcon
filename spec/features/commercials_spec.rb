@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-feature Commercial do
+describe Commercial do
   # It is necessary to use bang version of let to build roles before user
   let!(:conference) { create(:conference) }
   let!(:cfp) { create(:cfp, program: conference.program) }
@@ -13,53 +13,54 @@ feature Commercial do
     create(:event_user, user: participant, event: event, event_role: 'submitter')
   end
 
-  before(:each) do
+  before do
     sign_in participant
   end
 
-  scenario 'adds a valid commercial of an event', feature: true, js: true do
+  it 'adds a valid commercial of an event', feature: true, js: true do
     visit edit_conference_program_proposal_path(conference.short_title, event.id)
-    click_link 'Commercials'
+    click_link 'Materials'
     fill_in 'commercial_url', with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
 
     # Workaround to enable the 'Create Commercial' button
     page.execute_script("$('#commercial_submit_action').prop('disabled', false)")
 
-    click_button 'Create Commercial'
+    click_button 'Create Materials'
     page.find('#flash')
-    expect(flash).to eq('Commercial was successfully created.')
+    expect(flash).to eq('Materials were successfully created.')
   end
 
-  scenario 'updates a commercial of an event', feature: true, js: true do
+  it 'updates a commercial of an event', feature: true, js: true do
     commercial = create(:commercial,
                         commercialable_id:   event.id,
                         commercialable_type: 'Event')
     visit edit_conference_program_proposal_path(conference.short_title, event.id)
-    click_link 'Commercials'
-    within('.thumbnail') do
+    click_link 'Materials'
+    within('.panel') do
       fill_in 'commercial_url', with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
       # Workaround to enable the 'Create Commercial' button
       page.execute_script("$('#commercial_submit_action').prop('disabled', false)")
-      click_button 'Update Commercial'
+      click_button 'Update Materials'
     end
+
     page.find('#flash')
-    expect(flash).to eq('Commercial was successfully updated.')
+    expect(flash).to eq('Materials were successfully updated.')
     expect(event.commercials.count).to eq(1)
     commercial.reload
     expect(commercial.url).to eq('https://www.youtube.com/watch?v=M9bq_alk-sw')
   end
 
-  scenario 'deletes a commercial of an event', feature: true, js: true do
+  it 'deletes a commercial of an event', feature: true, js: true do
     create(:commercial,
            commercialable_id:   event.id,
            commercialable_type: 'Event')
     visit edit_conference_program_proposal_path(conference.short_title, event.id)
-    click_link 'Commercials'
+    click_link 'Materials'
     page.accept_alert do
       click_link 'Delete'
     end
     page.find('#flash')
-    expect(flash).to eq('Commercial was successfully destroyed.')
+    expect(flash).to eq('Materials were successfully destroyed.')
     expect(event.commercials.count).to eq(0)
   end
 end

@@ -12,15 +12,21 @@ linters:
   RuboCop:
     enabled: false
 
+  ConsecutiveComments:
+    exclude:
+      # These seems like a bug in haml-lint.
+      - "app/views/admin/conferences/show.html.haml"
+      - "app/views/proposals/index.html.haml"
+
   # Offense count: 24
   ConsecutiveSilentScripts:
+    max_consecutive: 3
     exclude:
       - "app/views/admin/booths/_change_state_dropdown.html.haml"
       - "app/views/admin/schedules/_day_tab.html.haml"
       - "app/views/admin/schedules/_event.html.haml"
       - "app/views/admin/versions/_object_desc_and_link.html.haml"
       - "app/views/booths/index.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
 
   # Offense count: 981
   LineLength:
@@ -111,26 +117,19 @@ linters:
   SpaceBeforeScript:
     enabled: false
 
-  # Offense count: 1
-  ImplicitDiv:
-    exclude:
-      - "app/views/admin/registrations/index.html.haml"
-
   # Offense count: 9
   MultilinePipe:
     exclude:
       - "app/views/admin/schedules/_day_tab.html.haml"
       - "app/views/admin/schedules/_event.html.haml"
-      - "app/views/schedules/_carousel.html.haml"
       - "app/views/schedules/_event.html.haml"
       - "app/views/schedules/_schedule_item.html.haml"
 
-  # Offense count: 9
+  # Offense count: 4
   ClassAttributeWithStaticValue:
     exclude:
       - "app/views/admin/survey_questions/_form.html.haml"
       - "app/views/admin/surveys/_survey_question.html.haml"
-      - "app/views/conferences/_gallery.html.haml"
       - "app/views/layouts/_navigation.html.haml"
       - "app/views/schedules/events.html.haml"
 

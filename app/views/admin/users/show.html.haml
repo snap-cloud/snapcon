@@ -12,8 +12,10 @@
       .tab-content
         #user-info-content.tab-pane{class: "#{'active' unless params[:tab] == 'submissions-content'}"}
           - if can? :edit, @user
-            .pull-right
+            .pull-right.btn-group
               = link_to 'Edit', edit_admin_user_path(@user), class: 'btn btn-primary'
+              = link_to 'Delete', admin_user_path(@user),method: :delete, class: 'btn btn-danger',
+                data: {confirm: "Are you sure?"}
           %table.table
             - @show_attributes.each do |attr|
               %tr
@@ -26,6 +28,9 @@
                 - elsif attr == 'biography'
                   %td
                     = markdown(@user.biography)
+                - elsif attr == 'profile_picture'
+                  %td
+                    = image_tag @user.profile_picture(size: '100'), alt: ''
                 - elsif attr == 'email'
                   %td
                     = @user.send(attr)

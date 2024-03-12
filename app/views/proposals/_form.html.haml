@@ -1,94 +1,101 @@
-:ruby
-  action_is_edit = @event.persisted?
-  user_is_admin = current_user&.is_admin?
-  display_details = user_is_admin || action_is_edit
-  display_registration = user_is_admin || @program.cfp&.enable_registrations?
-
-%h4
-  Proposal Information
+%h4 Proposal Information
 %hr
+
 .form-group
   = f.label :title
   %abbr{title: 'This field is required'} *
   = f.text_field :title, autofocus: true, required: true, class: 'form-control'
-- if display_details
-  .form-group
-    = f.label :subtitle
-    = f.text_field :subtitle, class: 'form-control'
-  .form-group
-    %label{for: 'users_selectize-selectized'} Speakers
-    = f.select :speaker_ids, f.object.speakers.pluck(:username, :id), {}, {  multiple: true, class: "form-control", id: "users_selectize", placeholder: "Speakers" }
-    %span.help-block
-      The people responsible for the event, beside you. You can only select existing users.
-  - if @program.tracks.confirmed.cfp_active.any?
-    .form-group
-      = f.label :track_id, 'Track'
-      = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), { include_blank: '(Please select)' }, { class: 'form-control select-help-toggle' }
-      = render 'shared/select_help_text', f: f, for: :track_id, include_blank: true, options: @program.tracks.confirmed.cfp_active do |track|
-        = markdown(track.description)
+
 .form-group
-  = f.label :event_type_id, 'Type'
-  = f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
+  = f.label :subtitle
+  = f.text_field :subtitle, class: 'form-control'
+.form-group
+  = f.label :presentation_mode
+  = f.select :presentation_mode, options_for_select(Event.display_presentation_modes, @event.presentation_mode), { include_blank: true }, { class: 'select-help-toggle form-control' }
+
+.form-group
+  = f.label :speaker_ids, 'Speakers'
+  = f.select :speaker_ids, user_options_for_dropdown(@event, :speakers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select speakers..." }
+  .help-block The people responsible for the event. You can only select existing users.
+
+= committee_only_actions(current_user, @conference) do
+  .form-group
+    = f.label :volunteer_ids, 'Volunteers'
+    = f.select :volunteer_ids, user_options_for_dropdown(@event, :volunteers), {}, { multiple: true, class: "select-help-toggle js-userSelector form-control", placeholder: "Select volunteers..." }
+    .help-block Assign volunteers to help run this session.
+  .form-group
+    = f.label "Is this is parent event?", for: :superevent
+    = f.check_box :superevent, class: 'switch-checkbox'
+    .help-block
+      A parent event can contain subevents. Enable this for the primary lightning talk
+      session, poster sessions, etc.
+  .form-group
+    = f.label :parent_id, 'Selet a Parent Event'
+    = f.select :parent_id, @superevents.map { |e| [e.title, e.id] }, {include_blank: 'Select a Parent Event'}, {class: 'select-help-toggle form-control'}
+    .help-block
+      Designate a parent event so that this event appears scheduled "inside"
+      the parent event on the schedule.
+  .form-group
+    = f.label :committee_review, 'Committee Feedback'
+    = f.text_area :committee_review, rows: 5, data: { provide: 'markdown' }
+    .help-block= markdown_hint('This field is shared with the submission authors.')
+  .form-group
+    = f.label :is_highlight
+    = f.check_box :is_highlight, class: 'switch-checkbox'
+  .help-block This shows the event on the conference homepage.
+
+
+- if @program.tracks.confirmed.cfp_active.any?
+  .form-group
+    = f.label :track_id, 'Track'
+    = f.select :track_id, @program.tracks.confirmed.cfp_active.pluck(:name, :id), { include_blank: '(Please select)' }, { class: 'form-control' }
+    - @program.tracks.confirmed.cfp_active.each do |track|
+      .help-block.select-help-text.track-description.collapse{ id: "#{track.id}-help" }
+        = track.description
+
+
 - if @program.languages.present?
   .form-group
-  = f.label :language
-  = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
-= render 'shared/select_help_text', f: f, for: :event_type_id, options: @conference.program.event_types do |event_type|
-  = event_type.description
-- if display_details
-  - if @conference.program.difficulty_levels.any?
+    = f.label :language
+    = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
+
+- if @conference.program.difficulty_levels.any?
+  .form-group
     = f.label :difficulty_level
     = f.select :difficulty_level_id, @conference.program.difficulty_levels.map{|level| [level.title, level.id ] }, {include_blank: false}, { class: 'select-help-toggle form-control' }
-    = render 'shared/select_help_text', f: f, for: :difficulty_level_id, options: @conference.program.difficulty_levels do |difficulty_level|
-      = difficulty_level.description
+    - @conference.program.difficulty_levels.each do |difficulty_level|
+      .help-block.select-help-text.collapse{ id: "#{difficulty_level.id}-help" }
+        = difficulty_level.description
+
+- if @event.committee_review.present?
+  %br
+  %strong.control-label Committee Feedback
+  %small Use this feedback to improve your submission.
+  .well= markdown(@event.committee_review)
+
+= render 'proposals/submission_type_content_form', f: f, program: @program
+
+- if  @program.cfp&.enable_registrations?
+  %h4 Event Registration
+  %hr
+  .checkbox
+    %label
+      = f.check_box :require_registration
+      Require participants to register to your event
+  .form-group
+    = f.number_field :max_attendees
+    .help-block
+      The maximum number of participants.
+      = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
+
 .form-group
-  = f.label :abstract
-  = f.text_area :abstract, required: true, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
-  %span.help-block
-    = markdown_hint('[Tips to improve your presentations.](http://blog.hubspot.com/blog/tabid/6307/bid/5975/10-Rules-to-Instantly-Improve-Your-Presentations.aspx)')
-  %p
-    You have used
-    %span#abstract-count = @event.abstract_word_count
-    words.  Abstracts must be between
-    %span#abstract-minimum-word-count
-      0
-    and
-    %span#abstract-maximum-word-count
-      250
-    words.
-  - if display_registration && display_details
-    %h4
-      Event Registration
-    %hr
-  - if display_registration
-    .checkbox
-      %label
-        = f.check_box :require_registration
-        Require participants to register to your event
-  - if display_registration && display_details
-    .form-group
-      = f.label :max_attendees
-      = f.number_field :max_attendees,  class: 'form-control'
-      %span.help-block
-        - message = @event.room ? "Value must be between 1 and #{@event.room.size}" : 'Check room capacity after scheduling.'
-        = 'The maximum number of participants. ' + message
-  - if display_details && current_user.has_any_role?(:admin, { name: :organizer, resource: @conference }, { name: :cfp, resource: @conference })
-    .checkbox
-      %label
-        = f.check_box :is_highlight
-        Is a highlight?
-  %p.text-right
-    = link_to '#description', 'data-toggle' => 'collapse' do
-      Do you require something special for your event?
-  #description{ class: "collapse #{ 'in' if @event.description.present? }" }
-    .form-group
-      = f.label :description, 'Requirements'
-      = f.text_area :description, rows: 5
-      %span.help-block
-        Eg. Whiteboard, printer, or something like that.
-  %p.text-right
-    - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
-    = f.submit submit_copy, class: 'btn btn-success'
+  = f.label :description, 'Requirements and Scheduling'
+  %p Please include any scheduling constraints.
+  = f.text_area :description, rows: 5, class: 'form-control'
+  .help-block e.g. Are you only attending certain days?
+
+%p.text-right
+  = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'
 
 - content_for :script_head do
   :javascript

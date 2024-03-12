@@ -6,20 +6,22 @@
   %section#tickets
     .container
       .row
-        .col-md-12.text-center
+        .col-md-12.text-center.col-top
           %h2
-            Support
-            = conference.title
+            Sign up for #{conference.title}!
+      .row.text-center
+        %h3
+          = link_to('Looking for the SAP Young Thinkers Learning Festival?', conference_path('ylf2021')) if conference.short_title == '2021'
       .row.row-centered
         - tickets.each do |ticket|
-          .col-md-3.col-sm-3.col-centered.col-top
-            = link_to(conference_tickets_path(conference.short_title),
-              class: 'thumbnail') do
+          .col-lg-4.col-md-3.col-sm-3.col-centered.col-top
+            = link_to(conference_tickets_path(conference.short_title), class: 'thumbnail') do
               .caption
                 %h3.text-center.word_break
                   = ticket.title
                 .word_break
-                  = markdown(ticket.description)
+                  = short_ticket_description(ticket)
                 %button.btn-block.btn.btn-lg.btn-success
-                  %i.fa-solid.fa-ticket.fa-fw
+                  %i.fa-solid.fa-ticket.fa-fw{ "aria-hidden": true }
                   = humanized_money_with_symbol(ticket.price)
+    .trapezoid

@@ -1,11 +1,30 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: surveys
+#
+#  id              :bigint           not null, primary key
+#  description     :text
+#  end_date        :datetime
+#  start_date      :datetime
+#  surveyable_type :string
+#  target          :integer          default("after_conference")
+#  title           :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  surveyable_id   :integer
+#
+# Indexes
+#
+#  index_surveys_on_surveyable_type_and_surveyable_id  (surveyable_type,surveyable_id)
+#
 class Survey < ActiveRecord::Base
   belongs_to :surveyable, polymorphic: true
   has_many :survey_questions, dependent: :destroy
   has_many :survey_submissions, dependent: :destroy
 
-  enum target: [:after_conference, :during_registration, :after_event]
+  enum target: { after_conference: 0, during_registration: 1, after_event: 2 }
   validates :title, presence: true
 
   ##

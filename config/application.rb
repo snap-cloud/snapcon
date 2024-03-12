@@ -31,6 +31,33 @@ module Osem
     config.time_zone = ENV.fetch('OSEM_TIME_ZONE') { 'UTC' }
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true
+
+    # Use SQL instead of Active Record's schema dumper when creating the database.
+    # This is necessary if your schema can't be completely dumped by the schema dumper,
+    # like if you have constraints or database-specific column types
+    # config.active_record.schema_format = :sql
+
+    # Enforce whitelist mode for mass assignment.
+    # This will create an empty whitelist of attributes available for mass-assignment for all models
+    # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
+    # parameters by using an attr_accessible or attr_protected declaration.
+    # config.active_record.whitelist_attributes = true
+
+    # Set cache headers
+    config.public_file_server.headers = { 'Cache-Control' => 'public, max-age=31536000' }
+
+    config.active_job.queue_adapter = :delayed_job
+
+    config.conference = {
+      events_per_page:       ENV.fetch('EVENTS_PER_PAGE', 5).to_i,
+      default_logo_filename: ENV.fetch('DEFAULT_LOGO_FILENAME', 'snapcon_logo.png'),
+      default_color:         ENV.fetch('DEFAULT_COLOR', '#0B3559')
+    }
+
+    config.fullcalendar = {
+      license_key: ENV.fetch('FULL_CALENDAR_LICENSE_KEY', nil)
+    }
+
     # Don't generate system test files.
     config.generators.system_tests = nil
     # This is a nightmare with our current data model, no one ever thought about this.

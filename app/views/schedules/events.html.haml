@@ -1,45 +1,70 @@
-.container#program
-  -if @events_schedules.any?
-    = render partial: 'schedule_tabs',  locals: { active: 'program' }
+- provide :title, "#{@conference.title} Program"
+= content_for :splash_nav do
+  %li
+    = link_to('Schedule', events_conference_schedule_path(@conference))
 
-  %h1.text-center
-    Program for
-    = @conference.title
-  .dropdown.program-dropdown
-    %button{ type: "button", class: "btn btn-default dropdown-toggle", 'data-toggle' => "dropdown" }
-      Dates
-      %span.caret
-    %ul.dropdown-menu
-      - @dates.each do |date|
-        %li.li-dropdown-program
-          = link_to date, "##{date}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
-      - if @unscheduled_events.any?
-        %li.li-dropdown-program
-          = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
+.container#program{ style: 'width :92%' }
+  .row{style: 'padding-top: 1em'}
+    = render partial: 'schedule_tabs', locals: { active: 'program' }
+
+    %h1.text-center
+      - if @favourites && current_user
+        #{current_user.name}'s Program for #{@conference.title}
+      - else
+        Program for #{@conference.title}
+
+    = render 'date_event_types', conference: @conference, favourites: @favourites
+
+    .dropdown.program-dropdown
+      %button.btn.btn-default.dropdown-toggle{ type: "button", 'data-toggle': "dropdown" }
+        Dates
+        %span.caret
+      %ul.dropdown-menu
+        - @dates.each do |date|
+          %li.li-dropdown-program
+            - new_date = current_user ? convert_timezone(date.to_datetime.change(hour: @conference.start_hour), @conference.timezone, current_user.timezone) || date : date
+            = link_to new_date.strftime('%Y-%m-%d'), "##{new_date.strftime('%Y-%m-%d')}", class: "program-selector#{ ' no-events-day' unless @conference.program.any_event_for_this_date?(date) }"
+        - if @unscheduled_events.any?
+          %li.li-dropdown-program
+            = link_to('Unscheduled', "#unscheduled", class: 'program-selector')
+
+  - if @favourites && current_user && @events_schedules.empty?
+    .row
+      %strong
+        You have no events on your agenda.
+      %br
+      %strong
+        #{link_to 'View the full program', events_conference_schedule_path(@conference.short_title, favourites: false)} and add events to your schedule?
+
 
   .row
-
     / scheduled events
-    - date = nil
-    - time = nil
+    :ruby
+      date = nil
+      time = nil
+      tz_object = current_user&.timezone ? current_user : @conference
+
+    / TODO-SNAPCON: Explore caching this.
     - @events_schedules.each do |event_schedule|
-      - unless event_schedule.start_time.strftime('%Y-%m-%d').eql?(date)
+      - next if event_schedule.event.parent_event.present?
+      - new_start_time = convert_timezone(event_schedule.start_time, @conference.timezone, tz_object.timezone)
+      - start_ymd = new_start_time.strftime('%Y-%m-%d')
+      - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
           .date-content
-            %span{ class: 'date-title', id: "#{ event_schedule.start_time.strftime('%Y-%m-%d') }" }
-              = date = event_schedule.start_time.strftime('%Y-%m-%d')
-            %a{ title: "Go up", class: "pull-right", href: "#program" }
-              %i{ class: "fa-solid fa-angles-up fa-lg", 'aria-hidden' => true }
-      - unless event_schedule.start_time.strftime('%H:%M').eql?(time)
-        .col-xs-12.col-md-1
-          .start-time
-            = time = event_schedule.start_time.strftime('%H:%M')
-        .col-xs-12.col-md-11
-          .new-time-event
-            = render partial: 'event', locals: { event: event_schedule.event, event_schedule: event_schedule }
-      - else
-        .col-xs-12.col-md-11.col-md-offset-1
-          = render partial: 'event', locals: { event: event_schedule.event, event_schedule: event_schedule }
+            %span.date-title{ id: start_ymd }
+              = inyourtz(event_schedule.start_time, @conference.timezone) do
+                = date = start_ymd
+            %a.pull-right{ title: "Go up", href: "#program" }
+              %i.fa-solid.fa-angles-up.fa-lg{ 'aria-hidden': true }
+      .col-xs-12.col-md-1
+        - if !event_schedule.start_time.strftime('%H:%M').eql?(time) || !start_ymd.eql?(date)
+          - time = new_start_time.strftime('%H:%M')
+          = inyourtz(event_schedule.start_time, @conference.timezone) do
+            = time + ' ' + timezone_text(tz_object)
+      .col-xs-12.col-md-11
+        - cache [@program, event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+          = render 'event', event: event_schedule.event, event_schedule: event_schedule
 
     / confirmed events that are not scheduled
     - if @unscheduled_events.any?
@@ -47,22 +72,24 @@
         .date-content
           %span.date-title#unscheduled
             Unscheduled events
-          %a{ title: "Go up", class: "pull-right", href: "#program" }
-            %i{ class: "fa-solid fa-angles-up fa-lg", 'aria-hidden' => true }
+          %a.pull-right{ title: "Go up", href: "#program" }
+            %i.fa-solid.fa-angles-up.fa-lg{ 'aria-hidden': true }
       - @unscheduled_events.each do |event|
         .col-xs-12.col-md-12
           .unscheduled-event
-            = render partial: 'event', locals: { event: event, event_schedule: nil }
+            - cache [@program, event, current_user, '#unscheduled#full#panel'] do
+              = render 'event', event: event, event_schedule: nil
 
 :javascript
   $('.program-selector').on('click', function(e) {
     $('.li-dropdown-program').removeClass('active');
   });
 
-  // Go to current date and time
   $(document).ready(function(){
     tag = "#{ @tag }";
     if(tag !== ""){
       document.getElementById(tag).scrollIntoView();
     }
+
+    updateFavouriteStatus({ events: #{@favourited_events}, loggedIn: #{current_user.present?} });
   });
