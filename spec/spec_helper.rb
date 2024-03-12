@@ -9,7 +9,7 @@ if ENV['CI']
   require 'simplecov-cobertura'
   SimpleCov.formatter = SimpleCov::Formatter::CoberturaFormatter
 end
-# SimpleCov.start 'rails'
+SimpleCov.start 'rails'
 
 require File.expand_path('../config/environment', __dir__)
 
