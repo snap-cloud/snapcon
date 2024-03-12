@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV.fetch('OSEM_RUBY_VERSION', '3.2.2')
+ruby ENV.fetch('OSEM_RUBY_VERSION', '3.3.0')
 
 # as web framework
 if next?
@@ -233,7 +233,7 @@ group :test do
   gem 'rspec-rails'
   gem 'webdrivers'
   # for measuring test coverage
-  gem 'simplecov', '<0.18'
+  gem 'simplecov'
   gem 'simplecov-cobertura'
   # for describing models
   gem 'shoulda-matchers', require: false

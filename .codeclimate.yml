@@ -3,6 +3,9 @@ plugins:
   rubocop:
     enabled: true
     channel: rubocop-1-56-3
+    exclude_patterns:
+    - "vendor/"
+    - "lib/"
 exclude_patterns:
 - "bin/"
 - "config/"
