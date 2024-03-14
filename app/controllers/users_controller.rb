@@ -50,7 +50,7 @@ class UsersController < ApplicationController
   def load_user
     @user ||= (params[:id] && params[:id] != 'current' && User.find(params[:id])) || current_user
   end
-  
+
   # rubocop:enable Naming/MemoizedInstanceVariableName
   def set_currency_options
     @currency_options = CurrencyConversion::VALID_CURRENCIES.map { |currency| [currency, currency] }

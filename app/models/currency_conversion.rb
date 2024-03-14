@@ -25,6 +25,6 @@ class CurrencyConversion < ApplicationRecord
   belongs_to :conference
   validates :rate, numericality: { greater_than: 0 }
   # Ensure from_currency and to_currency are among the VALID_CURRENCIES
-  validates :from_currency, :to_currency, inclusion: { in: VALID_CURRENCIES}
+  validates :from_currency, :to_currency, inclusion: { in: VALID_CURRENCIES }
   validates :from_currency, uniqueness: { scope: :to_currency }, on: :create
 end
