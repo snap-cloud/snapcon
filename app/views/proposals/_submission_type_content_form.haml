@@ -33,7 +33,7 @@
 
 - program.event_types.each do |event_type|
   .help-block.select-help-text.event_event_type_id.collapse{ id: "#{dom_id(event_type)}-instructions" }
-    - if event_type.submission_instructions.blank?
+    - if event_type.submission_template.blank?
       %p
         Use this space to include any additional inforrmation that is helpful in reviewing your
         submission.
@@ -43,7 +43,7 @@
         committee review your submission with all the details they need.
       .panel.panel-primary
         .panel-heading= "#{event_type.name} Template"
-        .panel-body= markdown(event_type.submission_instructions)
+        .panel-body= markdown(event_type.submission_template)
         .panel-footer
           %button.btn.btn-warning.btn-xs.js-resetSubmissionText{ type: 'button',
             data: { confirm: 'Do you really want to reset your submission text to the provided template?' } }
