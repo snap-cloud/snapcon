@@ -179,7 +179,7 @@ describe Event do
       fill_in 'event_submission_text', with: 'Lorem ipsum submission_text'
       expect(page).to have_text('Submission text')
       # Submission Instructions content
-      expect(page).to have_text('Example Event Instructions')
+      expect(page).to have_text('Example Event Template')
 
       # TODO-SNAPCON: (mb) this field is always shown.
       # click_link 'Do you require something special for your event?'
