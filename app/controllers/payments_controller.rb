@@ -25,13 +25,14 @@ class PaymentsController < ApplicationController
     #a way to display the currency values in the view, but there might be a better way to do this.
     @converted_prices = {}
     @unpaid_ticket_purchases.each do |ticket_purchase|
+      #hardcoded
       @converted_prices[ticket_purchase.id] = convert_currency(ticket_purchase.price.amount, 'USD', selected_currency)
     end
     @currency = selected_currency
   end
 
   def create
-    @payment = Payment.new (payment_params.merge(currency: session[:selected_currency]))
+    @payment = Payment.new (payment_params)
 
     if @payment.purchase && @payment.save
       update_purchased_ticket_purchases
@@ -64,7 +65,7 @@ class PaymentsController < ApplicationController
     params.permit(:stripe_customer_email, :stripe_customer_token)
           .merge(stripe_customer_email: params[:stripeEmail],
                  stripe_customer_token: params[:stripeToken],
-                 user: current_user, conference: @conference)
+                 user: current_user, conference: @conference, currency: session[:selected_currency])
   end
 
   def update_purchased_ticket_purchases
