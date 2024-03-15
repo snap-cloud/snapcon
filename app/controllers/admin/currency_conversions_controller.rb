@@ -7,13 +7,13 @@ module Admin
 
     # GET /currency_conversions
     def index
-      #todo: rescue currency that doesnt exist
+      # TODO: rescue currency that doesnt exist
       currency_conversions_with_symbols = @conference.currency_conversions.map do |conversion|
         {
           from_currency: conversion.from_currency,
-          to_currency: conversion.to_currency,
-          rate: conversion.rate,
-          symbol: Money::Currency.new(conversion.to_currency).symbol
+          to_currency:   conversion.to_currency,
+          rate:          conversion.rate,
+          symbol:        Money::Currency.new(conversion.to_currency).symbol
         }
       end
 

@@ -71,7 +71,7 @@ class TicketPurchase < ApplicationRecord
                      user_id:       user.id,
                      quantity:      quantity,
                      amount_paid:   ticket.price,
-                     currency: currency)
+                     currency:      currency)
       purchase.pay(nil) if ticket.price_cents.zero?
     end
     purchase

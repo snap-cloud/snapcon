@@ -17,8 +17,7 @@
           %td
             = humanized_money_with_symbol @converted_prices[ticket.id]
           %td
-            = humanized_money_with_symbol (@converted_prices[ticket.id] * ticket.quantity)
-            
+            = humanized_money_with_symbol (@converted_prices[ticket.id] * ticket.quantity)            
 = form_tag conference_payments_path(@conference.short_title, :has_registration_ticket => @has_registration_ticket) do
   %script.stripe-button{ src: "https://checkout.stripe.com/checkout.js",
         data: { amount: @total_amount_to_pay.cents,
