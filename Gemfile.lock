@@ -214,9 +214,9 @@ GEM
     cucumber-html-formatter (17.0.0)
       cucumber-messages (~> 17.1, >= 17.1.0)
     cucumber-messages (17.1.1)
-    cucumber-rails (2.5.1)
+    cucumber-rails (2.6.1)
       capybara (>= 2.18, < 4)
-      cucumber (>= 3.2, < 8)
+      cucumber (>= 3.2, < 9)
       mime-types (~> 3.3)
       nokogiri (~> 1.10)
       railties (>= 5.0, < 8)
@@ -403,6 +403,8 @@ GEM
       colorize (>= 0.8.1)
     nio4r (2.7.0)
     nokogiri (1.16.2-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.2-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.16.2-x86_64-linux)
       racc (~> 1.4)
@@ -639,15 +641,13 @@ GEM
     shoulda-matchers (5.3.0)
       activesupport (>= 5.2.0)
     simple_po_parser (1.1.6)
-    simplecov (0.22.0)
+    simplecov (0.17.1)
       docile (~> 1.1)
-      simplecov-html (~> 0.11)
-      simplecov_json_formatter (~> 0.1)
-    simplecov-cobertura (2.1.0)
-      rexml
-      simplecov (~> 0.19)
-    simplecov-html (0.12.3)
-    simplecov_json_formatter (0.1.4)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-cobertura (1.4.2)
+      simplecov (~> 0.8)
+    simplecov-html (0.10.2)
     snaky_hash (2.0.1)
       hashie
       version_gem (~> 1.1, >= 1.1.1)
@@ -659,6 +659,7 @@ GEM
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
     sqlite3 (1.6.3-arm64-darwin)
+    sqlite3 (1.6.3-x86_64-darwin)
     sqlite3 (1.6.3-x86_64-linux)
     ssrf_filter (1.1.2)
     stripe (5.55.0)
@@ -721,6 +722,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-23
+  x86_64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
@@ -837,6 +839,7 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   shoulda-matchers
+  simplecov (< 0.18)
   simplecov-cobertura
   sprockets-rails
   sqlite3

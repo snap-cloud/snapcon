@@ -32,11 +32,28 @@ class Mailbot < ApplicationMailer
       attachments["ticket_for_#{@conference.short_title}_#{physical_ticket.id}.pdf"] = pdf.render
     end
 
-    template_name = 'ticket_confirmation_template'
-    template_name = 'young_thinkers_ticket_confirmation_template' if @ticket_purchase.ticket_id == YTLF_TICKET_ID
+    if @ticket_purchase.ticket_id == YTLF_TICKET_ID
+      template_name = 'young_thinkers_ticket_confirmation_template'
+      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: template_name)
+    end
 
-    mail(subject:       "#{@conference.title} | Ticket Confirmation and PDF!",
-         template_name: template_name)
+    # if email subject is empty, use custom template
+    if @ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
+      @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
+      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: 'custom_ticket_confirmation_template')
+    # if email body is empty, use default template with subject
+    elsif !@ticket_purchase.ticket.email_subject.empty? && @ticket_purchase.ticket.email_body.empty?
+      @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
+      mail(subject: @ticket_purchase.ticket.email_subject, template_name: 'ticket_confirmation_template')
+    # if both exist, use custom
+    elsif !@ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
+      @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
+      @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
+      mail(subject: @ticket_purchase.ticket.email_subject, template_name: 'custom_ticket_confirmation_template')
+    # if both empty, use default
+    else
+      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: 'ticket_confirmation_template')
+    end
   end
 
   def acceptance_mail(event)

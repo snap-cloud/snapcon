@@ -10,7 +10,7 @@
 #  length                  :integer          default(30)
 #  maximum_abstract_length :integer          default(500)
 #  minimum_abstract_length :integer          default(0)
-#  submission_instructions :text
+#  submission_template     :text
 #  title                   :string           not null
 #  created_at              :datetime
 #  updated_at              :datetime
@@ -24,7 +24,7 @@ FactoryBot.define do
     description { 'Example Event Description\nThis event type is an example.' }
     minimum_abstract_length { 0 }
     maximum_abstract_length { 500 }
-    submission_instructions { 'Example Event Instructions _with_ **markdown**' }
+    submission_template { 'Example Event Template _with_ **markdown**' }
     color { '#ffffff' }
     program
   end
