@@ -2,6 +2,7 @@
 
 class UsersController < ApplicationController
   before_action :authenticate_user!, only: :search
+  before_action :set_currency_options, only: [:edit, :new, :create, :update]
   load_and_authorize_resource
 
   # GET /users/1
@@ -40,7 +41,7 @@ class UsersController < ApplicationController
 
   def user_params
     params[:user][:timezone] = params[:user][:timezone].presence || nil
-    params.require(:user).permit(:name, :biography, :nickname, :affiliation,
+    params.require(:user).permit(:name, :biography, :nickname, :affiliation, :default_currency,
                                  :picture, :picture_cache, :timezone)
   end
 
@@ -49,5 +50,9 @@ class UsersController < ApplicationController
   def load_user
     @user ||= (params[:id] && params[:id] != 'current' && User.find(params[:id])) || current_user
   end
+
   # rubocop:enable Naming/MemoizedInstanceVariableName
+  def set_currency_options
+    @currency_options = CurrencyConversion::VALID_CURRENCIES.map { |currency| [currency, currency] }
+  end
 end
