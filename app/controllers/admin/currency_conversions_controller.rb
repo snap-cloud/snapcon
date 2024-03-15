@@ -2,7 +2,9 @@ module Admin
   class CurrencyConversionsController < Admin::BaseController
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :currency_conversion, through: :conference
-    before_action :set_currency_options, only: [:new, :edit, :create]
+    before_action :check_for_tickets, only: [:new, :create, :edit]
+    before_action :set_currency_options, only: [:new, :create, :edit]
+  
 
 
     # GET /currency_conversions
@@ -14,9 +16,8 @@ module Admin
     # GET /currency_conversions/new
     def new
       @currency_conversion = @conference.currency_conversions.new(conference_id: @conference.short_title)
-      #change from @conference.tickets.first.price_currency to default conference currency when that is created
       @currency_conversion.from_currency = @conference.tickets.first.price_currency
-    end
+    end 
 
     # GET /currency_conversions/1/edit
     def edit; end
@@ -24,7 +25,6 @@ module Admin
     # POST /currency_conversions
     def create
       @currency_conversion = @conference.currency_conversions.new(currency_conversion_params)
-      #set from currency after the params are taken in by currency_conversion_params from form
       @currency_conversion.from_currency = @conference.tickets.first.price_currency 
       if @currency_conversion.save
         redirect_to admin_conference_currency_conversions_path(@conference.short_title), notice: 'Currency conversion was successfully created.'
@@ -61,8 +61,14 @@ module Admin
     end
 
     def set_currency_options
-      from_currency = @conference.tickets.first.price_currency
-      @currency_options = CurrencyConversion::VALID_CURRENCIES.reject{|i| i == from_currency}.map{|i| [i, i]}
+        @currency_conversion.from_currency = @conference.tickets.first.price_currency
+        @to_currency_options = CurrencyConversion::VALID_CURRENCIES.reject{|i| i == @currency_conversion.from_currency}
     end
-  end
+
+    def check_for_tickets
+      if @conference.tickets.empty?
+        redirect_to admin_conference_currency_conversions_path, alert: 'No tickets available for this conference. Cannot create or edit currency conversions.'
+      end 
+    end 
+  end 
 end
