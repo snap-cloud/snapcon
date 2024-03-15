@@ -233,7 +233,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_15_025823) do
     t.integer "program_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-    t.text "submission_instructions"
+    t.text "submission_template"
   end
 
   create_table "event_users", force: :cascade do |t|

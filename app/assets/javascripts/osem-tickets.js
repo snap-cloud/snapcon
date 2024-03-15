@@ -2,7 +2,7 @@
 function update_currency_rates(data) {
     data.forEach(function(conversion) {
         var key = conversion.from_currency + "_to_" + conversion.to_currency;
-        window.currencyRates[key] = conversion.rate;
+        window.currencyRates[key] = { rate: conversion.rate, symbol: conversion.symbol };
     });
     $('.quantity').each(function() {
         update_price($(this));
@@ -12,7 +12,6 @@ function update_currency_rates(data) {
 function fetch_currency_rates(){
     //todo get conference dynamically
     var conferenceIdentifier = $('meta[name="conference-short-title"]').data('short-title');
-    if (typeof conferenceIdentifier !== 'undefined') {
     var requestUrl = "/admin/conferences/" + conferenceIdentifier + "/currency_conversions";
     $.ajax({
         url: requestUrl, 
@@ -25,7 +24,7 @@ function fetch_currency_rates(){
           console.error("Failed to fetch currency rates: " + error);
         }
     });
-    }
+    
 }
 
 function update_price($this){
@@ -35,7 +34,8 @@ function update_price($this){
     var selectedCurrency = $('#currency_selector').val();
     var baseCurrency = "USD"; // todo fetch from controller
     var conversionKey = baseCurrency + "_to_" + selectedCurrency;
-    var conversionRate = window.currencyRates[conversionKey] || 1;
+    var conversionData = window.currencyRates[conversionKey] || { rate: 1, symbol: '$' };
+    var conversionRate = conversionData.rate;
 
     var originalPrice = parseFloat($('#price_'+id).data('original-price'));
     var convertedPrice = originalPrice*conversionRate;
@@ -43,24 +43,28 @@ function update_price($this){
 
     // Calculate price for row
     var value = $this.val();
-    $('#price_' + id).text(convertedPrice.toFixed(2));
+    $('#price_' + id).text(conversionData.symbol + " " + convertedPrice.toFixed(2));
 
 
-    $('#total_row_' + id).text((value * convertedPrice).toFixed(2));
+    $('#total_row_' + id).text(conversionData.symbol + " " + (value * convertedPrice).toFixed(2));
 
     // Calculate total price
     var total = 0;
     $('.total_row').each(function( index ) {
-        total += parseFloat($(this).text());
+        //a bit hacky, look into setting symbol as an attribute by itself instead of concatenating
+        total += parseFloat($(this).text().replace(conversionData.symbol, '').trim());
     });
-    $('#total_price').text(total.toFixed(2));
+    $('#total_price').text(conversionData.symbol + total.toFixed(2));
 }
 
 $( document ).ready(function() {
 
     // Initialize currency conversion rates
     window.currencyRates = {};
-    fetch_currency_rates(); 
+
+    if($('#currency_selector').length > 0) {
+        fetch_currency_rates();
+    }
 
     $('.quantity').each(function() {
         update_price($(this));
