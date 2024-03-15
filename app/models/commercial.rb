@@ -14,6 +14,9 @@
 #  commercial_id       :string
 #  commercialable_id   :integer
 #
+require 'csv'
+
+
 class Commercial < ApplicationRecord
   require 'oembed'
 
@@ -46,17 +49,24 @@ class Commercial < ApplicationRecord
     errors[:no_event] = []
     errors[:validation_errors] = []
 
-    file.read.each_line do |line|
-      # Get the event id (text before :)
-      id = line.match(/:/).pre_match.to_i
-      # Get the commercial url (text after :)
-      url = line.match(/:/).post_match
+    # Check if the file has a .csv extension
+    unless File.extname(file.original_filename).casecmp('.csv').zero?
+      errors[:validation_errors] << 'File must be a CSV.'
+      return errors
+    end
+
+    CSV.foreach(file.path, headers: true) do |row|
+      # You can access columns by their names if headers are included in the file
+      id = row['Event_ID'].to_i
+      title = row['Title']
+      url = row['URL']
+
       event = Event.find_by(id: id)
 
-      # Go to next event, if the event is not found
+      # Go to next event if the event is not found
       (errors[:no_event] << id) && next unless event
 
-      commercial = event.commercials.new(url: url)
+      commercial = event.commercials.new(title: title, url: url)
       unless commercial.save
         errors[:validation_errors] << ("Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')')
       end
