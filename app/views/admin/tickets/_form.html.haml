@@ -26,7 +26,7 @@
   - if Ticket.where(conference: @conference).empty?
     .form-group
       = f.label :price_currency, 'Currency'
-      = f.select :price_currency, ['USD', 'EUR', 'GBP', 'INR', 'CNY', 'CHF'], { include_blank: false }, { class: 'form-control' }
+      = f.select :price_currency, CurrencyConversion::VALID_CURRENCIES, { include_blank: false }, { class: 'form-control' }
   - else
     = hidden_field_tag "ticket[price_currency]", f.object.conference.tickets.first.price_currency
     %span.help-block

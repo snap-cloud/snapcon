@@ -24,7 +24,7 @@ FactoryBot.define do
     description { 'Example Event Description\nThis event type is an example.' }
     minimum_abstract_length { 0 }
     maximum_abstract_length { 500 }
-    submission_template { 'Example Event Instructions _with_ **markdown**' }
+    submission_template { 'Example Event Template _with_ **markdown**' }
     color { '#ffffff' }
     program
   end
