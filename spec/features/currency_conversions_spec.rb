@@ -16,17 +16,17 @@ describe CurrencyConversion do
     end
 
     context 'for a conference with no tickets' do
-      before do 
+      before do
         conference.currency_conversions << create(:currency_conversion)
         conference.tickets.destroy_all
-      end 
+      end
 
       it 'show error message when adding new currency conversion', feature: true, js: true do
         visit admin_conference_currency_conversions_path(conference.short_title)
         click_link 'Add Currency Conversion'
         page.find('#flash')
         expect(flash).to eq('No tickets available for this conference. Cannot create or edit currency conversions.')
-      end 
+      end
 
       it 'show error message when editing a currency conversion', feature: true, js: true do
         visit admin_conference_currency_conversions_path(conference.short_title)
@@ -35,7 +35,7 @@ describe CurrencyConversion do
         end
         page.find('#flash')
         expect(flash).to eq('No tickets available for this conference. Cannot create or edit currency conversions.')
-      end 
+      end
 
       it 'does not show error message when deleting a currency conversion', feature: true, js: true do
         visit admin_conference_currency_conversions_path(conference.short_title)
@@ -50,10 +50,9 @@ describe CurrencyConversion do
           expect(page.assert_selector('tbody tr', count: 0)).to be true
         end
       end
-    end 
-    
-    context 'for a conference with tickets' do 
-    
+    end
+
+    context 'for a conference with tickets' do
       it 'add a currency conversion', feature: true, js: true do
         visit admin_conference_currency_conversions_path(conference.short_title)
         click_link 'Add Currency Conversion'
@@ -106,6 +105,6 @@ describe CurrencyConversion do
           expect(page.assert_selector('tbody tr', count: 0)).to be true
         end
       end
-    end 
+    end
   end
 end

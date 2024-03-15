@@ -23,23 +23,15 @@
 require 'spec_helper'
 
 describe CurrencyConversion do
-    let!(:conference) { create(:conference, title: 'ExampleCon') }
-    describe 'validations' do
-        before do 
-          conference.currency_conversions << create(:currency_conversion)
-        end 
-        it { is_expected.to validate_numericality_of(:rate).is_greater_than(0) }
-        it 'validates uniqness of new currency conversion' do
-            is_expected.to validate_uniqueness_of(:from_currency).scoped_to(:to_currency).on(:create)
-        end 
+  let!(:conference) { create(:conference, title: 'ExampleCon') }
+
+  describe 'validations' do
+    before do
+      conference.currency_conversions << create(:currency_conversion)
     end
-end 
 
+    it { is_expected.to validate_numericality_of(:rate).is_greater_than(0) }
 
-        
-
-
-
-
-
-    
+    it { is_expected.to validate_uniqueness_of(:from_currency).scoped_to(:to_currency).on(:create) }
+  end
+end

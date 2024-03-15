@@ -24,5 +24,5 @@ class CurrencyConversion < ApplicationRecord
   VALID_CURRENCIES = %w[AUD CAD CHF CNY EUR GBP JPY USD].freeze
   belongs_to :conference
   validates :rate, numericality: { greater_than: 0 }
-  validates :from_currency, uniqueness: { scope: :to_currency}, on: :create
+  validates :from_currency, uniqueness: { scope: :to_currency }, on: :create
 end
