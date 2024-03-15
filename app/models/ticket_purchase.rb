@@ -6,6 +6,7 @@
 #
 #  id            :bigint           not null, primary key
 #  amount_paid   :float            default(0.0)
+#  currency      :string
 #  paid          :boolean          default(FALSE)
 #  quantity      :integer          default(1)
 #  week          :integer
@@ -42,7 +43,7 @@ class TicketPurchase < ApplicationRecord
 
   after_create :set_week
 
-  def self.purchase(conference, user, purchases)
+  def self.purchase(conference, user, purchases, currency)
     errors = []
     if count_purchased_registration_tickets(conference, purchases) > 1
       errors.push('You cannot buy more than one registration tickets.')
@@ -54,7 +55,7 @@ class TicketPurchase < ApplicationRecord
           purchase = if ticket.bought?(user) && ticket.unpaid?(user)
                        update_quantity(conference, quantity, ticket, user)
                      else
-                       purchase_ticket(conference, quantity, ticket, user)
+                       purchase_ticket(conference, quantity, ticket, user, currency)
                      end
           errors.push(purchase.errors.full_messages) if purchase && !purchase.save
         end
@@ -63,13 +64,14 @@ class TicketPurchase < ApplicationRecord
     errors.join('. ')
   end
 
-  def self.purchase_ticket(conference, quantity, ticket, user)
+  def self.purchase_ticket(conference, quantity, ticket, user, currency)
     if quantity > 0
       purchase = new(ticket_id:     ticket.id,
                      conference_id: conference.id,
                      user_id:       user.id,
                      quantity:      quantity,
-                     amount_paid:   ticket.price)
+                     amount_paid:   ticket.price,
+                     currency: currency)
       purchase.pay(nil) if ticket.price_cents.zero?
     end
     purchase

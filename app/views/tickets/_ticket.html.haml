@@ -23,11 +23,9 @@
         You currently have a registraction ticket.
 
   %td.col-sm-1.col-md-1.text-center
-    = ticket.price.symbol
-    %span{id: "price_#{ticket.id}"}
+    %span{id: "price_#{ticket.id}", 'data-original-price': humanized_money(ticket.price).to_s}
       = humanized_money ticket.price
   %td.col-sm-1.col-md-1.text-center
     %strong
-      = ticket.price.symbol
       %span.total_row{id: "total_row_#{ticket.id}"}
         0

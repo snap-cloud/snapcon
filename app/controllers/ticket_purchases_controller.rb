@@ -4,14 +4,15 @@ class TicketPurchasesController < ApplicationController
   before_action :authenticate_user!
   load_resource :conference, find_by: :short_title
   authorize_resource :conference_registrations, class: Registration
-  authorize_resource
 
   def create
     current_user.ticket_purchases.by_conference(@conference).unpaid.destroy_all
 
+    selected_currency = params[:currency]
+
     # Create a ticket purchase which can be paid or unpaid
     count_registration_tickets_before = current_user.count_registration_tickets(@conference)
-    message = TicketPurchase.purchase(@conference, current_user, params[:tickets].try(:first))
+    message = TicketPurchase.purchase(@conference, current_user, params[:tickets].try(:first), selected_currency)
     # The new ticket_purchase has been added to the database. current_user.ticket_purchases contains the new one.
     count_registration_tickets_after = current_user.count_registration_tickets(@conference)
 
@@ -32,7 +33,7 @@ class TicketPurchasesController < ApplicationController
     # User needs to pay for tickets if any of them is not free.
     if current_user.ticket_purchases.by_conference(@conference).unpaid.any?
       has_registration_ticket = count_registration_tickets_before.zero? && count_registration_tickets_after == 1
-      redirect_to new_conference_payment_path(has_registration_ticket: has_registration_ticket),
+      redirect_to new_conference_payment_path(has_registration_ticket: has_registration_ticket, currency: selected_currency),
                   notice: 'Please pay here to get tickets.'
       return
     end

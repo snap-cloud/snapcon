@@ -6,6 +6,7 @@
 #
 #  id            :bigint           not null, primary key
 #  amount_paid   :float            default(0.0)
+#  currency      :string
 #  paid          :boolean          default(FALSE)
 #  quantity      :integer          default(1)
 #  week          :integer

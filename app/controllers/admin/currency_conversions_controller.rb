@@ -6,7 +6,22 @@ module Admin
     before_action :set_currency_options, only: [:new, :create, :edit]
 
     # GET /currency_conversions
-    def index; end
+    def index
+      #todo: rescue currency that doesnt exist
+      currency_conversions_with_symbols = @conference.currency_conversions.map do |conversion|
+        {
+          from_currency: conversion.from_currency,
+          to_currency: conversion.to_currency,
+          rate: conversion.rate,
+          symbol: Money::Currency.new(conversion.to_currency).symbol
+        }
+      end
+
+      respond_to do |format|
+        format.html
+        format.json { render json: currency_conversions_with_symbols }
+      end
+    end
 
     # GET /currency_conversions/1
     def show; end
