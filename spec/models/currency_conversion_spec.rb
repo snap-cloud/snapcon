@@ -20,9 +20,18 @@
 #
 #  fk_rails_...  (conference_id => conferences.id)
 #
-class CurrencyConversion < ApplicationRecord
-  VALID_CURRENCIES = %w[AUD CAD CHF CNY EUR GBP JPY USD].freeze
-  belongs_to :conference
-  validates :rate, numericality: { greater_than: 0 }
-  validates :from_currency, uniqueness: { scope: :to_currency }, on: :create
+require 'spec_helper'
+
+describe CurrencyConversion do
+  let!(:conference) { create(:conference, title: 'ExampleCon') }
+
+  describe 'validations' do
+    before do
+      conference.currency_conversions << create(:currency_conversion)
+    end
+
+    it { is_expected.to validate_numericality_of(:rate).is_greater_than(0) }
+
+    it { is_expected.to validate_uniqueness_of(:from_currency).scoped_to(:to_currency).on(:create) }
+  end
 end

@@ -14,9 +14,10 @@
           url: "#{toggle_confirmation_admin_user_path(@user.id)}?user[to_confirm]=",
           class: 'switch-checkbox',
           readonly: true
-  .checkbox
+  .form-group.switch
     %label
-      = f.check_box :is_admin
+      = f.check_box :is_admin,
+      class: 'switch-checkbox'
       Is admin
     %span.help-block An admin can create a new conference, manage users and make other users admins.
   .form-group
