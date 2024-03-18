@@ -24,9 +24,6 @@
             Your browser is current set to
             %span.js-localTimezone
         .form-group
-          = f.label :default_currency, 'Default Currency'
-          = f.select :default_currency, options_for_select(@currency_options, selected: @user.default_currency), {}, { class: 'form-control' }
-        .form-group
           = f.label :avatar
           %br
           = image_tag(@user.gravatar_url(size: '48'), title: "Yo #{@user.name}!", alt: '', class: 'img-rounded')
