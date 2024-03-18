@@ -60,7 +60,7 @@ describe Payment do
 
     after { StripeMock.stop }
 
-    before { TicketPurchase.purchase(conference, user, tickets) }
+    before { TicketPurchase.purchase(conference, user, tickets, ticket_1.price_currency) }
 
     context 'when the payment is successful' do
       before { payment.purchase }
