@@ -10,9 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-
-ActiveRecord::Schema[7.0].define(version: 2024_03_06_000725) do
-
+ActiveRecord::Schema[7.0].define(version: 2024_02_26_175634) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -626,7 +624,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_06_000725) do
     t.boolean "is_disabled", default: false
     t.string "picture"
     t.string "timezone"
-    t.string "default_currency"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
