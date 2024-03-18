@@ -16,7 +16,6 @@
 #  confirmed_at           :datetime
 #  current_sign_in_at     :datetime
 #  current_sign_in_ip     :string
-#  default_currency       :string
 #  email                  :string           default(""), not null
 #  email_public           :boolean          default(FALSE)
 #  encrypted_password     :string           default(""), not null
