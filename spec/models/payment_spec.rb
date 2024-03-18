@@ -7,7 +7,7 @@
 #  id                 :bigint           not null, primary key
 #  amount             :integer
 #  authorization_code :string
-#  currency           :string
+#  currency           :string           default("USD")
 #  last4              :string
 #  status             :integer          default("unpaid"), not null
 #  created_at         :datetime         not null
@@ -85,7 +85,7 @@ describe Payment do
     context 'if the payment is not successful' do
       let(:payment) do
         create(:payment, user: user, conference: conference, stripe_customer_token: 'bogus_card_token',
-stripe_customer_email: user.email)
+        stripe_customer_email: user.email)
       end
 
       before { payment.purchase }
