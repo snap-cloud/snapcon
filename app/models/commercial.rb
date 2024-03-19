@@ -16,7 +16,6 @@
 #
 require 'csv'
 
-
 class Commercial < ApplicationRecord
   require 'oembed'
 
