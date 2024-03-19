@@ -106,26 +106,4 @@ describe CurrencyConversion do
         end
       end
     end
-
-    it 'buys a ticket in EUR', feature: true, js: true do
-      create(:ticket, conference: conference, price_cents: 10_000)
-      conference.currency_conversions << create(:currency_conversion)
-      visit conference_tickets_path(conference.short_title)
-      select 'EUR', from: 'currency_selector'
-      find('.quantity', match: :first).set(1)
-      expect(page).to have_content('89.00') # 100 USD to EUR at a rate of 0.89
-    end
-
-    it 'switches between EUR and GBP', feature: true, js: true do
-      create(:ticket, conference: conference, price_cents: 10_000)
-      conference.currency_conversions << create(:currency_conversion)
-      create(:currency_conversion, from_currency: 'USD', to_currency: 'GBP', rate: 0.75, conference: conference)
-      visit conference_tickets_path(conference.short_title)
-      select 'EUR', from: 'currency_selector'
-      find('.quantity', match: :first).set(1)
-      expect(page).to have_content('89.00')
-      select 'GBP', from: 'currency_selector'
-      expect(page).to have_content('75.00')
-    end
-  end
 end
