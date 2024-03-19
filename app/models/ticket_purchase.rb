@@ -65,14 +65,15 @@ class TicketPurchase < ApplicationRecord
   end
 
   def self.purchase_ticket(conference, quantity, ticket, user, currency)
+    converted_amount = CurrencyConversion.convert_currency(conference, ticket.price, ticket.price_currency, currency)
     if quantity > 0
       purchase = new(ticket_id:     ticket.id,
                      conference_id: conference.id,
                      user_id:       user.id,
                      quantity:      quantity,
-                     amount_paid:   ticket.price,
+                     amount_paid:   converted_amount,
                      currency:      currency)
-      purchase.pay(nil) if ticket.price_cents.zero?
+      purchase.pay(nil) if converted_amount.zero?
     end
     purchase
   end

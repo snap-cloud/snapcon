@@ -25,4 +25,18 @@ class CurrencyConversion < ApplicationRecord
   belongs_to :conference
   validates :rate, numericality: { greater_than: 0 }
   validates :from_currency, uniqueness: { scope: :to_currency }, on: :create
+
+  def self.convert_currency(conference, amount, from_currency, to_currency)
+    conversion = conference.currency_conversions.find_by(from_currency: from_currency, to_currency: to_currency)
+
+    if conversion
+      Money.add_rate(from_currency, to_currency, conversion.rate)
+    else
+      # If no conversion is found. Typically only possible if base to base. Maybe make this error out.
+      Money.add_rate(from_currency, to_currency, 1) unless from_currency == to_currency
+    end
+
+    # money_amount = Money.from_amount(amount, from_currency)
+    amount.exchange_to(to_currency)
+  end
 end

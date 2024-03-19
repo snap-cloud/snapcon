@@ -5,7 +5,6 @@ class PaymentsController < ApplicationController
   load_and_authorize_resource
   load_resource :conference, find_by: :short_title
   authorize_resource :conference_registrations, class: Registration
-  before_action :load_currency_conversions, only: [:new, :create]
 
   def index
     @payments = current_user.payments
@@ -17,7 +16,7 @@ class PaymentsController < ApplicationController
     selected_currency = session[:selected_currency] || 'USD'
     from_currency = 'USD'
 
-    @total_amount_to_pay = convert_currency(Ticket.total_price(@conference, current_user, paid: false).amount, from_currency, selected_currency)
+    @total_amount_to_pay = CurrencyConversion.convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
     raise CanCan::AccessDenied.new('Nothing to pay for!', :new, Payment) if @total_amount_to_pay.zero?
 
     @has_registration_ticket = params[:has_registration_ticket]
@@ -25,8 +24,7 @@ class PaymentsController < ApplicationController
     # a way to display the currency values in the view, but there might be a better way to do this.
     @converted_prices = {}
     @unpaid_ticket_purchases.each do |ticket_purchase|
-      # hardcoded
-      @converted_prices[ticket_purchase.id] = convert_currency(ticket_purchase.price.amount, 'USD', selected_currency)
+      @converted_prices[ticket_purchase.id] = ticket_purchase.amount_paid
     end
     @currency = selected_currency
   end
@@ -52,7 +50,7 @@ class PaymentsController < ApplicationController
                     notice: 'Thanks! Your ticket is booked successfully.'
       end
     else
-      @total_amount_to_pay = convert_currency(Ticket.total_price(@conference, current_user, paid: false).amount, from_currency, selected_currency)
+      @total_amount_to_pay = convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
       @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
       flash.now[:error] = @payment.errors.full_messages.to_sentence + ' Please try again with correct credentials.'
       render :new
@@ -71,27 +69,6 @@ class PaymentsController < ApplicationController
   def update_purchased_ticket_purchases
     current_user.ticket_purchases.by_conference(@conference).unpaid.each do |ticket_purchase|
       ticket_purchase.pay(@payment)
-    end
-  end
-
-  def load_currency_conversions
-    @currency_conversions = @conference.currency_conversions
-  end
-
-  def convert_currency(amount, from_currency, to_currency)
-    update_rate(from_currency, to_currency)
-
-    money_amount = Money.from_amount(amount, from_currency)
-    money_amount.exchange_to(to_currency)
-  end
-
-  def update_rate(from_currency, to_currency)
-    conversion = @currency_conversions.find_by(from_currency: from_currency, to_currency: to_currency)
-    if conversion
-      Money.add_rate(from_currency, to_currency, conversion.rate)
-    else
-      # If no conversion is found. Typically only possible if base to base. Maybe make this error out.
-      Money.add_rate(from_currency, to_currency, 1) unless from_currency == to_currency
     end
   end
 end
