@@ -14,26 +14,26 @@
         Create the schedules for the conference
       = render 'schedules/event_types_key', event_types: @event_types, favourites: false
 
-.modal#mass-schedule-modal
-  .modal-dialog
-    .modal-content
-      .modal-header
-        %h1
-          Schedule events
-      .modal-body
-        = form_for('', url: mass_upload_schedules_admin_conference_program_path(@conference.short_title), method: :post) do |f|
-          .form-group
-            = f.file_field 'file', as: :file
-            %span.help-block
-              Upload your file.csv with data in the following format:
-              %b Event_ID, xx:xx - xx:xx, Room
-              for instance:
-              %pre
-                Event_ID, xx:xx - xx:xx, Room
-                1, 10:00 - 11:00, Room 1
-                2, 11:00 - 12:00, Room 2
-          .modal-footer
-            = f.submit nil, class: 'btn btn-primary'
+-# .modal#mass-schedule-modal
+-#   .modal-dialog
+-#     .modal-content
+-#       .modal-header
+-#         %h1
+-#           Schedule events
+-#       .modal-body
+-#         = form_for('', url: mass_upload_schedules_admin_conference_program_path(@conference.short_title), method: :post) do |f|
+-#           .form-group
+-#             = f.file_field 'file', as: :file
+-#             %span.help-block
+-#               Upload your file.csv with data in the following format:
+-#               %b Event_ID, xx:xx - xx:xx, Room
+-#               for instance:
+-#               %pre
+-#                 Event_ID, xx:xx - xx:xx, Room
+-#                 1, 10:00 - 11:00, Room 1
+-#                 2, 11:00 - 12:00, Room 2
+-#           .modal-footer
+-#             = f.submit nil, class: 'btn btn-primary'
 
 - if @rooms.present?
   .row
