@@ -202,28 +202,27 @@ describe Registration, feature: true, js: true do
         allow(ENV).to receive(:[]).with('CURRENCY_SELECTOR_ENABLED').and_return('true')
         conference.currency_conversions << create(:currency_conversion, from_currency: 'USD', to_currency: 'EUR', rate: 0.89)
         conference.currency_conversions << create(:currency_conversion, from_currency: 'USD', to_currency: 'GBP', rate: 0.75)
+        visit root_path
+        click_link 'Register'
+        click_button 'Register'
       end
 
       it 'selects a ticket in EUR', feature: true, js: true do
-        visit conference_tickets_path(conference.short_title)
         select 'EUR', from: 'currency_selector'
-        all('.quantity').third.set(1)
+        fill_in "tickets__#{third_registration_ticket.id}", with: '1'
         expect(page).to have_content('17.80')
       end
 
       it 'switches between EUR and GBP', feature: true, js: true do
-        visit conference_tickets_path(conference.short_title)
         select 'EUR', from: 'currency_selector'
-        all('.quantity').third.set(1)
+        fill_in "tickets__#{third_registration_ticket.id}", with: '1'
         expect(page).to have_content('17.80')
         select 'GBP', from: 'currency_selector'
-        expect(page).to have_content('75.00')
+        expect(page).to have_content('7.50')
       end
 
       it 'sees the correct currency symbol after changing the currency in tickets', feature: true, js: true do
-        visit conference_tickets_path(conference.short_title)
         select 'EUR', from: 'currency_selector'
-        find('.quantity', match: :first).set(1)
         expect(page).to have_content('€')
         select 'GBP', from: 'currency_selector'
         expect(page).to have_content('£')
