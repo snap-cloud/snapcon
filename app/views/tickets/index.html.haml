@@ -15,9 +15,10 @@
           %strong
             = @conference.title
       .col-md-4.text-right
-        .form-group
-          %label{for: 'currency_selector'} Currency:
-          = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control', style: 'width: auto; display: inline-block;'
+        - if ENV['SHOW_CURRENCY_SELECTOR'] == 'true'
+          .form-group
+            %label{for: 'currency_selector'} Currency:
+            = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control', style: 'width: auto; display: inline-block;'
     %table.table.table-hover
       %thead
         %tr
