@@ -27,5 +27,10 @@ class TicketsController < ApplicationController
   def load_currency_conversions
     @currency_conversions = @conference.currency_conversions
     @currencies = @currency_conversions.map(&:to_currency).uniq
+    @currency_meta = @currencies.map do |currency|
+      rate = @currency_conversions.find { |c| c.to_currency == currency }.rate
+      symbol = Money::Currency.new(currency).symbol
+      { currency: currency, rate: rate, symbol: symbol }
+    end
   end
 end

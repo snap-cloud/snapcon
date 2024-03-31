@@ -31,12 +31,10 @@ class CurrencyConversion < ApplicationRecord
 
     if conversion
       Money.add_rate(from_currency, to_currency, conversion.rate)
+      amount.exchange_to(to_currency)
     else
       # If no conversion is found. Typically only possible if base to base. Maybe make this error out.
-      Money.add_rate(from_currency, to_currency, 1) unless from_currency == to_currency
+      amount
     end
-
-    # money_amount = Money.from_amount(amount, from_currency)
-    amount.exchange_to(to_currency)
   end
 end
