@@ -1,47 +1,55 @@
+%meta{name: 'conference-short-title', data: { short_title: @conference.short_title }}
+:javascript
+  window.currencyMeta = #{@currency_meta.to_json.html_safe};
 .container
   .row
     .col-md-12
       .page-header
         %h1
           Tickets
-      %p.lead
-        Please choose your tickets for
-        %strong
-          = @conference.title
-      = form_tag(conference_ticket_purchases_path, method: :post) do |f|
-        %table.table.table-hover
-          %thead
-            %tr
-              %th Ticket
-              %th Registration?
-              %th Quantity
-              %th Price
-              %th Total
-          %tbody
-          - user_has_reg_ticket = current_user.tickets.for_registration(@conference).present?
-          - @conference.tickets.visible.each do |ticket|
-            = render 'ticket', f: f, ticket: ticket, user_has_reg_ticket: user_has_reg_ticket
-          %tr
-            %td
-            %td
-            %td
-            %td.col-sm-1.col-md-1.text-center
-              %h4
-                Total
-            %td.col-sm-1.col-md-1.text-center
-              %h4
-                %strong
-                  = @conference.tickets.first.price.symbol
-                  %span{ id: 'total_price' }
-                    0
-        .pull-right
-          .btn-group-vertical
-            = button_tag(type: 'submit', class: 'btn btn-success btn-lg') do
-              Continue
-              %i.fa-solid.fa-cart-shopping
-            = link_to 'Back to registration',
-              conference_conference_registration_path(@conference.short_title),
-              class: 'btn btn-default btn-sm'
+  = form_tag(conference_ticket_purchases_path, method: :post) do |f|
+    .row
+      .col-md-8
+        %p.lead
+          Please choose your tickets for
+          %strong
+            = @conference.title
+      .col-md-4.text-right
+        .form-group
+          %label{for: 'currency_selector'} Currency:
+          = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control', style: 'width: auto; display: inline-block;'
+    %table.table.table-hover
+      %thead
+        %tr
+          %th Ticket
+          %th Registration?
+          %th Quantity
+          %th Price
+          %th Total
+      %tbody
+      - user_has_reg_ticket = current_user.tickets.for_registration(@conference).present?
+      - @conference.tickets.visible.each do |ticket|
+        = render 'ticket', f: f, ticket: ticket, user_has_reg_ticket: user_has_reg_ticket
+      %tr
+        %td
+        %td
+        %td
+        %td.col-sm-1.col-md-1.text-center
+          %h4
+            Total
+        %td.col-sm-1.col-md-1.text-center
+          %h4
+            %strong
+              %span#total-currency-symbol $
+              %span#total-price 0
+    .pull-right
+      .btn-group-vertical
+        = button_tag(type: 'submit', class: 'btn btn-success btn-lg') do
+          Continue
+          %i.fa-solid.fa-cart-shopping
+        = link_to 'Back to registration',
+          conference_conference_registration_path(@conference.short_title),
+          class: 'btn btn-default btn-sm'
   - if @conference.tickets.for_registration.any?
     .row
       .col-md-13
