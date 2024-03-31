@@ -106,4 +106,5 @@ describe CurrencyConversion do
         end
       end
     end
+  end
 end
