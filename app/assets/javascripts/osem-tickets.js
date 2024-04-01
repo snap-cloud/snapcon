@@ -19,8 +19,8 @@ function update_price($this){
     $('.total_row').each(function() {
         total += parseFloat($(this).text().trim());
     });
-    $('#total_currency_symbol').text(conversionData.symbol);
-    $('#total_price').text(total.toFixed(2));
+    $('#total-currency-symbol').text(conversionData.symbol);
+    $('#total-price').text(total.toFixed(2));
 }
 
 $( document ).ready(function() {

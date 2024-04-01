@@ -4,9 +4,7 @@ class TicketsController < ApplicationController
   before_action :authenticate_user!
   load_resource :conference, find_by: :short_title
   before_action :load_tickets
-
   before_action :load_currency_conversions, only: :index
-
   authorize_resource :ticket, through: :conference
   authorize_resource :conference_registrations, class: Registration
   before_action :check_load_resource, only: :index
@@ -26,9 +24,15 @@ class TicketsController < ApplicationController
 
   def load_currency_conversions
     @currency_conversions = @conference.currency_conversions
-    @currencies = @currency_conversions.map(&:to_currency).uniq
+    @currencies = [@conference.tickets.first.price_currency]
+    @currencies |= @currency_conversions.map(&:to_currency).uniq
     @currency_meta = @currencies.map do |currency|
-      rate = @currency_conversions.find { |c| c.to_currency == currency }.rate
+      currency_conversion = @currency_conversions.find { |c| c.to_currency == currency }
+      rate = if currency_conversion
+               currency_conversion.rate
+             else
+               1
+             end
       symbol = Money::Currency.new(currency).symbol
       { currency: currency, rate: rate, symbol: symbol }
     end

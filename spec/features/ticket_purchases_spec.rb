@@ -198,8 +198,7 @@ describe Registration, feature: true, js: true do
 
     context 'currency conversion' do
       before do
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with('CURRENCY_SELECTOR_ENABLED').and_return('true')
+        ENV['SHOW_CURRENCY_SELECTOR'] = 'true'
         conference.currency_conversions << create(:currency_conversion, from_currency: 'USD', to_currency: 'EUR', rate: 0.89)
         conference.currency_conversions << create(:currency_conversion, from_currency: 'USD', to_currency: 'GBP', rate: 0.75)
         visit root_path
