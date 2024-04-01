@@ -28,12 +28,11 @@ class CurrencyConversion < ApplicationRecord
 
   def self.convert_currency(conference, amount, from_currency, to_currency)
     conversion = conference.currency_conversions.find_by(from_currency: from_currency, to_currency: to_currency)
-
     if conversion
       Money.add_rate(from_currency, to_currency, conversion.rate)
       amount.exchange_to(to_currency)
     else
-      # If no conversion is found. Typically only possible if base to base. Maybe make this error out.
+      # If no conversion is found. Should not be possible with the currency design of fixed allowed currencies.
       amount
     end
   end
