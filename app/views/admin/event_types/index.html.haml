@@ -11,7 +11,8 @@
         %tr
           %th Title
           %th Description
-          %th Instructions
+          %th Enable Public Submission
+          %th Template
           %th Length
           %th Abstract Length
           %th Color
@@ -23,6 +24,8 @@
               = event_type.title
             %td
               = markdown(event_type.description)
+            %td
+              = event_type.enable_public_submission ? 'Yes' : 'No'
             %td
               = markdown(event_type.submission_template)
             %td

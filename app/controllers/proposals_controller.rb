@@ -31,6 +31,12 @@ class ProposalsController < ApplicationController
     @url = conference_program_proposals_path(@conference.short_title)
     @languages = @program.languages_list
     @superevents = @program.super_events
+
+    if current_user.is_admin?
+      @event_types = @program.event_types
+    else 
+      @event_types = @program.event_types.available_for_public
+    end 
   end
 
   def edit

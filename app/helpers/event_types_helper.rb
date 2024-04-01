@@ -15,7 +15,7 @@ module EventTypesHelper
         { data: {
           min_words:    type.minimum_abstract_length,
           max_words:    type.maximum_abstract_length,
-          instructions: type.submission_template
+          template: type.submission_template
         } }
       ]
     end
