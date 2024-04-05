@@ -32,8 +32,7 @@ class CurrencyConversion < ApplicationRecord
       Money.add_rate(from_currency, to_currency, conversion.rate)
       amount.exchange_to(to_currency)
     else
-      # If no conversion is found. Should not be possible with the currency design of fixed allowed currencies.
-      amount
+      Money.from_amount(-1, "USD")
     end
   end
 end

@@ -53,7 +53,7 @@ describe CurrencyConversion do
     context 'when conversion rate does not exist' do
       it 'returns the original amount if no conversion is found' do
         original_amount = described_class.convert_currency(conference, amount, 'USD', 'INR')
-        expect(original_amount.cents).to eq(1000)
+        expect(original_amount.cents).to eq(-100)
       end
     end
   end
