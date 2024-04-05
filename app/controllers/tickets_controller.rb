@@ -24,15 +24,10 @@ class TicketsController < ApplicationController
 
   def load_currency_conversions
     @currency_conversions = @conference.currency_conversions
-    @currencies = [@conference.tickets.first.price_currency]
-    @currencies |= @currency_conversions.map(&:to_currency).uniq
+    @currencies = [@conference.tickets.first.price_currency] | @currency_conversions.map(&:to_currency).uniq
     @currency_meta = @currencies.map do |currency|
       currency_conversion = @currency_conversions.find { |c| c.to_currency == currency }
-      rate = if currency_conversion
-               currency_conversion.rate
-             else
-               1
-             end
+      rate = currency_conversion ? currency_conversion.rate : 1
       symbol = Money::Currency.new(currency).symbol
       { currency: currency, rate: rate, symbol: symbol }
     end
