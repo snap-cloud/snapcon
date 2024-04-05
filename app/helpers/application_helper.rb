@@ -122,8 +122,16 @@ hint: options[:hint]
     end, ', ')
   end
 
-  def event_types_sentence(conference)
-    conference.event_types.map { |et| et.title.pluralize }.to_sentence
+  def event_types_sentence(conference, is_admin = true)
+    if is_admin
+      conference.event_types.map { |et| et.title.pluralize }.to_sentence
+    else 
+      conference.event_types.available_for_public.map { |et| et.title.pluralize }.to_sentence
+    end
+  end
+
+  def event_types_dropdown(conference, is_admin = true)
+    is_admin ? conference.event_types : conference.event_types.available_for_public
   end
 
   def sign_in_path

@@ -3,6 +3,7 @@
 class ProposalsController < ApplicationController
   include ConferenceHelper
   before_action :authenticate_user!, except: %i[show new create]
+  before_action :set_is_admin
   load_resource :conference, find_by: :short_title
   load_resource :program, through: :conference, singleton: true
   load_and_authorize_resource :event, parent: false, through: :program
@@ -31,12 +32,6 @@ class ProposalsController < ApplicationController
     @url = conference_program_proposals_path(@conference.short_title)
     @languages = @program.languages_list
     @superevents = @program.super_events
-
-    if current_user.is_admin?
-      @event_types = @program.event_types
-    else 
-      @event_types = @program.event_types.available_for_public
-    end 
   end
 
   def edit
@@ -224,4 +219,8 @@ class ProposalsController < ApplicationController
   def user_params
     params.require(:user).permit(:email, :password, :password_confirmation, :username)
   end
+
+  def set_is_admin
+    @is_admin = current_user.is_admin
+  end 
 end
