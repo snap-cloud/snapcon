@@ -32,7 +32,7 @@ class CurrencyConversion < ApplicationRecord
       Money.add_rate(from_currency, to_currency, conversion.rate)
       amount.exchange_to(to_currency)
     else
-      Money.from_amount(-1, "USD")
+      Money.from_amount(-1, 'USD')
     end
   end
 end
