@@ -31,6 +31,7 @@ describe Payment do
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:user_id) }
     it { is_expected.to validate_presence_of(:conference_id) }
+    it { is_expected.to validate_presence_of(:currency) }
   end
 
   describe '#amount_to_pay' do
@@ -82,7 +83,7 @@ describe Payment do
       end
 
       it 'assigns currency' do
-        expect (payment.currency).to eq('USD')
+        expect(payment.currency).to eq('USD')
       end
     end
 
@@ -148,6 +149,13 @@ describe Payment do
         it 'raises exception' do
           StripeMock.prepare_error(Stripe::RateLimitError.new)
           expect { payment.purchase }.not_to raise_error
+        end
+      end
+
+      context 'when the currency is invalid' do
+        it 'returns false' do
+          payment.currency = 'ABC'
+          expect(payment.purchase).to be false
         end
       end
     end

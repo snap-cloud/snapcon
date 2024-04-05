@@ -18,7 +18,8 @@ class PaymentsController < ApplicationController
 
     @total_amount_to_pay = CurrencyConversion.convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
     raise CanCan::AccessDenied.new('Nothing to pay for!', :new, Payment) if @total_amount_to_pay.zero?
-    raise CanCan::AccessDenied.new('Selected currency is invalid!', :new, Payment) if @total_amount_to_pay < 0
+    raise CanCan::AccessDenied.new('Selected currency is invalid!', :new, Payment) if @total_amount_to_pay.negative?
+
     @has_registration_ticket = params[:has_registration_ticket]
     @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
     # a way to display the currency values in the view, but there might be a better way to do this.

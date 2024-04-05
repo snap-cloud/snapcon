@@ -228,7 +228,6 @@ describe Registration, feature: true, js: true do
       end
 
       it 'buys a ticket in EUR' do
-
         select 'EUR', from: 'currency_selector'
         fill_in "tickets__#{third_registration_ticket.id}", with: '1'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -248,7 +247,6 @@ describe Registration, feature: true, js: true do
           expect(page).to have_content 'Your ticket is booked successfully.'
         end
       end
-
     end
 
     context 'who is registered' do
