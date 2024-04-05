@@ -44,6 +44,10 @@ describe TicketPurchase do
       expect(subject).not_to allow_value(-1).for(:quantity)
     end
 
+    it 'is not valid without a currency' do
+      expect(subject).to validate_presence_of(:currency)
+    end
+
     it 'is valid with a quantity greater than zero' do
       expect(subject).to allow_value(1).for(:quantity)
     end

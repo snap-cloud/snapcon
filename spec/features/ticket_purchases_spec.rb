@@ -226,6 +226,29 @@ describe Registration, feature: true, js: true do
         select 'GBP', from: 'currency_selector'
         expect(page).to have_content('£')
       end
+
+      it 'buys a ticket in EUR' do
+
+        select 'EUR', from: 'currency_selector'
+        fill_in "tickets__#{third_registration_ticket.id}", with: '1'
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
+        click_button 'Continue'
+        page.find('#flash')
+        expect(page).to have_current_path(new_conference_payment_path(conference.short_title), ignore_query: true)
+        expect(flash).to eq('Please pay here to get tickets.')
+        purchase = TicketPurchase.where(user_id: participant.id, ticket_id: third_registration_ticket.id).first
+        expect(purchase.quantity).to eq(1)
+        expect(purchase.currency).to eq('EUR')
+        expect(purchase.amount_paid).to eq(17.80)
+
+        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
+          make_stripe_purchase
+          expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
+                                            ignore_query: true)
+          expect(page).to have_content 'Your ticket is booked successfully.'
+        end
+      end
+
     end
 
     context 'who is registered' do

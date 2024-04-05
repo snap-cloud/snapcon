@@ -80,6 +80,10 @@ describe Payment do
       it 'assigns authorization_code' do
         expect(payment.authorization_code).to eq('test_ch_3')
       end
+
+      it 'assigns currency' do
+        expect (payment.currency).to eq('USD')
+      end
     end
 
     context 'if the payment is not successful' do
