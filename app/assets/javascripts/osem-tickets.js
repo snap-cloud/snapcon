@@ -1,5 +1,4 @@
 function update_price($this){
-
     var id = $this.data('id');
     var selectedCurrency = $('#currency_selector').val();
     var conversionData = window.currencyRates[selectedCurrency] || { rate: 1, symbol: '$' };
