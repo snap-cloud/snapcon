@@ -15,7 +15,7 @@
           %strong
             = @conference.title
       .col-md-4.text-right
-        - if ENV['SHOW_CURRENCY_SELECTOR'] == 'true'
+        - if true
           .form-group
             %label{for: 'currency_selector'} Currency:
             = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control', style: 'width: auto; display: inline-block;'
