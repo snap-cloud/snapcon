@@ -31,6 +31,8 @@ class CurrencyConversion < ApplicationRecord
     if conversion
       Money.add_rate(from_currency, to_currency, conversion.rate)
       amount.exchange_to(to_currency)
+    elsif from_currency == to_currency
+      amount
     else
       Money.from_amount(-1, 'USD')
     end

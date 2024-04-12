@@ -3,7 +3,7 @@
   window.currencyMeta = #{@currency_meta.to_json.html_safe};
 .container
   .row
-    .col-md-12
+    .col-md-8
       .page-header
         %h1
           Tickets
@@ -15,10 +15,9 @@
           %strong
             = @conference.title
       .col-md-4.text-right
-        - if ENV['SHOW_CURRENCY_SELECTOR'] == 'true'
-          .form-group
-            %label{for: 'currency_selector'} Currency:
-            = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control', style: 'width: auto; display: inline-block;'
+        .form-group
+          %label{for: 'currency_selector'} Currency:
+          = select_tag :currency, options_for_select(@currencies), id: 'currency_selector', class: 'form-control', style: 'width: auto; display: inline-block;'
     %table.table.table-hover
       %thead
         %tr
