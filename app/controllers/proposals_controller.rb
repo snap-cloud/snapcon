@@ -3,7 +3,6 @@
 class ProposalsController < ApplicationController
   include ConferenceHelper
   before_action :authenticate_user!, except: %i[show new create]
-  before_action :set_is_admin
   load_resource :conference, find_by: :short_title
   load_resource :program, through: :conference, singleton: true
   load_and_authorize_resource :event, parent: false, through: :program
@@ -50,6 +49,7 @@ class ProposalsController < ApplicationController
       authorize! :create, @user
       if @user.save
         sign_in(@user)
+        set_is_admin
       else
         flash.now[:error] = "Could not save user: #{@user.errors.full_messages.join(', ')}"
         render action: 'new'
@@ -217,10 +217,6 @@ class ProposalsController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :username)
+    params.require(:user).permit(:email, :password, :password_confirmation, :username, :is_admin)
   end
-
-  def set_is_admin
-    @is_admin = current_user.is_admin
-  end 
 end

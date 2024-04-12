@@ -130,10 +130,6 @@ hint: options[:hint]
     end
   end
 
-  def event_types_dropdown(conference, is_admin = true)
-    is_admin ? conference.event_types : conference.event_types.available_for_public
-  end
-
   def sign_in_path
     if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
       new_user_ichain_session_path

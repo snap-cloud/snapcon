@@ -32,6 +32,7 @@ class EventType < ApplicationRecord
   validates :color, format: /\A#[0-9A-F]{6}\z/
 
   before_validation :capitalize_color
+  before_validation :strip_title
 
   alias_attribute :name, :title
 
@@ -57,7 +58,7 @@ class EventType < ApplicationRecord
     program.conference_id
   end
 
-  # def self.available_for_public_submission
-  #   is_admin? all : available_for_public
-  # end 
+  def strip_title
+    self.title = title.strip unless title.nil?
+  end
 end
