@@ -65,6 +65,11 @@ class ConferencesController < ApplicationController
       ).order('sponsorship_levels.position ASC', 'sponsors.name')
       @sponsors = @conference.sponsors
     end
+    if @splashpage.include_committee?
+      @organizers = @conference.organizers
+      # @volunteers = @conference.volunteers
+      # @reviewers = @conference.reviewers
+    end
   end
   # rubocop:enable Metrics/CyclomaticComplexity
 

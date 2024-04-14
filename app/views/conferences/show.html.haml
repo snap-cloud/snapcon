@@ -86,6 +86,11 @@
       sponsorship_levels: @sponsorship_levels,
       sponsors: @sponsors
 
+  -# comittee
+  - if @conference.splashpage.include_committee?
+    = render 'organizers', conference: @conference, organizers: @organizers
+
+
   -# footer
   - if @conference.splashpage.include_social_media? && @conference.contact.has_social_media?
     = render 'social_media', contact: @conference.contact, cached: true
