@@ -23,7 +23,7 @@ class TicketPurchase < ApplicationRecord
   belongs_to :conference
   belongs_to :payment
 
-  validates :ticket_id, :user_id, :conference_id, :quantity, presence: true
+  validates :ticket_id, :user_id, :conference_id, :quantity, :currency, presence: true
   validate :one_registration_ticket_per_user
   validate :registration_ticket_already_purchased, on: :create
   validates :quantity, numericality: { greater_than: 0 }
@@ -65,14 +65,19 @@ class TicketPurchase < ApplicationRecord
   end
 
   def self.purchase_ticket(conference, quantity, ticket, user, currency)
+    converted_amount = CurrencyConversion.convert_currency(conference, ticket.price, ticket.price_currency, currency)
+    if converted_amount < 0
+      errors.push('Currency is invalid')
+      purchase.pay(nil)
+    end
     if quantity > 0
       purchase = new(ticket_id:     ticket.id,
                      conference_id: conference.id,
                      user_id:       user.id,
                      quantity:      quantity,
-                     amount_paid:   ticket.price,
-                     currency: currency)
-      purchase.pay(nil) if ticket.price_cents.zero?
+                     amount_paid:   converted_amount,
+                     currency:      currency)
+      purchase.pay(nil) if converted_amount.zero?
     end
     purchase
   end

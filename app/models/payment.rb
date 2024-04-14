@@ -34,7 +34,7 @@ class Payment < ApplicationRecord
   }
 
   def amount_to_pay
-    Ticket.total_price(conference, user, paid: false).cents
+    CurrencyConversion.convert_currency(conference, Ticket.total_price(conference, user, paid: false), conference.tickets.first.price_currency, currency).cents
   end
 
   def stripe_description
