@@ -88,8 +88,7 @@
 
   -# comittee
   - if @conference.splashpage.include_committee?
-    = render 'organizers', conference: @conference, organizers: @organizers
-
+    = render 'committee', organizers: @organizers
 
   -# footer
   - if @conference.splashpage.include_social_media? && @conference.contact.has_social_media?

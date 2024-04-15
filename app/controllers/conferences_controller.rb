@@ -66,9 +66,7 @@ class ConferencesController < ApplicationController
       @sponsors = @conference.sponsors
     end
     if @splashpage.include_committee?
-      @organizers = @conference.organizers
-      # @volunteers = @conference.volunteers
-      # @reviewers = @conference.reviewers
+      @organizers = User.with_role(:organizer, @conference)
     end
   end
   # rubocop:enable Metrics/CyclomaticComplexity

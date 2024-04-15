@@ -1,0 +1,17 @@
+-# _committee.haml
+.row
+  .col-md-12
+    %h3.text-center
+      Committee
+.row
+  .col-sd-6
+    .row.row-centered
+      - organizers.shuffle.each do |organizer|
+        .col-sd-3.col-sm-1.col-xs-3.col-centered
+          .thumbnail{ style: 'border: none; background: none; padding: 20;' }
+            - if organizer.profile_picture.present?
+              = image_tag organizer.profile_picture(size: 150), 
+              class: ['img-responsive', 'img-circle'], 
+              title: organizer.name
+            .caption
+              %h4.text-center= organizer.name
