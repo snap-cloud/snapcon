@@ -49,7 +49,6 @@ class ProposalsController < ApplicationController
       authorize! :create, @user
       if @user.save
         sign_in(@user)
-        set_is_admin
       else
         flash.now[:error] = "Could not save user: #{@user.errors.full_messages.join(', ')}"
         render action: 'new'

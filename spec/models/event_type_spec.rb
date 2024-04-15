@@ -63,24 +63,24 @@ describe EventType do
       end
     end
 
-    describe 'title' do 
-      it 'removes leading and trailing whitespace from title' do 
+    describe 'title' do
+      it 'removes leading and trailing whitespace from title' do
         event_type = EventType.new(title: '  Movie  ')
         event_type.valid?
         expect(event_type.title).to eq('Movie')
-      end 
-    end 
+      end
+    end
   end
 
   describe 'scope :available_for_public' do
     it 'includes event types with enable_public_submission set to true' do
       public_event_type = create(:event_type, program: conference.program, enable_public_submission: true)
       expect(EventType.available_for_public).to include(public_event_type)
-    end 
+    end
 
     it 'excludes event types with enable_public_submission set to false' do
       non_public_event_type = create(:event_type, program: conference.program, enable_public_submission: false)
       expect(EventType.available_for_public).not_to include(non_public_event_type)
-    end 
-  end 
+    end
+  end
 end

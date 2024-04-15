@@ -3,7 +3,7 @@
 
 .form-group
   = f.label :event_type_id, "Type"
-  - if current_user.is_admin
+  - if current_user&.is_admin
     = f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
   - else
     = f.select :event_type_id, event_type_select_options(@conference.program.event_types.available_for_public), { include_blank: false }, { class: 'select-help-toggle form-control' }

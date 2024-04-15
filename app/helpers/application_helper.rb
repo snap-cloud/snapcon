@@ -122,10 +122,10 @@ hint: options[:hint]
     end, ', ')
   end
 
-  def event_types_sentence(conference, is_admin = true)
+  def event_types_sentence(conference, is_admin)
     if is_admin
       conference.event_types.map { |et| et.title.pluralize }.to_sentence
-    else 
+    else
       conference.event_types.available_for_public.map { |et| et.title.pluralize }.to_sentence
     end
   end
