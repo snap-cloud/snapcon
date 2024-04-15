@@ -61,21 +61,33 @@ module Admin
 
       if !params[:file]
         flash[:error] = 'Empty file detected while adding materials to Event'
-      elsif errors.all? { |_k, v| v.blank? }
-        flash[:notice] = 'Successfully added materials.'
-      else
-        errors_text = ''
-        errors_text += 'Unable to find event with ID: ' + errors[:no_event].join(', ') + '. ' if errors[:no_event].any?
-        if errors[:validation_errors].any?
-          errors_text += 'There were some errors: ' + errors[:validation_errors].join('. ')
-        end
+      elsif errors.present?
+        errors_text = aggregate_errors(errors)
+        flash[:notice] = if errors_text.length > 4096
+                           'Errors are too long to be displayed. Please check the logs.'
+                         else
+                           errors_text
+                         end
 
-        flash[:error] = errors_text
+      else
+        flash[:notice] = 'Successfully added materials.'
       end
       redirect_back(fallback_location: root_path)
     end
 
     private
+
+    # Aggregate errors and ensure that they do not exceed 4 KB in total size
+    def aggregate_errors(errors)
+      errors_text = ''
+      if errors[:no_event].any?
+        errors_text += 'Unable to find events with IDs: ' + errors[:no_event].join(', ') + '. '
+      end
+      if errors[:validation_errors].any?
+        errors_text += 'Validation errors: ' + errors[:validation_errors].join('. ')
+      end
+      errors_text
+    end
 
     def commercial_params
       params.require(:commercial).permit(:title, :url)
