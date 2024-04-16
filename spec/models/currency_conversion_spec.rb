@@ -20,11 +20,18 @@
 #
 #  fk_rails_...  (conference_id => conferences.id)
 #
-FactoryBot.define do
-  factory :currency_conversion do
-    from_currency { 'USD' }
-    to_currency { 'EUR' }
-    rate { 0.89 }
-    conference
+require 'spec_helper'
+
+describe CurrencyConversion do
+  let!(:conference) { create(:conference, title: 'ExampleCon') }
+
+  describe 'validations' do
+    before do
+      conference.currency_conversions << create(:currency_conversion)
+    end
+
+    it { is_expected.to validate_numericality_of(:rate).is_greater_than(0) }
+
+    it { is_expected.to validate_uniqueness_of(:from_currency).scoped_to(:to_currency).on(:create) }
   end
 end
