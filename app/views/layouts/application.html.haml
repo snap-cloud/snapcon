@@ -23,6 +23,7 @@
     - if @conference && @conference.custom_css
       %style{type: 'text/css'}
         = @conference.custom_css.html_safe
+    = yield(:script_head)
 
   %body{ class: ("conference-#{@conference.short_title}" if @conference) }
     = render 'layouts/navigation', conference: @conference

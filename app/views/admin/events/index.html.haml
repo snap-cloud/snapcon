@@ -35,12 +35,13 @@
           .form-group
             = f.file_field 'file', as: :file
             %span.help-block
-              Upload your file with data in the following format:
-              %b Event_ID:Commercial_Link
+              Upload your file.csv with data in the following format:
+              %b Event_ID,Title,URL
               for instance:
               %pre
-                11:https://youtube.com/myvideo
-                23:https://vimeo.com/myvideo
+                Event_ID,Title,URL
+                1,Session Recording,https://youtube.com/myvideo
+                2,Demo Video,https://vimeo.com/myvideo
           .modal-footer
             = f.submit nil, class: 'btn btn-primary'
 .row
