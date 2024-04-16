@@ -51,8 +51,8 @@
       - start_ymd = new_start_time.strftime('%Y-%m-%d')
       - unless start_ymd.eql?(date)
         .col-xs-12.col-md-12
-          .date-content
-            %span.date-title{ id: start_ymd }
+          .date-content{ data: { time: event_schedule.start_time.strftime('%H:%M') } }
+            %span.date-title{ id: "event-#{event_schedule.id}" }
               = inyourtz(event_schedule.start_time, @conference.timezone) do
                 = date = start_ymd
             %a.pull-right{ title: "Go up", href: "#program" }
@@ -79,6 +79,8 @@
           .unscheduled-event
             - cache [@program, event, current_user, '#unscheduled#full#panel'] do
               = render 'event', event: event, event_schedule: nil
+  %button#current-event-btn.btn.btn-primary{ type: "button" }
+    Jump to Current Event
 
 :javascript
   $('.program-selector').on('click', function(e) {
