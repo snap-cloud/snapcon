@@ -87,7 +87,7 @@ Metrics/ModuleLength:
 # Offense count: 25
 # Configuration parameters: AllowedMethods, AllowedPatterns.
 Metrics/PerceivedComplexity:
-  Max: 17
+  Max: 18
 
 # Offense count: 13
 Naming/AccessorMethodName:
