@@ -84,29 +84,28 @@ $(document).ready( function() {
     var now = new Date();
     var closestEventId = null;
     var smallestDiff = Infinity;
+    var i=0
 
-    $('.date-content').each(function() {
+    $('.event-item').each(function() {
+
       var eventTimeStr = $(this).data('time');
-      if (eventTimeStr) {
-        var eventTimeParts = eventTimeStr.split(':');
-        var eventMinutes = parseInt(eventTimeParts[0]) * 60 + parseInt(eventTimeParts[1]);
-        var nowMinutes = now.getHours() * 60 + now.getMinutes();
-        var diff = Math.abs(eventMinutes - nowMinutes);
+        
+        if (eventTimeStr) {
+            var eventTime = new Date(eventTimeStr);
+            var diff = Math.abs(eventTime - now);
 
-        if (diff < smallestDiff) {
-          smallestDiff = diff;
-          closestEventId = $(this).find('.date-title').attr('id');
+            if (diff < smallestDiff) {
+                smallestDiff = diff;
+                closestEventId = $(this).attr('class').split(' ')[1];
+            }
         }
-      }
     });
 
     if (closestEventId) {
       //Instead of relying on hash it's probably better to scroll using javascript
       //Since the users and click button->scroll->click again, which won't re-scroll
-      var element = document.getElementById(closestEventId);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+      $('.highlighted').removeClass('highlighted');
+      $('.' + closestEventId).addClass('highlighted').get(0).scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
 
