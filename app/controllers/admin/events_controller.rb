@@ -182,6 +182,17 @@ module Admin
       end
     end
 
+    def destroy
+      @event = Event.find(params[:id])
+      if @event.destroy
+        flash[:notice] = 'Event successfully deleted.'
+        redirect_to admin_conference_program_events_path(@conference.short_title)
+      else
+        flash[:alert] = 'Event could not be deleted.'
+        redirect_to admin_conference_program_event_path(@conference.short_title, @event)
+      end
+    end
+
     private
 
     def event_params
@@ -224,5 +235,8 @@ module Admin
         votes: [:user]
       )
     end
+
   end
+
+  
 end
