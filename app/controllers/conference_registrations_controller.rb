@@ -29,11 +29,16 @@ class ConferenceRegistrationsController < ApplicationController
   end
 
   def show
-    @total_price = Ticket.total_price_user(@conference, current_user, paid: true)
-    @tickets = current_user.ticket_purchases.by_conference(@conference).paid
-    @total_price_per_ticket = @tickets.group(:ticket_id).sum('amount_paid * quantity')
-    @ticket_payments = @tickets.group_by(&:ticket_id)
-    @total_quantity = @tickets.group(:ticket_id).sum(:quantity)
+    @purchases = current_user.ticket_purchases.by_conference(@conference).paid
+    summed_per_purchase_per_currency = @purchases.group(:ticket_id, :currency).sum('amount_paid_cents * quantity')
+    @total_price_per_purchase_per_currency = summed_per_purchase_per_currency.each_with_object({}) do |((ticket_id, currency), amount), hash|
+      hash[[ticket_id, currency]] = Money.new(amount, currency)
+    end
+    @total_quantity = @purchases.group(:ticket_id, :currency).sum(:quantity)
+    sum_total_currency = @purchases.group(:currency).sum('amount_paid_cents * quantity')
+    @total_price_per_currency = sum_total_currency.each_with_object({}) do |(currency, amount), hash|
+      hash[currency] = Money.new(amount, currency)
+    end
   end
 
   def edit; end

@@ -86,27 +86,25 @@
             %i.fa-solid.fa-square-dashed.fa-stack-2x
             %i.fa-solid.fa-ticket.fa-stack-1x
           Tickets
-        - if @tickets.any?
-          Total Purchased:
-          = "(#{@tickets.first.price.symbol}#{humanized_money @total_price})"
-          %ul
-            .col-md-12
-              - @ticket_payments.each_pair do |ticket_id, tickets|
-                %li
-                  = @total_quantity[ticket_id]
-                  = tickets.first.title
-                  = word_pluralize(@total_quantity[ticket_id], 'Ticket')
-                  for
-                  = tickets.first.price.symbol
-                  = humanized_money @total_price_per_ticket[ticket_id]
-              %br
-          .btn-group{ role: 'group' }
-            = link_to 'View all tickets',
-              conference_physical_tickets_path(@conference.short_title),
-              class: 'btn btn-success'
-            = link_to 'Get more tickets',
-              conference_tickets_path(@conference.short_title),
-              class: 'btn btn-default'
+        - if @purchases.any?
+          .col-md-12
+            - @total_price_per_currency.each do |currency, total_price|
+              %h4
+                Total Purchased (#{currency}):
+                = humanized_money_with_symbol(total_price)
+              %ul
+                - @total_price_per_purchase_per_currency.select { |(id, curr)| curr == currency }.each do |(ticket_id, curr), total_amount|
+                  - purchase = @purchases.find { |p| p.ticket_id == ticket_id && p.currency == curr }
+                  %li
+                    = "#{@total_quantity[[ticket_id, currency]]} #{purchase.title} Tickets for "
+                    = humanized_money_with_symbol(total_amount)
+            .btn-group{ role: 'group' }
+              = link_to 'View all tickets',
+                conference_physical_tickets_path(@conference.short_title),
+                class: 'btn btn-success'
+              = link_to 'Get more tickets',
+                conference_tickets_path(@conference.short_title),
+                class: 'btn btn-default'
         - else
           %p
             You haven't bought any tickets.
@@ -125,7 +123,7 @@
       - if @registration
         .btn-group-vertical.pull-right
           = link_to 'Edit your Registration', edit_conference_conference_registration_path(@conference.short_title), class: 'btn btn-success', disabled: @conference.end_date < Date.today
-          - if @tickets.any?
+          - if @purchases.any?
             = link_to 'Unregister', conference_conference_registration_path(@conference.short_title), method: :delete, class: 'btn btn-danger btn-xs',
               data: { confirm: "Your ticket purchases won't be refunded. Are you sure you want to unregister?" }, disabled: @conference.end_date < Date.today
           - else

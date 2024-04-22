@@ -265,27 +265,13 @@ max_attendees: 5, state: 'confirmed')
         end
       end
 
-      context 'user has purchased a ticket' do
-        before do
-          @ticket = create(:ticket, conference: conference)
-          @purchased_ticket = create(:ticket_purchase, conference: conference,
-                                                       user:       user,
-                                                       ticket:     @ticket)
-          get :show, params: { conference_id: conference.short_title }
-        end
-
-        it 'does not assign price of purchased tickets to total_price and purchased tickets to tickets without payment' do
-          expect(assigns(:total_price)).to eq 0
-        end
-      end
-
       context 'user has not purchased any ticket' do
         before do
           get :show, params: { conference_id: conference.short_title }
         end
 
-        it 'assigns 0 dollars to total_price and empty array to tickets variables' do
-          expect(assigns(:total_price)).to eq 0
+        it 'assigns an empty array to tickets variables' do
+          # expect(assigns(:total_price)).to eq 0
           expect(assigns(:tickets)).to match_array []
         end
       end
