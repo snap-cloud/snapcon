@@ -68,6 +68,38 @@ module Admin
       end
     end
 
+    def upload_csv
+      Rails.logger.debug "Entered the upload_csv method"
+      @conference = Conference.find_by!(short_title: params[:conference_id])
+      authorize! :update, @conference
+    
+      # Check if the file was included in the params
+      if params[:schedule] && params[:schedule][:file].present?
+        file = params[:schedule][:file]
+        begin
+          CSV.foreach(file.path, headers: true) do |row|
+            event_date = Date.strptime(row['Date'], '%m/%d/%y')
+            event_time = Time.parse(row['Start_Time'])
+            event_start_time = DateTime.new(event_date.year, event_date.month, event_date.day, event_time.hour, event_time.min, event_time.sec, event_time.zone)
+    
+            room = Room.find_or_create_by(name: row['Room'])
+            event = Event.find_by(id: row['Event_ID'])
+            
+            if event
+              event.update(start_time: event_start_time, room: room)
+            end
+          end
+          flash[:notice] = 'Schedule uploaded successfully!'
+        rescue => e
+          flash[:alert] = "Failed to process CSV file: #{e.message}"
+        end
+      else
+        flash[:alert] = 'No file was attached!'
+      end
+      redirect_to admin_conference_schedules_path(@conference)
+    end
+    
+
     private
 
     def schedule_params
