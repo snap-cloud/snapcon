@@ -4,17 +4,18 @@
 #
 # Table name: ticket_purchases
 #
-#  id            :bigint           not null, primary key
-#  amount_paid   :float            default(0.0)
-#  currency      :string
-#  paid          :boolean          default(FALSE)
-#  quantity      :integer          default(1)
-#  week          :integer
-#  created_at    :datetime
-#  conference_id :integer
-#  payment_id    :integer
-#  ticket_id     :integer
-#  user_id       :integer
+#  id                :bigint           not null, primary key
+#  amount_paid       :float            default(0.0)
+#  amount_paid_cents :integer          default(0)
+#  currency          :string
+#  paid              :boolean          default(FALSE)
+#  quantity          :integer          default(1)
+#  week              :integer
+#  created_at        :datetime
+#  conference_id     :integer
+#  payment_id        :integer
+#  ticket_id         :integer
+#  user_id           :integer
 #
 
 class TicketPurchase < ApplicationRecord

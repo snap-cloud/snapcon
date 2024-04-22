@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_18_164346) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_22_230019) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -109,6 +109,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_18_164346) do
     t.string "custom_domain"
     t.integer "booth_limit", default: 0
     t.text "custom_css"
+    t.text "registered_attendees_message"
     t.index ["organization_id"], name: "index_conferences_on_organization_id"
   end
 
@@ -546,6 +547,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_18_164346) do
     t.integer "week"
     t.float "amount_paid", default: 0.0
     t.string "currency"
+    t.integer "amount_paid_cents", default: 0
   end
 
   create_table "ticket_scannings", force: :cascade do |t|

@@ -24,6 +24,10 @@
     = f.text_area :description, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
     .help-block= markdown_hint('Splash page content')
   .form-group
+    = f.label :registered_attendees_message, 'Message for Registered Attendees'
+    = f.text_area :registered_attendees_message, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
+    .help-block= markdown_hint('Splash page content')
+  .form-group
     = f.color_field :color, size: 6, class: 'form-control'
     %span.help-block
       The color will be used for the dashboard, for instance.
