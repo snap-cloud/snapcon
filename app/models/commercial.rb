@@ -30,6 +30,7 @@ class Commercial < ApplicationRecord
 
   def self.render_from_url(url)
     register_provider
+    url = generate_snap_embed(url)
     begin
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
@@ -37,6 +38,32 @@ class Commercial < ApplicationRecord
       { html: iframe_fallback(url) }
       # { error: exception.message }
     end
+  end
+
+  def self.generate_snap_embed(url)
+    uri = URI.parse(url)
+    if uri.host == 'snap.berkeley.edu' && uri.path == '/project'
+      args = URI.decode_www_form(uri.query).to_h
+    else
+      return url
+    end
+    if args.key?('username') && args.key?('projectname')
+      new_query = URI.encode_www_form({
+                                        'projectname' => args['projectname'],
+                                        'username'    => args['username'],
+                                        'showTitle'   => 'true',
+                                        'showAuthor'  => 'true',
+                                        'editButton'  => 'true',
+                                        'pauseButton' => 'true'
+                                      })
+      new_uri = URI::HTTPS.build(
+        host:  uri.host,
+        path:  '/embed',
+        query: new_query
+      )
+      return new_uri.to_s
+    end
+    url
   end
 
   def self.iframe_fallback(url)
