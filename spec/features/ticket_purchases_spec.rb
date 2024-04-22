@@ -225,7 +225,7 @@ describe Registration, feature: true, js: true do
         select 'GBP', from: 'currency_selector'
         expect(page).to have_content('£')
       end
-      
+
       it 'buys a ticket in EUR' do
         select 'EUR', from: 'currency_selector'
         fill_in "tickets__#{third_registration_ticket.id}", with: '1'
