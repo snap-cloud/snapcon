@@ -15,7 +15,6 @@
 #  commercialable_id   :integer
 #
 require 'spec_helper'
-require 'uri'
 
 describe Commercial do
   it { is_expected.to validate_presence_of(:url) }
