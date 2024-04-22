@@ -41,6 +41,8 @@ class Commercial < ApplicationRecord
   end
 
   def self.generate_snap_embed(url)
+    return url unless url
+
     uri = URI.parse(url)
     if uri.host == 'snap.berkeley.edu' && uri.path == '/project'
       args = URI.decode_www_form(uri.query).to_h
