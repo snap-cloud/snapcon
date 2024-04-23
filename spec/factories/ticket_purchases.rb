@@ -6,6 +6,7 @@
 #
 #  id            :bigint           not null, primary key
 #  amount_paid   :float            default(0.0)
+#  currency      :string
 #  paid          :boolean          default(FALSE)
 #  quantity      :integer          default(1)
 #  week          :integer
@@ -21,6 +22,7 @@ FactoryBot.define do
     conference
     ticket
     quantity { 10 }
+    currency { 'USD' }
     factory :paid_ticket_purchase do
       after(:build) do |ticket_purchase|
         payment = create(:payment)

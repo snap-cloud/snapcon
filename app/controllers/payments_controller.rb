@@ -11,11 +11,23 @@ class PaymentsController < ApplicationController
   end
 
   def new
-    @total_amount_to_pay = Ticket.total_price(@conference, current_user, paid: false)
+    # TODO: use "base currency"
+    session[:selected_currency] = params[:currency] if params[:currency].present?
+    selected_currency = session[:selected_currency] || @conference.tickets.first.price_currency
+    from_currency = @conference.tickets.first.price_currency
+
+    @total_amount_to_pay = CurrencyConversion.convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
     raise CanCan::AccessDenied.new('Nothing to pay for!', :new, Payment) if @total_amount_to_pay.zero?
+    raise CanCan::AccessDenied.new('Selected currency is invalid!', :new, Payment) if @total_amount_to_pay.negative?
 
     @has_registration_ticket = params[:has_registration_ticket]
     @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
+
+    @converted_prices = {}
+    @unpaid_ticket_purchases.each do |ticket_purchase|
+      @converted_prices[ticket_purchase.id] = ticket_purchase.amount_paid
+    end
+    @currency = selected_currency
   end
 
   def create
@@ -39,7 +51,7 @@ class PaymentsController < ApplicationController
                     notice: 'Thanks! Your ticket is booked successfully.'
       end
     else
-      @total_amount_to_pay = Ticket.total_price(@conference, current_user, paid: false)
+      @total_amount_to_pay = convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
       @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
       flash.now[:error] = @payment.errors.full_messages.to_sentence + ' Please try again with correct credentials.'
       render :new
@@ -52,7 +64,7 @@ class PaymentsController < ApplicationController
     params.permit(:stripe_customer_email, :stripe_customer_token)
           .merge(stripe_customer_email: params[:stripeEmail],
                  stripe_customer_token: params[:stripeToken],
-                 user: current_user, conference: @conference)
+                 user: current_user, conference: @conference, currency: session[:selected_currency])
   end
 
   def update_purchased_ticket_purchases
