@@ -98,7 +98,12 @@ class TicketPurchase < ApplicationRecord
 
   # Total amount
   def self.total
-    sum('amount_paid_cents * quantity')
+    sum('amount_paid * quantity')
+  end
+
+  # Total quantity
+  def self.total_quantity
+    sum('quantity')
   end
 
   def pay(payment)

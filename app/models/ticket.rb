@@ -84,7 +84,7 @@ class Ticket < ApplicationRecord
     ticket = Ticket.find(id)
     return Money.new(0, 'USD') unless ticket
 
-    sum = ticket.ticket_purchases.paid.total
+    sum = ticket.price_cents * ticket.ticket_purchases.paid.total_quantity
     Money.new(sum, ticket.price_currency)
   end
 

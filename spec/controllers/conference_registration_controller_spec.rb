@@ -271,8 +271,7 @@ max_attendees: 5, state: 'confirmed')
         end
 
         it 'assigns an empty array to tickets variables' do
-          # expect(assigns(:total_price)).to eq 0
-          expect(assigns(:tickets)).to match_array []
+          expect(assigns(:purchases)).to match_array []
         end
       end
     end
