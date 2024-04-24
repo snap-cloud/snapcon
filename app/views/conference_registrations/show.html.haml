@@ -96,7 +96,9 @@
                 - @total_price_per_purchase_per_currency.select { |(id, curr)| curr == currency }.each do |(ticket_id, curr), total_amount|
                   - purchase = @purchases.find { |p| p.ticket_id == ticket_id && p.currency == curr }
                   %li
-                    = "#{@total_quantity[[ticket_id, currency]]} #{purchase.title} Tickets for "
+                    - title = purchase.title.titleize.gsub(/(?i)\bticket\b/, 'Tickets')
+                    - title = title.include?('Tickets') ? title : "#{title} Tickets"
+                    = "#{@total_quantity[[ticket_id, currency]]} #{title} for "
                     = humanized_money_with_symbol(total_amount)
             .btn-group{ role: 'group' }
               = link_to 'View all tickets',
