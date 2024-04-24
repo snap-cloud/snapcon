@@ -13,9 +13,9 @@ module EventTypesHelper
         "#{type.title} - #{show_time(type.length)}",
         type.id,
         { data: {
-          min_words:    type.minimum_abstract_length,
-          max_words:    type.maximum_abstract_length,
-          instructions: type.submission_template
+          min_words: type.minimum_abstract_length,
+          max_words: type.maximum_abstract_length,
+          template:  type.submission_template
         } }
       ]
     end

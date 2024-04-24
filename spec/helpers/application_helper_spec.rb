@@ -155,4 +155,22 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
       expect(conference_logo_url(conference2)).to include('2.png')
     end
   end
+
+  describe '#event_type_sentence' do
+    before do
+      create(:event_type, title: 'Keynote', program: conference.program, enable_public_submission: false)
+    end
+
+    context 'when a user is an admin' do
+      it 'returns a sentence with all event types' do
+        expect(helper.event_types_sentence(conference, true)).to eq 'Talks, Workshops, and Keynotes'
+      end
+    end
+
+    context 'when a user is not an admin' do
+      it 'returns a sentence only event types that allow public submission' do
+        expect(helper.event_types_sentence(conference, false)).to eq 'Talks and Workshops'
+      end
+    end
+  end
 end

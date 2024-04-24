@@ -23,6 +23,7 @@ FactoryBot.define do
     title { 'Example Event Type' }
     length { 30 }
     description { 'Example Event Description\nThis event type is an example.' }
+    enable_public_submission { true }
     minimum_abstract_length { 0 }
     maximum_abstract_length { 500 }
     submission_template { 'Example Event Template _with_ **markdown**' }
