@@ -30,8 +30,8 @@ class ConferenceRegistrationsController < ApplicationController
 
   def show
     @purchases = current_user.ticket_purchases.by_conference(@conference).paid
-    summed_per_purchase_per_currency = @purchases.group(:ticket_id, :currency).sum('amount_paid_cents * quantity')
-    @total_price_per_purchase_per_currency = summed_per_purchase_per_currency.each_with_object({}) do |((ticket_id, currency), amount), hash|
+    summed_per_ticket_per_currency = @purchases.group(:ticket_id, :currency).sum('amount_paid_cents * quantity')
+    @total_price_per_ticket_per_currency = summed_per_ticket_per_currency.each_with_object({}) do |((ticket_id, currency), amount), hash|
       hash[[ticket_id, currency]] = Money.new(amount, currency)
     end
     @total_quantity = @purchases.group(:ticket_id, :currency).sum(:quantity)

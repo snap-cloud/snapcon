@@ -274,6 +274,34 @@ max_attendees: 5, state: 'confirmed')
           expect(assigns(:purchases)).to match_array []
         end
       end
+
+      context 'when user has purchased tickets' do
+        let!(:purchase) { create(:ticket_purchase, user: user, conference: conference, quantity: 2, amount_paid_cents: 10_000, currency: 'USD', paid: true, ticket_id: 1) }
+        let!(:purchase_not_paid) { create(:ticket_purchase, user: user, conference: conference, quantity: 2, amount_paid_cents: 10_000, currency: 'USD') }
+        let!(:purchase_diff_id) { create(:ticket_purchase, user: user, conference: conference, quantity: 1, amount_paid_cents: 10_000, currency: 'USD', paid: true, ticket_id: 2) }
+        let!(:purchase_diff_curr) { create(:ticket_purchase, user: user, conference: conference, quantity: 1, amount_paid_cents: 10_000, currency: 'CAD', paid: true, ticket_id: 1) }
+
+        before do
+          sign_in user
+          get :show, params: { conference_id: conference.short_title }
+        end
+
+        it 'assigns @purchases correctly' do
+          expect(assigns(:purchases)).to contain_exactly(purchase, purchase_diff_id, purchase_diff_curr)
+        end
+
+        it 'assigns @total_price_per_ticket_per_currency correctly' do
+          expect(assigns(:total_price_per_ticket_per_currency)).to eq({ [purchase.ticket_id, 'USD'] => Money.new(20_000, 'USD'), [purchase_diff_id.ticket_id, 'USD'] => Money.new(10_000, 'USD'), [purchase_diff_curr.ticket_id, 'CAD'] => Money.new(10_000, 'CAD') })
+        end
+
+        it 'assigns @total_quantity correctly' do
+          expect(assigns(:total_quantity)).to eq({ [purchase.ticket_id, 'USD'] => 2, [purchase_diff_id.ticket_id, 'USD'] => 1, [purchase_diff_curr.ticket_id, 'CAD'] => 1 })
+        end
+
+        it 'assigns @total_price_per_currency correctly' do
+          expect(assigns(:total_price_per_currency)).to eq({ 'USD' => Money.new(30_000, 'USD'), 'CAD' => Money.new(10_000, 'CAD') })
+        end
+      end
     end
 
     describe 'GET #edit' do

@@ -31,7 +31,6 @@ class TicketPurchase < ApplicationRecord
 
   delegate :title, to: :ticket
   delegate :description, to: :ticket
-  # delegate :price, to: :ticket
   delegate :price_cents, to: :ticket
   delegate :price_currency, to: :ticket
 

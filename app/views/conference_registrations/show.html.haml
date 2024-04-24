@@ -93,7 +93,7 @@
                 Total Purchased (#{currency}):
                 = humanized_money_with_symbol(total_price)
               %ul
-                - @total_price_per_purchase_per_currency.select { |(id, curr)| curr == currency }.each do |(ticket_id, curr), total_amount|
+                - @total_price_per_ticket_per_currency.select { |(id, curr)| curr == currency }.each do |(ticket_id, curr), total_amount|
                   - purchase = @purchases.find { |p| p.ticket_id == ticket_id && p.currency == curr }
                   %li
                     - title = purchase.title.titleize.gsub(/(?i)\bticket\b/, 'Tickets')
