@@ -22,6 +22,7 @@ FactoryBot.define do
     conference
     ticket
     quantity { 10 }
+    currency { 'USD' }
     factory :paid_ticket_purchase do
       after(:build) do |ticket_purchase|
         payment = create(:payment)

@@ -20,5 +20,6 @@ FactoryBot.define do
     user
     conference
     status { 'unpaid' }
+    currency { 'USD' }
   end
 end

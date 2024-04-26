@@ -31,6 +31,7 @@ describe Payment do
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:user_id) }
     it { is_expected.to validate_presence_of(:conference_id) }
+    it { is_expected.to validate_presence_of(:currency) }
   end
 
   describe '#amount_to_pay' do
@@ -60,7 +61,7 @@ describe Payment do
 
     after { StripeMock.stop }
 
-    before { TicketPurchase.purchase(conference, user, tickets) }
+    before { TicketPurchase.purchase(conference, user, tickets, ticket_1.price_currency) }
 
     context 'when the payment is successful' do
       before { payment.purchase }
@@ -80,12 +81,16 @@ describe Payment do
       it 'assigns authorization_code' do
         expect(payment.authorization_code).to eq('test_ch_3')
       end
+
+      it 'assigns currency' do
+        expect(payment.currency).to eq('USD')
+      end
     end
 
     context 'if the payment is not successful' do
       let(:payment) do
         create(:payment, user: user, conference: conference, stripe_customer_token: 'bogus_card_token',
-stripe_customer_email: user.email)
+        stripe_customer_email: user.email)
       end
 
       before { payment.purchase }
@@ -144,6 +149,13 @@ stripe_customer_email: user.email)
         it 'raises exception' do
           StripeMock.prepare_error(Stripe::RateLimitError.new)
           expect { payment.purchase }.not_to raise_error
+        end
+      end
+
+      context 'when the currency is invalid' do
+        it 'returns false' do
+          payment.currency = 'ABC'
+          expect(payment.purchase).to be false
         end
       end
     end
