@@ -6,6 +6,8 @@
 #
 #  id                  :bigint           not null, primary key
 #  description         :text
+#  email_body          :text
+#  email_subject       :string
 #  price_cents         :integer          default(0), not null
 #  price_currency      :string           default("USD"), not null
 #  registration_ticket :boolean          default(FALSE)
@@ -81,13 +83,13 @@ describe Ticket do
     subject { ticket.tickets_turnover_total ticket.id }
 
     let!(:purchase1) do
-      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 1, paid: true, user: user
+      create(:ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 1, paid: true, user: user)
     end
     let!(:purchase2) do
-      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 2, paid: true, user: user
+      create(:ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 2, paid: true, user: user)
     end
     let!(:purchase3) do
-      create :ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 10, paid: false, user: user
+      create(:ticket_purchase, ticket: ticket, amount_paid: 5_000, quantity: 10, paid: false, user: user)
     end
 
     it 'returns turnover as Money with ticket\'s currency' do

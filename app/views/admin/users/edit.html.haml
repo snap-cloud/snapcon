@@ -1,7 +1,1 @@
-.row
-  .col-md-12
-    .page-header
-      %h1
-        Edit User #{@user.nickname}
-    = form_for(@user) do |f|
-      = render 'users/form', f: f
+= render partial: 'form'

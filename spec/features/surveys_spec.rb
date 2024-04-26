@@ -35,10 +35,10 @@ describe Survey do
     end
 
     it 'respond to a survey during registration', feature: true, js: true do
-      create :registration_period, conference: conference
-      create :registration, conference: conference, user: attendee
+      create(:registration_period, conference: conference)
+      create(:registration, conference: conference, user: attendee)
       survey = create(:survey, surveyable: conference, target: :during_registration)
-      create :boolean_mandatory, survey: survey
+      create(:boolean_mandatory, survey: survey)
 
       visit conference_conference_registration_path(conference)
       expect(find(:link, survey.title).sibling('.fa-solid')[:title]).to eq('Please fill out the survey')

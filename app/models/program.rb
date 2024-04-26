@@ -189,7 +189,7 @@ class Program < ApplicationRecord
     return false unless schedule_public
 
     # do not notify unless the mail content is set up
-    (conference.email_settings.program_schedule_public_subject.present? && conference.email_settings.program_schedule_public_body.present?)
+    conference.email_settings.program_schedule_public_subject.present? && conference.email_settings.program_schedule_public_body.present?
   end
 
   def languages_list
@@ -298,9 +298,9 @@ class Program < ApplicationRecord
     errors.add(:languages, "can't be repeated") && return unless languages_array.uniq!.nil?
 
     # We check if every language is a valid ISO 639-1 language
-    errors.add(:languages, 'must be ISO 639-1 valid codes') unless languages_array.select do |x|
+    errors.add(:languages, 'must be ISO 639-1 valid codes') unless languages_array.none? do |x|
                                                                      ISO_639.find(x).nil?
-                                                                   end.empty?
+                                                                   end
   end
 
   ##

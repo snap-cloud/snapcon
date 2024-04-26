@@ -89,7 +89,7 @@ module Admin
     def ticket_params
       params.require(:ticket).permit(
         :conference, :conference_id,
-        :title, :url, :description,
+        :title, :url, :description, :email_subject, :email_body,
         :price_cents, :price_currency, :price,
         :registration_ticket, :visible
       )
@@ -97,7 +97,7 @@ module Admin
 
     def gift_ticket_params
       response = params.require(:ticket_purchase).permit(:user_id)
-      response.merge(paid: true, amount_paid: 0, conference: @conference)
+      response.merge(paid: true, amount_paid: 0, conference: @conference, currency: @conference.tickets.first.price_currency)
     end
   end
 end

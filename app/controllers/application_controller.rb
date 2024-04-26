@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
   end
 
   def not_found
-    raise ActionController::RoutingError, 'Not Found'
+    raise ActionController::RoutingError.new('Not Found')
   end
 
   skip_authorization_check only: :apple_pay

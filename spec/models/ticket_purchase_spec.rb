@@ -6,6 +6,7 @@
 #
 #  id            :bigint           not null, primary key
 #  amount_paid   :float            default(0.0)
+#  currency      :string
 #  paid          :boolean          default(FALSE)
 #  quantity      :integer          default(1)
 #  week          :integer
@@ -43,6 +44,10 @@ describe TicketPurchase do
       expect(subject).not_to allow_value(-1).for(:quantity)
     end
 
+    it 'is not valid without a currency' do
+      expect(subject).to validate_presence_of(:currency)
+    end
+
     it 'is valid with a quantity greater than zero' do
       expect(subject).to allow_value(1).for(:quantity)
     end
@@ -68,10 +73,11 @@ describe TicketPurchase do
     let!(:ticket_2) { create(:ticket) }
     let!(:free_ticket) { create(:ticket, price_cents: 0) }
     let!(:conference) { create(:conference, tickets: [ticket_1, ticket_2, free_ticket]) }
+    let!(:currency) { 'USD' }
 
     it 'creates purchase to free ticket' do
       tickets = { free_ticket.id.to_s => '10' }
-      message = TicketPurchase.purchase(conference, participant, tickets)
+      message = TicketPurchase.purchase(conference, participant, tickets, currency)
       purchase = TicketPurchase.where(conference_id: conference.id,
                                       user_id:       participant.id,
                                       ticket_id:     free_ticket.id).first
@@ -83,7 +89,7 @@ describe TicketPurchase do
 
     it 'creates a purchase for one ticket' do
       tickets = { ticket_1.id.to_s => '1' }
-      message = TicketPurchase.purchase(conference, participant, tickets)
+      message = TicketPurchase.purchase(conference, participant, tickets, currency)
       purchase = TicketPurchase.where(conference_id: conference.id,
                                       user_id:       participant.id,
                                       ticket_id:     ticket_1.id).first
@@ -95,7 +101,7 @@ describe TicketPurchase do
 
     it 'creates several purchases for more than one ticket' do
       tickets = { ticket_1.id.to_s => '1', ticket_2.id.to_s => '1' }
-      message = TicketPurchase.purchase(conference, participant, tickets)
+      message = TicketPurchase.purchase(conference, participant, tickets, currency)
       purchase_1 = TicketPurchase.where(conference_id: conference.id,
                                         user_id:       participant.id,
                                         ticket_id:     ticket_1.id).first
@@ -112,14 +118,14 @@ describe TicketPurchase do
 
     it 'creates no purchase if quantity is less than 1' do
       tickets = { ticket_1.id.to_s => '-1' }
-      TicketPurchase.purchase(conference, participant, tickets)
+      TicketPurchase.purchase(conference, participant, tickets, currency)
 
       expect(TicketPurchase.count).to eq(0)
     end
 
     it 'creates no purchase if quantity is 0' do
       tickets = { ticket_1.id.to_s => '0' }
-      TicketPurchase.purchase(conference, participant, tickets)
+      TicketPurchase.purchase(conference, participant, tickets, currency)
 
       expect(TicketPurchase.count).to eq(0)
     end
@@ -132,7 +138,7 @@ describe TicketPurchase do
                         quantity:   5)
 
       tickets = { ticket_1.id.to_s => '10' }
-      message = TicketPurchase.purchase(conference, participant, tickets)
+      message = TicketPurchase.purchase(conference, participant, tickets, currency)
       purchase.reload
 
       expect(TicketPurchase.count).to eq(1)
