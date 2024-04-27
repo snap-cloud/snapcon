@@ -4,17 +4,18 @@
 #
 # Table name: ticket_purchases
 #
-#  id            :bigint           not null, primary key
-#  amount_paid   :float            default(0.0)
-#  currency      :string
-#  paid          :boolean          default(FALSE)
-#  quantity      :integer          default(1)
-#  week          :integer
-#  created_at    :datetime
-#  conference_id :integer
-#  payment_id    :integer
-#  ticket_id     :integer
-#  user_id       :integer
+#  id                :bigint           not null, primary key
+#  amount_paid       :float            default(0.0)
+#  amount_paid_cents :integer          default(0)
+#  currency          :string
+#  paid              :boolean          default(FALSE)
+#  quantity          :integer          default(1)
+#  week              :integer
+#  created_at        :datetime
+#  conference_id     :integer
+#  payment_id        :integer
+#  ticket_id         :integer
+#  user_id           :integer
 #
 require 'spec_helper'
 
@@ -64,6 +65,16 @@ describe TicketPurchase do
         expect(ticket_purchase.valid?).to be false
         expect(ticket_purchase.errors[:quantity]).to eq ['cannot be greater than one for registration tickets.']
       end
+    end
+  end
+
+  describe 'monetization' do
+    let!(:purchase) { create(:ticket_purchase, amount_paid_cents: 1000, currency: 'USD') }
+
+    it 'correctly monetizes amount_paid_cents' do
+      expect(purchase.purchase_price).to be_a(Money)
+      expect(purchase.purchase_price.currency.iso_code).to eq('USD')
+      expect(purchase.purchase_price.fractional).to eq(1000)
     end
   end
 
