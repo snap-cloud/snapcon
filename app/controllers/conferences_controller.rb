@@ -32,6 +32,7 @@ class ConferencesController < ApplicationController
     # User messages at the top of the page.
     @unpaid_tickets = current_user_has_unpaid_tickets?
     @user_needs_to_register = current_user_needs_to_register?
+    @user_registered = current_user_registered?
 
     @image_url = @splashpage.banner_photo_url || @conference.picture_url
 
@@ -134,6 +135,10 @@ class ConferencesController < ApplicationController
   def current_user_needs_to_register?
     current_user && !@conference.user_registered?(current_user) &&
       current_user_tickets.where(ticket: @conference.registration_tickets).paid.any?
+  end
+
+  def current_user_registered?
+    current_user && @conference.user_registered?(current_user)
   end
 
   def current_user_has_unpaid_tickets?
