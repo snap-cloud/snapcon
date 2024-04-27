@@ -85,38 +85,37 @@ describe Conference do
     it_behaves_like 'add and update conference'
   end
 
-  describe 'user views' do 
+  describe 'user views' do
     let!(:conference) { create(:full_conference, description: 'Welcome to this conference!', registered_attendees_message: 'This is an exclusive message!') }
-    let!(:registered_user) {create(:user)}
-    let!(:not_registered_user) {create(:user)}
-    let!(:registration) {create(:registration, user: registered_user, conference: conference)}
+    let!(:registered_user) { create(:user) }
+    let!(:not_registered_user) { create(:user) }
+    let!(:registration) { create(:registration, user: registered_user, conference: conference) }
 
-
-    context 'when user is registered for conference' do 
-      before do 
+    context 'when user is registered for conference' do
+      before do
         sign_in registered_user
         visit conference_path(conference.short_title)
-      end 
+      end
 
       it 'shows registered attendees message and description' do
-        expect(page).to have_content("Welcome to this conference!")
+        expect(page).to have_content('Welcome to this conference!')
         expect(page).to have_content('This is an exclusive message!')
-      end 
-    end 
+      end
+    end
 
-    context 'when user is not registered for conference' do 
-      before do 
+    context 'when user is not registered for conference' do
+      before do
         sign_in not_registered_user
         visit conference_path(conference)
-      end 
+      end
 
       it 'shows conference description' do
-        expect(page).to have_content("Welcome to this conference!")
-      end 
+        expect(page).to have_content('Welcome to this conference!')
+      end
 
       it 'does not show registered attendees message' do
         expect(page).not_to have_content('This is an exclusive message!')
-      end 
+      end
     end
-  end 
+  end
 end
