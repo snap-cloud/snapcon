@@ -80,6 +80,35 @@ $(document).ready( function() {
   $('.unscheduled-events .schedule-event-delete-button').hide();
   $('.non_schedulable .schedule-event-delete-button').hide();
 
+  $('#current-event-btn').on('click', function() {
+    var now = new Date();
+    var closestEventId = null;
+    var smallestDiff = Infinity;
+    var i = 0;
+
+    $('.event-item').each(function() {
+
+      var eventTimeStr = $(this).data('time');
+        
+        if (eventTimeStr) {
+            var eventTime = new Date(eventTimeStr);
+            var diff = Math.abs(eventTime - now);
+
+            if (diff < smallestDiff) {
+                smallestDiff = diff;
+                closestEventId = $(this).attr('class').split(' ')[1];
+            }
+        }
+    });
+
+    if (closestEventId) {
+      //Instead of relying on hash it's probably better to scroll using javascript
+      //Since the users and click button->scroll->click again, which won't re-scroll
+      $('.highlighted').removeClass('highlighted');
+      $('.' + closestEventId).addClass('highlighted').get(0).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
   // set events as draggable
   $('.schedule-event').not('.non_schedulable').draggable({
     snap: '.schedule-room-slot',

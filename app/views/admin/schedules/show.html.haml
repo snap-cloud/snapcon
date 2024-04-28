@@ -4,9 +4,36 @@
   .col-md-12
     .page-header
       %h1= "#{@conference.title} Schedule"
+
+      .btn-group.pull-right
+        %button.btn.btn-primary{ title: 'Mass import of schedule for events',
+          data: { toggle: 'modal', target: '#mass-schedule-modal' } }
+          Upload with CSV file
+
       %p.text-muted
         Create the schedules for the conference
       = render 'schedules/event_types_key', event_types: @event_types, favourites: false
+
+.modal#mass-schedule-modal
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %h1
+          Schedule events
+      .modal-body
+        = form_for :schedule, url: upload_csv_admin_conference_schedules_path(@conference), html: { multipart: true }, method: :post do |f|
+          .form-group
+            = f.file_field :file, as: :file
+            %span.help-block
+              Upload your CSV file with data in the following format:
+              %b Event_ID, Start_Time, Date, Room
+              for instance:
+              %pre
+                Event_ID, Start_Time, Date, Room
+                osemdemo, 10:00, 6/1/2024, Australia
+                osemdemo, 11:00, 6/2/2024, Brazil
+          .modal-footer
+            = f.submit 'Upload', class: 'btn btn-primary'
 
 - if @rooms.present?
   .row

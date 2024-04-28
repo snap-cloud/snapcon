@@ -4,17 +4,18 @@
 #
 # Table name: event_types
 #
-#  id                      :bigint           not null, primary key
-#  color                   :string
-#  description             :string
-#  length                  :integer          default(30)
-#  maximum_abstract_length :integer          default(500)
-#  minimum_abstract_length :integer          default(0)
-#  submission_template     :text
-#  title                   :string           not null
-#  created_at              :datetime
-#  updated_at              :datetime
-#  program_id              :integer
+#  id                       :bigint           not null, primary key
+#  color                    :string
+#  description              :string
+#  enable_public_submission :boolean          default(TRUE), not null
+#  length                   :integer          default(30)
+#  maximum_abstract_length  :integer          default(500)
+#  minimum_abstract_length  :integer          default(0)
+#  submission_template      :text
+#  title                    :string           not null
+#  created_at               :datetime
+#  updated_at               :datetime
+#  program_id               :integer
 #
 require 'spec_helper'
 
@@ -60,6 +61,26 @@ describe EventType do
       it 'is not valid when length is not multiple of LENGTH_STEP' do
         expect(build(:event_type, program: conference.program, length: 37)).not_to be_valid
       end
+    end
+
+    describe 'title' do
+      it 'removes leading and trailing whitespace from title' do
+        event_type = EventType.new(title: '  Movie  ')
+        event_type.valid?
+        expect(event_type.title).to eq('Movie')
+      end
+    end
+  end
+
+  describe 'scope :available_for_public' do
+    it 'includes event types with enable_public_submission set to true' do
+      public_event_type = create(:event_type, program: conference.program, enable_public_submission: true)
+      expect(EventType.available_for_public).to include(public_event_type)
+    end
+
+    it 'excludes event types with enable_public_submission set to false' do
+      non_public_event_type = create(:event_type, program: conference.program, enable_public_submission: false)
+      expect(EventType.available_for_public).not_to include(non_public_event_type)
     end
   end
 end
