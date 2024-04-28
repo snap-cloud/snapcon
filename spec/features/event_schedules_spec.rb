@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe EventSchedule, js: true do
+describe EventSchedule, :js do
   Timecop.return
   let(:test_date) { Time.current }
   let!(:conference) do
