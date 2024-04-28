@@ -76,7 +76,7 @@ module Admin
       if process_csv
         flash[:notice] = 'Schedule uploaded successfully!'
       else
-        flash[:alert] = "Failed to process CSV file."
+        flash[:alert] = 'Failed to process CSV file.'
       end
 
       redirect_to admin_conference_schedules_path(@conference)
@@ -98,7 +98,7 @@ module Admin
         process_row(row)
       end
       true
-    rescue => e
+    rescue StandardError => e
       Rails.logger.error "CSV Processing Error: #{e.message}"
       false
     end
@@ -111,7 +111,7 @@ module Admin
       room = Room.find_or_create_by(name: row['Room'])
       event = Event.find_by(id: row['Event_ID'])
 
-      event.update(start_time: event_start_time, room: room) if event
+      event&.update(start_time: event_start_time, room: room)
     end
 
     def parse_date(date_str)
