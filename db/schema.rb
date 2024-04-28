@@ -468,6 +468,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_22_200831) do
     t.boolean "include_booths"
     t.boolean "shuffle_highlights", default: false, null: false
     t.boolean "include_happening_now"
+    t.boolean "include_committee"
   end
 
   create_table "sponsors", force: :cascade do |t|
