@@ -40,49 +40,33 @@ class Commercial < ApplicationRecord
     end
   end
 
-  # Extracted method to parse the URI and handle errors
-  def self.parse_uri(url)
-    URI.parse(url)
-  rescue URI::InvalidURIError
-    nil
-  end
-
-  # New method to determine if the URL is a Snap! project
-  def self.snap_berkeley_project?(uri)
-    uri.host == 'snap.berkeley.edu' && uri.path == '/project'
-  end
-
-  # Extracted method to parse query parameters
-  def self.parse_query(uri)
-    URI.decode_www_form(uri.query).to_h
-  end
-
-  # New method to build the embed URL
-  def self.build_embed_url(uri, args)
-    new_query = URI.encode_www_form({
-      'projectname' => args['projectname'],
-      'username'    => args['username'],
-      'showTitle'   => 'true',
-      'showAuthor'  => 'true',
-      'editButton'  => 'true',
-      'pauseButton' => 'true'
-    })
-    URI::HTTPS.build(host: uri.host, path: '/embed', query: new_query).to_s
-  end
-
-  # Updated generate_snap_embed to use extracted methods
   def self.generate_snap_embed(url)
     return url unless url
 
-    uri = parse_uri(url)
-    return url unless uri && snap_berkeley_project?(uri)
-
-    args = parse_query(uri)
-    return url unless args.key?('username') && args.key?('projectname')
-
-    build_embed_url(uri, args)
+    uri = URI.parse(url)
+    if uri.host == 'snap.berkeley.edu' && uri.path == '/project'
+      args = URI.decode_www_form(uri.query).to_h
+    else
+      return url
+    end
+    if args.key?('username') && args.key?('projectname')
+      new_query = URI.encode_www_form({
+                                        'projectname' => args['projectname'],
+                                        'username'    => args['username'],
+                                        'showTitle'   => 'true',
+                                        'showAuthor'  => 'true',
+                                        'editButton'  => 'true',
+                                        'pauseButton' => 'true'
+                                      })
+      new_uri = URI::HTTPS.build(
+        host:  uri.host,
+        path:  '/embed',
+        query: new_query
+      )
+      return new_uri.to_s
+    end
+    url
   end
-
 
   def self.iframe_fallback(url)
     "<iframe width=560 height=315 frameborder=0 allowfullscreen=true src=\"#{url}\"></iframe>".html_safe
