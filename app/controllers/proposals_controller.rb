@@ -216,6 +216,6 @@ class ProposalsController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :username, :is_admin)
+    params.require(:user).permit(:email, :password, :password_confirmation, :username)
   end
 end
