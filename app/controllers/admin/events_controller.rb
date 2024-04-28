@@ -235,8 +235,5 @@ module Admin
         votes: [:user]
       )
     end
-
   end
-
-  
 end
