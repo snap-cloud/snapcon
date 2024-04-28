@@ -50,52 +50,8 @@
     = f.select :ticket_layout, Conference.ticket_layouts.keys, {}, class: 'form-control'
     %span.help-block
       Layout type for tickets of the conference.
-
-%h4 Scheduling
-%hr
-.form-group
-  = f.label :timezone
-  = f.time_zone_select :timezone, nil, { default: 'UTC' }, { class: 'form-control' }
-  %span.help-block
-    Please select in what time zone your conference will take place.
-.form-group
-  = f.label :start_date, "Start Date"
-  %abbr{title: 'This field is required'} *
-  = f.text_field :start_date, id: 'conference-start-datepicker', required: true, class: 'form-control'
-.form-group
-  = f.label :end_date, "End Date"
-  %abbr{title: 'This field is required'} *
-  = f.text_field :end_date, id: 'conference-end-datepicker', required: true, class: 'form-control'
-- unless f.object.new_record?
-  .form-group
-    = f.label :start_hour
-    = f.number_field :start_hour, size: 2, min: 0, max: 23, class: 'form-control'
-    %span.help-block
-      = rescheduling_hint(@affected_event_count)
-  .form-group
-    = f.label :end_hour
-    = f.number_field :end_hour, size: 2, min: 1, max: 24, class: 'form-control'
-    %span.help-block
-      = rescheduling_hint(@affected_event_count)
-  %h4 Registrations
-  %hr
-  .form-group
-    = f.label :registration_limit
-    = f.number_field :registration_limit, in: 0..9999, class: 'form-control'
-    %span.help-block
-      Limit the number of registrations to the conference (0 no limit). Please note that the registration limit
-      does not apply to speakers of confirmed events, they will still be able to register even if the limit has been reached.
-      You currently have #{pluralize(@conference.registrations.count, 'registration')}.
-  %h4
-    Booths
-  %hr
-  .form-group
-    = f.label :booth_limit
-    = f.number_field :booth_limit, in: 0..9999, class: 'form-control'
-    %span.help-block
-      #{(t'booth').capitalize} limit is the maximum number of #{(t'booth').pluralize}
-      that you can accept for this conference. By setting this number (0 no limit) you can be sure that you are not going to accept more #{(t'booth').pluralize}
-      than the conference can accommodate. You currently have #{pluralize(@conference.booths.accepted.count, "accepted #{t'booth'}")}.
+=render partial: 'scheduling_form_fields', locals: {f: f}
+=render partial: 'registration_and_booth_form_fields', locals: {f: f}
 %p.text-right
   - if f.object.new_record?
     = f.submit nil, { class: 'btn btn-success' }

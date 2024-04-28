@@ -1,0 +1,19 @@
+- unless f.object.new_record?
+  %h4 Registrations
+  %hr
+  .form-group
+    = f.label :registration_limit
+    = f.number_field :registration_limit, in: 0..9999, class: 'form-control'
+    %span.help-block
+      Limit the number of registrations to the conference (0 no limit). Please note that the registration limit
+      does not apply to speakers of confirmed events, they will still be able to register even if the limit has been reached.
+      You currently have #{pluralize(@conference.registrations.count, 'registration')}.
+  %h4 Booths
+  %hr
+  .form-group
+    = f.label :booth_limit
+    = f.number_field :booth_limit, in: 0..9999, class: 'form-control'
+    %span.help-block
+      #{(t'booth').capitalize} limit is the maximum number of #{(t'booth').pluralize}
+      that you can accept for this conference. By setting this number (0 no limit) you can be sure that you are not going to accept more #{(t'booth').pluralize}
+      than the conference can accommodate. You currently have #{pluralize(@conference.booths.accepted.count, "accepted #{t'booth'}")}.
