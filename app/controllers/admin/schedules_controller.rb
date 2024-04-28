@@ -4,6 +4,7 @@ module Admin
   class SchedulesController < Admin::BaseController
     # By authorizing 'conference' resource, we can ensure there will be no unauthorized access to
     # the schedule of a conference, which should not be accessed in the first place
+    before_action :set_conference
     load_and_authorize_resource :conference, find_by: :short_title
     load_and_authorize_resource :program, through: :conference, singleton: true
     load_and_authorize_resource :schedule, through: :program, except: %i[new create]
@@ -69,39 +70,61 @@ module Admin
     end
 
     def upload_csv
-      @conference = Conference.find_by!(short_title: params[:conference_id])
       authorize! :update, @conference
+      return flash[:alert] = 'No file was attached!' unless file_present?
 
-      if params[:schedule] && params[:schedule][:file].present?
-        file = params[:schedule][:file]
-        CSV.foreach(file.path, headers: true) do |row|
-          next if row['Event_ID'].blank? || row['Date'].blank? || row['Start_Time'].blank? || row['Room'].blank?
-
-          begin
-            event_date = Date.strptime(row['Date'], '%m/%d/%y')
-            event_time = Time.parse(row['Start_Time'])
-            event_start_time = DateTime.new(event_date.year, event_date.month, event_date.day, event_time.hour, event_time.min, event_time.sec, event_time.zone)
-            room = Room.find_or_create_by(name: row['Room'])
-            event = Event.find_by(id: row['Event_ID'])
-
-            if event
-              event.update(start_time: event_start_time, room: room)
-            else
-              Rails.logger.warn "Event not found with ID: #{row['Event_ID']}"
-            end
-          rescue StandardError => e
-            Rails.logger.error "Error processing row: #{row.to_h}, Error: #{e.message}"
-            next
-          end
-        end
+      if process_csv
         flash[:notice] = 'Schedule uploaded successfully!'
       else
-        flash[:alert] = 'No file was attached!'
+        flash[:alert] = "Failed to process CSV file."
       end
+
       redirect_to admin_conference_schedules_path(@conference)
     end
 
     private
+
+    def set_conference
+      @conference = Conference.find_by!(short_title: params[:conference_id])
+    end
+
+    def file_present?
+      params[:schedule] && params[:schedule][:file].present?
+    end
+
+    def process_csv
+      file = params[:schedule][:file]
+      CSV.foreach(file.path, headers: true) do |row|
+        process_row(row)
+      end
+      true
+    rescue => e
+      Rails.logger.error "CSV Processing Error: #{e.message}"
+      false
+    end
+
+    def process_row(row)
+      event_date = parse_date(row['Date'])
+      event_time = parse_time(row['Start_Time'])
+      event_start_time = combine_datetime(event_date, event_time)
+
+      room = Room.find_or_create_by(name: row['Room'])
+      event = Event.find_by(id: row['Event_ID'])
+
+      event.update(start_time: event_start_time, room: room) if event
+    end
+
+    def parse_date(date_str)
+      Date.strptime(date_str, '%m/%d/%y')
+    end
+
+    def parse_time(time_str)
+      Time.parse(time_str)
+    end
+
+    def combine_datetime(date, time)
+      DateTime.new(date.year, date.month, date.day, time.hour, time.min, time.sec, time.zone)
+    end
 
     def schedule_params
       params.require(:schedule).permit(:track_id) if params[:schedule]
