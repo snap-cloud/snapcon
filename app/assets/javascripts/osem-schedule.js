@@ -84,7 +84,7 @@ $(document).ready( function() {
     var now = new Date();
     var closestEventId = null;
     var smallestDiff = Infinity;
-    var i=0
+    var i = 0;
 
     $('.event-item').each(function() {
 
