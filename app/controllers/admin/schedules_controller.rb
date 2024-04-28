@@ -102,7 +102,7 @@ module Admin
     end
 
     private
-    
+
     def schedule_params
       params.require(:schedule).permit(:track_id) if params[:schedule]
     end
