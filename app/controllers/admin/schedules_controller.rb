@@ -89,7 +89,7 @@ module Admin
             else
               Rails.logger.warn "Event not found with ID: #{row['Event_ID']}"
             end
-          rescue => e
+          rescue StandardError => e
             Rails.logger.error "Error processing row: #{row.to_h}, Error: #{e.message}"
             next
           end
@@ -101,10 +101,7 @@ module Admin
       redirect_to admin_conference_schedules_path(@conference)
     end
 
-    
-
     private
-
     def schedule_params
       params.require(:schedule).permit(:track_id) if params[:schedule]
     end
