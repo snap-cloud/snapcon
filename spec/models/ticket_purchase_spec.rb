@@ -68,6 +68,16 @@ describe TicketPurchase do
     end
   end
 
+  describe 'monetization' do
+    let!(:purchase) { create(:ticket_purchase, amount_paid_cents: 1000, currency: 'USD') }
+
+    it 'correctly monetizes amount_paid_cents' do
+      expect(purchase.purchase_price).to be_a(Money)
+      expect(purchase.purchase_price.currency.iso_code).to eq('USD')
+      expect(purchase.purchase_price.fractional).to eq(1000)
+    end
+  end
+
   describe 'self#purchase' do
     let!(:participant) { create(:user) }
     let!(:ticket_1) { create(:ticket) }

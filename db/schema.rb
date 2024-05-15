@@ -10,7 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_22_230019) do
+
+ActiveRecord::Schema[7.0].define(version: 2024_04_22_200831) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -469,6 +470,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_22_230019) do
     t.boolean "include_booths"
     t.boolean "shuffle_highlights", default: false, null: false
     t.boolean "include_happening_now"
+    t.boolean "include_committee"
   end
 
   create_table "sponsors", force: :cascade do |t|
@@ -627,6 +629,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_22_230019) do
     t.boolean "is_disabled", default: false
     t.string "picture"
     t.string "timezone"
+    t.string "default_currency"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true

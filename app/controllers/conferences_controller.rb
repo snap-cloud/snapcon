@@ -14,6 +14,7 @@ class ConferencesController < ApplicationController
   end
 
   # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/PerceivedComplexity
   def show
     # load conference with header content
     @conference = Conference.unscoped.eager_load(
@@ -66,8 +67,12 @@ class ConferencesController < ApplicationController
       ).order('sponsorship_levels.position ASC', 'sponsors.name')
       @sponsors = @conference.sponsors
     end
+    if @splashpage.include_committee?
+      @organizers = User.with_role(:organizer, @conference)
+    end
   end
   # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/PerceivedComplexity
 
   def calendar
     respond_to do |format|

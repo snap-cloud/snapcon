@@ -23,10 +23,6 @@ class PaymentsController < ApplicationController
     @has_registration_ticket = params[:has_registration_ticket]
     @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
 
-    @converted_prices = {}
-    @unpaid_ticket_purchases.each do |ticket_purchase|
-      @converted_prices[ticket_purchase.id] = ticket_purchase.amount_paid
-    end
     @currency = selected_currency
   end
 

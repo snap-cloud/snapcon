@@ -80,16 +80,11 @@ class Ticket < ApplicationRecord
     result || Money.new(0, 'USD')
   end
 
-  def self.total_price_user(conference, user, paid: false)
-    tickets = TicketPurchase.where(conference: conference, user: user, paid: paid)
-    tickets.inject(0) { |sum, ticket| sum + (ticket.amount_paid * ticket.quantity) }
-  end
-
   def tickets_turnover_total(id)
     ticket = Ticket.find(id)
     return Money.new(0, 'USD') unless ticket
 
-    sum = ticket.ticket_purchases.paid.total
+    sum = ticket.price_cents * ticket.ticket_purchases.paid.total_quantity
     Money.new(sum, ticket.price_currency)
   end
 
