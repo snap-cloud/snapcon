@@ -4,17 +4,18 @@
 #
 # Table name: event_types
 #
-#  id                      :bigint           not null, primary key
-#  color                   :string
-#  description             :string
-#  length                  :integer          default(30)
-#  maximum_abstract_length :integer          default(500)
-#  minimum_abstract_length :integer          default(0)
-#  submission_template     :text
-#  title                   :string           not null
-#  created_at              :datetime
-#  updated_at              :datetime
-#  program_id              :integer
+#  id                       :bigint           not null, primary key
+#  color                    :string
+#  description              :string
+#  enable_public_submission :boolean          default(TRUE), not null
+#  length                   :integer          default(30)
+#  maximum_abstract_length  :integer          default(500)
+#  minimum_abstract_length  :integer          default(0)
+#  submission_template      :text
+#  title                    :string           not null
+#  created_at               :datetime
+#  updated_at               :datetime
+#  program_id               :integer
 #
 class EventType < ApplicationRecord
   belongs_to :program, touch: true
@@ -31,8 +32,11 @@ class EventType < ApplicationRecord
   validates :color, format: /\A#[0-9A-F]{6}\z/
 
   before_validation :capitalize_color
+  before_validation :strip_title
 
   alias_attribute :name, :title
+
+  scope :available_for_public, -> { where(enable_public_submission: true) }
 
   private
 
@@ -52,5 +56,9 @@ class EventType < ApplicationRecord
 
   def conference_id
     program.conference_id
+  end
+
+  def strip_title
+    self.title = title.strip unless title.nil?
   end
 end

@@ -2,8 +2,9 @@
 %p Please select a submission type, then fill in the abstract and extended details.
 
 .form-group
-  = f.label :event_type_id, 'Type'
-  = f.select :event_type_id, event_type_select_options(@conference.program.event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
+  = f.label :event_type_id, "Type"
+  - visible_event_types = current_user&.is_admin ? @conference.program.event_types : @conference.program.event_types.available_for_public
+  = f.select :event_type_id, event_type_select_options(visible_event_types), { include_blank: false }, { class: 'select-help-toggle form-control' }
 
 - program.event_types.each do |event_type|
   .help-block.event_event_type_id.collapse{ id: "#{dom_id(event_type)}-help" }
