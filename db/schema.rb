@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_15_025823) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_22_200831) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -234,6 +234,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_15_025823) do
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
     t.text "submission_template"
+    t.boolean "enable_public_submission", default: true, null: false
   end
 
   create_table "event_users", force: :cascade do |t|
@@ -467,6 +468,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_15_025823) do
     t.boolean "include_booths"
     t.boolean "shuffle_highlights", default: false, null: false
     t.boolean "include_happening_now"
+    t.boolean "include_committee"
   end
 
   create_table "sponsors", force: :cascade do |t|
@@ -545,6 +547,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_15_025823) do
     t.integer "week"
     t.float "amount_paid", default: 0.0
     t.string "currency"
+    t.integer "amount_paid_cents", default: 0
   end
 
   create_table "ticket_scannings", force: :cascade do |t|

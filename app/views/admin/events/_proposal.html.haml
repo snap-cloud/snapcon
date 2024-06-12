@@ -11,6 +11,8 @@
             = link_to 'Preview', conference_program_proposal_path(@conference.short_title, @event.id), class: 'btn btn-mini btn-primary'
           = link_to 'Registrations', registrations_admin_conference_program_event_path(@conference.short_title, @event), class: 'btn btn-success'
           = link_to 'Edit', edit_admin_conference_program_event_path(@conference.short_title, @event), class: 'btn btn-mini btn-primary'
+          = link_to 'Delete', admin_conference_program_event_path(@conference.short_title, @event), method: :delete, data: { confirm: 'Are you sure you want to delete this event?' }, class: 'btn btn-mini btn-danger'
+
 
   .row
     .col-md-12

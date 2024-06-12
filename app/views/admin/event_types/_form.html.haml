@@ -16,6 +16,9 @@
     = f.text_area :description, class: 'form-control', rows: 5, data: { provide: 'markdown' }
     .help-block= markdown_hint
   .form-group
+    = f.label "Allow public submission?", for: :enable_public_submission
+    = f.check_box :enable_public_submission, class: 'switch-checkbox'
+  .form-group
     = f.label :minimum_abstract_length
     %abbr{title: 'This field is required'} *
     = f.number_field :minimum_abstract_length, size: 3, required: true, class: 'form-control'
