@@ -29,4 +29,11 @@ describe Commercial do
     commercial = build(:conference_commercial)
     expect(commercial.valid?).to be true
   end
+
+  it 'parses snap url' do
+    url = 'https://snap.berkeley.edu/project?username=avi_shor&projectname=stamps'
+    transformed_url = Commercial.generate_snap_embed(url)
+    expected_url = 'https://snap.berkeley.edu/embed?projectname=stamps&username=avi_shor&showTitle=true&showAuthor=true&editButton=true&pauseButton=true'
+    expect(transformed_url).to eq expected_url
+  end
 end

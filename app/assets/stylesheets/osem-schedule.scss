@@ -185,3 +185,10 @@
 h3.event-panel-title small {
   line-height: 1.4;
 }
+
+#current-event-btn {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 1000;
+}

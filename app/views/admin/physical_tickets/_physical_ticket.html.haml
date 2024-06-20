@@ -3,7 +3,8 @@
   %td= physical_ticket.ticket.title
   %td= physical_ticket.ticket.registration_ticket? ? 'Yes' : 'No'
   %td= physical_ticket.user&.email
-  %td= humanized_money_with_symbol physical_ticket.ticket_purchase.amount_paid
+  %td= humanized_money_with_symbol(physical_ticket.ticket_purchase.purchase_price)
+  %td= physical_ticket.ticket_purchase.currency || 'USD'
   %td
     - if physical_ticket.ticket_scannings.present?
       %span Checked in:

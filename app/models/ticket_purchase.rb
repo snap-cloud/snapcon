@@ -4,17 +4,18 @@
 #
 # Table name: ticket_purchases
 #
-#  id            :bigint           not null, primary key
-#  amount_paid   :float            default(0.0)
-#  currency      :string
-#  paid          :boolean          default(FALSE)
-#  quantity      :integer          default(1)
-#  week          :integer
-#  created_at    :datetime
-#  conference_id :integer
-#  payment_id    :integer
-#  ticket_id     :integer
-#  user_id       :integer
+#  id                :bigint           not null, primary key
+#  amount_paid       :float            default(0.0)
+#  amount_paid_cents :integer          default(0)
+#  currency          :string
+#  paid              :boolean          default(FALSE)
+#  quantity          :integer          default(1)
+#  week              :integer
+#  created_at        :datetime
+#  conference_id     :integer
+#  payment_id        :integer
+#  ticket_id         :integer
+#  user_id           :integer
 #
 
 class TicketPurchase < ApplicationRecord
@@ -30,11 +31,12 @@ class TicketPurchase < ApplicationRecord
 
   delegate :title, to: :ticket
   delegate :description, to: :ticket
-  delegate :price, to: :ticket
   delegate :price_cents, to: :ticket
   delegate :price_currency, to: :ticket
 
   has_many :physical_tickets
+
+  monetize :amount_paid_cents, with_model_currency: :currency, as: 'purchase_price'
 
   scope :paid, -> { where(paid: true) }
   scope :unpaid, -> { where(paid: false) }
@@ -71,12 +73,13 @@ class TicketPurchase < ApplicationRecord
       purchase.pay(nil)
     end
     if quantity > 0
-      purchase = new(ticket_id:     ticket.id,
-                     conference_id: conference.id,
-                     user_id:       user.id,
-                     quantity:      quantity,
-                     amount_paid:   converted_amount,
-                     currency:      currency)
+      purchase = new(ticket_id:         ticket.id,
+                     conference_id:     conference.id,
+                     user_id:           user.id,
+                     quantity:          quantity,
+                     amount_paid:       converted_amount.to_f,
+                     amount_paid_cents: converted_amount.fractional,
+                     currency:          currency)
       purchase.pay(nil) if converted_amount.zero?
     end
     purchase
@@ -95,6 +98,11 @@ class TicketPurchase < ApplicationRecord
   # Total amount
   def self.total
     sum('amount_paid * quantity')
+  end
+
+  # Total quantity
+  def self.total_quantity
+    sum('quantity')
   end
 
   def pay(payment)
