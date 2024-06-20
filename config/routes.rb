@@ -40,6 +40,11 @@ Osem::Application.routes.draw do
     resource :ticket_scanning, only: [:create]
     resources :comments, only: [:index]
     resources :conferences do
+      resources :schedules do
+        collection do
+          post :upload_csv
+        end
+      end
       resources :surveys do
         resources :survey_questions, except: :index
       end
