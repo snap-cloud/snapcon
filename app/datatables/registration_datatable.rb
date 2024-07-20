@@ -8,7 +8,6 @@ class RegistrationDatatable < AjaxDatatablesRails::ActiveRecord
   # def_delegator :@view, :delete_admin_conference_registration_path
   def_delegator :@view, :admin_conference_registration_toggle_attendance_path
 
-
   def initialize(params, opts = {})
     @view = opts[:view_context]
     super
