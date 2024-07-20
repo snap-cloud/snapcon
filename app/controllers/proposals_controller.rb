@@ -41,6 +41,7 @@ class ProposalsController < ApplicationController
 
   def create
     @url = conference_program_proposals_path(@conference.short_title)
+    @superevents = @program.events.where(superevent: true)
 
     # We allow proposal submission and sign up on same page.
     # If user is not signed in then first create new user and then sign them in
@@ -80,6 +81,7 @@ class ProposalsController < ApplicationController
 
   def update
     @url = conference_program_proposal_path(@conference.short_title, params[:id])
+    @superevents = @program.events.where(superevent: true)
 
     track = Track.find_by(id: params[:event][:track_id])
     if track && !track.cfp_active
@@ -216,6 +218,6 @@ class ProposalsController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :username, :is_admin)
+    params.require(:user).permit(:email, :password, :password_confirmation, :username)
   end
 end

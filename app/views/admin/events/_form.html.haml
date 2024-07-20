@@ -28,7 +28,7 @@
                     = form_for(@event.commercials.new, url: conference_program_proposal_commercials_path(conference_id: @conference.short_title, proposal_id: @event)) do |f|
                       = render 'proposals/commercial_form_fields', f: f, commercial: @event.commercials.build
               %hr
-            - @event.commercials.each_slice(3) do |slice|
+            - @event.commercials.includes([:versions]).each_slice(3) do |slice|
               .row
                 - slice.each do |commercial|
                   - if commercial.persisted?

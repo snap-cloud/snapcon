@@ -2,5 +2,19 @@ version: "2"
 plugins:
   rubocop:
     enabled: true
-    channel: rubocop-1-48-1
-
+    channel: rubocop-1-56-3
+exclude_patterns:
+- "bin/"
+- "config/"
+- "db/"
+- "dist/"
+- "features/"
+- "**/node_modules/"
+- "script/"
+- "**/spec/"
+- "**/test/"
+- "**/tests/"
+- "Tests/"
+- "**/vendor/"
+- "**/*_test.go"
+- "**/*.d.ts"

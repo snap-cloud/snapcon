@@ -35,12 +35,12 @@ class Commercial < ApplicationRecord
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
     rescue StandardError
-      { html: iframe_fallback(url) }
+      { html: EmbeddableURL.new(url).render_embed.html_safe }
       # { error: exception.message }
     end
   end
 
-  def self.generate_snap_embed(url)
+  def self.geenerate_snap_embed(url)
     return url unless url
 
     uri = URI.parse(url)
@@ -73,6 +73,7 @@ class Commercial < ApplicationRecord
   end
 
   def self.read_file(file)
+    require 'csv'
     errors = {}
     errors[:no_event] = []
     errors[:validation_errors] = []
@@ -96,7 +97,8 @@ class Commercial < ApplicationRecord
 
       commercial = event.commercials.new(title: title, url: url)
       unless commercial.save
-        errors[:validation_errors] << ("Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')')
+        errors[:validation_errors] <<
+          "Could not create materials for event with ID #{event.id} (#{commercial.errors.full_messages.to_sentence})"
       end
     end
     errors
@@ -105,6 +107,8 @@ class Commercial < ApplicationRecord
   private
 
   def valid_url
+    return unless url
+
     result = Commercial.render_from_url(url)
     errors.add(:base, result[:error]) if result[:error]
   end
