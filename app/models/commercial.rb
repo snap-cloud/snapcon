@@ -74,6 +74,8 @@ class Commercial < ApplicationRecord
   private
 
   def valid_url
+    return unless url
+
     result = Commercial.render_from_url(url)
     errors.add(:base, result[:error]) if result[:error]
   end
