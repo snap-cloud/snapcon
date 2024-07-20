@@ -6,7 +6,7 @@ describe CurrencyConversion do
   let!(:conference) { create(:conference, title: 'ExampleCon') }
   let!(:admin) { create(:admin) }
 
-  context 'as an admin', js: true do
+  context 'as an admin', :js do
     before do
       sign_in admin
     end

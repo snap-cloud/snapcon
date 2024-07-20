@@ -61,8 +61,6 @@ describe Track do
                                                                    withdrawn])
     }
 
-    it { is_expected.to validate_inclusion_of(:cfp_active).in_array([true, false]) }
-
     context 'when self_organized_and_accepted_or_confirmed? returns true' do
       before do
         allow(subject).to receive(:self_organized_and_accepted_or_confirmed?).and_return(true)

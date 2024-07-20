@@ -96,3 +96,55 @@
 
 %p.text-right
   = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'
+
+- content_for :script_head do
+  :javascript
+    /* Wait for the DOM to be ready before attaching events to the elements */
+    $( document ).ready(function() {
+        /* Set the minimum and maximum proposal abstract word length */
+        function updateEventTypeRequirements() {
+            var $selected = $("#event_event_type_id option:selected")
+            var max = $selected.data("max-words");
+            var min = $selected.data("min-words");
+
+            // We replace the default text only if the current field is empty,
+            // or is set to the default text of another event type.
+            replace_defaut_submission_text(
+                '#event_submission_text',
+                $selected.data("instructions"),
+                $("#event_event_type_id option").toArray().map(e => $(e).data('instructions'))
+            );
+
+            $("#abstract-maximum-word-count").text(max);
+            $("#abstract-minimum-word-count").text(min);
+            word_count($('#event_abstract').get(0), 'abstract-count', max);
+        }
+        $("#event_event_type_id").change(updateEventTypeRequirements);
+        updateEventTypeRequirements();
+
+        /* Count the proposal abstract length */
+        $("#event_abstract").on('input', function() {
+            var $selected = $("#event_event_type_id option:selected")
+            var max = $selected.data("max-words");
+            word_count(this, 'abstract-count', max);
+        } );
+
+        /* Count the submission text length */
+        $("#event_submission_text").bind('change keyup paste input', function() {
+            var $selected = $("event_event_type_id option:selected")
+            var max = $selected.data("max-words");
+            word_count(this, 'submission-count', max);
+        });
+
+        $('.js-resetSubmissionText').click((e) => {
+          console.log('CLICKED')
+          let $selected = $("#event_event_type_id option:selected");
+          let $this = $(e.target);
+          let affirm = confirm($this.data('confirm'));
+          if (affirm) {
+            let sub_text = $('#event_submission_text');
+            sub_text.val($selected.data('instructions'));
+            sub_text.trigger('change');
+          }
+        });
+    });
