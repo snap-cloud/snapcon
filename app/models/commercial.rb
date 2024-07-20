@@ -40,7 +40,7 @@ class Commercial < ApplicationRecord
     end
   end
 
-  def self.geenerate_snap_embed(url)
+  def self.generate_snap_embed(url)
     return url unless url
 
     uri = URI.parse(url)
