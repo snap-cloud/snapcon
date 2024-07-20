@@ -18,6 +18,7 @@ class EmbeddableURL
   def render_embed
     return render_dropbox if url.include?('dropbox.com')
 
+    # TODO-A11Y: Set an iframe title
     "<iframe #{DEFAULT_FRAME_ATTRS} src='#{iframe_url}'></iframe>"
   end
 
@@ -55,11 +56,11 @@ class EmbeddableURL
   def dropbox(url)
     # debugger
     uri = URI.parse(url)
-    params = URI.decode_www_form(uri.query)
+    params = URI.decode_www_form(uri.query)&.to_h
     params.delete('raw')
     params['dl'] = '0'
     # params['rlkey'] = params['rlkey']
-    uri.query = params
+    uri.query = params.to_query
     uri.to_s
   end
 
