@@ -30,7 +30,7 @@ class Commercial < ApplicationRecord
 
   def self.render_from_url(url)
     register_provider
-    url = generate_snap_embed(url)
+    url = Commercial.generate_snap_embed(url)
     begin
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
