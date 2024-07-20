@@ -16,7 +16,7 @@ class EmbeddableURL
   end
 
   def render_embed
-    return render_dropbox if url.match?(/dropbox\.com/)
+    return render_dropbox if url.include?('dropbox.com')
 
     "<iframe #{DEFAULT_FRAME_ATTRS} src='#{iframe_url}'></iframe>"
   end
@@ -42,7 +42,7 @@ class EmbeddableURL
   private
 
   def optional_params
-    return '' unless url.match?(/snap\.berkeley/)
+    return '' unless url.include?('snap.berkeley')
 
     'allow="geolocation;microphone;camera"'
   end
