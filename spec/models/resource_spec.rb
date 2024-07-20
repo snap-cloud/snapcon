@@ -15,7 +15,7 @@ require 'spec_helper'
 
 describe Resource do
   let(:conference) { create(:conference) }
-  let(:resource) { create :resource }
+  let(:resource) { create(:resource) }
 
   it { is_expected.to validate_presence_of(:name) }
 

@@ -1,0 +1,38 @@
+.row
+  .col-md-12
+    .page-header
+      %h1 Currency Conversions
+      %p.text-muted
+        Enter the currency conversions for this conference
+      %p.alert.alert-warning
+        %strong Warning:
+        Currency conversion feature has not been implemented yet. Do not add any currency conversions.
+.row
+  .col-md-12
+    %table.table.table-hover#currency-conversions
+      %thead
+        %tr
+          %th From Currency
+          %th To Currency
+          %th Rate
+          %th Actions
+      %tbody
+        - @conference.currency_conversions.each do |currency_conversion|
+          %tr
+            %td
+              = currency_conversion.from_currency
+            %td
+              = currency_conversion.to_currency
+            %td
+              = currency_conversion.rate
+            %td
+              .btn-group{ role: 'group' }
+                = link_to 'Edit', edit_admin_conference_currency_conversion_path(@conference.short_title, currency_conversion.id),
+                method: :get, class: 'btn btn-primary'
+                = link_to 'Delete', admin_conference_currency_conversion_path(@conference.short_title, currency_conversion.id),
+                method: :delete, class: 'btn btn-danger',
+                data: { confirm: "Do you really want to delete this currency conversion?" }
+
+.row
+  .col-md-12.text-right
+    = link_to 'Add Currency Conversion', new_admin_conference_currency_conversion_path(@conference.short_title), class: 'btn btn-primary'

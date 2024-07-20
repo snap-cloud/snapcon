@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 Osem::Application.routes.draw do
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
@@ -127,6 +128,7 @@ Osem::Application.routes.draw do
       resources :physical_tickets, only: %i[delete]
       resources :sponsors, except: [:show]
       resources :lodgings, except: [:show]
+      resources :currency_conversions, except: [:show]
       resources :emails, only: %i[show update index]
       resources :physical_tickets, only: [:index]
       resources :roles, except: %i[new create] do
@@ -247,3 +249,4 @@ Osem::Application.routes.draw do
   # A Short Fallback Route
   get '/:id', to: 'conferences#show'
 end
+# rubocop:enable Metrics/BlockLength

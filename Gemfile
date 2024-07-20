@@ -8,9 +8,6 @@ source 'https://rubygems.org'
 
 ruby ENV.fetch('OSEM_RUBY_VERSION', '3.2.2')
 
-# rails-assets requires >= 1.8.4
-abort 'Bundler version >= 1.8.4 is required' if Gem::Version.new(Bundler::VERSION) < Gem::Version.new('1.8.4')
-
 # as web framework
 if next?
   gem 'rails', '~> 7'
@@ -89,39 +86,10 @@ gem 'cocoon'
 # as the JavaScript library
 # TODO: Consolidate with the rails-assets below or move to webpack...
 gem 'jquery-rails'
-gem 'jquery-ui-rails', '~> 6.0.1'
+gem 'jquery-ui-rails', '~> 7.0.0'
 
 # for languages validation
 gem 'iso-639'
-
-# frontend javascripts
-source 'https://rails-assets.org' do
-  # transient dependencies, included here to reduce warnings.
-  gem 'rails-assets-bootstrap'
-  gem 'rails-assets-jquery'
-  # for placeholder images
-  gem 'rails-assets-holderjs'
-  # for formating dates
-  gem 'rails-assets-date.format'
-  # for or parsing, validating, manipulating, and formatting dates
-  gem 'rails-assets-momentjs'
-  # for smooth scrolling
-  gem 'rails-assets-jquery-smooth-scroll'
-  # as color picker
-  gem 'rails-assets-spectrum'
-  # for color manipulation
-  gem 'rails-assets-tinycolor'
-  # for drawing triangle backgrounds
-  gem 'rails-assets-trianglify'
-  # for scroll way points
-  gem 'rails-assets-waypoints'
-  # for markdown editors
-  gem 'rails-assets-bootstrap-markdown'
-  # for select with icon
-  gem 'rails-assets-bootstrap-select'
-  gem 'rails-assets-markdown'
-  gem 'rails-assets-to-markdown', '~> 3'
-end
 
 # as date picker
 gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
@@ -140,7 +108,9 @@ gem 'leaflet-rails'
 gem 'gravtastic'
 
 # for country selects
-gem 'country_select', '< 7'
+# TODO-SNAPCON: Verify that this is no longer necessary.
+# gem 'country_select', '< 7'
+gem 'i18n_data'
 
 # as PDF generator
 gem 'prawn-qrcode'
@@ -222,16 +192,13 @@ gem 'selectize-rails'
 
 # n+1 query logging
 gem 'bullet'
-# For collecting performance data
-gem 'skylight', '~> 5'
-
-gem 'nokogiri'
 
 # memcached binary connector
 gem 'dalli', require: false
 # Redis Cache
 gem 'redis'
 
+# to generate ical files
 gem 'icalendar'
 
 # for making external requests easier
@@ -240,10 +207,10 @@ gem 'httparty'
 # pagination
 gem 'pagy', '<4.0'
 
-# Use guard for testing in development
+# to tame logs
+gem 'lograge'
+
 group :development do
-  # to launch specs when files are modified
-  gem 'guard-rspec'
   # to open mails
   gem 'letter_opener'
   # view mail at /letter_opener/
@@ -266,6 +233,7 @@ group :test do
   gem 'rspec-rails'
   gem 'webdrivers'
   # for measuring test coverage
+  gem 'simplecov', '<0.18'
   gem 'simplecov-cobertura'
   # for describing models
   gem 'shoulda-matchers', require: false
@@ -290,18 +258,23 @@ end
 group :development, :test, :linters do
   # as debugger
   gem 'byebug'
-  # gem 'pry'
-  # gem 'pry-byebug'
 
-  # Linters and static analysis.
+  # for static code analisys
+  gem 'rubocop', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-capybara', require: false
+  gem 'rubocop-performance', require: false
+  gem 'haml_lint'
+
   gem 'faraday-retry', require: false
+  # TODO-SNAPCON: figure out which haml-lint OR haml_lint is good.
   gem 'haml-lint', require: false
+
+  # Easily run linters
   gem 'pronto', require: false
   gem 'pronto-haml', require: false
   gem 'pronto-rubocop', require: false
-  gem 'rubocop-faker', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rspec', require: false
 end
 
 group :development, :test do

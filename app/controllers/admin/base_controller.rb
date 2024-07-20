@@ -25,7 +25,7 @@ module Admin
                                             :any) || (current_user.has_cached_role? :organization_admin, :any) ||
              (current_user.has_cached_role? :volunteers_coordinator, :any) ||
              (current_user.has_cached_role? :track_organizer, :any) || current_user.is_admin
-        raise CanCan::AccessDenied, 'You are not authorized to access this page.'
+        raise CanCan::AccessDenied.new('You are not authorized to access this page.')
       end
     end
   end
