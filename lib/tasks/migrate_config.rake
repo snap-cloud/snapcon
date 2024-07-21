@@ -40,5 +40,18 @@ namespace :data do
 
       puts "Migrated config/config.yml to .env.#{Rails.env}"
     end
+
+    task :update_ticket_purchase_currency do
+      TicketPurchase.find_each do |purchase|
+        converted_amount = CurrencyConversion.convert_currency(
+          purchase.conference,
+          purchase.ticket.price_cents,
+          purchase.price_currency,
+          purchase.currency
+        )
+
+        purchase.update_column(:amount_paid_cents, converted_amount.fractional)
+      end
+    end
   end
 end
