@@ -45,9 +45,9 @@ class Conference < ApplicationRecord
   # Dependent destroy will fail as roles#destroy will be cancelled,hence delete_all
   resourcify :roles, dependent: :delete_all
 
-  default_scope { order('start_date DESC') }
-  scope :upcoming, -> { where('end_date >= ?', Date.current) }
-  scope :past, -> { where('end_date < ?', Date.current) }
+  default_scope { order('conferences.start_date DESC') }
+  scope :upcoming, -> { where('conferences.end_date >= ?', Date.current) }
+  scope :past, -> { where('conferences.end_date < ?', Date.current) }
 
   belongs_to :organization
   delegate :code_of_conduct, to: :organization

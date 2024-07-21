@@ -28,6 +28,8 @@
             %th{ width: '25%' } Name
             %th{ width: '0' } E-Mail
             %th{ width: '0' } Ticket Type
+            %th{ width: '0' } Price
+            %th{ width: '0' } Attended
             %th{ width: '0' }
               %abbr{ title: 'Code of Conduct' } CoC
             %th{ width: '0' } Actions
@@ -55,12 +57,12 @@
         {
           "data": "name",
           "className": "truncate",
-          "render": function(data, type, row) {
-            var content = '<span data-toggle="tooltip" title="' + data + '">' + data + '</span><br/>';
-            $.each(row.roles, function(index, role){
-              content += ' <span class="label label-info">' + role + '</span>'
-            });
-            return content;
+          "render": (data, type, row) => {
+            return `
+              <span data-toggle="tooltip" title="${data}">${data}</span>
+              <br/>
+              ${row.roles.map(role => ` <span class="label label-info">${role}</span>`)}
+            `;
           }
         },
         {
@@ -70,19 +72,41 @@
           "data": "ticket_type"
         },
         {
+          "data": "ticket_price",
+          "render": data => `$${data}`
+        },
+        {
+          "data": "attended",
+          "search": data => data,
+          "render": (data, _type, row) => {
+            let js_url = "#{toggle_attendance_admin_conference_registration_path(@conference.short_title, id: 'ROW_ID')}";
+            return `
+              <span class="sr-only">${data}</span>
+              <input
+                type="checkbox"
+                class="switch-checkbox"
+                ${data ? "checked" : ""}
+                name="#{@conference.short_title}_${row.id}"
+                url="${js_url.replace('ROW_ID', row.id)}?attended="
+              >
+            `;
+          }
+        },
+        {
           "data": "accepted_code_of_conduct",
           "className": "code-of-conduct text-center",
           "searchable": false,
+          "visible": codeOfConductPresent
         },
         {
           "data": "actions",
           "className": "actions",
           "searchable": false,
           "sortable": false,
-          "render":    function (data, type, row, meta) {
-            return '<div class="btn-group">'+
-                   '<a class="btn-primary" href="'+row.edit_url+'">Edit</a>'+
-                   '</div>';
+          "render": (data, type, row) => {
+            return `<div class="btn-group">
+                      <a class="btn-primary" href="${row.edit_url}">Edit</a>
+                   </div>`;
           }
         }
       ]
