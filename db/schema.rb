@@ -328,9 +328,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_22_200831) do
     t.integer "status", default: 0, null: false
     t.integer "user_id", null: false
     t.integer "conference_id", null: false
+    t.string "currency"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.string "currency"
   end
 
   create_table "physical_tickets", force: :cascade do |t|
