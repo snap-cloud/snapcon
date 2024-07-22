@@ -11,15 +11,19 @@ class EmbeddableURL
     /dropbox\.com/        => :dropbox
   }.freeze
 
-  def initialize(url)
-    self.url = url
+  def initialize(url, title)
+    # Do some normalizing so that URIs parse correctly.
+    if url
+      self.url = url.strip
+    end
+    self.title = title
   end
 
   def render_embed
     return render_dropbox if url.include?('dropbox.com')
 
     # TODO-A11Y: Set an iframe title
-    "<iframe #{DEFAULT_FRAME_ATTRS} src='#{iframe_url}'></iframe>"
+    "<iframe #{DEFAULT_FRAME_ATTRS} src='#{iframe_url}' #{iframe_title}></iframe>"
   end
 
   def iframe_url
@@ -66,9 +70,35 @@ class EmbeddableURL
 
   def snap(url)
     uri = URI.parse(url)
-    query = CGI.parse(uri.query)
-    username = query['username'][0] || query['user'][0]
-    project = query['projectname'][0] || query['project'][0]
-    "https://snap.berkeley.edu/embed?projectname=#{project}&username=#{username}&showTitle=true&showAuthor=true&editButton=true&pauseButton=true"
+    return url if uri.query.blank?
+
+    args = URI.decode_www_form(uri.query).to_h
+    username = args['username'] || args['user']
+    projectname = args['projectname'] || args['project']
+
+    return url if username.blank? || projectname.blank?
+    new_query = URI.encode_www_form({
+      'projectname' => projectname,
+      'username'    => username,
+      'showTitle'   => 'true',
+      'showAuthor'  => 'true',
+      'editButton'  => 'true',
+      'pauseButton' => 'true'
+    })
+    new_uri = URI::HTTPS.build(
+      host:  uri.host,
+      path:  '/embed',
+      query: new_query
+    ).to_s
+    end
+
+  end
+
+  def iframe_title
+    if self.title
+      "title='#{self.title} Embedded Media'"
+    else
+      'title="Embedded Media for Presentation"'
+    end
   end
 end
