@@ -28,7 +28,7 @@ class Commercial < ApplicationRecord
 
   validate :valid_url
 
-  def self.render_from_url(url)
+  def self.render_from_url(url, title = nil)
     register_provider
     begin
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
@@ -87,7 +87,7 @@ class Commercial < ApplicationRecord
   def valid_url
     return unless url
 
-    result = Commercial.render_from_url(url)
+    result = Commercial.render_from_url(url, title)
     errors.add(:base, result[:error]) if result[:error]
   end
 

@@ -1,7 +1,7 @@
 # Transform a URL to a version that allows iframes
 
 class EmbeddableURL
-  attr_accessor :url
+  attr_accessor :url, :title
 
   DEFAULT_FRAME_ATTRS = 'width=560 height=315 frameborder=0 allowfullscreen'.freeze
 
