@@ -7,7 +7,6 @@
 #  id                 :bigint           not null, primary key
 #  amount             :integer
 #  authorization_code :string
-#  currency           :string
 #  last4              :string
 #  status             :integer          default("unpaid"), not null
 #  created_at         :datetime         not null
@@ -20,5 +19,6 @@ FactoryBot.define do
     user
     conference
     status { 'unpaid' }
+    currency { 'USD' }
   end
 end
