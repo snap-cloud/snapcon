@@ -77,26 +77,21 @@ class EmbeddableURL
     projectname = args['projectname'] || args['project']
 
     return url if username.blank? || projectname.blank?
-    new_query = URI.encode_www_form({
-      'projectname' => projectname,
-      'username'    => username,
-      'showTitle'   => 'true',
-      'showAuthor'  => 'true',
-      'editButton'  => 'true',
-      'pauseButton' => 'true'
-    })
-    new_uri = URI::HTTPS.build(
-      host:  uri.host,
-      path:  '/embed',
-      query: new_query
-    ).to_s
-    end
 
+    query = URI.encode_www_form({
+                                  'projectname' => projectname,
+                                  'username'    => username,
+                                  'showTitle'   => 'true',
+                                  'showAuthor'  => 'true',
+                                  'editButton'  => 'true',
+                                  'pauseButton' => 'true'
+                                })
+    URI::HTTPS.build(host: uri.host, path: '/embed', query: query).to_s
   end
 
   def iframe_title
-    if self.title
-      "title='#{self.title} Embedded Media'"
+    if title
+      "title='#{title} Embedded Media'"
     else
       'title="Embedded Media for Presentation"'
     end
