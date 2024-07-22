@@ -10,19 +10,19 @@ describe EmbeddableURL do
     end
 
     it 'transforms a Google Drive URL' do
-      url = EmbeddableURL.new('https://docs.google.com/presentation/d/1eGbEQtcOPW2N2P5rKfBVfSo2zn4C307Sh6C7vpJsruE/edit#slide=id.g1088c029399_0_47', title).iframe_url
+      url = EmbeddableURL.new('https://docs.google.com/presentation/d/1eGbEQtcOPW2N2P5rKfBVfSo2zn4C307Sh6C7vpJsruE/edit#slide=id.g1088c029399_0_47', 'title').iframe_url
       expect(url).to include '/embed'
       expect(url).not_to include('/edit')
     end
 
     it 'transforms a Dropbox URL' do
-      url = EmbeddableURL.new('https://www.dropbox.com/scl/fi/49gkp6ghfnxgqex64zvzd/Guzdial-SnapCon23.pdf?rlkey=ecwvmcmfscqtwfq21l3kzqcul&dl=1', title).iframe_url
+      url = EmbeddableURL.new('https://www.dropbox.com/scl/fi/49gkp6ghfnxgqex64zvzd/Guzdial-SnapCon23.pdf?rlkey=ecwvmcmfscqtwfq21l3kzqcul&dl=1', 'title').iframe_url
       expect(url).to include('dl=0')
       expect(url).not_to include('raw=')
     end
 
     it 'transforms a Snap! Project URL' do
-      url = EmbeddableURL.new('https://snap.berkeley.edu/project?username=jedi_force&projectname=Autograder%2dlite', title).iframe_url
+      url = EmbeddableURL.new('https://snap.berkeley.edu/project?username=jedi_force&projectname=Autograder%2dlite', 'title').iframe_url
       expect(url).to include('/embed')
     end
   end
