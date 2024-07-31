@@ -98,7 +98,7 @@ $(document).ready( function() {
       }
     });
 
-    if (closestEventId) {
+    if (closestEvent) {
       // Instead of relying on hash it's probably better to scroll using javascript
       // Since the users and click button->scroll->click again, which won't re-scroll
       $('.highlighted').removeClass('highlighted');
