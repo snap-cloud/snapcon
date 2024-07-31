@@ -14,7 +14,7 @@
 
       %h3.event-panel-title
         = link_to conference_program_proposal_path(@conference.short_title, event.id),
-                  style: color_style do
+                  style: "#{color_style}; line-height: 1.7" do
           = event.title
           - if event.subtitle.present?
             %br

@@ -5,6 +5,8 @@
     The conference timezone is #{timezone_mapping(conference.timezone)}.
   - if current_user
     Visit your #{link_to('user profile page', edit_user_path(current_user.id))} to set your timezone.
+  - else
+    (#{link_to('Log in', new_user_session_path)} to view the schedule in your preferred timezone.)
 - if current_user
   %p.text-center
     Click the star next to each event to add or remove it from

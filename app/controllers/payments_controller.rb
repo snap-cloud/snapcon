@@ -50,7 +50,8 @@ class PaymentsController < ApplicationController
                     notice: 'Thanks! Your ticket is booked successfully.'
       end
     else
-      @total_amount_to_pay = convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
+      # TODO-SNAPCON: This case is not tested at all
+      @total_amount_to_pay = CurrencyConversion.convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
       @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
       flash.now[:error] = @payment.errors.full_messages.to_sentence + ' Please try again with correct credentials.'
       render :new
