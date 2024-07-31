@@ -330,6 +330,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_22_200831) do
     t.integer "conference_id", null: false
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.string "currency"
   end
 
   create_table "physical_tickets", force: :cascade do |t|
