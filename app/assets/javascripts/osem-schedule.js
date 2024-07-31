@@ -15,10 +15,10 @@ var Schedule = {
     schedule_id = schedule_id_param;
   },
   remove: function(element) {
-    var e =  $("#" + element);
-    var event_schedule_id = e.attr("event_schedule_id");
-    if(event_schedule_id != null){
-      var my_url = url + '/' + event_schedule_id;
+    var e = $("#" + element);
+    var event_schedule_id = parseInt(e.attr("event_schedule_id"));
+    if(event_schedule_id > 0) {
+      var my_url = `${url}/${event_schedule_id}`;
       var success_callback = function(data) {
         e.attr("event_schedule_id", null);
         e.appendTo($(".unscheduled-events"));
@@ -41,18 +41,18 @@ var Schedule = {
   },
   add: function (previous_parent, new_parent, event) {
     event.appendTo(new_parent);
-    var event_schedule_id = event.attr("event_schedule_id");
+    // Event Schedule Id could be an empty string.
+    var event_schedule_id = parseInt(event.attr("event_schedule_id"));
     var my_url = url;
     var type = 'POST';
     var params = { event_schedule: {
       room_id: new_parent.attr("room_id"),
       start_time: (new_parent.attr("date") + ' ' + new_parent.attr("hour"))
     }};
-    if(event_schedule_id != null){
+    if (event_schedule_id > 0) {
       type = 'PUT';
-      my_url += ('/' + event_schedule_id);
-    }
-    else{
+      my_url += `/${event_schedule_id}`;
+    } else {
       params['event_schedule']['event_id'] = event.attr("event_id");
       params['event_schedule']['schedule_id'] = schedule_id;
     }
@@ -89,7 +89,7 @@ $(document).ready( function() {
     $('.event-item').each(function() {
 
       var eventTimeStr = $(this).data('time');
-        
+
         if (eventTimeStr) {
             var eventTime = new Date(eventTimeStr);
             var diff = Math.abs(eventTime - now);

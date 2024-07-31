@@ -28,6 +28,9 @@ class PaymentsController < ApplicationController
 
   def create
     @payment = Payment.new payment_params
+    session[:selected_currency] = params[:currency] if params[:currency].present?
+    selected_currency = session[:selected_currency] || @conference.tickets.first.price_currency
+    from_currency = @conference.tickets.first.price_currency
 
     if @payment.purchase && @payment.save
       update_purchased_ticket_purchases

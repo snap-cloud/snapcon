@@ -1,7 +1,7 @@
 <%= render partial: "layouts/mailbot_header" %>
   <div id="content">
     <span style="white-space: pre-line">
-        <%= @ticket_purchase.ticket.email_body %>
+        <%= @rendered_email_body %>
     </span>
   </div>
 <%= render partial: "layouts/mailbot_footer" %>

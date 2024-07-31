@@ -38,7 +38,7 @@ module Admin
     end
 
     def render_commercial
-      result = Commercial.render_from_url(params[:url])
+      result = Commercial.render_from_url(params[:url], params[:title])
       if result[:error]
         render plain: result[:error], status: :bad_request
       else
