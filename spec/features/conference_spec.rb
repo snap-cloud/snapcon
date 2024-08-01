@@ -114,7 +114,7 @@ describe Conference do
       end
 
       it 'does not show registered attendees message' do
-        expect(page).not_to have_content('This is an exclusive message!')
+        expect(page).to have_no_content('This is an exclusive message!')
       end
     end
   end
