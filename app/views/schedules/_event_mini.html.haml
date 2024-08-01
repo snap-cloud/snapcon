@@ -25,8 +25,8 @@
         %span= " at #{new_start_time.strftime('%l:%M %P')}"
         = join_event_link(event, event_schedule, current_user, small: true)
       %p
-        = truncate(markdown(event.abstract), length: 250, escape: false)
-        - if event.subevents.present?
+        = markdown(truncate(event.abstract, length: 256))
+        - if event.program_subevents.present?
           %ul
             - event.program_subevents.each do |subevent|
               %li= link_to(subevent.title, conference_program_proposal_path(@conference.short_title, subevent.id))
