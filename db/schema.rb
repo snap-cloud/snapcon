@@ -548,7 +548,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_22_200831) do
     t.float "amount_paid", default: 0.0
     t.integer "amount_paid_cents", default: 0
     t.string "currency"
-    t.integer "amount_paid_cents", default: 0
   end
 
   create_table "ticket_scannings", force: :cascade do |t|
