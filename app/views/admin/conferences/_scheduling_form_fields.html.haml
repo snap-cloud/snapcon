@@ -1,0 +1,26 @@
+%h4 Scheduling
+%hr
+.form-group
+  = f.label :timezone
+  = f.time_zone_select :timezone, nil, { default: 'UTC' }, { class: 'form-control' }
+  %span.help-block
+    Please select in what time zone your conference will take place.
+.form-group
+  = f.label :start_date, "Start Date"
+  %abbr{title: 'This field is required'} *
+  = f.text_field :start_date, id: 'conference-start-datepicker', required: true, class: 'form-control'
+.form-group
+  = f.label :end_date, "End Date"
+  %abbr{title: 'This field is required'} *
+  = f.text_field :end_date, id: 'conference-end-datepicker', required: true, class: 'form-control'
+- unless f.object.new_record?
+  .form-group
+    = f.label :start_hour
+    = f.number_field :start_hour, size: 2, min: 0, max: 23, class: 'form-control'
+    %span.help-block
+      = rescheduling_hint(@affected_event_count)
+  .form-group
+    = f.label :end_hour
+    = f.number_field :end_hour, size: 2, min: 1, max: 24, class: 'form-control'
+    %span.help-block
+      = rescheduling_hint(@affected_event_count)
