@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-YTLF_TICKET_ID = Rails.configuration.mailbot[:ytlf_ticket_id]
-
 class Mailbot < ApplicationMailer
   helper ApplicationHelper
   helper ConferenceHelper
@@ -32,28 +30,19 @@ class Mailbot < ApplicationMailer
       attachments["ticket_for_#{@conference.short_title}_#{physical_ticket.id}.pdf"] = pdf.render
     end
 
-    if @ticket_purchase.ticket_id == YTLF_TICKET_ID
-      template_name = 'young_thinkers_ticket_confirmation_template'
-      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: template_name)
+    email_subject = "#{@conference.title} | Ticket Confirmation and PDF!"
+    email_template = 'ticket_confirmation_template'
+
+    if @ticket_purchase.ticket.email_subject.present?
+      email_subject = @ticket_purchase.render_email_data(@ticket_purchase.ticket.email_subject)
     end
 
-    # if email subject is empty, use custom template
-    if @ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
-      @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
-      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: 'custom_ticket_confirmation_template')
-    # if email body is empty, use default template with subject
-    elsif !@ticket_purchase.ticket.email_subject.empty? && @ticket_purchase.ticket.email_body.empty?
-      @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
-      mail(subject: @ticket_purchase.ticket.email_subject, template_name: 'ticket_confirmation_template')
-    # if both exist, use custom
-    elsif !@ticket_purchase.ticket.email_subject.empty? && !@ticket_purchase.ticket.email_body.empty?
-      @ticket_purchase.ticket.email_body = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_body)
-      @ticket_purchase.ticket.email_subject = @ticket_purchase.generate_confirmation_mail(@ticket_purchase.ticket.email_subject)
-      mail(subject: @ticket_purchase.ticket.email_subject, template_name: 'custom_ticket_confirmation_template')
-    # if both empty, use default
-    else
-      mail(subject: "#{@conference.title} | Ticket Confirmation and PDF!", template_name: 'ticket_confirmation_template')
+    if @ticket_purchase.ticket.email_body.present?
+      @rendered_email_body = @ticket_purchase.render_email_data(@ticket_purchase.ticket.email_body)
+      email_template = 'custom_ticket_confirmation_template'
     end
+
+    mail(subject: email_subject, template_name: email_template)
   end
 
   def acceptance_mail(event)

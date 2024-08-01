@@ -125,7 +125,7 @@ class TicketPurchase < ApplicationRecord
     end
   end
 
-  def generate_confirmation_mail(event_template)
+  def render_email_data(event_template)
     parser = EmailTemplateParser.new(conference, user)
     values = parser.retrieve_values(nil, nil, quantity, ticket)
     EmailTemplateParser.parse_template(event_template, values)

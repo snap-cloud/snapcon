@@ -144,8 +144,7 @@ Rails.application.configure do
 
   # Mailbot settings
   config.mailbot = {
-    ytlf_ticket_id: ENV.fetch('YTLF_TICKET_ID', 50),
-    bcc_address:    ENV.fetch('OSEM_MESSAGE_BCC_ADDRESS', nil)
+    bcc_address: ENV.fetch('OSEM_MESSAGE_BCC_ADDRESS', nil)
   }
 
   config.after_initialize do
