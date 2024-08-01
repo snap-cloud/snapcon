@@ -28,48 +28,26 @@ class Commercial < ApplicationRecord
 
   validate :valid_url
 
-  def self.render_from_url(url)
+  def self.render_from_url(url, title = nil)
     register_provider
-    url = Commercial.generate_snap_embed(url)
     begin
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
     rescue StandardError
-      { html: EmbeddableURL.new(url).render_embed.html_safe }
+      { html: EmbeddableURL.new(url, title).render_embed.html_safe }
       # { error: exception.message }
     end
   end
 
-  def self.generate_snap_embed(url)
-    return url unless url
-
-    uri = URI.parse(url)
-    if uri.host == 'snap.berkeley.edu' && uri.path == '/project'
-      args = URI.decode_www_form(uri.query).to_h
-    else
-      return url
-    end
-    if args.key?('username') && args.key?('projectname')
-      new_query = URI.encode_www_form({
-                                        'projectname' => args['projectname'],
-                                        'username'    => args['username'],
-                                        'showTitle'   => 'true',
-                                        'showAuthor'  => 'true',
-                                        'editButton'  => 'true',
-                                        'pauseButton' => 'true'
-                                      })
-      new_uri = URI::HTTPS.build(
-        host:  uri.host,
-        path:  '/embed',
-        query: new_query
-      )
-      return new_uri.to_s
-    end
-    url
-  end
-
-  def self.iframe_fallback(url)
-    "<iframe width=560 height=315 frameborder=0 allowfullscreen=true src=\"#{url}\"></iframe>".html_safe
+  # TODO: Is this necessary?
+  def self.iframe_fallback(url, title)
+    iframe = <<~HTML
+      <iframe width=560 height=315 frameborder=0 allowfullscreen=true
+        title="#{title || 'Embedded Media for Event'}"
+        src="#{url}">
+      </iframe>
+    HTML
+    iframe.html_safe
   end
 
   def self.read_file(file)
@@ -109,7 +87,7 @@ class Commercial < ApplicationRecord
   def valid_url
     return unless url
 
-    result = Commercial.render_from_url(url)
+    result = Commercial.render_from_url(url, title)
     errors.add(:base, result[:error]) if result[:error]
   end
 

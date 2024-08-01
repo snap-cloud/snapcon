@@ -90,9 +90,7 @@ module Admin
     end
 
     def commercial_params
-      params.require(:commercial).permit(:title, :url).tap do |params|
-        params[:url] = Commercial.generate_snap_embed(params[:url]) if params[:url]
-      end
+      params.require(:commercial).permit(:title, :url)
     end
   end
 end
