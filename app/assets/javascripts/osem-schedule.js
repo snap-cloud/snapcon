@@ -82,30 +82,27 @@ $(document).ready( function() {
 
   $('#current-event-btn').on('click', function() {
     var now = new Date();
-    var closestEventId = null;
+    var closestEvent = null;
     var smallestDiff = Infinity;
-    var i = 0;
 
     $('.event-item').each(function() {
+      let $event = $(this), eventTimeStr = $event.data('time');
 
-      var eventTimeStr = $(this).data('time');
+      if (!eventTimeStr) { return; }
 
-        if (eventTimeStr) {
-            var eventTime = new Date(eventTimeStr);
-            var diff = Math.abs(eventTime - now);
-
-            if (diff < smallestDiff) {
-                smallestDiff = diff;
-                closestEventId = $(this).attr('class').split(' ')[1];
-            }
-        }
+      var eventTime = new Date(eventTimeStr);
+      var diff = Math.abs(eventTime - now);
+      if (diff < smallestDiff) {
+        smallestDiff = diff;
+        closestEvent = $event;
+      }
     });
 
-    if (closestEventId) {
-      //Instead of relying on hash it's probably better to scroll using javascript
-      //Since the users and click button->scroll->click again, which won't re-scroll
+    if (closestEvent) {
+      // Instead of relying on hash it's probably better to scroll using javascript
+      // Since the users and click button->scroll->click again, which won't re-scroll
       $('.highlighted').removeClass('highlighted');
-      $('.' + closestEventId).addClass('highlighted').get(0).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      $(closestEvent).addClass('highlighted').get(0).scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
 

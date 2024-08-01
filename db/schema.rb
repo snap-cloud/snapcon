@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_07_22_183008) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_22_200831) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -545,8 +545,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_22_183008) do
     t.integer "payment_id"
     t.integer "week"
     t.float "amount_paid", default: 0.0
-    t.integer "amount_paid_cents", default: 0
     t.string "currency"
+    t.integer "amount_paid_cents", default: 0
   end
 
   create_table "ticket_scannings", force: :cascade do |t|
