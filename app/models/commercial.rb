@@ -28,22 +28,30 @@ class Commercial < ApplicationRecord
 
   validate :valid_url
 
-  def self.render_from_url(url)
+  def self.render_from_url(url, title = nil)
     register_provider
     begin
       resource = OEmbed::Providers.get(url, maxwidth: 560, maxheight: 315)
       { html: resource.html.html_safe }
     rescue StandardError
-      { html: iframe_fallback(url) }
+      { html: EmbeddableURL.new(url, title).render_embed.html_safe }
       # { error: exception.message }
     end
   end
 
-  def self.iframe_fallback(url)
-    "<iframe width=560 height=315 frameborder=0 allowfullscreen=true src=\"#{url}\"></iframe>".html_safe
+  # TODO: Is this necessary?
+  def self.iframe_fallback(url, title)
+    iframe = <<~HTML
+      <iframe width=560 height=315 frameborder=0 allowfullscreen=true
+        title="#{title || 'Embedded Media for Event'}"
+        src="#{url}">
+      </iframe>
+    HTML
+    iframe.html_safe
   end
 
   def self.read_file(file)
+    require 'csv'
     errors = {}
     errors[:no_event] = []
     errors[:validation_errors] = []
@@ -67,7 +75,8 @@ class Commercial < ApplicationRecord
 
       commercial = event.commercials.new(title: title, url: url)
       unless commercial.save
-        errors[:validation_errors] << ("Could not create materials for event with ID #{event.id} (" + commercial.errors.full_messages.to_sentence + ')')
+        errors[:validation_errors] <<
+          "Could not create materials for event with ID #{event.id} (#{commercial.errors.full_messages.to_sentence})"
       end
     end
     errors
@@ -76,7 +85,9 @@ class Commercial < ApplicationRecord
   private
 
   def valid_url
-    result = Commercial.render_from_url(url)
+    return unless url
+
+    result = Commercial.render_from_url(url, title)
     errors.add(:base, result[:error]) if result[:error]
   end
 

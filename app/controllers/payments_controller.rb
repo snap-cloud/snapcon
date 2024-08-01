@@ -23,15 +23,14 @@ class PaymentsController < ApplicationController
     @has_registration_ticket = params[:has_registration_ticket]
     @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
 
-    @converted_prices = {}
-    @unpaid_ticket_purchases.each do |ticket_purchase|
-      @converted_prices[ticket_purchase.id] = ticket_purchase.amount_paid
-    end
     @currency = selected_currency
   end
 
   def create
     @payment = Payment.new payment_params
+    session[:selected_currency] = params[:currency] if params[:currency].present?
+    selected_currency = session[:selected_currency] || @conference.tickets.first.price_currency
+    from_currency = @conference.tickets.first.price_currency
 
     if @payment.purchase && @payment.save
       update_purchased_ticket_purchases
@@ -51,7 +50,8 @@ class PaymentsController < ApplicationController
                     notice: 'Thanks! Your ticket is booked successfully.'
       end
     else
-      @total_amount_to_pay = convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
+      # TODO-SNAPCON: This case is not tested at all
+      @total_amount_to_pay = CurrencyConversion.convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
       @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
       flash.now[:error] = @payment.errors.full_messages.to_sentence + ' Please try again with correct credentials.'
       render :new
