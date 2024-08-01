@@ -57,6 +57,9 @@
           %i{ class: "fa-li #{icon_for_todo @splashpage.include_social_media?}" }
           Display social media links
         %li
+          %i{ class: "fa-li #{icon_for_todo @splashpage.include_committee?}" }
+          Display social media links
+        %li
           - if @conference.splashpage && @conference.splashpage.public?
             %i{ class: "fa-li #{icon_for_todo @splashpage.public?}" }
             %text-muted.publicorprivate  Public
