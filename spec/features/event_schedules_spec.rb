@@ -41,6 +41,6 @@ describe EventSchedule, :js do
   it 'jumps to the closest event' do
     find('#current-event-btn').click
     highlighted_element = page.find('.highlighted', visible: true, wait: 1)
-    expect(highlighted_element[:class]).to include("event-#{scheduled_event_mid.id}")
+    expect(highlighted_element[:id]).to include("event_#{scheduled_event_mid.id}")
   end
 end

@@ -40,38 +40,33 @@
   .row
     / scheduled events
     :ruby
-      date = nil
-      time = nil
-      tz_object = current_user&.timezone ? current_user : @conference
+      prev_date, prev_time = nil
+      display_tz = current_user&.timezone.presence || @conference.timezone
 
     / TODO-SNAPCON: Explore caching this.
-    - @events_schedules.each do |event_schedule|
-      - next if event_schedule.event.parent_event.present?
-      - new_start_time = convert_timezone(event_schedule.start_time, @conference.timezone, tz_object.timezone)
-      - start_ymd = new_start_time.strftime('%Y-%m-%d')
-      - unless start_ymd.eql?(date)
-        .col-xs-12.col-md-12
-          .date-content
-            %span.date-title
-              = inyourtz(event_schedule.start_time, @conference.timezone) do
-                = date = start_ymd
-            %a.pull-right{ title: "Go up", href: "#program" }
-              %i.fa-solid.fa-angles-up.fa-lg{ 'aria-hidden': true }
-      .col-xs-12.col-md-1
-        - if !event_schedule.start_time.strftime('%H:%M').eql?(time) || !start_ymd.eql?(date)
-          - time = new_start_time.strftime('%H:%M')
-          = inyourtz(event_schedule.start_time, @conference.timezone) do
-            = time + ' ' + timezone_text(tz_object)
-      .col-xs-12.col-md-11
-        - cache [@program, event_schedule, event_schedule.event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
-          .event-item{ data: { time: event_schedule.start_time.iso8601 }, class: "event-#{event_schedule.event.id}" }
-            = render 'event', event: event_schedule.event, event_schedule: event_schedule
+    - @events_schedules.select { |es| es.event.parent_event.nil? }.each do |event_schedule|
+      - event = event_schedule.event
+      - start_time = convert_timezone(event_schedule.start_time, @conference.timezone, display_tz)
+
+      - unless start_time.to_date.eql?(prev_date)
+        .date-content
+          %h2.date-title{ style: "margin: 0;" }
+            = prev_date = start_time.to_date
+          %a.pull-right{ title: "Go up", href: "#program" }
+            %i.fa-solid.fa-angles-up.fa-lg{ 'aria-hidden': true }
+      - if !start_time.eql?(prev_time)
+        - prev_time = start_time
+        %h3= start_time.strftime('%H:%M %p %Z')
+      .col-12
+        -# - cache [@program, event_schedule, event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+        .event-item{ data: { time: event_schedule.start_time.iso8601 }, id: dom_id(event) }
+          = render 'event', event: event, event_schedule: event_schedule
 
     / confirmed events that are not scheduled
     - if @unscheduled_events.any?
-      .col-xs-12.col-md-12
+      .col-12
         .date-content
-          %span.date-title#unscheduled
+          %h2.date-title#unscheduled{ style: "margin: 0;" }
             Unscheduled events
           %a.pull-right{ title: "Go up", href: "#program" }
             %i.fa-solid.fa-angles-up.fa-lg{ 'aria-hidden': true }
