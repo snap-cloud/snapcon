@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby file: '.ruby-version'
+ruby file: '.tool-versions'
 
 # as web framework
 if next?
