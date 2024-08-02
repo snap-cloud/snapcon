@@ -29,7 +29,7 @@ gem 'pg'
 gem 'paper_trail', '< 13'
 
 # for upload management
-gem 'carrierwave'
+gem 'carrierwave', '< 3'
 gem 'carrierwave-bombshelter'
 gem 'mini_magick'
 # for uploading images to the cloud
