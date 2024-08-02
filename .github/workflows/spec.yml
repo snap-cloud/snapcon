@@ -10,13 +10,12 @@ jobs:
     continue-on-error: true
     runs-on: ubuntu-latest
     env:
-      PRONTO_PULL_REQUEST_ID: ${{ github.event.pull_request.number }}
+      PRONTO_PULL_REQUEST_ID: "${{ github.event.pull_request.number }}"
       PRONTO_GITHUB_ACCESS_TOKEN: "${{ github.token }}"
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.2
           bundler-cache: true
       # - name: Run Pronto
       #   run: bundle exec pronto run
@@ -39,7 +38,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2.2
           bundler-cache: true
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -63,7 +61,9 @@ jobs:
       - name: spec/${{ matrix.suite }}
         run: |
           xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
-          $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov
+      # - name: format code coverage
+      #   run: |
+      #     $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov
       # - name: coverage upload ${{ matrix.suite }}
       #   uses: codacy/codacy-coverage-reporter-action@v1
       #   if: github.ref == 'refs/heads/master' && always()
@@ -77,10 +77,9 @@ jobs:
           name: capybara-screenshots
           path: tmp/capybara/
           retention-days: 7
-
-      - name: Publish code coverage
-        run: |
-          export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
-          $CCTR sum-coverage coverage/codeclimate.*.json
-          $CCTR upload-coverage --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
-          $CCTR after-build --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
+      # - name: Publish code coverage
+      #   run: |
+      #     export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
+      #     $CCTR sum-coverage coverage/codeclimate.*.json
+      #     $CCTR upload-coverage --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
+      #     $CCTR after-build --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"

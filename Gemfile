@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby ENV.fetch('OSEM_RUBY_VERSION', '3.2.2')
+ruby file: '.tool-versions'
 
 # as web framework
 if next?
@@ -29,7 +29,7 @@ gem 'pg'
 gem 'paper_trail', '< 13'
 
 # for upload management
-gem 'carrierwave'
+gem 'carrierwave', '< 3'
 gem 'carrierwave-bombshelter'
 gem 'mini_magick'
 # for uploading images to the cloud
@@ -233,7 +233,7 @@ group :test do
   gem 'rspec-rails'
   gem 'webdrivers'
   # for measuring test coverage
-  gem 'simplecov', '<0.18'
+  gem 'simplecov'
   gem 'simplecov-cobertura'
   # for describing models
   gem 'shoulda-matchers', require: false
