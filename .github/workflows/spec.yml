@@ -77,10 +77,9 @@ jobs:
           name: capybara-screenshots
           path: tmp/capybara/
           retention-days: 7
-
-      - name: Publish code coverage
-        run: |
-          export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
-          $CCTR sum-coverage coverage/codeclimate.*.json
-          $CCTR upload-coverage --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
-          $CCTR after-build --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
+      # - name: Publish code coverage
+      #   run: |
+      #     export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
+      #     $CCTR sum-coverage coverage/codeclimate.*.json
+      #     $CCTR upload-coverage --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
+      #     $CCTR after-build --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
