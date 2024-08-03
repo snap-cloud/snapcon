@@ -104,13 +104,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.string "picture"
     t.integer "start_hour", default: 9
     t.integer "end_hour", default: 20
-    t.integer "organization_id"
     t.integer "ticket_layout", default: 0
     t.string "custom_domain"
     t.integer "booth_limit", default: 0
     t.text "custom_css"
     t.text "registered_attendees_message"
-    t.index ["organization_id"], name: "index_conferences_on_organization_id"
+    t.text "code_of_conduct"
   end
 
   create_table "conferences_questions", id: false, force: :cascade do |t|
@@ -313,13 +312,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.integer "user_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-  end
-
-  create_table "organizations", force: :cascade do |t|
-    t.string "name", null: false
-    t.text "description"
-    t.string "picture"
-    t.text "code_of_conduct"
   end
 
   create_table "payments", force: :cascade do |t|

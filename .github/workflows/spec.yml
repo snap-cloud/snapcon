@@ -13,7 +13,7 @@ jobs:
       PRONTO_PULL_REQUEST_ID: "${{ github.event.pull_request.number }}"
       PRONTO_GITHUB_ACCESS_TOKEN: "${{ github.token }}"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     name: spec
     env:
-      OSEM_DB_ADAPTER: sqlite3
+      OSEM_DB_HOST: localhost
       RAILS_ENV: test
       CCTR: ./cc-test-reporter
       CCTR_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
@@ -35,7 +35,7 @@ jobs:
       matrix:
         suite: [models, features, controllers, ability, leftovers, cucumber]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
@@ -53,7 +53,6 @@ jobs:
           $CCTR before-build
       - name: Prepare spec
         run: |
-          rm -f osem_test osem_development
           bundle exec rake db:setup --trace
           bundle exec bin/rails webdrivers:chromedriver:update
           bundle exec rake factory_bot:lint RAILS_ENV=test
@@ -70,7 +69,7 @@ jobs:
       #   with:
       #     project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
       #     coverage-reports: coverage/coverage.xml
-      - name: Upload Capybara Failure Screenshots
+    - name: Upload Capybara Failure Screenshots
         uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -83,3 +82,16 @@ jobs:
       #     $CCTR sum-coverage coverage/codeclimate.*.json
       #     $CCTR upload-coverage --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
       #     $CCTR after-build --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: mysecretpassword
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432

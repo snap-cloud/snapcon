@@ -70,27 +70,6 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
         ENV.delete('OSEM_NAME')
         expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: 'OSEM')
       end
-
-      it 'uses the conference organization name' do
-        expect(nav_root_link_for(conference)).to include image_tag(conference.picture.thumb.url,
-                                                                   alt: conference.organization.name)
-      end
-    end
-
-    describe 'navigation link title text' do
-      it 'defaults to OSEM' do
-        ENV.delete('OSEM_NAME')
-        expect(nav_link_text(nil)).to match 'OSEM'
-      end
-
-      it 'uses the environment variable' do
-        ENV['OSEM_NAME'] = Faker::Company.name + "'"
-        expect(nav_link_text(nil)).to match ENV.fetch('OSEM_NAME', nil)
-      end
-
-      it 'uses the conference organization name' do
-        expect(nav_link_text(conference)).to match conference.organization.name
-      end
     end
   end
 

@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-describe 'Has correct abilities' do
-  let(:organization) { create(:organization) }
-  let(:conference) { create(:full_conference, organization: organization) } # user is cfp
+feature 'Has correct abilities' do
+
+  let(:conference) { create(:full_conference) } # user is cfp
   let(:user) { create(:user) }
 
   context 'when user has no role' do

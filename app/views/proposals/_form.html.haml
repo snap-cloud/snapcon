@@ -57,7 +57,8 @@
 - if @program.languages.present?
   .form-group
     = f.label :language
-    = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
+    = f.select :language, @program.languages_list, { include_blank: false}, { class: 'select-help-toggle form-control' }
+
 
 - if @conference.program.difficulty_levels.any?
   .form-group

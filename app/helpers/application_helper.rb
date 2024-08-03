@@ -157,31 +157,19 @@ hint: options[:hint]
   # TODO: If conference is defined, the alt text should be conference name.
   def nav_root_link_for(conference = nil)
     path = conference&.id.present? ? conference_path(conference) : root_path
+    link_text = conference.present? ? conference.short_title : ENV.fetch('OSEM_NAME', 'OSEM')
     link_to(
-      image_tag(conference_logo_url(conference), alt: nav_link_text(conference)),
+      image_tag(conference_logo_url(conference), alt: "#{link_text} homepage"),
       path,
       class: 'navbar-brand',
-      title: nav_link_text(conference)
+      title: link_text
     )
   end
 
-  # TODO-SNAPCON: This should be the conference title.
-  def nav_link_text(conference = nil)
-    conference.try(:organization).try(:name) || ENV.fetch('OSEM_NAME', 'OSEM')
-  end
-
-  # TODO: Consider Renaming this?
-  # TODO: Allow passing in an organization
   def conference_logo_url(conference = nil)
-    return DEFAULT_LOGO unless conference
+    return conference.picture.thumb.url if conference && conference.picture.present?
 
-    if conference.picture.present?
-      conference.picture.thumb.url
-    elsif conference.organization&.picture.present?
-      conference.organization.picture.thumb.url
-    else
-      DEFAULT_LOGO
-    end
+    DEFAULT_LOGO
   end
 
   # returns the url to be used for logo on basis of sponsorship level position

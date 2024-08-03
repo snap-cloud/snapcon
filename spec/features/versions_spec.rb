@@ -311,42 +311,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_no_text('Someone (probably via the console) created new commercial')
   end
 
-  it 'display changes in organization', feature: true, versioning: true, js: true do
-    admin = create(:admin)
-    sign_in admin
-
-    visit new_admin_organization_path
-    fill_in 'organization_name', with: 'New org'
-    click_button 'Create Organization'
-
-    visit admin_revision_history_path
-    expect(page).to have_text('created new organization New org')
-  end
-
-  context 'organization role', feature: true, versioning: true, js: true do
-    let!(:organization_admin) { create(:organization_admin, organization: conference.organization) }
-    let!(:user) { create(:user) }
-
-    before do
-      user.add_role :organization_admin, conference.organization
-      user.remove_role :organization_admin, conference.organization
-
-      sign_in organization_admin
-      visit admin_revision_history_path
-    end
-
-    it 'is recorded to history when user is added' do
-      skip('fails since paper_trail 12.2.0')
-      expect(page).to have_text(/added role organization_admin with ID \d+ to user #{user.name} in organization #{conference.organization.name}/)
-    end
-
-    it 'is recorded to history when user is removed' do
-      skip('fails since paper_trail 12.2.0')
-      expect(page).to have_text(/removed role organization_admin with ID \d+ from user #{user.name} in organization #{conference.organization.name}/)
-    end
-  end
-
-  it 'display changes in users_role for conference role', feature: true, versioning: true, js: true do
+  scenario 'display changes in users_role for conference role', feature: true, versioning: true, js: true do
     user = create(:user)
     role = Role.find_by(name: 'cfp', resource_id: conference.id, resource_type: 'Conference')
     user.add_role :cfp, conference

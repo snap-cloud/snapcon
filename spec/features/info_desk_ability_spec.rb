@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-describe 'Has correct abilities' do
-  let(:organization) { create(:organization) }
-  let(:conference) { create(:full_conference, organization: organization) }
+feature 'Has correct abilities' do
+
+  let(:conference) { create(:full_conference) }
   let(:role_info_desk) { Role.find_by(name: 'info_desk', resource: conference) }
   let(:user_info_desk) { create(:user, role_ids: [role_info_desk.id]) }
 
@@ -13,7 +13,7 @@ describe 'Has correct abilities' do
       sign_in user_info_desk
     end
 
-    it 'for organization and conference attributes' do
+    scenario 'for conference attributes' do
       visit admin_conference_path(conference.short_title)
       expect(page).to have_current_path(admin_conference_path(conference.short_title), ignore_query: true)
 
@@ -50,15 +50,6 @@ describe 'Has correct abilities' do
       expect(page).to have_link('Questions', href: "/admin/conferences/#{conference.short_title}/questions")
       expect(page).not_to have_link('E-Mails', href: "/admin/conferences/#{conference.short_title}/emails")
       expect(page).not_to have_link('New Conference', href: '/admin/conferences/new')
-
-      visit admin_organizations_path
-      expect(page).to have_current_path(admin_organizations_path, ignore_query: true)
-
-      visit edit_admin_organization_path(organization)
-      expect(page).to have_current_path(root_path, ignore_query: true)
-
-      visit new_admin_organization_path
-      expect(page).to have_current_path(root_path, ignore_query: true)
 
       visit edit_admin_conference_path(conference.short_title)
       expect(page).to have_current_path(root_path, ignore_query: true)

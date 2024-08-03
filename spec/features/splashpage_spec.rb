@@ -65,21 +65,6 @@ describe Splashpage do
     end
   end
 
-  context 'navigation' do
-    let!(:splashpage) { create(:splashpage, conference: conference, public: true) }
-
-    context 'multiple organizations' do
-      let!(:additional_organization) { create(:organization) }
-
-      it 'has organization logo', feature: true, js: true do
-        sign_in participant
-        visit conference_path(conference.short_title)
-
-        expect(find('.navbar-brand img')['alt']).to have_content conference.organization.name
-      end
-    end
-  end
-
   context 'happening now section', feature: true, js: true do
     let!(:conference2) do
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)

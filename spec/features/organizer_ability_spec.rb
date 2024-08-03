@@ -2,13 +2,10 @@
 
 require 'spec_helper'
 
-describe 'Has correct abilities' do
-  let(:organization) { create(:organization) }
-  let(:conference) { create(:full_conference, organization: organization) }
-  # user is organizer, venue is not set by default
-  let(:other_conference) do
-    create(:conference, organization: organization)
-  end
+feature 'Has correct abilities' do
+
+  let(:conference) { create(:full_conference) }
+  let(:other_conference) { create(:conference) } # user is organizer, venue is not set by default
   let(:role_organizer_conf) { Role.find_by(name: 'organizer', resource: conference) }
   let(:role_organizer_other_conf) { Role.find_by(name: 'organizer', resource: other_conference) }
   let(:user_organizer) { create(:user, role_ids: [role_organizer_conf.id, role_organizer_other_conf.id]) }
@@ -19,18 +16,7 @@ describe 'Has correct abilities' do
       sign_in user_organizer
     end
 
-    it 'for organization attributes' do
-      visit admin_organizations_path
-      expect(page).to have_current_path(admin_organizations_path, ignore_query: true)
-
-      visit edit_admin_organization_path(organization)
-      expect(page).to have_current_path(root_path, ignore_query: true)
-
-      visit new_admin_organization_path
-      expect(page).to have_current_path(root_path, ignore_query: true)
-    end
-
-    it 'for conference attributes' do
+    scenario 'for conference attributes' do
       visit admin_conference_path(conference.short_title)
       expect(page).to have_current_path(admin_conference_path(conference.short_title), ignore_query: true)
 

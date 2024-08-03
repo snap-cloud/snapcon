@@ -63,7 +63,6 @@ module Admin
       @comment_count = @event.comment_threads.count
       @user = @event.submitter
       @url = admin_conference_program_event_path(@conference.short_title, @event)
-      @languages = @program.languages_list
       @superevents = @program.events.where(superevent: true)
     end
 
@@ -78,7 +77,6 @@ module Admin
     end
 
     def update
-      @languages = @program.languages_list
       if @event.update(event_params)
 
         if request.xhr?
@@ -96,7 +94,6 @@ module Admin
 
     def create
       @url = admin_conference_program_events_path(@conference.short_title, @event)
-      @languages = @program.languages_list
       @event.submitter = current_user
       @superevents = @program.events.where(superevent: true)
 
@@ -111,7 +108,6 @@ module Admin
 
     def new
       @url = admin_conference_program_events_path(@conference.short_title, @event)
-      @languages = @program.languages_list
       @superevents = @program.events.where(superevent: true)
     end
 

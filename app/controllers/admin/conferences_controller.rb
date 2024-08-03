@@ -180,7 +180,7 @@ module Admin
                                          :use_vpositions, :use_vdays, :vdays_attributes,
                                          :vpositions_attributes, :use_volunteers, :color,
                                          :sponsorship_levels_attributes, :sponsors_attributes,
-                                         :registration_limit, :organization_id, :ticket_layout,
+                                         :registration_limit, :code_of_conduct, :ticket_layout,
                                          :booth_limit, :custom_css, :registered_attendees_message)
     end
   end
