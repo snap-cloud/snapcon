@@ -30,11 +30,9 @@
 #  use_vpositions               :boolean          default(FALSE)
 #  created_at                   :datetime
 #  updated_at                   :datetime
-#  organization_id              :integer
 #
 # Indexes
 #
-#  index_conferences_on_organization_id  (organization_id)
 #
 # rubocop:disable Metrics/ClassLength
 class Conference < ApplicationRecord
@@ -170,7 +168,7 @@ class Conference < ApplicationRecord
     registration.user = user
     if registration.save
       MailblusterEditLeadJob.perform_later(
-        user.id, add_tags: ["#{organization.name}-#{short_title}"]
+        user.id, add_tags: ["#{short_title}"]
       )
       return registration
     end

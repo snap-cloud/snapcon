@@ -115,17 +115,10 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
   end
 
   describe '#conference_logo_url' do
-    let(:organization) { create(:organization) }
-    let(:conference2) { create(:conference, organization: organization) }
+    let(:conference2) { create(:conference) }
 
     it 'gives the correct logo url' do
       expect(conference_logo_url(conference2)).to eq('snapcon_logo.png')
-
-      File.open('spec/support/logos/1.png') do |file|
-        organization.picture = file
-      end
-
-      expect(conference_logo_url(conference2)).to include(organization.picture.thumb.url)
 
       File.open('spec/support/logos/2.png') do |file|
         conference2.picture = file

@@ -9,8 +9,9 @@
     All Events
     %b.caret
   %ul.dropdown-menu
+    -# TODO-SNAPCON: rename/redo org grouping.
     - visible_conference_links.each_with_index do |(org, confs), index|
-      %li.dropdown-header= org.name
+      %li.dropdown-header= org
       - confs.sort_by(&:start_date).each do |conf|
         %li= link_to(conf.title, conference_path(conf.short_title))
       - if index < visible_conference_links.length - 1

@@ -188,10 +188,6 @@
     - unless commercial.commercialable_type == 'Conference'
       in conference
       = link_to_conference(version.conference_id)
-  - elsif version.organization_id
-    - organization = Organization.find(version.organization_id)
-    in organization
-    = link_to_organization(version.organization_id)
   - else
     in conference
     = link_to_conference(version.conference_id)

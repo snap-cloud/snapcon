@@ -673,9 +673,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_11_21_114727) do
     t.text "object_changes"
     t.datetime "created_at", precision: nil
     t.integer "conference_id"
-    t.bigint "organization_id"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
-    t.index ["organization_id"], name: "index_versions_on_organization_id"
   end
 
   create_table "votes", force: :cascade do |t|
