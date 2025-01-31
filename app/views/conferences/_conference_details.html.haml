@@ -29,7 +29,8 @@
             - if conference.program and conference.program.schedule_public
               = link_to "Schedule", vertical_schedule_conference_schedule_path(conference.short_title), class: 'btn btn-default'
               - if conference.code_of_conduct.present?
-                = link_to "Code of Conduct", code_of_conduct_conference_path(conference.short_title), class: 'btn btn-default'            - if conference.registration_open?
+                = link_to "Code of Conduct", code_of_conduct_conference_path(conference.short_title), class: 'btn btn-default'
+            - if conference.registration_open?
               - if conference.user_registered?(current_user)
                 = link_to "My Registration", conference_conference_registration_path(conference.short_title), class: 'btn btn-default'
               - else
@@ -56,4 +57,5 @@
             - if current_user && current_user.physical_tickets.by_conference(conference).any?
               = link_to 'My Tickets', conference_physical_tickets_path(conference.short_title), class: 'btn btn-default'
             - surveys_after_conference = conference.surveys.after_conference.select(&:active?)
-            = link_to 'Surveys', conference_surveys_path(conference.short_title), class: 'btn btn-default' if surveys_after_conference.any? && conference.ended?
+            - if surveys_after_conference.any? && conference.ended?
+              = link_to 'Surveys', conference_surveys_path(conference.short_title), class: 'btn btn-default'

@@ -27,7 +27,7 @@ class Payment < ApplicationRecord
   validates :conference_id, presence: true
   validates :currency, presence: true
 
-  enum status: {
+  enum :status, {
     unpaid:  0,
     success: 1,
     failure: 2

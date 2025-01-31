@@ -48,7 +48,7 @@ describe Sponsor do
       end
       page.find('#flash')
       expect(flash).to eq('Sponsor successfully deleted.')
-      expect(page).not_to have_table('#sponsors')
+      expect(page).to have_no_selector('table#sponsors')
     end
   end
 

@@ -7,7 +7,6 @@
  *= require selectize
  *= require selectize.bootstrap3
  *= require bootstrap-markdown
- *= require bootstrap-datetimepicker
  *= require bootstrap-select
 
  *= require osem

@@ -46,8 +46,8 @@ class Conference < ApplicationRecord
   resourcify :roles, dependent: :delete_all
 
   default_scope { order('conferences.start_date DESC') }
-  scope :upcoming, -> { where('conferences.end_date >= ?', Date.current) }
-  scope :past, -> { where('conferences.end_date < ?', Date.current) }
+  scope :upcoming, (-> { where(end_date: Date.current..) })
+  scope :past, (-> { where(end_date: ...Date.current) })
 
   has_paper_trail ignore: %i(updated_at guid revision events_per_week), meta: { conference_id: :id }
 
@@ -136,7 +136,7 @@ class Conference < ApplicationRecord
   after_create :create_free_ticket
   after_update :delete_event_schedules
 
-  enum ticket_layout: { portrait: 0, landscape: 1 }
+  enum :ticket_layout, [:portrait, :landscape]
 
   ##
   # Checks if the user is registered to the conference
@@ -223,7 +223,7 @@ class Conference < ApplicationRecord
   def get_submissions_per_week
     result = []
 
-    if program&.cfp && program&.events
+    if program&.cfp && program.events
       submissions = program.events.select(:week).group(:week).order(:week).count
       start_week = program.cfp.start_week
       weeks = program.cfp.weeks
@@ -239,7 +239,7 @@ class Conference < ApplicationRecord
   # ====Returns
   #  * +Array+ -> e.g. 'Submitted' => [0, 3, 3, 5]  -> first week 0 events, second week 3 events.
   def get_submissions_data
-    return [] unless program&.cfp && program&.events
+    return [] unless program&.cfp && program.events
 
     start_week = program.cfp.start_week
     get_events_per_week_by_state.collect do |state, values|
@@ -263,10 +263,7 @@ class Conference < ApplicationRecord
   # ====Returns
   #  * +Array+ -> e.g. [0, 3, 3, 5] -> first week 0, second week 3 registrations
   def get_registrations_per_week
-    return [] unless registrations &&
-                     registration_period &&
-                     registration_period.start_date &&
-                     registration_period.end_date
+    return [] unless registrations && registration_period&.start_date && registration_period.end_date
 
     reg = registrations.group(:week).order(:week).count
     start_week = get_registration_start_week
@@ -332,7 +329,7 @@ class Conference < ApplicationRecord
     result = 0
     weeks = 0
     if registration_period&.start_date &&
-       registration_period&.end_date
+        registration_period.end_date
       weeks = Date.new(registration_period.start_date.year, 12, 31)
                   .strftime('%W').to_i
 

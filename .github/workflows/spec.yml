@@ -56,26 +56,29 @@ jobs:
           bundle exec rake db:setup --trace
           bundle exec bin/rails webdrivers:chromedriver:update
           bundle exec rake factory_bot:lint RAILS_ENV=test
-        # TODO: Not all suites need xvfb
       - name: spec/${{ matrix.suite }}
+        run: bundle exec rake spec:${{ matrix.suite }}
+      - name: format code coverage
         run: |
-          xvfb-run --auto-servernum bundle exec rake spec:${{ matrix.suite }}
-      # - name: format code coverage
-      #   run: |
-      #     $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov
-      # - name: coverage upload ${{ matrix.suite }}
-      #   uses: codacy/codacy-coverage-reporter-action@v1
-      #   if: github.ref == 'refs/heads/master' && always()
-      #   with:
-      #     project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-      #     coverage-reports: coverage/coverage.xml
-    - name: Upload Capybara Failure Screenshots
-        uses: actions/upload-artifact@v3
-        if: always()
+          $CCTR format-coverage --output coverage/codeclimate.${{ matrix.suite }}.json --input-type simplecov
+      - name: Upload Suite Artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
         with:
-          name: capybara-screenshots
-          path: tmp/capybara/
-          retention-days: 7
+          name: logs-${{ matrix.suite }}
+          path: |
+            log/
+            tmp/capybara
+      - name: coverage upload ${{ matrix.suite }}
+        uses: codacy/codacy-coverage-reporter-action@master
+        if: github.ref == 'refs/heads/master'
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage/coverage.xml
+        # with:
+        #   name: capybara-screenshots
+        #   path: tmp/capybara/
+        #   retention-days: 7
       # - name: Publish code coverage
       #   run: |
       #     export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"

@@ -96,7 +96,8 @@
   .help-block e.g. Are you only attending certain days?
 
 %p.text-right
-  = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'
+  - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
+  = f.submit submit_copy, class: 'btn btn-success'
 
 - content_for :script_head do
   :javascript

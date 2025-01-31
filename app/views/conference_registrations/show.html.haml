@@ -21,23 +21,20 @@
           .fa-stack
             .fa-solid.fa-square-dashed
             .fa-solid.fa-handshake
-          Code of Conduct
+          = link_to code_of_conduct_conference_path(@conference.short_title) do
+            Code of Conduct
         %ul.fa-ul
           - if @registration.accepted_code_of_conduct
             %li.text-info
               %span.fa-li
                 = icon('fa-solid', 'check')
-              You have accepted the
-              = link_to 'Code of Conduct', '#',
-                data: { toggle: 'modal', target: '#modal-code-of-conduct'}
+              You have accepted the Code of Conduct
           - else
             %li.text-warning
               %span.fa-li
                 = icon('fa-solid', 'circle-exclamation')
-              You need to accept the
-              = link_to 'Code of Conduct', '#',
-                data: { toggle: 'modal', target: '#modal-code-of-conduct'}
-          = render 'conferences/code_of_conduct'
+              You need to accept the Code of Conduct. Please
+              = link_to 'edit your Registration.', edit_conference_conference_registration_path(@conference.short_title), disabled: @conference.end_date < Date.today
   - if @conference.surveys.for_registration.any?
     .row
       .col-md-12
@@ -148,7 +145,7 @@
             %i.fa-solid.fa-user-group.fa-stack-1x
           = @conference.participants.count
           Registered
-          = word_pluralize(@conference.participants.count, 'Attendee')
+          = pluralize(@conference.participants.count, 'Attendee')
         - @conference.participants.each do |participant|
           = link_to image_tag(participant.profile_picture(size: '25'), title: "#{participant.name}!", class: 'img-circle'), user_path(participant)
     .col-md-4.col-md-offset-2
@@ -159,6 +156,6 @@
             %i.fa-solid.fa-microphone.fa-stack-1x
           = @conference.program.speakers.confirmed.count
           Confirmed
-          = word_pluralize(@conference.program.speakers.confirmed.count, 'Speaker')
+          = pluralize(@conference.program.speakers.confirmed.count, 'Speaker')
         - @conference.program.speakers.confirmed.each do |speaker|
           = link_to image_tag(speaker.profile_picture(size: '25'), title: "#{speaker.name}!", class: 'img-circle'), user_path(speaker)

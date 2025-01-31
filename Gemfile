@@ -255,13 +255,13 @@ group :development, :test, :linters do
   gem 'rubocop', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec_rails', require: false
+  gem 'rubocop-factory_bot', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-performance', require: false
   gem 'haml_lint'
-
+  # TODO-SNAPCON: Why is this in the current group?
   gem 'faraday-retry', require: false
-  # TODO-SNAPCON: figure out which haml-lint OR haml_lint is good.
-  gem 'haml-lint', require: false
 
   # Easily run linters
   gem 'pronto', require: false
