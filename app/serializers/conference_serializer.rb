@@ -32,7 +32,7 @@
 #  updated_at                   :datetime
 #
 # Indexes
-,#
+#
 class ConferenceSerializer < ActiveModel::Serializer
   include ApplicationHelper
   include Rails.application.routes.url_helpers
