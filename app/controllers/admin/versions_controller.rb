@@ -14,11 +14,6 @@ module Admin
                                  ).pluck(:short_title)
                                end
 
-      if current_user.has_cached_role? :organization_admin, :any
-        @conferences_with_role = Organization.with_role('organization_admin', current_user).map do |org|
-          org.conferences.pluck :short_title
-        end.flatten
-      end
       @conferences_with_role.uniq!
 
       return if @conference.blank?

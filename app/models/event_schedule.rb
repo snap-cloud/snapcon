@@ -157,7 +157,7 @@ class EventSchedule < ApplicationRecord
   end
 
   def start_after_end_hour
-    return unless event && start_time && event.program && event.program.conference && event.program.conference.end_hour
+    return unless event && start_time && event.program&.conference && event.program.conference.end_hour
 
     if start_time.hour >= event.program.conference.end_hour
       errors.add(:start_time,
@@ -166,9 +166,7 @@ class EventSchedule < ApplicationRecord
   end
 
   def start_before_start_hour
-    unless event && start_time && event.program && event.program.conference && event.program.conference.start_hour
-      return
-    end
+    return unless event && start_time && event.program&.conference && event.program.conference.start_hour
 
     if start_time.hour < event.program.conference.start_hour
       errors.add(:start_time,

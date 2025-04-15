@@ -30,11 +30,8 @@
 #  use_vpositions               :boolean          default(FALSE)
 #  created_at                   :datetime
 #  updated_at                   :datetime
-#  organization_id              :integer
 #
 # Indexes
-#
-#  index_conferences_on_organization_id  (organization_id)
 #
 class ConferenceSerializer < ActiveModel::Serializer
   include ApplicationHelper

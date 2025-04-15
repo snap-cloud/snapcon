@@ -6,12 +6,12 @@ require 'cancan/matchers'
 describe 'User' do
   describe 'Abilities' do
     # see https://github.com/CanCanCommunity/cancancan/wiki/Testing-Abilities
-    subject(:ability) { Ability.new(user) }
+    subject(:ability){ Ability.new(user) }
+    let(:user){ nil }
 
     let!(:admin) { create(:admin) }
     let(:user) { nil }
-    let!(:organization) { create(:organization) }
-    let!(:my_conference) { create(:full_conference, organization: organization) }
+    let!(:my_conference) { create(:full_conference) }
     let(:my_room) { create(:room, venue: my_conference.venue) }
     let(:conference_not_public) { create(:conference, splashpage: create(:splashpage, public: false)) }
     let(:conference_public) { create(:full_conference, splashpage: create(:splashpage, public: true)) }
@@ -30,8 +30,7 @@ describe 'User' do
 
     # Test abilities for not signed in users
     context 'when user is not signed in' do
-      it { is_expected.to be_able_to(:index, Organization) }
-      it { is_expected.to be_able_to(:index, Conference) }
+      it{ should be_able_to(:index, Conference)}
 
       it { is_expected.to be_able_to(:show, conference_public) }
       it { is_expected.not_to be_able_to(:show, conference_not_public) }

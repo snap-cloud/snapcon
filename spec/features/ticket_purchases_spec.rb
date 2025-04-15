@@ -34,7 +34,8 @@ describe Registration, feature: true, js: true do
   end
 
   context 'as a participant' do
-    before do
+
+    before(:each) do
       sign_in participant
     end
 

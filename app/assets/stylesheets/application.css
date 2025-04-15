@@ -7,7 +7,6 @@
  *= require selectize
  *= require selectize.bootstrap3
  *= require bootstrap-markdown
- *= require bootstrap-datetimepicker
  *= require bootstrap-select
 
  *= require osem
@@ -17,7 +16,6 @@
  *= require osem-splash
  *= require osem-fonts
  *= require bootstrap-markdown
- *= require bootstrap-datetimepicker
  *= require leaflet
  *= require bootstrap3-switch
  *= require osem-payments

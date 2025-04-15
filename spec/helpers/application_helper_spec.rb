@@ -70,27 +70,6 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
         ENV.delete('OSEM_NAME')
         expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: 'OSEM')
       end
-
-      it 'uses the conference organization name' do
-        expect(nav_root_link_for(conference)).to include image_tag(conference.picture.thumb.url,
-                                                                   alt: conference.organization.name)
-      end
-    end
-
-    describe 'navigation link title text' do
-      it 'defaults to OSEM' do
-        ENV.delete('OSEM_NAME')
-        expect(nav_link_text(nil)).to match 'OSEM'
-      end
-
-      it 'uses the environment variable' do
-        ENV['OSEM_NAME'] = Faker::Company.name + "'"
-        expect(nav_link_text(nil)).to match ENV.fetch('OSEM_NAME', nil)
-      end
-
-      it 'uses the conference organization name' do
-        expect(nav_link_text(conference)).to match conference.organization.name
-      end
     end
   end
 
@@ -136,17 +115,10 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
   end
 
   describe '#conference_logo_url' do
-    let(:organization) { create(:organization) }
-    let(:conference2) { create(:conference, organization: organization) }
+    let(:conference2) { create(:conference) }
 
     it 'gives the correct logo url' do
       expect(conference_logo_url(conference2)).to eq('snapcon_logo.png')
-
-      File.open('spec/support/logos/1.png') do |file|
-        organization.picture = file
-      end
-
-      expect(conference_logo_url(conference2)).to include(organization.picture.thumb.url)
 
       File.open('spec/support/logos/2.png') do |file|
         conference2.picture = file

@@ -1,3 +1,9 @@
+:ruby
+  action_is_edit = @event.persisted?
+  user_is_admin = current_user&.is_admin?
+  display_details = user_is_admin || action_is_edit
+  display_registration = user_is_admin || @program.cfp&.enable_registrations?
+
 %h4 Proposal Information
 %hr
 
@@ -57,7 +63,8 @@
 - if @program.languages.present?
   .form-group
     = f.label :language
-    = f.select :language, @languages, { include_blank: false}, { class: 'select-help-toggle form-control' }
+    = f.select :language, @program.languages_list, { include_blank: false}, { class: 'select-help-toggle form-control' }
+
 
 - if @conference.program.difficulty_levels.any?
   .form-group
@@ -95,7 +102,8 @@
   .help-block e.g. Are you only attending certain days?
 
 %p.text-right
-  = f.submit @event.persisted? ? 'Update Proposal' : 'Create Proposal', class: 'btn btn-success'
+  - submit_copy = action_is_edit ? 'Update Proposal' : 'Create Proposal'
+  = f.submit submit_copy, class: 'btn btn-success'
 
 - content_for :script_head do
   :javascript

@@ -12,13 +12,6 @@ Desktop.ini
 ._*
 Thumbs.db
 
-# Files that might appear on external disks
-.Spotlight-V100
-.Trashes
-
-
-# Legacy from before Feb 2021
-/db/test.sqlite3-journal
 config/application.rb
 config/config.yml
 config/local_env.yml
@@ -39,7 +32,6 @@ capybara-*.html
 /vendor/bundle
 /log/*
 /tmp/*
-/db/*.sqlite3
 /public/system/*
 /coverage/
 /spec/tmp/*

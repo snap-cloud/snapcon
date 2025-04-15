@@ -29,13 +29,11 @@ class ProposalsController < ApplicationController
   def new
     @user = User.new
     @url = conference_program_proposals_path(@conference.short_title)
-    @languages = @program.languages_list
     @superevents = @program.super_events
   end
 
   def edit
     @url = conference_program_proposal_path(@conference.short_title, params[:id])
-    @languages = @program.languages_list
     @superevents = @program.events.where(superevent: true)
   end
 
