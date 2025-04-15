@@ -28,6 +28,9 @@ jobs:
     name: spec
     env:
       OSEM_DB_HOST: localhost
+      OSEM_DB_PASSWORD: mysecretpassword
+      OSEM_DB_USERNAME: postgres
+      OSEM_DB_NAME: osem_test
       RAILS_ENV: test
       CCTR: ./cc-test-reporter
       CCTR_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
