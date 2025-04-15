@@ -70,13 +70,13 @@ jobs:
       #   with:
       #     project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
       #     coverage-reports: coverage/coverage.xml
-      - name: Upload Capybara Failure Screenshots
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: capybara-screenshots
-          path: tmp/capybara/
-          retention-days: 7
+      # - name: Upload Capybara Failure Screenshots
+      #   uses: actions/upload-artifact@v4
+      #   if: always()
+      #   with:
+      #     name: capybara-screenshots
+      #     path: tmp/capybara/
+      #     retention-days: 7
       # - name: Publish code coverage
       #   run: |
       #     export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"

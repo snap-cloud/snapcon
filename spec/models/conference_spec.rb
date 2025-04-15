@@ -72,11 +72,11 @@ describe Conference do
   describe '#write_event_distribution_to_db' do
     it 'updates pending conferences' do
       create(:conference,
-             start_date: Date.today - 2.weeks,
-             end_date:   Date.today - 1.week)
+             start_date: Time.zone.today - 2.weeks,
+             end_date:   Time.zone.today - 1.week)
 
-      subject.start_date = Date.today + 1.week
-      subject.end_date = Date.today + 2.weeks
+      subject.start_date = Time.zone.today + 1.week
+      subject.end_date = Time.zone.today + 2.weeks
 
       result = {
         DateTime.now.end_of_week =>
@@ -97,8 +97,8 @@ describe Conference do
 
     it 'does not update past conferences' do
       old_conference = create(:conference,
-                              start_date: Date.today - 2.weeks,
-                              end_date:   Date.today - 1.week)
+                              start_date: Time.zone.today - 2.weeks,
+                              end_date:   Time.zone.today - 1.week)
 
       Conference.write_event_distribution_to_db
       old_conference.reload
@@ -107,12 +107,12 @@ describe Conference do
 
     it 'computes the correct result' do
       subject.email_settings = create(:email_settings)
-      subject.start_date = Date.today + 6.weeks
-      subject.end_date = Date.today + 7.weeks
+      subject.start_date = Time.zone.today + 6.weeks
+      subject.end_date = Time.zone.today + 7.weeks
       subject.save
-      create(:cfp, start_date: Date.today - 3.weeks, program: subject.program)
+      create(:cfp, start_date: Time.zone.today - 3.weeks, program: subject.program)
 
-      create(:event, program: subject.program, created_at: Date.today)
+      create(:event, program: subject.program, created_at: Time.zone.today)
       options = {}
       options[:send_mail] = 'false'
 
@@ -153,8 +153,8 @@ describe Conference do
 
     it 'does not overwrite old entries' do
       subject.email_settings = create(:email_settings)
-      subject.start_date = Date.today + 6.weeks
-      subject.end_date = Date.today + 7.weeks
+      subject.start_date = Time.zone.today + 6.weeks
+      subject.end_date = Time.zone.today + 7.weeks
       db_data = {
         DateTime.now.end_of_week - 2.weeks =>
                                               {
@@ -177,9 +177,9 @@ describe Conference do
       }
       subject.events_per_week = db_data
       subject.save
-      create(:cfp, start_date: Date.today - 3.weeks, program: subject.program)
+      create(:cfp, start_date: Time.zone.today - 3.weeks, program: subject.program)
 
-      create(:event, program: subject.program, created_at: Date.today)
+      create(:event, program: subject.program, created_at: Time.zone.today)
       unconfirmed = create(:event, program: subject.program)
       confirmed = create(:event, program: subject.program)
       options = {}
@@ -231,16 +231,16 @@ describe Conference do
     end
 
     it 'calculates the correct result with data from database' do
-      subject.start_date = Date.today + 6.weeks
-      subject.end_date = Date.today + 7.weeks
+      subject.start_date = Time.zone.today + 6.weeks
+      subject.end_date = Time.zone.today + 7.weeks
 
       # Inject last two weeks to database
       db_data = {
-        Date.today.end_of_week - 2.weeks => {
+        Time.zone.today.end_of_week - 2.weeks => {
           confirmed:   1,
           unconfirmed: 2
         },
-        Date.today.end_of_week - 1.week  => {
+        Time.zone.today.end_of_week - 1.week  => {
           confirmed:   3,
           unconfirmed: 4
         }
@@ -248,9 +248,9 @@ describe Conference do
       subject.events_per_week = db_data
 
       subject.save
-      create(:cfp, start_date: Date.today - 2.weeks, program: subject.program)
+      create(:cfp, start_date: Time.zone.today - 2.weeks, program: subject.program)
 
-      create(:event, program: subject.program, created_at: Date.today - 2.weeks)
+      create(:event, program: subject.program, created_at: Time.zone.today - 2.weeks)
 
       result = [{ name: 'Submitted', data: { 'Wk 1' => 1, 'Wk 2' => 1, 'Wk 3' => 1 } },
                 { name: 'Confirmed', data: { 'Wk 1' => 1, 'Wk 2' => 3, 'Wk 3' => 0 } }, { name: 'Unconfirmed', data: { 'Wk 1' => 2, 'Wk 2' => 4, 'Wk 3' => 0 } }]
@@ -258,10 +258,10 @@ describe Conference do
     end
 
     it 'calculates the correct result without data from database' do
-      subject.start_date = Date.today + 6.weeks
-      subject.end_date = Date.today + 7.weeks
+      subject.start_date = Time.zone.today + 6.weeks
+      subject.end_date = Time.zone.today + 7.weeks
       subject.save
-      create(:cfp, start_date: Date.today, program: subject.program)
+      create(:cfp, start_date: Time.zone.today, program: subject.program)
       create(:event, program: subject.program)
 
       result = [
@@ -274,12 +274,12 @@ describe Conference do
 
     it 'pads left correct' do
       subject.email_settings = create(:email_settings)
-      subject.start_date = Date.today + 6.weeks
-      subject.end_date = Date.today + 7.weeks
+      subject.start_date = Time.zone.today + 6.weeks
+      subject.end_date = Time.zone.today + 7.weeks
       subject.save
-      create(:cfp, start_date: Date.today - 3.weeks, program: subject.program)
+      create(:cfp, start_date: Time.zone.today - 3.weeks, program: subject.program)
 
-      create(:event, program: subject.program, created_at: Date.today)
+      create(:event, program: subject.program, created_at: Time.zone.today)
       unconfirmed = create(:event, program: subject.program)
       confirmed = create(:event, program: subject.program)
       options = {}
@@ -306,16 +306,16 @@ describe Conference do
     end
 
     it 'calculates correct with missing weeks' do
-      subject.start_date = Date.today + 6.weeks
-      subject.end_date = Date.today + 7.weeks
+      subject.start_date = Time.zone.today + 6.weeks
+      subject.end_date = Time.zone.today + 7.weeks
 
       # Inject last two weeks to database
       db_data = {
-        Date.today.end_of_week - 3.weeks => {
+        Time.zone.today.end_of_week - 3.weeks => {
           confirmed:   1,
           unconfirmed: 2
         },
-        Date.today.end_of_week - 1.week  => {
+        Time.zone.today.end_of_week - 1.week  => {
           confirmed:   3,
           unconfirmed: 4
         }
@@ -323,9 +323,9 @@ describe Conference do
       subject.events_per_week = db_data
 
       subject.save
-      create(:cfp, start_date: Date.today - 3.weeks, program: subject.program)
+      create(:cfp, start_date: Time.zone.today - 3.weeks, program: subject.program)
 
-      create(:event, program: subject.program, created_at: Date.today - 3.weeks)
+      create(:event, program: subject.program, created_at: Time.zone.today - 3.weeks)
 
       result = [
         {
@@ -1027,8 +1027,8 @@ describe Conference do
 
     it 'calculates correct for conference with registration, cfp, venue, rooms' do
       subject.registration_period = create(:registration_period,
-                                           start_date: Date.today,
-                                           end_date: Date.today + 14, conference: subject)
+                                           start_date: Time.zone.today,
+                                           end_date: Time.zone.today + 14, conference: subject)
       create(:cfp, program: subject.program)
       subject.venue = create(:venue, conference: subject)
       subject.venue.rooms = [create(:room, venue: subject.venue)]
@@ -1051,8 +1051,8 @@ describe Conference do
       subject.venue.rooms = [create(:room, venue: subject.venue)]
       subject.program.tracks = [create(:track)]
       subject.registration_period = create(:registration_period,
-                                           start_date: Date.today,
-                                           end_date: Date.today + 14, conference: subject)
+                                           start_date: Time.zone.today,
+                                           end_date: Time.zone.today + 14, conference: subject)
       create(:cfp, program: subject.program)
       subject.program.event_types = []
       subject.program.difficulty_levels = []
@@ -1073,8 +1073,8 @@ describe Conference do
       subject.program.tracks = [create(:track)]
       subject.program.event_types = [create(:event_type)]
       subject.registration_period = create(:registration_period,
-                                           start_date: Date.today,
-                                           end_date: Date.today + 14, conference: subject)
+                                           start_date: Time.zone.today,
+                                           end_date: Time.zone.today + 14, conference: subject)
       create(:cfp, program: subject.program)
       subject.venue = create(:venue, conference: subject)
       subject.venue.rooms = [create(:room, venue: subject.venue)]
@@ -1097,8 +1097,8 @@ describe Conference do
       subject.program.event_types = [create(:event_type)]
       subject.program.difficulty_levels = [create(:difficulty_level)]
       subject.registration_period = create(:registration_period,
-                                           start_date: Date.today,
-                                           end_date: Date.today + 14, conference: subject)
+                                           start_date: Time.zone.today,
+                                           end_date: Time.zone.today + 14, conference: subject)
       create(:cfp, program: subject.program)
       subject.venue = create(:venue, conference: subject)
       subject.venue.rooms = [create(:room, venue: subject.venue)]
@@ -1370,14 +1370,14 @@ describe Conference do
   describe '#pending?' do
     context 'is pending' do
       it '#pending? is true' do
-        subject.start_date = Date.today + 10
+        subject.start_date = Time.zone.today + 10
         expect(subject.pending?).to be true
       end
     end
 
     context 'is not pending' do
       it '#pending? is false' do
-        subject.start_date = Date.today - 10
+        subject.start_date = Time.zone.today - 10
         expect(subject.pending?).to be false
       end
     end
@@ -1392,10 +1392,10 @@ describe Conference do
 
     context 'open registration' do
       before do
-        subject.end_date = Date.today + 7
+        subject.end_date = Time.zone.today + 7
         enrollment = create(:registration_period,
-                            start_date: Date.today - 1,
-                            end_date: Date.today + 7, conference: subject)
+                            start_date: Time.zone.today - 1,
+                            end_date: Time.zone.today + 7, conference: subject)
         subject.registration_period = enrollment
       end
 

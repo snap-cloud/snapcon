@@ -391,7 +391,7 @@ class Conference < ApplicationRecord
   # * +false+ -> If the conference start date is in the past.
   # * +true+ -> If the conference start date is in the future.
   def pending?
-    start_date > Date.today
+    start_date > Time.zone.today
   end
 
   ##
@@ -686,7 +686,7 @@ class Conference < ApplicationRecord
   def self.write_event_distribution_to_db
     week = DateTime.now.end_of_week
 
-    Conference.where('end_date > ?', Date.today).find_each do |conference|
+    Conference.where('end_date > ?', Time.zone.today).find_each do |conference|
       result = {}
       Event.state_machine.states.each do |state|
         count = conference.program.events.where('state = ?', state.name).count
@@ -905,7 +905,7 @@ class Conference < ApplicationRecord
     end
 
     # Actual week
-    this_week = Date.today.end_of_week.strftime('%W').to_i
+    this_week = Time.zone.today.end_of_week.strftime('%W').to_i
     result['Confirmed'][this_week] = program.events.where('state = ?', :confirmed).count
     result['Unconfirmed'][this_week] = program.events.where('state = ?', :unconfirmed).count
     result['Submitted'] = program.events.select(:week).group(:week).count

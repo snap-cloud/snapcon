@@ -68,29 +68,29 @@ describe Program do
 
     describe 'voting_start_date_before_end_date' do
       it 'is valid, when voting_start_date is the same day as voting_end_date' do
-        expect(build(:program, voting_start_date: Date.today, voting_end_date: Date.today)).to be_valid
+        expect(build(:program, voting_start_date: Time.zone.today, voting_end_date: Time.zone.today)).to be_valid
       end
 
       it 'is valid, when voting_start_date is before voting_end_date' do
-        expect(build(:program, voting_start_date: Date.today, voting_end_date: Date.today + 1)).to be_valid
+        expect(build(:program, voting_start_date: Time.zone.today, voting_end_date: Time.zone.today + 1)).to be_valid
       end
 
       it 'is not valid, when voting_start_date is after voting_end_date' do
-        expect(build(:program, voting_start_date: Date.today, voting_end_date: Date.today - 1)).not_to be_valid
+        expect(build(:program, voting_start_date: Time.zone.today, voting_end_date: Time.zone.today - 1)).not_to be_valid
       end
     end
 
     describe 'voting_dates_exist' do
       it 'is valid, when both voting_start_date and voting_end_date are set' do
-        expect(build(:program, voting_start_date: Date.today, voting_end_date: Date.today + 1)).to be_valid
+        expect(build(:program, voting_start_date: Time.zone.today, voting_end_date: Time.zone.today + 1)).to be_valid
       end
 
       it 'is invalid, when voting_start_date is not set' do
-        expect(build(:program, voting_end_date: Date.today)).not_to be_valid
+        expect(build(:program, voting_end_date: Time.zone.today)).not_to be_valid
       end
 
       it 'is invalid, when voting_end_date is not set' do
-        expect(build(:program, voting_start_date: Date.today)).not_to be_valid
+        expect(build(:program, voting_start_date: Time.zone.today)).not_to be_valid
       end
     end
   end
@@ -113,12 +113,12 @@ describe Program do
       end
 
       it 'returns true if voting period is over' do
-        program.voting_end_date = Date.today - 1
+        program.voting_end_date = Time.zone.today - 1
         expect(program.show_voting?).to be true
       end
 
       it 'returns false if we are still in votig period' do
-        program.voting_end_date = Date.today + 1
+        program.voting_end_date = Time.zone.today + 1
         expect(program.show_voting?).to be false
       end
     end
@@ -140,10 +140,10 @@ describe Program do
     end
 
     context 'voting dates are set' do
-      it_behaves_like 'voting period', Date.today - 1, Date.today + 1, true
-      it_behaves_like 'voting period', Date.today - 1, 1.hour.from_now, true
-      it_behaves_like 'voting period', Date.today - 2, Date.today - 1, false
-      it_behaves_like 'voting period', Date.today - 1, 1.minute.ago, false
+      it_behaves_like 'voting period', Time.zone.today - 1, Time.zone.today + 1, true
+      it_behaves_like 'voting period', Time.zone.today - 1, 1.hour.from_now, true
+      it_behaves_like 'voting period', Time.zone.today - 2, Time.zone.today - 1, false
+      it_behaves_like 'voting period', Time.zone.today - 1, 1.minute.ago, false
     end
   end
 
