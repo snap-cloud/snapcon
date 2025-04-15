@@ -133,7 +133,7 @@ describe Event do
     describe '#before_end_of_conference' do
       context 'is invalid' do
         it 'when event is created after the conference end_date, and returns an error message' do
-          conference = create(:conference, start_date: Date.today - 1, end_date: Date.today - 1)
+          conference = create(:conference, start_date: Time.zone.today - 1, end_date: Time.zone.today - 1)
           new_event = build(:event, program: conference.program)
           expect(new_event.valid?).to be false
           expect(new_event.errors[:created_at]).to eq ["can't be after the conference end date!"]
@@ -142,7 +142,7 @@ describe Event do
 
       context 'is valid' do
         it 'when event is created before the conference end_date' do
-          conference = create(:conference, start_date: Date.today - 1, end_date: Date.today + 1)
+          conference = create(:conference, start_date: Time.zone.today - 1, end_date: Time.zone.today + 1)
           new_event = build(:event, program: conference.program)
           expect(new_event.valid?).to be true
         end

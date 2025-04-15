@@ -19,9 +19,9 @@ require 'spec_helper'
 describe Cfp do
   subject { create(:cfp) }
 
-  let!(:conference) { create(:conference, end_date: Date.today) }
+  let!(:conference) { create(:conference, end_date: Time.zone.today) }
   let!(:cfp) do
-    create(:cfp, cfp_type: 'events', start_date: Date.today - 2, end_date: Date.today - 1,
+    create(:cfp, cfp_type: 'events', start_date: Time.zone.today - 2, end_date: Time.zone.today - 1,
    program_id: conference.program.id)
   end
 
@@ -45,7 +45,7 @@ describe Cfp do
 
   describe '.for_tracks' do
     it 'returns the cfp for tracks when it exists' do
-      call_for_tracks = create(:cfp, cfp_type: 'tracks', program: conference.program, end_date: Date.today)
+      call_for_tracks = create(:cfp, cfp_type: 'tracks', program: conference.program, end_date: Time.zone.today)
       expect(conference.program.cfps.for_tracks).to eq call_for_tracks
     end
 
@@ -57,12 +57,12 @@ describe Cfp do
   describe '#before_end_of_conference' do
     describe 'fails to save cfp' do
       it 'when cfp end_date is after conference end_date' do
-        cfp.end_date = Date.today + 1
+        cfp.end_date = Time.zone.today + 1
         expect(cfp.valid?).to be false
       end
 
       it 'when cfp start_date is after conference end_date' do
-        cfp.start_date = Date.today + 1
+        cfp.start_date = Time.zone.today + 1
         expect(cfp.valid?).to be false
       end
     end
@@ -80,7 +80,7 @@ describe Cfp do
     end
 
     it 'fails when cfp start_date is after cfp end_date' do
-      cfp.start_date = Date.today
+      cfp.start_date = Time.zone.today
       expect(cfp.valid?).to be false
     end
   end
@@ -98,14 +98,14 @@ describe Cfp do
 
     describe 'returns true' do
       it 'when end_date changed' do
-        cfp.end_date = Date.today
+        cfp.end_date = Time.zone.today
         expect(cfp.start_date_changed?).to be false
         expect(cfp.end_date_changed?).to be true
         expect(cfp.notify_on_cfp_date_update?).to be true
       end
 
       it 'when start_date changed' do
-        cfp.start_date = Date.today
+        cfp.start_date = Time.zone.today
         expect(cfp.end_date_changed?).to be false
         expect(cfp.start_date_changed?).to be true
         expect(cfp.notify_on_cfp_date_update?).to be true
@@ -122,7 +122,7 @@ describe Cfp do
       it 'when send_on_cfp_dates_updates is not set' do
         conference.email_settings.send_on_cfp_dates_updated = false
         conference.email_settings.save!
-        cfp.end_date = Date.today
+        cfp.end_date = Time.zone.today
 
         expect(cfp.end_date_changed?).to be true
         expect(cfp.notify_on_cfp_date_update?).to be false
@@ -131,7 +131,7 @@ describe Cfp do
       it 'when cfp_dates_updates_subject is not set' do
         conference.email_settings.cfp_dates_updated_subject = ''
         conference.email_settings.save!
-        cfp.end_date = Date.today
+        cfp.end_date = Time.zone.today
 
         expect(cfp.end_date_changed?).to be true
         expect(cfp.notify_on_cfp_date_update?).to be false
@@ -140,7 +140,7 @@ describe Cfp do
       it 'when cfp_dates_updates_template is not set' do
         conference.email_settings.cfp_dates_updated_body = ''
         conference.email_settings.save!
-        cfp.end_date = Date.today
+        cfp.end_date = Time.zone.today
 
         expect(cfp.end_date_changed?).to be true
         expect(cfp.notify_on_cfp_date_update?).to be false

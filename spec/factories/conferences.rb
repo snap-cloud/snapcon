@@ -42,7 +42,7 @@ FactoryBot.define do
     title { Faker::Book.title }
     short_title { SecureRandom.urlsafe_base64(4) }
     timezone { Faker::Address.time_zone }
-    start_date { Date.today }
+    start_date { Time.zone.today }
     end_date { 6.days.from_now }
     start_hour { 9 }
     end_hour { 20 }

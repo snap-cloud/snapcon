@@ -150,7 +150,7 @@ hint: options[:hint]
   # ==== Returns
   # class hidden if conference is over
   def hidden_if_conference_over(conference)
-    'hidden' if Date.today > conference.end_date
+    'hidden' if Time.zone.today > conference.end_date
   end
 
   # TODO-SNAPCON: Replace this with a search for a conference logo.

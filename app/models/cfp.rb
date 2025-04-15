@@ -76,7 +76,7 @@ class Cfp < ApplicationRecord
     end_date.strftime('%W').to_i
   end
 
-  def remaining_days(date = Date.today)
+  def remaining_days(date = Time.zone.today)
     result = (end_date - date).to_i
     result > 0 ? result : 0
   end
