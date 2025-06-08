@@ -523,7 +523,13 @@ GEM
     responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rexml (3.3.9)
+      strscan
     rolify (6.0.1)
     rqrcode (2.2.0)
       chunky_png (~> 1.0)
