@@ -253,7 +253,6 @@ GEM
     fastimage (2.3.1)
     feature (1.4.0)
     ffi (1.17.0-arm64-darwin)
-    ffi (1.17.0-x86_64-linux-gnu)
     font-awesome-sass (6.5.2)
       sassc (~> 2.0)
     geckodriver-helper (0.24.0)
@@ -379,8 +378,6 @@ GEM
       rainbow (>= 3)
     nio4r (2.7.4)
     nokogiri (1.18.7-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.18.7-x86_64-linux-gnu)
       racc (~> 1.4)
     oauth2 (2.0.9)
       faraday (>= 0.17.3, < 3.0)
@@ -523,13 +520,7 @@ GEM
     responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
-    rest-client (2.1.0)
-      http-accept (>= 1.7.0, < 2.0)
-      http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 4.0)
-      netrc (~> 0.8)
-    rexml (3.3.9)
-      strscan
+    rexml (3.4.1)
     rolify (6.0.1)
     rqrcode (2.2.0)
       chunky_png (~> 1.0)
@@ -704,7 +695,6 @@ GEM
 
 PLATFORMS
   arm64-darwin-24
-  x86_64-linux
 
 DEPENDENCIES
   active_model_serializers
