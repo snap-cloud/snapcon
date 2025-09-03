@@ -118,8 +118,9 @@ build-iPhoneSimulator/
 
 # common db things from heroku
 latest.dump*
-.ackrc
-spec/support/deprecation_shitlist.json
-.vs/*
 
+.ackrc
+
+spec/support/deprecation_shitlist.json
 cc-test-reporter
+.vscode

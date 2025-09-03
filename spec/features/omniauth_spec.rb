@@ -19,8 +19,8 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link 'omniauth-google'
       end
-      page.find('#flash')
-      expect(flash).to eq('test-1@example.com signed in successfully with google')
+
+      within('#flash') { expect(page).to have_text('test-1@example.com signed in successfully with google') }
       expect(Openid.count).to eq(expected_count_openid)
       expect(User.count).to eq(expected_count_user)
     end
@@ -35,8 +35,8 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link 'omniauth-google'
       end
-      page.find('#flash')
-      expect(flash).to eq('test-participant-1@example.com signed in successfully with google')
+
+      within('#flash') { expect(page).to have_text('test-participant-1@example.com signed in successfully with google') }
       expect(Openid.count).to eq(expected_count_openid)
       expect(User.count).to eq(expected_count_user)
     end
@@ -48,8 +48,8 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link 'omniauth-google'
       end
-      page.find('#flash')
-      expect(flash).to eq('Could not authenticate you from Google because "Invalid credentials".')
+
+      within('#flash') { expect(page).to have_text('Could not authenticate you from Google because "Invalid credentials".') }
     end
 
     it 'adds openid to existing user' do
@@ -66,8 +66,8 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link 'omniauth-google'
       end
-      page.find('#flash')
-      expect(flash).to eq('test-participant-1@example.com signed in successfully with google')
+
+      within('#flash') { expect(page).to have_text('test-participant-1@example.com signed in successfully with google') }
       expect(Openid.count).to eq(expected_count_openid)
       expect(User.count).to eq(expected_count_user)
       expect(Openid.where(email: 'test-1@example.com').first.nil?).to be(false)
@@ -84,8 +84,8 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link 'omniauth-google'
       end
-      page.find('#flash')
-      expect(flash).to eq('test-participant-1@example.com signed in successfully with google')
+
+      within('#flash') { expect(page).to have_text('test-participant-1@example.com signed in successfully with google') }
       page.find('#flash .close').click
       expect(Openid.count).to eq(expected_count_openid)
       expect(User.count).to eq(expected_count_user)
@@ -99,8 +99,8 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link 'omniauth-google'
       end
-      page.find('#flash')
-      expect(flash).to eq('test-participant-1@example.com signed in successfully with google')
+
+      within('#flash') { expect(page).to have_text('test-participant-1@example.com signed in successfully with google') }
       page.find('#flash .close').click
       expect(Openid.count).to eq(expected_count_openid)
       expect(User.count).to eq(expected_count_user)
@@ -117,8 +117,7 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link 'omniauth-facebook'
       end
-      page.find('#flash')
-      expect(flash).to eq('test-participant-1@example.com signed in successfully with facebook')
+      within('#flash') { expect(page).to have_text('test-participant-1@example.com signed in successfully with facebook') }
       expect(Openid.count).to eq(expected_count_openid)
       expect(User.count).to eq(expected_count_user)
       last_openid = Openid.last
@@ -143,8 +142,8 @@ describe Openid, js: true, type: :feature do
       within('#openidlinks') do
         click_link "omniauth-#{provider}"
       end
-      page.find('#flash')
-      expect(flash).to eq("user-#{provider}@example.com signed in successfully with #{provider}")
+
+      within('#flash') { expect(page).to have_text("user-#{provider}@example.com signed in successfully with #{provider}") }
       expect(Openid.count).to eq(expected_count_openid)
       expect(User.count).to eq(expected_count_user)
     end

@@ -10,9 +10,9 @@ ruby file: '.tool-versions'
 
 # as web framework
 if next?
-  gem 'rails', '~> 7'
+  gem 'rails', '~> 8.0'
 else
-  gem 'rails', '~> 7.0'
+  gem 'rails', '~> 7.2'
 end
 
 # Use Puma as the app server
@@ -86,7 +86,7 @@ gem 'cocoon'
 # as the JavaScript library
 # TODO: Consolidate with the rails-assets below or move to webpack...
 gem 'jquery-rails'
-gem 'jquery-ui-rails', '~> 7.0.0'
+gem 'jquery-ui-rails'
 
 # for languages validation
 gem 'iso-639'

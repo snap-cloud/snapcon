@@ -49,7 +49,7 @@ describe Event do
       fill_in 'Title', with: 'Organizer-Created Proposal'
       fill_in 'Abstract', with: 'This proposal was created by an organizer.'
       click_button 'Create Proposal'
-      expect(flash).to eq('Event was successfully submitted.')
+      within('#flash') { expect(page).to have_text('Event was successfully submitted.') }
     end
 
     scenario 'rejects a proposal', feature: true, js: true do
@@ -118,9 +118,8 @@ describe Event do
       fill_in 'event_submission_text', with: 'Lorem ipsum submission'
 
       click_button 'Create Proposal'
-      page.find('#flash')
-      expect(page).to have_content 'Proposal was successfully submitted.'
 
+      within('#flash') { expect(page).to have_text('Proposal was successfully submitted.') }
       expect(Event.count).to eq(expected_count_event)
       expect(User.count).to eq(expected_count_user)
     end
@@ -157,8 +156,8 @@ describe Event do
       # expect(page).to have_selector '.in', text: 'Events are understandable for everyone without knowledge of the topic.'
 
       click_button 'Update Proposal'
-      page.find('#flash')
-      expect(page).to have_content 'Proposal was successfully updated.'
+
+      within('#flash') { expect(page).to have_text('Proposal was successfully updated.') }
     end
 
     it 'signed_in user submits a valid proposal', feature: true, js: true do
@@ -187,9 +186,8 @@ describe Event do
 
       click_button 'Create Proposal'
 
-      page.find('#flash')
-      expect(page).to have_content 'Proposal was successfully submitted.'
-      expect(page).to have_current_path(conference_program_proposals_path(conference.short_title), ignore_query: true)
+      within('#flash') { expect(page).to have_text('Proposal was successfully submitted.') }
+      expect(current_path).to eq(conference_program_proposals_path(conference.short_title))
       expect(Event.count).to eq(expected_count)
     end
 
@@ -213,10 +211,9 @@ describe Event do
       expect(page).to have_content 'Example Proposal'
       click_link "delete_proposal_#{@event.id}"
       page.accept_alert
-      page.find('#flash')
-      expect(page).to have_content 'Proposal was successfully withdrawn.'
-      @event.reload
-      expect(@event.state).to eq('withdrawn')
+
+      within('#flash') { expect(page).to have_text('Proposal was successfully withdrawn.') }
+      expect(@event.reload.state).to eq('withdrawn')
     end
 
     it 'can reset to text template', feature: true, js: true do

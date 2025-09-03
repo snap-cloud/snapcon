@@ -26,5 +26,13 @@ module Admin
         raise CanCan::AccessDenied.new('You are not authorized to access this page.')
       end
     end
+
+    def sign_in_path
+      if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
+        User.ichain_login_url
+      else
+        new_user_session_path
+      end
+    end
   end
 end

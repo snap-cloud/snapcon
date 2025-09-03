@@ -132,8 +132,6 @@ class TicketPurchase < ApplicationRecord
   end
 end
 
-private
-
 def set_week
   self.week = created_at.strftime('%W')
   save!

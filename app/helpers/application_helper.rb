@@ -130,14 +130,6 @@ hint: options[:hint]
     end
   end
 
-  def sign_in_path
-    if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
-      new_user_ichain_session_path
-    else
-      new_user_session_path
-    end
-  end
-
   def rescheduling_hint(affected_event_count)
     if affected_event_count > 0
       "You have #{affected_event_count} scheduled #{'event'.pluralize(affected_event_count)}. Changing the conference hours will unschedule those scheduled outside the conference hours."
