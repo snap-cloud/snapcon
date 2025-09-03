@@ -417,8 +417,9 @@ class Event < ApplicationRecord
     word_limit(:abstract)
   end
 
+  # Currently submission text limits are disabled and will not be checked
   def submission_limit
-    word_limit(:submission_text)
+    # word_limit(:submission_text)
   end
 
   # TODO: create a module to be mixed into model to perform same operation

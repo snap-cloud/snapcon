@@ -207,6 +207,9 @@ gem 'pagy', '<4.0'
 # to tame logs
 gem 'lograge'
 
+# TODO: where is this used? Needed to be added for Ruby >= 3.4
+gem 'base64'
+
 group :development do
   # to open mails
   gem 'letter_opener'

@@ -1,5 +1,5 @@
-%h2 Submission Type and Details
-%p Please select a submission type, then fill in the abstract and extended details.
+%h2 Submission Details
+%p Please select a submission type, then fill in the abstract and complete text details.
 
 .form-group
   = f.label :event_type_id, "Type"
@@ -11,7 +11,9 @@
     %strong Description
     = markdown(event_type.description)
 
-%h3 Submission Abstract
+%h3
+  Submission Abstract
+  %abbr{title: 'This field is required'} *
 %p
   The abstract is reviewed by the committee and included in the conference program.
   You are encouraged to include links or other references as appropriate.
@@ -29,7 +31,8 @@
   %span#abstract-maximum-word-count 250
   words.
 
-%h3 Extended Information
+%h3
+  Extended Submission Text
 %p This part of the submission is intended only for the conference committee.
 
 - program.event_types.each do |event_type|
@@ -56,3 +59,41 @@
   = f.label :submission_text, class: 'sr-only'
   = f.text_area :submission_text, rows: 10, data: { provide: 'markdown' }, class: 'form-control md-input'
   .help-block= markdown_hint
+
+- content_for :script_head do
+  :javascript
+    $(document).ready(function() {
+        $("#event_event_type_id").change(() => {
+            var $selected = $("#event_event_type_id option:selected")
+            var max = $selected.data("max-words");
+            var min = $selected.data("min-words");
+            // We replace the default text only if the current field is empty,
+            // or is set to the default text of another event type.
+            replace_defaut_submission_text(
+                '#event_submission_text',
+                $selected.data("template"),
+                $("#event_event_type_id option").toArray().map(e => $(e).data('template'))
+            );
+
+            $("#abstract-maximum-word-count").text(max);
+            $("#abstract-minimum-word-count").text(min);
+            word_count($('#event_abstract').get(0), 'abstract-count', max);
+        });
+        $('#event_event_type_id').trigger('change');
+
+        $("#event_abstract").on('change', function() {
+            var $selected = $("#event_event_type_id option:selected")
+            var max = $selected.data("max-words");
+            word_count(this, 'abstract-count', max);
+        });
+
+        $('.js-resetSubmissionText').click((e) => {
+          let $selected = $("#event_event_type_id option:selected");
+          let affirm = confirm($(e.target).data('confirm'));
+          if (affirm) {
+            let sub_text = $('#event_submission_text');
+            sub_text.val($selected.data('template'));
+            sub_text.trigger('change');
+          }
+        });
+    });
