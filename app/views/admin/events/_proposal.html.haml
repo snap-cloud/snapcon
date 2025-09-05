@@ -117,7 +117,7 @@
               - unless speaker.biography.blank?
                 %b
                   = speaker.name
-                = markdown(speaker.biography)
+                = restricted_markdown(speaker.biography)
         %tr
           %td
             %b Submitted on

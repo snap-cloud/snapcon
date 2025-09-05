@@ -16,4 +16,4 @@
   - if (defined?(show_bio) && show_bio) && speaker.biography?
     .row.speakerbio
       .col-md-12
-        = markdown(speaker.biography)
+        = restricted_markdown(speaker.biography, truncate: 500)

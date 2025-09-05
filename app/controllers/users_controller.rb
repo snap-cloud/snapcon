@@ -7,7 +7,18 @@ class UsersController < ApplicationController
 
   # GET /users/1
   def show
-    @events = @user.events.where(state: :confirmed)
+    all_user_events = @user.events
+    @events = all_user_events.where(state: :confirmed)
+
+    # Minimize info shown unless a user has submitted at least one proposal
+    # To be safe, we don't delete data, just hide it in a hacky way.
+    # Unset the email so a picture from gravatar won't be shown
+    unless all_user_events.any?
+      @user.picture = nil
+      @user.email = nil
+      @user.name = @user.name.length > 15 ? @user.name[0, 15] + '…' : @user.name
+      @user.biography = ''
+    end
   end
 
   # GET /users/1/edit

@@ -150,26 +150,50 @@ module FormatHelper
     schedule == @selected_schedule ? 'Yes' : 'No'
   end
 
+  # Used for user bios and high-spam places
+  def restricted_markdown(text, truncate: 2000)
+    return '' if text.nil?
+
+    markdown_options = {
+      autolink:                     false,
+      space_after_headers:          true,
+      no_intra_emphasis:            false, # SNAPCON
+      fenced_code_blocks:           true,
+      disable_indented_code_blocks: true
+    }
+    render_options = {
+      filter_html:     true,
+      no_images:       true,
+      no_links:        true,
+      escape_html:     false,
+      safe_links_only: true
+    }
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(render_options), markdown_options)
+    truncate(sanitize(markdown.render(text), remove_elements: %w[a]), length: truncate)
+  end
+
   def markdown(text, escape_html = true)
     return '' if text.nil?
 
     markdown_options = {
       autolink:                     true,
       space_after_headers:          true,
-      # no_intra_emphasis:            true, # SNAPCON
+      no_intra_emphasis:            false, # SNAPCON
       fenced_code_blocks:           true,
       disable_indented_code_blocks: true,
+      lax_spacing:                  true, # SNAPCON
       tables:                       true, # SNAPCON
       strikethrough:                true, # SNAPCON
       footnotes:                    true, # SNAPCON
-      superscript:                  true # SNAPCON
+      superscript:                  true  # SNAPCON
     }
     render_options = {
+      filter_html:     escape_html,
       escape_html:     escape_html,
       safe_links_only: true
     }
     markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(render_options), markdown_options)
-    rendered = sanitize(markdown.render(text))
+    rendered = markdown.render(text)
     escape_html ? sanitize(rendered, scrubber: Loofah::Scrubbers::NoFollow.new) : rendered.html_safe
   end
 
