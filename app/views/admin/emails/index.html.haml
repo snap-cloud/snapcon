@@ -33,7 +33,7 @@
                 'data-body-input-id' => 'email_settings_registration_body',
                 'data-body-text' => "Dear {name},\n\nThank you for Registering for the conference {conference}.\nPlease complete your registration by filling out your travel information.\n\nIf you are unable to attend please unregister online:\n{registrationlink}\n\nFeel free to contact us with any questions or concerns.\nWe look forward to see you there.\n\nBest wishes\n\n{conference} Team" } Load Template
                 %a.btn.btn-link.control_label.template_help_link{ 'data-name' => 'registration_help' } Show Help
-                = render partial: 'shared/help', locals: { id: 'registration_help', show_event_variables: false, show_ticket_variables: false, show_ticket_variables: false }
+                = render partial: 'shared/help', locals: { id: 'registration_help', show_event_variables: false, show_ticket_variables: false }
               #proposal.tab-pane{ role: 'tabpanel' }
                 .checkbox
                   %label
@@ -210,7 +210,7 @@
                 'data-body-input-id' => 'email_settings_booths_rejection_body',
                 'data-body-text' => "Dear {name},\n\nThank you for your #{t'booth'} request {booth_title} for the conference {conference}.\n\nUnfortunately, we are sorry to inform you that your request has been rejected.\n\n\nBest wishes\n\n{conference} Team" } Load Template
                 %a.btn.btn-link.control_label.template_help_link{ 'data-name' => 'booth_rejection_help' } Show help
-                =  render partial: 'shared/help', locals: {id: 'booth_rejection_help', show_event_variables: false, show_ticket_variables: false, show_ticket_variables: false}
+                =  render partial: 'shared/help', locals: {id: 'booth_rejection_help', show_event_variables: false, show_ticket_variables: false}
 
       .row
         .col-md-12

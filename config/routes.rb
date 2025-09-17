@@ -25,13 +25,6 @@ Osem::Application.routes.draw do
   end
 
   namespace :admin do
-    resources :organizations do
-      member do
-        get :admins
-        post :assign_org_admins
-        delete :unassign_org_admins
-      end
-    end
     resources :users do
       member do
         patch :toggle_confirmation
@@ -162,12 +155,8 @@ Osem::Application.routes.draw do
     get '/revision_history/:id/revert_object' => 'versions#revert_object', as: 'revision_history_revert_object'
     get '/revision_history/:id/revert_attribute' => 'versions#revert_attribute', as: 'revision_history_revert_attribute'
   end
-  resources :organizations, only: [:index] do
-    member do
-      get :conferences, 'code-of-conduct'
-    end
-  end
-  resources :conferences, only: %i[index show] do
+
+  resources :conferences, only: [:index, :show] do
     resources :booths do
       member do
         patch :withdraw
@@ -223,6 +212,10 @@ Osem::Application.routes.draw do
     end
     resources :rooms, only: [] do
       get :live_session
+    end
+
+    member do
+      get 'code-of-conduct'
     end
   end
 

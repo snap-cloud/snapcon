@@ -20,10 +20,9 @@ describe Role do
       click_link('Edit', href: edit_admin_conference_role_path(conference.short_title, role_name))
       fill_in 'role_description', with: 'changed description'
       click_button 'Update Role'
-      role.reload
-      page.find('#flash')
-      expect(flash).to eq("Successfully updated role #{role_name}")
-      expect(role.description).to eq('changed description')
+
+      within('#flash') { expect(page).to have_text("Successfully updated role #{role_name}") }
+      expect(role.reload.description).to eq('changed description')
     end
   end
 
@@ -60,6 +59,8 @@ describe Role do
 
       fill_in 'user_email', with: user_with_no_role.email
       click_button 'Add'
+      page.find('.alert')
+
       user_with_no_role.reload
 
       expect(user_with_no_role.has_cached_role?(role.name, conference)).to be true
@@ -101,52 +102,6 @@ describe Role do
       click_link('Users', href: admin_conference_role_path(conference.short_title, role_name))
 
       expect(first('td').has_css?('.bootstrap-switch-container')).to be false
-    end
-  end
-
-  context 'organization_admin' do
-    let!(:organization) { create(:organization) }
-    let!(:org_admin_role) { Role.find_by(name: 'organization_admin', resource: organization) }
-    let!(:organization_admin) { create(:user, role_ids: [org_admin_role.id]) }
-    let(:user_with_no_role) { create(:user) }
-    let!(:other_organization) { create(:organization) }
-
-    before do
-      sign_in organization_admin
-      visit admin_organizations_path
-    end
-
-    context 'for the organization it belongs to' do
-      it 'successfully adds role organization_admin' do
-        click_link('Admins', href: admins_admin_organization_path(organization.id))
-
-        fill_in 'user_email', with: user_with_no_role.email
-        click_button 'Add'
-        user_with_no_role.reload
-
-        expect(user_with_no_role.has_cached_role?('organization_admin', organization)).to be true
-      end
-
-      it 'successfully removes role organization_admin' do
-        click_link('Admins', href: admins_admin_organization_path(organization.id))
-
-        first('tbody > tr').find('.btn-danger').click
-        organization_admin.reload
-        expect(organization_admin.has_cached_role?('organization_admin', organization)).to be false
-      end
-    end
-
-    context 'for the organizations it does not belong to' do
-      it 'does not successfully add role organization_admin' do
-        click_link('Admins', href: admins_admin_organization_path(other_organization.id))
-
-        expect(page.has_field?('user_email')).to be false
-      end
-
-      it 'does not successfully removes role organization_admin' do
-        click_link('Admins', href: admins_admin_organization_path(other_organization.id))
-        expect(page.has_css?('.btn-danger')).to be false
-      end
     end
   end
 

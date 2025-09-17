@@ -30,11 +30,8 @@
 #  use_vpositions               :boolean          default(FALSE)
 #  created_at                   :datetime
 #  updated_at                   :datetime
-#  organization_id              :integer
 #
 # Indexes
-#
-#  index_conferences_on_organization_id  (organization_id)
 #
 
 FactoryBot.define do
@@ -49,8 +46,6 @@ FactoryBot.define do
     registration_limit { 0 }
     ticket_layout { 'portrait' }
     description { Faker::Hipster.paragraph }
-    organization
-    color { '#FFFFFF' }
     after(:create) do |conference|
       Role.where(name:     'organizer',
                  resource: conference).first_or_create(description: 'For the organizers of the conference (who shall have full access)')

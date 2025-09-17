@@ -30,7 +30,6 @@ class AdminAbility
       (conference.registration_open? && !conference.registration_limit_exceeded?) || conference.program.speakers.confirmed.include?(user)
     end
 
-    can %i[index admins], Organization
     can :index, Ticket
     can :manage, TicketPurchase, user_id: user.id
     can %i[new create], Payment, user_id: user.id
@@ -81,7 +80,6 @@ class AdminAbility
 
   # Abilities for signed in users with roles
   def signed_in_with_roles(user)
-    signed_in_with_organization_admin_role(user) if user.has_cached_role? :organization_admin, :any
     signed_in_with_organizer_role(user) if user.has_cached_role? :organizer, :any
     signed_in_with_cfp_role(user) if user.has_cached_role? :cfp, :any
     signed_in_with_info_desk_role(user) if user.has_cached_role? :info_desk, :any
@@ -90,26 +88,9 @@ class AdminAbility
     common_abilities_for_roles(user)
   end
 
-  def signed_in_with_organization_admin_role(user)
-    org_ids_for_organization_admin = Organization.with_role(:organization_admin, user).pluck(:id)
-    conf_ids_for_organization_admin = Conference.where(organization_id: org_ids_for_organization_admin).pluck(:id)
-
-    can %i[read update destroy assign_org_admins unassign_org_admins admins], Organization,
-        id: org_ids_for_organization_admin
-    can :new, Conference
-    can :manage, Conference, organization_id: org_ids_for_organization_admin
-    can %i[index show], Role
-
-    can %i[index revert_object revert_attribute], PaperTrail::Version,
-        organization_id: org_ids_for_organization_admin
-
-    signed_in_with_organizer_role(user, conf_ids_for_organization_admin)
-  end
-
-  def signed_in_with_organizer_role(user, conf_ids_for_organization_admin = [])
-    # ids of all the conferences for which the user has the 'organizer' role and
-    # conferences that belong to organizations for which user is 'organization_admin'
-    conf_ids = conf_ids_for_organization_admin.concat(Conference.with_role(:organizer, user).pluck(:id)).uniq
+  def signed_in_with_organizer_role(user)
+    # ids of all the conferences for which the user has the 'organizer' role
+    conf_ids = Conference.with_role(:organizer, user).pluck(:id)
     # ids of all the tracks that belong to the programs of the above conferences
     track_ids = Track.joins(:program).where('programs.conference_id IN (?)', conf_ids).pluck(:id)
 
@@ -160,7 +141,7 @@ class AdminAbility
 
     # Abilities for Role (Conference resource)
     can [:index, :show], Role do |role|
-      role.resource_type == 'Conference' || role.resource_type == 'Track'
+      ['Conference', 'Track'].include?(role.resource_type)
     end
 
     can [:edit, :update, :toggle_user], Role do |role|
@@ -200,7 +181,7 @@ class AdminAbility
 
     # Abilities for Role (Conference resource)
     can [:index, :show], Role do |role|
-      role.resource_type == 'Conference' || role.resource_type == 'Track'
+      ['Conference', 'Track'].include?(role.resource_type)
     end
     # Can add or remove users from role, when user has that same role for the conference
     # Eg. If you are member of the CfP team, you can add more CfP team members (add users to the role 'CfP')
@@ -238,7 +219,7 @@ class AdminAbility
 
     # Abilities for Role (Conference resource)
     can [:index, :show], Role do |role|
-      role.resource_type == 'Conference' || role.resource_type == 'Track'
+      ['Conference', 'Track'].include?(role.resource_type)
     end
     # Can add or remove users from role, when user has that same role for the conference
     # Eg. If you are member of the CfP team, you can add more CfP team members (add users to the role 'CfP')
@@ -263,7 +244,7 @@ class AdminAbility
 
     # Abilities for Role (Conference resource)
     can [:index, :show], Role do |role|
-      role.resource_type == 'Conference' || role.resource_type == 'Track'
+      ['Conference', 'Track'].include?(role.resource_type)
     end
     # Can add or remove users from role, when user has that same role for the conference
     # Eg. If you are member of the CfP team, you can add more CfP team members (add users to the role 'CfP')
@@ -299,7 +280,7 @@ class AdminAbility
 
     # Show Roles in the admin sidebar and allow authorization of the index action
     can [:index, :show], Role do |role|
-      role.resource_type == 'Conference' || role.resource_type == 'Track'
+      ['Conference', 'Track'].include?(role.resource_type)
     end
 
     can :toggle_user, Role do |role|

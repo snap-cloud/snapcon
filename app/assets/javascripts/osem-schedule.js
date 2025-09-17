@@ -49,7 +49,7 @@ var Schedule = {
       room_id: new_parent.attr("room_id"),
       start_time: (new_parent.attr("date") + ' ' + new_parent.attr("hour"))
     }};
-    if (event_schedule_id > 0) {
+    if(event_schedule_id){
       type = 'PUT';
       my_url += `/${event_schedule_id}`;
     } else {

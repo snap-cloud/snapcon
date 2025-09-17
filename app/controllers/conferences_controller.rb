@@ -49,19 +49,23 @@ class ConferencesController < ApplicationController
     end
     if @splashpage.include_program?
       @highlights = @conference.highlighted_events.includes(:speakers, :speaker_event_users)
+      load_happening_now if @splashpage.include_happening_now # SNAPCON
       if @splashpage.include_tracks?
         @tracks = @conference.confirmed_tracks.eager_load(
           :room
         ).order('tracks.name')
       end
-      @booths = @conference.confirmed_booths.order('title') if @splashpage.include_booths?
-      load_happening_now if @splashpage.include_happening_now
+      if splashpage.include_booths
+        @booths = @conference.confirmed_booths.order(:title)
+      end
     end
-    if @splashpage.include_registrations? || @splashpage.include_tickets?
-      @tickets = @conference.tickets.visible.order('price_cents')
+    if splashpage.include_registrations || splashpage.include_tickets
+      @tickets = @conference.tickets.visible.order(:price_cents) # SNAPCON
     end
-    @lodgings = @conference.lodgings.order('id') if @splashpage.include_lodgings?
-    if @splashpage.include_sponsors?
+    if splashpage.include_lodgings
+      @lodgings = @conference.lodgings.order(:name)
+    end
+    if splashpage.include_sponsors
       @sponsorship_levels = @conference.sponsorship_levels.eager_load(
         :sponsors
       ).order('sponsorship_levels.position ASC', 'sponsors.name')
@@ -114,6 +118,8 @@ class ConferencesController < ApplicationController
       end
     end
   end
+
+  def code_of_conduct; end
 
   private
 

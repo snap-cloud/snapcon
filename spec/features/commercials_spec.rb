@@ -25,9 +25,8 @@ describe Commercial do
     # Workaround to enable the 'Create Commercial' button
     page.execute_script("$('#commercial_submit_action').prop('disabled', false)")
 
-    click_button 'Create Materials'
-    page.find('#flash')
-    expect(flash).to eq('Materials were successfully created.')
+    click_button 'Create Commercial'
+    within('#flash') { expect(page).to have_text('Commercial was successfully created.') }
   end
 
   it 'updates a commercial of an event', feature: true, js: true do
@@ -42,9 +41,7 @@ describe Commercial do
       page.execute_script("$('#commercial_submit_action').prop('disabled', false)")
       click_button 'Update Materials'
     end
-
-    page.find('#flash')
-    expect(flash).to eq('Materials were successfully updated.')
+    within('#flash') { expect(page).to have_text('Commercial was successfully updated.') }
     expect(event.commercials.count).to eq(1)
     commercial.reload
     expect(commercial.url).to eq('https://www.youtube.com/watch?v=M9bq_alk-sw')
@@ -59,8 +56,7 @@ describe Commercial do
     page.accept_alert do
       click_link 'Delete'
     end
-    page.find('#flash')
-    expect(flash).to eq('Materials were successfully destroyed.')
+    within('#flash') { expect(page).to have_text('Commercial was successfully destroyed.') }
     expect(event.commercials.count).to eq(0)
   end
 end

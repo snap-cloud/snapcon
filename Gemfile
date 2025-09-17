@@ -10,9 +10,9 @@ ruby file: '.tool-versions'
 
 # as web framework
 if next?
-  gem 'rails', '~> 7'
+  gem 'rails', '~> 8.0'
 else
-  gem 'rails', '~> 7.0'
+  gem 'rails', '~> 7.2'
 end
 
 # Use Puma as the app server
@@ -22,7 +22,7 @@ gem 'puma'
 # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#responders
 gem 'responders', '~> 3.0'
 
-# as supported databases
+# as database
 gem 'pg'
 
 # for tracking data changes
@@ -86,13 +86,10 @@ gem 'cocoon'
 # as the JavaScript library
 # TODO: Consolidate with the rails-assets below or move to webpack...
 gem 'jquery-rails'
-gem 'jquery-ui-rails', '~> 7.0.0'
+gem 'jquery-ui-rails'
 
 # for languages validation
 gem 'iso-639'
-
-# as date picker
-gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
 # data tables
 gem 'ajax-datatables-rails'
@@ -232,9 +229,7 @@ group :test do
   gem 'cucumber-rails', require: false
   gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
   gem 'database_cleaner'
-  gem 'geckodriver-helper'
   gem 'rspec-rails'
-  gem 'webdrivers'
   # for measuring test coverage
   gem 'simplecov'
   gem 'simplecov-cobertura'
@@ -259,20 +254,17 @@ group :test do
 end
 
 group :development, :test, :linters do
-  # as debugger
-  gem 'byebug'
-
   # for static code analisys
   gem 'rubocop', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec_rails', require: false
+  gem 'rubocop-factory_bot', require: false
   gem 'rubocop-capybara', require: false
   gem 'rubocop-performance', require: false
   gem 'haml_lint'
-
+  # TODO-SNAPCON: Why is this in the current group?
   gem 'faraday-retry', require: false
-  # TODO-SNAPCON: figure out which haml-lint OR haml_lint is good.
-  gem 'haml-lint', require: false
 
   # Easily run linters
   gem 'pronto', require: false
@@ -281,8 +273,11 @@ group :development, :test, :linters do
 end
 
 group :development, :test do
-  # as development/test database
-  gem 'sqlite3'
+  # as capybara driver
+  gem 'webdrivers'
+  gem 'geckodriver-helper'
+  # as debugger
+  gem 'byebug'
   # to test new rails version
   gem 'next_rails'
 end

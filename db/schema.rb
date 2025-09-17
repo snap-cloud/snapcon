@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
+ActiveRecord::Schema[7.0].define(version: 2024_11_21_114727) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -63,7 +63,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.integer "user_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-    t.string "subject"
+    t.string "subject", limit: 255
     t.integer "parent_id"
     t.integer "lft"
     t.integer "rgt"
@@ -104,13 +104,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.string "picture"
     t.integer "start_hour", default: 9
     t.integer "end_hour", default: 20
-    t.integer "organization_id"
     t.integer "ticket_layout", default: 0
     t.string "custom_domain"
     t.integer "booth_limit", default: 0
     t.text "custom_css"
+    t.text "code_of_conduct"
     t.text "registered_attendees_message"
-    t.index ["organization_id"], name: "index_conferences_on_organization_id"
   end
 
   create_table "conferences_questions", id: false, force: :cascade do |t|
@@ -313,13 +312,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.integer "user_id"
     t.datetime "created_at", precision: nil
     t.datetime "updated_at", precision: nil
-  end
-
-  create_table "organizations", force: :cascade do |t|
-    t.string "name", null: false
-    t.text "description"
-    t.string "picture"
-    t.text "code_of_conduct"
   end
 
   create_table "payments", force: :cascade do |t|
@@ -547,8 +539,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.integer "payment_id"
     t.integer "week"
     t.float "amount_paid", default: 0.0
-    t.string "currency"
     t.integer "amount_paid_cents", default: 0
+    t.string "currency"
   end
 
   create_table "ticket_scannings", force: :cascade do |t|
@@ -628,7 +620,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.boolean "is_disabled", default: false
     t.string "picture"
     t.string "timezone"
-    t.string "default_currency"
+    t.text "default_currency"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -681,9 +673,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_01_042356) do
     t.text "object_changes"
     t.datetime "created_at", precision: nil
     t.integer "conference_id"
-    t.bigint "organization_id"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
-    t.index ["organization_id"], name: "index_versions_on_organization_id"
   end
 
   create_table "votes", force: :cascade do |t|

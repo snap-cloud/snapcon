@@ -34,7 +34,8 @@ describe Registration, feature: true, js: true do
   end
 
   context 'as a participant' do
-    before do
+
+    before(:each) do
       sign_in participant
     end
 
@@ -55,18 +56,29 @@ describe Registration, feature: true, js: true do
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         click_button 'Continue'
-        page.find('#flash')
-        expect(page).to have_current_path(new_conference_payment_path(conference.short_title), ignore_query: true)
-        expect(flash).to eq('Please pay here to get tickets.')
+
+        expect(current_path).to eq(new_conference_payment_path(conference.short_title))
+        within('#flash') { expect(page).to have_text('Please pay here to get tickets.') }
+
         purchase = TicketPurchase.where(user_id: participant.id, ticket_id: ticket.id).first
         expect(purchase.quantity).to eq(2)
 
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_stripe_purchase
-          # expect(current_path).to eq(conference_conference_registration_path(conference.short_title))
-          expect(page).to have_current_path(conference_physical_tickets_path(conference.short_title),
-                                            ignore_query: true)
-          expect(page).to have_content 'Your ticket is booked successfully.'
+        if ENV.fetch('STRIPE_PUBLISHABLE_KEY', nil)
+          find('.stripe-button-el').click
+
+          stripe_iframe = all('iframe[name=stripe_checkout_app]').last
+          sleep(5)
+          Capybara.within_frame stripe_iframe do
+            expect(page).to have_content('book your tickets')
+            page.execute_script(%{ $('input#card_number').val('4242424242424242'); })
+            page.execute_script(%{ $('input#cc-exp').val('08/22'); })
+            page.execute_script(%{ $('input#cc-csc').val('123'); })
+            page.execute_script(%{ $('#submitButton').click(); })
+            sleep(20)
+          end
+
+          expect(current_path).to eq(conference_conference_registration_path(conference.short_title))
+          expect(page.has_content?("2 #{ticket.title} Tickets for $ 10")).to be true
         end
       end
 
@@ -82,17 +94,28 @@ describe Registration, feature: true, js: true do
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         click_button 'Continue'
-        page.find('#flash')
-        expect(page).to have_current_path(new_conference_payment_path(conference.short_title), ignore_query: true)
-        expect(flash).to eq('Please pay here to get tickets.')
+
+        expect(current_path).to eq(new_conference_payment_path(conference.short_title))
+        within('#flash') { expect(page).to have_text('Please pay here to get tickets.') }
+
         purchase = TicketPurchase.where(user_id: participant.id, ticket_id: ticket.id).first
         expect(purchase.quantity).to eq(2)
 
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_failed_stripe_purchase
-          page.find('#flash')
-          expect(page).to have_current_path(conference_payments_path(conference.short_title), ignore_query: true)
-          expect(flash).to eq('Your card was declined. Please try again with correct credentials.')
+        if ENV.fetch('STRIPE_PUBLISHABLE_KEY', nil)
+          find('.stripe-button-el').click
+
+          stripe_iframe = all('iframe[name=stripe_checkout_app]').last
+          sleep(5)
+          Capybara.within_frame stripe_iframe do
+            expect(page).to have_content('book your tickets')
+            page.execute_script(%{ $('input#card_number').val('4000000000000341'); })
+            page.execute_script(%{ $('input#cc-exp').val('08/22'); })
+            page.execute_script(%{ $('input#cc-csc').val('123'); })
+            page.execute_script(%{ $('#submitButton').click(); })
+            sleep(20)
+          end
+          expect(current_path).to eq(conference_payments_path(conference.short_title))
+          within('#flash') { expect(page).to have_text('Your card was declined. Please try again with correct credentials.') }
         end
       end
 
@@ -190,61 +213,9 @@ describe Registration, feature: true, js: true do
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         click_button 'Continue'
-        page.find('#flash')
-        expect(flash).to eq('Oops, something went wrong with your purchase! You cannot buy more than one registration tickets.')
-        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
-      end
-    end
 
-    context 'currency conversion' do
-      before do
-        conference.currency_conversions << create(:currency_conversion, from_currency: 'USD', to_currency: 'EUR', rate: 0.89)
-        conference.currency_conversions << create(:currency_conversion, from_currency: 'USD', to_currency: 'GBP', rate: 0.75)
-        visit root_path
-        click_link 'Register'
-        click_button 'Register'
-      end
-
-      it 'selects a ticket in EUR', feature: true, js: true do
-        select 'EUR', from: 'currency_selector'
-        fill_in "tickets__#{third_registration_ticket.id}", with: '1'
-        expect(page).to have_content('17.80')
-      end
-
-      it 'switches between EUR and GBP', feature: true, js: true do
-        select 'EUR', from: 'currency_selector'
-        fill_in "tickets__#{third_registration_ticket.id}", with: '1'
-        expect(page).to have_content('17.80')
-        select 'GBP', from: 'currency_selector'
-        expect(page).to have_content('7.50')
-      end
-
-      it 'sees the correct currency symbol after changing the currency in tickets', feature: true, js: true do
-        select 'EUR', from: 'currency_selector'
-        expect(page).to have_content('€')
-        select 'GBP', from: 'currency_selector'
-        expect(page).to have_content('£')
-      end
-
-      it 'buys a ticket in EUR' do
-        select 'EUR', from: 'currency_selector'
-        fill_in "tickets__#{third_registration_ticket.id}", with: '1'
-        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
-        click_button 'Continue'
-        page.find('#flash')
-        expect(page).to have_current_path(new_conference_payment_path(conference.short_title), ignore_query: true)
-        expect(flash).to eq('Please pay here to get tickets.')
-        purchase = TicketPurchase.where(user_id: participant.id, ticket_id: third_registration_ticket.id).first
-        expect(purchase.quantity).to eq(1)
-        expect(purchase.currency).to eq('EUR')
-        expect(purchase.amount_paid).to eq(17.80)
-
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_stripe_purchase
-          expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
-                                            ignore_query: true)
-          expect(page).to have_content 'Your ticket is booked successfully.'
-        end
+        expect(current_path).to eq(conference_tickets_path(conference.short_title))
+        within('#flash') { expect(page).to have_text('Oops, something went wrong with your purchase! You cannot buy more than one registration tickets.') }
       end
     end
 
@@ -262,18 +233,29 @@ describe Registration, feature: true, js: true do
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         click_button 'Continue'
-        page.find('#flash')
-        expect(page).to have_current_path(new_conference_payment_path(conference.short_title), ignore_query: true)
-        expect(flash).to eq('Please pay here to get tickets.')
+
+        expect(current_path).to eq(new_conference_payment_path(conference.short_title))
+        within('#flash') { expect(page).to have_text('Please pay here to get tickets.') }
+
         purchase = TicketPurchase.where(user_id: participant.id, ticket_id: ticket.id).first
         expect(purchase.quantity).to eq(2)
 
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_stripe_purchase
-          # expect(current_path).to eq(conference_conference_registration_path(conference.short_title))
-          expect(page).to have_current_path(conference_physical_tickets_path(conference.short_title),
-                                            ignore_query: true)
-          expect(page).to have_content 'Your ticket is booked successfully.'
+        if ENV.fetch('STRIPE_PUBLISHABLE_KEY', nil)
+          find('.stripe-button-el').click
+
+          stripe_iframe = all('iframe[name=stripe_checkout_app]').last
+          sleep(5)
+          Capybara.within_frame stripe_iframe do
+            expect(page).to have_content('book your tickets')
+            page.execute_script(%{ $('input#card_number').val('4242424242424242'); })
+            page.execute_script(%{ $('input#cc-exp').val('08/22'); })
+            page.execute_script(%{ $('input#cc-csc').val('123'); })
+            page.execute_script(%{ $('#submitButton').click(); })
+            sleep(20)
+          end
+
+          expect(current_path).to eq(conference_conference_registration_path(conference.short_title))
+          expect(page.has_content?("2 #{ticket.title} Tickets for $ 10")).to be true
 
           click_button 'Unregister'
         end

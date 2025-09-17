@@ -9,9 +9,6 @@
 # bundle exec rake secret
 # SECRET_KEY_BASE=12345
 
-# The type of database to use (postgresql, mysql2, sqlite3)
-# OSEM_DB_ADAPTER=mysql2
-
 # The name of the host the database runs on
 # OSEM_DB_HOST=database
 
@@ -31,9 +28,6 @@
 # OSEM_MEMCACHED_SERVERS='cache-1.example.com,cache-2.example.com'
 # OSEM_MEMCACHED_USERNAME='root'
 # OSEM_MEMCACHED_PASSWORD='1234'
-
-# Set this if you want to deviate from our 'standard' ruby version
-# OSEM_RUBY_VERSION=3.1.2
 
 # What time is it?
 # OSEM_TIME_ZONE="UTC"
@@ -110,10 +104,6 @@
 
 # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
 # FORCE_SSL=true
-
-# Your skylight.io keys
-# SKYLIGHT_AUTHENTICATION=1234
-# SKYLIGHT_PUBLIC_DASHBOARD_URL='https://oss.skylight.io/app/applications/xxxxxxxxxxxx'
 
 # How should browser tests be performed?
 # For headless Chrome (default):

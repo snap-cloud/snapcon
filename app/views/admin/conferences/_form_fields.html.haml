@@ -1,9 +1,5 @@
 %h4 Basic Information
 %hr
-- if f.object.new_record?
-  .form-group
-    = f.label :organization, "Organization"
-    = f.select :organization_id, Organization.accessible_by(current_ability, :update).pluck(:name, :id)
 .form-group
   = f.label :title
   %abbr{title: 'This field is required'} *
@@ -36,8 +32,32 @@
     - if f.object.picture?
       = image_tag f.object.picture.thumb.url
     = f.file_field :picture
-    %span.help-block
+    .help-block
       This will be shown in the navigation bar and emails.
+  .form-group
+    = f.text_area :code_of_conduct, rows: 10, data: { provide: 'markdown' }, class: 'form-control'
+    .help-block
+      Rules governing behavior and dispute resolution...
+      = markdown_hint
+  = f.select :ticket_layout, Conference.ticket_layouts.keys, {}, class: 'form-control'
+  %span.help-block
+    Layout type for tickets of the conference.
+
+%h4
+  Scheduling
+%hr
+= f.time_zone_select :timezone, nil, { default: 'UTC' }, { class: 'form-control' }
+%span.help-block
+  Please select in what time zone your conference will take place.
+.form-group
+  = f.label :start_date, "Start Date"
+  %abbr{title: 'This field is required'} *
+  = f.date_field :start_date, required: true, class: 'form-control'
+.form-group
+  = f.label :end_date, "End Date"
+  %abbr{title: 'This field is required'} *
+  = f.date_field :end_date, required: true, class: 'form-control'
+- unless f.object.new_record? # We are showing more fields on the edit form
   .form-group
     = f.label :custom_css, "Custom CSS"
     = f.text_area :custom_css, rows: 10, class: 'form-control', html: { style: 'font-family: monospace' }

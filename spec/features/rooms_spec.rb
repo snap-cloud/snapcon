@@ -23,9 +23,8 @@ describe Room do
       fill_in 'room_size', with: '100'
 
       click_button 'Create Room'
-      page.find('#flash')
-      # Validations
-      expect(flash).to eq('Room successfully created.')
+
+      within('#flash') { expect(page).to have_text('Room successfully created.') }
       within('table#rooms') do
         expect(page.has_content?('Auditorium')).to be true
         expect(page.assert_selector('tr', count: 2)).to be true
@@ -43,9 +42,8 @@ describe Room do
       fill_in 'room_size', with: '100'
 
       click_button 'Update Room'
-      page.find('#flash')
-      # Validations
-      expect(flash).to eq('Room successfully updated.')
+
+      within('#flash') { expect(page).to have_text('Room successfully updated.') }
       within('table#rooms') do
         expect(page.has_content?('Auditorium')).to be true
         expect(page.assert_selector('tr', count: 2)).to be true

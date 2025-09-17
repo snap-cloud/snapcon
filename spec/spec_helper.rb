@@ -35,7 +35,7 @@ include ERB::Util
 # run twice. It is recommended that you do not name files matching this glob to
 # end with _spec.rb. You can configure this pattern with with the --pattern
 # option on the command line or in ~/.rspec, .rspec or `.rspec-local`.
-Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
 
 RSpec.configure do |config|
   # ## Mock Framework
@@ -93,7 +93,6 @@ RSpec.configure do |config|
   config.include OmniauthMacros
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include LoginMacros, type: :feature
-  config.include Flash, type: :feature
   config.include Sidebar, type: :view
   config.include Devise::Test::ControllerHelpers, type: :view
 
@@ -120,6 +119,12 @@ RSpec.configure do |config|
   # Expect configured host instead of `test.host` (see https://stackoverflow.com/q/15414847)
   config.before(:each, type: :controller) do
     @request.host = Rails.application.routes.default_url_options[:host]
+  end
+
+  config.before(:each) do
+    Rails.logger.debug '======================================================================'
+    Rails.logger.debug { "\n\n\n\t\t#{RSpec.current_example.metadata[:full_description]}\n\n\n" }
+    Rails.logger.debug '======================================================================'
   end
 
   # use the config to use

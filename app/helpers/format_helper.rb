@@ -97,14 +97,6 @@ module FormatHelper
     bool ? 'todolist-ok' : 'todolist-missing'
   end
 
-  def word_pluralize(count, singular, plural = nil)
-    if count.positive? && count < 2
-      singular
-    else
-      plural || singular.pluralize
-    end
-  end
-
   # Returns black or white deppending on what of them contrast more with the
   # given color. Useful to print text in a coloured background.
   # hexcolor is a hex color of 7 characters, being the first one '#'.

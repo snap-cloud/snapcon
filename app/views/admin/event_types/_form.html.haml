@@ -20,10 +20,12 @@
     = f.check_box :enable_public_submission, class: 'switch-checkbox'
   .form-group
     = f.label :minimum_abstract_length
+    (words)
     %abbr{title: 'This field is required'} *
     = f.number_field :minimum_abstract_length, size: 3, required: true, class: 'form-control'
   .form-group
     = f.label :maximum_abstract_length
+    (words)
     %abbr{title: 'This field is required'} *
     = f.number_field :maximum_abstract_length, size: 3, required: true, class: 'form-control'
   .form-group
