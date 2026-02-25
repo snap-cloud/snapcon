@@ -1,10 +1,9 @@
 ## Spring 2026 CS169L
 
-## Local Fork
 [![Specs](https://github.com/cs169/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/spec.yml)
 [![codecov](https://codecov.io/gh/cs169/snapcon/graph/badge.svg?token=kw6lq9NkSW)](https://codecov.io/gh/cs169/snapcon)
 
-## Golden Repo
+## Snap!Con Production Repository
 [![Specs](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml)
 [![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b7b0d559a03bf218663a/maintainability)](https://codeclimate.com/github/snap-cloud/snapcon/maintainability)
