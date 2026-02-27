@@ -1,14 +1,16 @@
-## Srping 2024 CS169L
+# [Snap!Con](https://snapcon.org) Base Repository
 [![Specs](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml)
-[![Pivotal Tracker](doc/pivotal_tracker_logo.png)](https://www.pivotaltracker.com/n/projects/2487653)
-[![Maintainability](https://api.codeclimate.com/v1/badges/b7b0d559a03bf218663a/maintainability)](https://codeclimate.com/github/snap-cloud/snapcon/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/b7b0d559a03bf218663a/test_coverage)](https://codeclimate.com/github/snap-cloud/snapcon/test_coverage)
+[![Maintainability](https://qlty.sh/gh/snap-cloud/projects/snapcon/maintainability.svg)](https://qlty.sh/gh/snap-cloud/projects/snapcon)
+[![Code Coverage](https://qlty.sh/gh/snap-cloud/projects/snapcon/coverage.svg)](https://qlty.sh/gh/snap-cloud/projects/snapcon)
 [![codecov](https://codecov.io/gh/snap-cloud/snapcon/branch/snapcon/graph/badge.svg?token=EViEwaSjH4)](https://codecov.io/gh/snap-cloud/snapcon)
 <a href="https://heroku.com/deploy?template=https://github.com/snap-cloud/snapcon/tree/v1.0">
   <img src="https://www.herokucdn.com/deploy/button.svg" height="20px" alt="Deploy">
 </a>
 
-# [Snap!Con](https://snapcon.org)
+## Spring 2026 CS169L Repository
+[![Specs](https://github.com/cs169/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/cs169/snapcon/actions/workflows/spec.yml)
+[![codecov](https://codecov.io/gh/cs169/snapcon/graph/badge.svg?token=kw6lq9NkSW)](https://codecov.io/gh/cs169/snapcon)
+
 Forked From:
 ## Open Source Event Manager - [osem.io](https://osem.io)
 
