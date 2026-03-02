@@ -14,7 +14,7 @@ class SchedulesController < ApplicationController
     event_schedules = @program.event_schedule_for_fullcalendar
 
     unless event_schedules
-      redirect_to events_conference_schedule_path(@conference.short_title)
+      redirect_to events_conference_schedule_path(@conference.short_title, favourites: @favourites.presence)
       return
     end
 
@@ -80,6 +80,10 @@ class SchedulesController < ApplicationController
     event_ids = @events_schedules.map { |es| es.event.id }
     favourited_events(event_ids)
 
+    if current_user && @favourites
+      @events_schedules.keep_if { |es| es.event.planned_for_user?(current_user) }
+    end
+
     respond_to do |format|
       format.html
       format.json { render json: @events_schedules.to_json(root: false, include: :event) }
@@ -87,7 +91,7 @@ class SchedulesController < ApplicationController
   end
 
   def vertical_schedule
-    redirect_to conference_schedule_path(@conference)
+    redirect_to conference_schedule_path(@conference, favourites: @favourites.presence)
   end
 
   def app
