@@ -565,6 +565,42 @@ class Conference < ApplicationRecord
   end
 
   ##
+  # Gross ticket sales per enabled currency (no refunds/fees).
+  # Returns a hash suitable for donut chart: { "USD" => { value:, color: }, ... }
+  # Only includes currencies that are enabled for the conference (base + conversions).
+  def ticket_sales_by_currency_distribution
+    result = {}
+    enabled_currencies = enabled_currencies_list
+    return result if enabled_currencies.blank?
+
+    # Gross sales: sum(amount_paid_cents * quantity) per currency, paid only
+    sums = ticket_purchases.paid.group(:currency).sum('amount_paid_cents * quantity')
+    enabled_currencies.each do |currency|
+      total_cents = sums[currency].to_i
+      next if total_cents.zero?
+
+      amount = Money.new(total_cents, currency)
+      label = "#{currency} (#{ApplicationController.helpers.humanized_money(amount)})"
+      # Use amount in major units (e.g. 50 for $50) so chart tooltip shows readable numbers, not cents
+      result[label] = {
+        'value' => (total_cents / 100.0).round(2),
+        'color' => "\##{Digest::MD5.hexdigest(currency)[0..5]}"
+      }
+    end
+    result
+  end
+
+  ##
+  # List of currencies enabled for this conference (base + conversion targets).
+  def enabled_currencies_list
+    base = tickets.first&.price_currency
+    return [] if base.blank?
+
+    targets = currency_conversions.pluck(:to_currency).uniq
+    [base] | targets
+  end
+
+  ##
   # Calculates the overall program minutes
   #
   # ====Returns
