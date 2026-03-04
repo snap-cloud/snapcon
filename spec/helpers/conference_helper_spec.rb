@@ -79,6 +79,60 @@ describe ConferenceHelper, type: :helper do
     end
   end
 
+  describe '#icalendar_proposals' do
+    let!(:conference_with_venue) do
+      create(:conference, venue: create(:venue))
+    end
+    let!(:contact_for_venue_conf) { create(:contact, conference: conference_with_venue) }
+    context 'when an event has a nil event_type' do
+      it 'skips the event and adds no VEVENT to the calendar' do
+        cal = Icalendar::Calendar.new
+        event = create(:event, program: conference_with_venue.program)
+        # Bypass validation to simulate legacy 2021 data with nil event_type
+        event.update_column(:event_type_id, nil)
+        event.reload
+
+        icalendar_proposals(cal, [event], conference_with_venue)
+        expect(cal.events).to be_empty
+      end
+    end
+
+    context 'when an event has a nil time (no event_schedule for selected schedule)' do
+      it 'skips the event and adds no VEVENT to the calendar' do
+        cal = Icalendar::Calendar.new
+        event = create(:event, program: conference_with_venue.program)
+        # Event exists but has no event_schedule, so event.time returns nil
+
+        icalendar_proposals(cal, [event], conference_with_venue)
+        expect(cal.events).to be_empty
+      end
+    end
+
+    context 'when an event has a nil room and conference has a venue' do
+      it 'still adds the event but builds location without room name' do
+        cal = Icalendar::Calendar.new
+        event = create(:event_scheduled, program: conference_with_venue.program)
+        # Nullify the room on the event_schedule to simulate missing room data
+        event.event_schedules.each { |es| es.update_column(:room_id, nil) }
+
+        icalendar_proposals(cal, [event], conference_with_venue)
+        expect(cal.events.size).to eq(1)
+        expect(cal.events.first.summary).to eq(event.title)
+      end
+    end
+
+    context 'with valid events' do
+      it 'adds the event to the calendar with correct summary' do
+        cal = Icalendar::Calendar.new
+        event = create(:event_scheduled, program: conference_with_venue.program)
+
+        icalendar_proposals(cal, [event], conference_with_venue)
+        expect(cal.events.size).to eq(1)
+        expect(cal.events.first.summary).to eq(event.title)
+      end
+    end
+  end
+
   describe '#get_happening_next_events_schedules' do
     let!(:conference2) do
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
