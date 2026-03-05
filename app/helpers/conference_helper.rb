@@ -35,6 +35,9 @@ module ConferenceHelper
   # adds events to icalendar for proposals in a conference
   def icalendar_proposals(calendar, proposals, conference)
     proposals.each do |proposal|
+      # some 2021 events have nil time or event_type
+      next if proposal.time.nil? || proposal.event_type.nil?
+
       calendar.event do |e|
         e.dtstart = proposal.time
         e.dtend = proposal.time + (proposal.event_type.length * 60)
@@ -49,7 +52,7 @@ module ConferenceHelper
         if v
           e.geo = v.latitude, v.longitude if v.latitude && v.longitude
           location = ''
-          location += "#{proposal.room.name} - " if proposal.room.name
+          location += "#{proposal.room.name} - " if proposal.room&.name
           location += " - #{v.street}, " if v.street
           location += "#{v.postalcode} #{v.city}, " if v.postalcode && v.city
           location += "#{v.country_name}, " if v.country_name
