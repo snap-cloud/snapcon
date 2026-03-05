@@ -10,6 +10,7 @@
 #  currency           :string
 #  last4              :string
 #  status             :integer          default("unpaid"), not null
+#  stripe_session_id  :string
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  conference_id      :integer          not null

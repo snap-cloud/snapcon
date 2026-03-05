@@ -10,13 +10,13 @@
 #  currency           :string
 #  last4              :string
 #  status             :integer          default("unpaid"), not null
+#  stripe_session_id  :string
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  conference_id      :integer          not null
 #  user_id            :integer          not null
 #
 require 'spec_helper'
-require 'stripe_mock'
 
 describe Payment do
   context 'new payment' do
@@ -46,117 +46,212 @@ describe Payment do
     end
   end
 
-  describe '#purchase' do
+  describe '#create_checkout_session' do
     let!(:user) { create(:user) }
-    let(:payment) do
-      create(:payment, user: user, conference: conference, stripe_customer_token: stripe_helper.generate_card_token,
-     stripe_customer_email: user.email)
-    end
     let!(:conference) { create(:conference) }
     let!(:ticket_1) { create(:ticket, price: 10, price_currency: 'USD', conference: conference) }
     let!(:tickets) { { ticket_1.id.to_s => '2' } }
-    let(:stripe_helper) { StripeMock.create_test_helper }
-
-    before { StripeMock.start }
-
-    after { StripeMock.stop }
+    let(:payment) { create(:payment, user: user, conference: conference) }
 
     before { TicketPurchase.purchase(conference, user, tickets, ticket_1.price_currency) }
 
-    context 'when the payment is successful' do
-      before { payment.purchase }
+    context 'when the session is created successfully' do
+      let(:mock_session) do
+        double('Stripe::Checkout::Session',
+               id:  'cs_test_session_123',
+               url: 'https://checkout.stripe.com/pay/cs_test_session_123')
+      end
+
+      before do
+        allow(Stripe::Checkout::Session).to receive(:create).and_return(mock_session)
+        allow(payment).to receive(:update).and_return(true)
+      end
+
+      it 'creates a Stripe Checkout Session with line items' do
+        result = payment.create_checkout_session(
+          success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
+          cancel_url:  'https://example.com/cancel'
+        )
+
+        expect(result).to eq(mock_session)
+        expect(Stripe::Checkout::Session).to have_received(:create).with(
+          hash_including(
+            payment_method_types: ['card'],
+            mode:                 'payment',
+            customer_email:       user.email,
+            line_items:           a_collection_containing_exactly(
+              hash_including(
+                price_data: hash_including(
+                  currency:     'usd',
+                  product_data: hash_including(name: ticket_1.title),
+                  unit_amount:  1000
+                ),
+                quantity:   2
+              )
+            )
+          )
+        )
+      end
+
+      it 'stores the session id on the payment' do
+        payment.create_checkout_session(
+          success_url: 'https://example.com/success',
+          cancel_url:  'https://example.com/cancel'
+        )
+
+        expect(payment).to have_received(:update).with(stripe_session_id: 'cs_test_session_123')
+      end
+    end
+
+    context 'when Stripe raises an error' do
+      before do
+        allow(Stripe::Checkout::Session).to receive(:create)
+          .and_raise(Stripe::StripeError.new('Test error'))
+      end
+
+      it 'returns nil' do
+        result = payment.create_checkout_session(
+          success_url: 'https://example.com/success',
+          cancel_url:  'https://example.com/cancel'
+        )
+
+        expect(result).to be_nil
+      end
+
+      it 'sets status to failure' do
+        payment.create_checkout_session(
+          success_url: 'https://example.com/success',
+          cancel_url:  'https://example.com/cancel'
+        )
+
+        expect(payment.status).to eq('failure')
+      end
+
+      it 'adds error message' do
+        payment.create_checkout_session(
+          success_url: 'https://example.com/success',
+          cancel_url:  'https://example.com/cancel'
+        )
+
+        expect(payment.errors[:base]).to include('Test error')
+      end
+    end
+  end
+
+  describe '#complete_checkout' do
+    let!(:user) { create(:user) }
+    let!(:conference) { create(:conference) }
+    let(:payment) { create(:payment, user: user, conference: conference, stripe_session_id: 'cs_test_123') }
+
+    context 'when the payment was successful' do
+      let(:mock_charge) do
+        double('Stripe::Charge',
+               payment_method_details: double(card: double(last4: '4242')))
+      end
+
+      let(:mock_session) do
+        double('Stripe::Checkout::Session',
+               payment_status: 'paid',
+               amount_total:   2000,
+               payment_intent: double(id: 'pi_test_123', latest_charge: mock_charge))
+      end
+
+      before do
+        allow(Stripe::Checkout::Session).to receive(:retrieve).and_return(mock_session)
+      end
+
+      it 'sets status to success' do
+        payment.complete_checkout
+        expect(payment.status).to eq('success')
+      end
 
       it 'assigns amount' do
+        payment.complete_checkout
         expect(payment.amount).to eq(2000)
       end
 
       it 'assigns last4' do
+        payment.complete_checkout
         expect(payment.last4).to eq('4242')
       end
 
-      it "assigns 'success' to payment.status" do
-        expect(payment.status).to eq('success')
-      end
-
-      it 'assigns authorization_code' do
-        expect(payment.authorization_code).to eq('test_ch_3')
-      end
-
-      it 'assigns currency' do
-        expect(payment.currency).to eq('USD')
+      it 'assigns authorization_code from payment intent' do
+        payment.complete_checkout
+        expect(payment.authorization_code).to eq('pi_test_123')
       end
     end
 
-    context 'if the payment is not successful' do
-      let(:payment) do
-        create(:payment, user: user, conference: conference, stripe_customer_token: 'bogus_card_token',
-        stripe_customer_email: user.email)
+    context 'when the payment was not successful' do
+      let(:mock_session) do
+        double('Stripe::Checkout::Session',
+               payment_status: 'unpaid',
+               payment_intent: nil)
       end
 
-      before { payment.purchase }
-
-      context 'when the card is invalid' do
-        it 'returns false' do
-          payment_result = payment.purchase
-          expect(payment_result).to be false
-        end
-
-        it 'assigns "failure" to payment.status' do
-          expect(payment.status).to eq('failure')
-        end
-
-        it 'adds errors' do
-          expect(payment.errors[:base].count).to eq(1)
-        end
+      before do
+        allow(Stripe::Checkout::Session).to receive(:retrieve).and_return(mock_session)
       end
 
-      context 'when the connection to Stripe drops' do
-        it 'raises exception' do
-          StripeMock.prepare_error(Stripe::APIConnectionError.new)
-          expect { payment.purchase }.not_to raise_error
-        end
+      it 'sets status to failure' do
+        payment.complete_checkout
+        expect(payment.status).to eq('failure')
       end
 
-      context 'when there is a Stripe API Error' do
-        it 'raises exception' do
-          StripeMock.prepare_error(Stripe::APIError.new)
-          expect { payment.purchase }.not_to raise_error
-        end
+      it 'returns false' do
+        expect(payment.complete_checkout).to be false
+      end
+    end
+
+    context 'when Stripe raises an error' do
+      before do
+        allow(Stripe::Checkout::Session).to receive(:retrieve)
+          .and_raise(Stripe::APIConnectionError.new('Connection failed'))
       end
 
-      context 'when there is authentication error' do
-        it 'raises exception' do
-          StripeMock.prepare_error(Stripe::AuthenticationError.new)
-          expect { payment.purchase }.not_to raise_error
-        end
+      it 'does not raise' do
+        expect { payment.complete_checkout }.not_to raise_error
       end
 
-      context 'when there is a card error' do
-        it 'raises exception' do
-          StripeMock.prepare_card_error(:card_declined)
-          expect { payment.purchase }.not_to raise_error
-        end
+      it 'sets status to failure' do
+        payment.complete_checkout
+        expect(payment.status).to eq('failure')
       end
 
-      context 'when the request to Stripe is invalid' do
-        it 'raises exception' do
-          StripeMock.prepare_error(Stripe::InvalidRequestError.new('Your request is invalid.', {}, code: 402))
-          expect { payment.purchase }.not_to raise_error
-        end
+      it 'returns false' do
+        expect(payment.complete_checkout).to be false
+      end
+    end
+
+    context 'when there is an authentication error' do
+      before do
+        allow(Stripe::Checkout::Session).to receive(:retrieve)
+          .and_raise(Stripe::AuthenticationError.new('Invalid API key'))
       end
 
-      context 'when Stripe rate limit exceeds' do
-        it 'raises exception' do
-          StripeMock.prepare_error(Stripe::RateLimitError.new)
-          expect { payment.purchase }.not_to raise_error
-        end
+      it 'does not raise' do
+        expect { payment.complete_checkout }.not_to raise_error
+      end
+    end
+
+    context 'when there is an invalid request' do
+      before do
+        allow(Stripe::Checkout::Session).to receive(:retrieve)
+          .and_raise(Stripe::InvalidRequestError.new('Invalid session', {}))
       end
 
-      context 'when the currency is invalid' do
-        it 'returns false' do
-          payment.currency = 'ABC'
-          expect(payment.purchase).to be false
-        end
+      it 'does not raise' do
+        expect { payment.complete_checkout }.not_to raise_error
+      end
+    end
+
+    context 'when Stripe rate limit exceeds' do
+      before do
+        allow(Stripe::Checkout::Session).to receive(:retrieve)
+          .and_raise(Stripe::RateLimitError.new('Rate limit exceeded'))
+      end
+
+      it 'does not raise' do
+        expect { payment.complete_checkout }.not_to raise_error
       end
     end
   end
