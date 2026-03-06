@@ -195,11 +195,11 @@ module Admin
       duplicator = EventDuplicator.new(@event, current_user)
       duplicated_events = duplicator.duplicate(count)
 
-      if duplicated_events.length == 1
-        flash[:notice] = "Event '#{duplicated_events.first.title}' duplicated successfully."
-      else
-        flash[:notice] = "#{duplicated_events.length} copies of '#{@event.title}' created successfully."
-      end
+      flash[:notice] = if duplicated_events.length == 1
+                         "Event '#{duplicated_events.first.title}' duplicated successfully."
+                       else
+                         "#{duplicated_events.length} copies of '#{@event.title}' created successfully."
+                       end
       redirect_to admin_conference_program_events_path(@conference.short_title)
     rescue StandardError => e
       flash[:alert] = "Could not duplicate event: #{e.message}"

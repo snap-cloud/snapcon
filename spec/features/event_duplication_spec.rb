@@ -9,7 +9,7 @@ describe 'Event Duplication Feature', :js do
   let(:event_type) { create(:event_type, program: program) }
   let(:track) { create(:track, state: 'confirmed', program: program) }
   let(:difficulty_level) { create(:difficulty_level, program: program) }
-  
+
   let(:speaker) { create(:user) }
   let(:venue) { conference.venue || create(:venue, conference: conference) }
   let(:room) { create(:room, venue: venue) }
@@ -160,6 +160,8 @@ describe 'Event Duplication Feature', :js do
   end
 
   describe 'deleting and updating duplicates' do
+    let(:duplicates) { Event.where(title: original_event.title).where.not(id: original_event.id).order(:created_at) }
+
     before do
       visit admin_conference_program_event_path(conference.short_title, original_event)
       click_button('Duplicate')
@@ -176,12 +178,11 @@ describe 'Event Duplication Feature', :js do
           sleep 0.1
         end
       end
-      @duplicates = Event.where(title: original_event.title).where.not(id: original_event.id).order(:created_at)
     end
 
     it 'deleting a duplicate does not affect others' do
-      dup_id = @duplicates.first.id
-      dup_title = @duplicates.first.title
+      dup_id = duplicates.first.id
+      dup_title = duplicates.first.title
 
       visit admin_conference_program_event_path(conference.short_title, Event.find(dup_id))
       accept_confirm do
@@ -194,19 +195,19 @@ describe 'Event Duplication Feature', :js do
     end
 
     it 'can individually edit duplicates' do
-      duplicate = @duplicates.first
+      duplicate = duplicates.first
       new_subtitle = 'Updated Subtitle'
-      
+
       visit edit_admin_conference_program_event_path(conference.short_title, duplicate)
       fill_in('event_subtitle', with: new_subtitle)
       click_button('Update Proposal')
-      
+
       # Wait for the update to complete and page to redirect
       expect(page).to have_content(original_event.title)
-      
+
       duplicate.reload
       expect(duplicate.subtitle).to eq new_subtitle
-      
+
       # Original should not be affected
       original_event.reload
       expect(original_event.subtitle).not_to eq new_subtitle
@@ -218,25 +219,26 @@ describe 'Event Duplication Feature', :js do
       expect do
         3.times do |i|
           visit admin_conference_program_event_path(conference.short_title, original_event)
-          current_count = Event.where(title: original_event.title).count          
+          current_count = Event.where(title: original_event.title).count
           click_button('Duplicate')
           fill_in('count', with: 2)
           click_button('Create Copies')
-          
-          # Wait for duplicates to be queryable (database transaction visibility)          
+
+          # Wait for duplicates to be queryable (database transaction visibility)
           Timeout.timeout(5) do
             loop do
               new_count = Event.where(title: original_event.title).count
               break if new_count >= current_count + 2
+
               sleep 0.1
             end
           end
-          
+
           new_events = Event.where(title: original_event.title).where.not(id: original_event.id).last(2)
           new_events.each do |event|
             event.update(max_attendees: 100 + i)
           end
-          
+
           new_events.first&.destroy
         end
       end.not_to raise_error
