@@ -1,4 +1,4 @@
-# [Snap!Con](https://snapcon.org) Base Repository
+## [Snap!Con](https://snapcon.org) Production Repository
 [![Specs](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml/badge.svg)](https://github.com/snap-cloud/snapcon/actions/workflows/spec.yml)
 [![Maintainability](https://qlty.sh/gh/snap-cloud/projects/snapcon/maintainability.svg)](https://qlty.sh/gh/snap-cloud/projects/snapcon)
 [![Code Coverage](https://qlty.sh/gh/snap-cloud/projects/snapcon/coverage.svg)](https://qlty.sh/gh/snap-cloud/projects/snapcon)

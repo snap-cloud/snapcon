@@ -37,6 +37,8 @@ gem 'cloudinary'
 
 # for internationalizing
 gem 'rails-i18n'
+# Windows: timezone data (required on Windows for tzinfo)
+gem 'tzinfo-data', platforms: %i[ windows jruby ]
 
 # as authentification framework
 gem 'devise'

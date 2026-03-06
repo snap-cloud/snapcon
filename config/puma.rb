@@ -24,15 +24,16 @@ pidfile ENV.fetch('PIDFILE') { 'tmp/pids/server.pid' }
 # Workers do not work on JRuby or Windows (both of which do not support
 # processes).
 #
-workers ENV.fetch('WEB_CONCURRENCY') { 2 }
+worker_count = ENV.fetch('WEB_CONCURRENCY') { Gem.win_platform? ? 0 : 2 }.to_i
+workers worker_count
 # Set a 10 minute timeout in development for debugging.
-worker_timeout 60 * 60 * 10 if ENV.fetch('RAILS_ENV') == 'development'
+worker_timeout 60 * 60 * 10 if ENV.fetch('RAILS_ENV') == 'development' && worker_count > 0
 
 # Use the `preload_app!` method when specifying a `workers` number.
 # This directive tells Puma to first boot the application and load code
 # before forking the application. This takes advantage of Copy On Write
 # process behavior so workers use less memory.
-preload_app!
+preload_app! if worker_count > 0
 
 lowlevel_error_handler do |ex, env|
   Sentry.capture_exception(
