@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Admin::EventsController, type: :controller do
-  let(:conference) { create(:conference, short_title: 'osem2023') }
+  let(:conference) { create(:conference, short_title: 'snapcon2026') }
   let(:program) { conference.program }
   let(:user) { create(:admin) }
   let(:event_type) { create(:event_type, program: program) }
@@ -196,36 +196,37 @@ describe Admin::EventsController, type: :controller do
       end
 
       it 'does not copy registrations' do
-        create(:registration)
-        original_event.registrations << Registration.first
+        registration = create(:registration)
+        original_event.registrations << registration
+        
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        new_duplicate = Event.where(id: Event.last.id).first
+        new_duplicate = Event.last
         expect(new_duplicate.registrations).to be_empty
       end
 
       it 'does not copy votes' do
-        create(:vote, event: original_event)
+        create(:vote, event: original_event, user: create(:user))
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        new_duplicate = Event.where(id: Event.last.id).first
+        new_duplicate = Event.last
         expect(new_duplicate.votes).to be_empty
       end
 
       it 'does not copy comments' do
-        create(:comment, commentable: original_event)
+        create(:comment, commentable: original_event, user: create(:user))
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        new_duplicate = Event.where(id: Event.last.id).first
+        new_duplicate = Event.last
         expect(new_duplicate.comment_threads).to be_empty
       end
     end
@@ -314,13 +315,13 @@ describe Admin::EventsController, type: :controller do
       end
 
       it 'updating original does not affect duplicates' do
+        original_title = original_event.title
         new_title = 'Updated Original Title'
         original_event.update(title: new_title)
         
         @duplicates.each do |duplicate|
           duplicate.reload
-          expect(duplicate.title).not_to eq new_title
-          expect(duplicate.title).to eq original_event.title.sub(new_title, original_event.title)
+          expect(duplicate.title).to eq original_title
         end
       end
 
@@ -336,11 +337,12 @@ describe Admin::EventsController, type: :controller do
       it 'updating a duplicate does not affect other duplicates' do
         first_duplicate = @duplicates.first
         second_duplicate = @duplicates.last
+        original_max = original_event.max_attendees
         
         first_duplicate.update(max_attendees: 100)
         
         second_duplicate.reload
-        expect(second_duplicate.max_attendees).to eq original_event.max_attendees
+        expect(second_duplicate.max_attendees).to eq original_max
       end
     end
   end
