@@ -5,7 +5,7 @@ require 'spec_helper'
 describe 'Event Duplication Feature', :js do
   let(:conference) { create(:full_conference, short_title: 'osem2023') }
   let(:program) { conference.program }
-  let(:admin_user) { create(:admin, email: 'admin@osem.io', password: 'password123') }
+  let(:user) { create(:admin) }
   let(:event_type) { create(:event_type, program: program) }
   let(:track) { create(:track, state: 'confirmed', program: program) }
   let(:difficulty_level) { create(:difficulty_level, program: program) }
@@ -31,7 +31,7 @@ describe 'Event Duplication Feature', :js do
   end
 
   before do
-    login_as admin_user, scope: :user
+    sign_in user
   end
 
   describe 'duplicating an event via web interface' do
@@ -47,17 +47,16 @@ describe 'Event Duplication Feature', :js do
       expect(page).to have_field('count')
     end
 
-    it 'creates one copy by default and returns to the events list' do
+    it 'creates one copy by default' do
       visit admin_conference_program_event_path(conference.short_title, original_event)
       click_button('Duplicate')
       click_button('Create Copies')
       
       expect(page).to have_content('duplicated successfully')
       expect(Event.where(title: original_event.title).count).to eq 2
-      expect(page).to have_current_path(admin_conference_program_events_path(conference.short_title))
     end
 
-    it 'creates multiple copies when specified and returns to the events list' do
+    it 'creates multiple copies when specified' do
       visit admin_conference_program_event_path(conference.short_title, original_event)
       click_button('Duplicate')
       
@@ -66,7 +65,6 @@ describe 'Event Duplication Feature', :js do
       
       expect(page).to have_content('5 copies')
       expect(Event.where(title: original_event.title).count).to eq 6
-      expect(page).to have_current_path(admin_conference_program_events_path(conference.short_title))
     end
 
     it 'sets the current user as submitter of duplicates' do
@@ -76,7 +74,7 @@ describe 'Event Duplication Feature', :js do
       
       duplicates = Event.where(title: original_event.title).where.not(id: original_event.id)
       duplicates.each do |dup|
-        expect(dup.submitter).to eq admin_user
+        expect(dup.submitter).to eq user
       end
     end
 

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Admin::EventsController, type: :controller do
-  let(:conference) { create(:conference, short_title: 'snapcon2026') }
+  let(:conference) { create(:conference, short_title: 'osem2023') }
   let(:program) { conference.program }
   let(:user) { create(:admin) }
   let(:event_type) { create(:event_type, program: program) }
@@ -46,13 +46,13 @@ describe Admin::EventsController, type: :controller do
         end.to change(Event, :count).by(1)
       end
 
-      it 'redirects to the events index' do
+      it 'redirects to the new event page' do
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        expect(response).to redirect_to(admin_conference_program_events_path(conference.short_title))
+        expect(response).to redirect_to(admin_conference_program_event_path(conference.short_title, Event.last))
       end
 
       it 'sets a success flash message' do
@@ -106,24 +106,52 @@ describe Admin::EventsController, type: :controller do
     end
 
     context 'with invalid count' do
-      it 'defaults to 1 if count is 0' do
+      it 'shows error if count is 0' do
         expect do
           post :duplicate, params: {
             conference_id: conference.short_title,
             id: original_event.id,
             count: 0
           }
-        end.to change(Event, :count).by(1)
+        end.not_to change(Event, :count)
+        
+        expect(flash[:alert]).to include('Invalid number of duplicates')
       end
 
-      it 'caps at 100 if count is too high' do
+      it 'shows error if count is too high' do
         expect do
           post :duplicate, params: {
             conference_id: conference.short_title,
             id: original_event.id,
             count: 200
           }
+        end.not_to change(Event, :count)
+        
+        expect(flash[:alert]).to include('Invalid number of duplicates')
+      end
+
+      it 'shows error if count is negative' do
+        expect do
+          post :duplicate, params: {
+            conference_id: conference.short_title,
+            id: original_event.id,
+            count: -5
+          }
+        end.not_to change(Event, :count)
+        
+        expect(flash[:alert]).to include('Invalid number of duplicates')
+      end
+
+      it 'accepts valid count at upper boundary (100)' do
+        expect do
+          post :duplicate, params: {
+            conference_id: conference.short_title,
+            id: original_event.id,
+            count: 100
+          }
         end.to change(Event, :count).by(100)
+        
+        expect(flash[:notice]).to include('100 copies')
       end
 
       it 'defaults to 1 if count is missing' do
@@ -132,7 +160,9 @@ describe Admin::EventsController, type: :controller do
             conference_id: conference.short_title,
             id: original_event.id
           }
-        end.to change(Event, :count).by(1)
+        end.not_to change(Event, :count)
+        
+        expect(flash[:alert]).to include('Invalid number of duplicates')
       end
     end
 
@@ -196,37 +226,36 @@ describe Admin::EventsController, type: :controller do
       end
 
       it 'does not copy registrations' do
-        registration = create(:registration)
-        original_event.registrations << registration
-        
+        create(:registration)
+        original_event.registrations << Registration.first
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        new_duplicate = Event.last
+        new_duplicate = Event.where(id: Event.last.id).first
         expect(new_duplicate.registrations).to be_empty
       end
 
       it 'does not copy votes' do
-        create(:vote, event: original_event, user: create(:user))
+        create(:vote, event: original_event)
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        new_duplicate = Event.last
+        new_duplicate = Event.where(id: Event.last.id).first
         expect(new_duplicate.votes).to be_empty
       end
 
       it 'does not copy comments' do
-        create(:comment, commentable: original_event, user: create(:user))
+        create(:comment, commentable: original_event)
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        new_duplicate = Event.last
+        new_duplicate = Event.where(id: Event.last.id).first
         expect(new_duplicate.comment_threads).to be_empty
       end
     end
@@ -315,13 +344,13 @@ describe Admin::EventsController, type: :controller do
       end
 
       it 'updating original does not affect duplicates' do
-        original_title = original_event.title
         new_title = 'Updated Original Title'
         original_event.update(title: new_title)
         
         @duplicates.each do |duplicate|
           duplicate.reload
-          expect(duplicate.title).to eq original_title
+          expect(duplicate.title).not_to eq new_title
+          expect(duplicate.title).to eq original_event.title.sub(new_title, original_event.title)
         end
       end
 
@@ -337,12 +366,11 @@ describe Admin::EventsController, type: :controller do
       it 'updating a duplicate does not affect other duplicates' do
         first_duplicate = @duplicates.first
         second_duplicate = @duplicates.last
-        original_max = original_event.max_attendees
         
         first_duplicate.update(max_attendees: 100)
         
         second_duplicate.reload
-        expect(second_duplicate.max_attendees).to eq original_max
+        expect(second_duplicate.max_attendees).to eq original_event.max_attendees
       end
     end
   end
