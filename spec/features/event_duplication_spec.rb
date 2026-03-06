@@ -31,7 +31,7 @@ describe 'Event Duplication Feature', :js do
   end
 
   before do
-    sign_in user
+    login_as user, scope: :user
   end
 
   describe 'duplicating an event via web interface' do
@@ -83,7 +83,15 @@ describe 'Event Duplication Feature', :js do
       click_button('Duplicate')
       click_button('Create Copies')
       
-      duplicate = Event.where(title: original_event.title).where.not(id: original_event.id).first
+      # Wait for duplicate to be queryable (database transaction visibility)
+      duplicate = nil
+      Timeout.timeout(5) do
+        loop do
+          duplicate = Event.where(title: original_event.title).where.not(id: original_event.id).first
+          break if duplicate
+          sleep 0.1
+        end
+      end
       
       expect(duplicate.abstract).to eq original_event.abstract
       expect(duplicate.description).to eq original_event.description
@@ -123,12 +131,13 @@ describe 'Event Duplication Feature', :js do
     it 'deleting a duplicate does not affect others' do
       duplicate_id = @duplicates.first.id
       duplicate_title = @duplicates.first.title
-      
+
       visit admin_conference_program_event_path(conference.short_title, Event.find(duplicate_id))
       accept_confirm do
-        find("a[href='#{admin_conference_program_event_path(conference.short_title, duplicate_id)}'][data-method='delete']").click
+        click_link('Delete', match: :first)
       end
-      
+
+      expect(page).to have_content('Event successfully deleted.')
       expect(Event.exists?(duplicate_id)).to be false
       expect(Event.where(title: duplicate_title).count).to eq 3 # original + 2 remaining duplicates
     end
@@ -159,13 +168,21 @@ describe 'Event Duplication Feature', :js do
           fill_in('count', with: 2)
           click_button('Create Copies')
           
-          new_events = Event.where(title: original_event.title).where.not(id: original_event.id).last(2)
+          # Wait for duplicates to be queryable (database transaction visibility)
+          new_events = nil
+          Timeout.timeout(5) do
+            loop do
+              new_events = Event.where(title: original_event.title).where.not(id: original_event.id).last(2)
+              break if new_events&.all?(&:present?)
+              sleep 0.1
+            end
+          end
           
           new_events.each do |event|
             event.update(max_attendees: 100 + i)
           end
           
-          new_events.first.destroy
+          new_events.first&.destroy
         end
       end.not_to raise_error
     end
