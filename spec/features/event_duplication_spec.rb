@@ -47,16 +47,17 @@ describe 'Event Duplication Feature', :js do
       expect(page).to have_field('count')
     end
 
-    it 'creates one copy by default' do
+    it 'creates one copy by default and returns to the events list' do
       visit admin_conference_program_event_path(conference.short_title, original_event)
       click_button('Duplicate')
       click_button('Create Copies')
       
       expect(page).to have_content('duplicated successfully')
       expect(Event.where(title: original_event.title).count).to eq 2
+      expect(page).to have_current_path(admin_conference_program_events_path(conference.short_title))
     end
 
-    it 'creates multiple copies when specified' do
+    it 'creates multiple copies when specified and returns to the events list' do
       visit admin_conference_program_event_path(conference.short_title, original_event)
       click_button('Duplicate')
       
@@ -65,6 +66,7 @@ describe 'Event Duplication Feature', :js do
       
       expect(page).to have_content('5 copies')
       expect(Event.where(title: original_event.title).count).to eq 6
+      expect(page).to have_current_path(admin_conference_program_events_path(conference.short_title))
     end
 
     it 'sets the current user as submitter of duplicates' do

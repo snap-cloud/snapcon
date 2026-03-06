@@ -189,13 +189,15 @@ module Admin
       duplicator = EventDuplicator.new(@event, current_user)
       duplicated_events = duplicator.duplicate(count)
       
+      # always send user back to the events list after duplicating,
+      # even when only a single copy was made.  this matches the
+      # behaviour expected by the UX and simplifies the controller.
       if duplicated_events.length == 1
         flash[:notice] = "Event '#{duplicated_events.first.title}' duplicated successfully."
-        redirect_to admin_conference_program_event_path(@conference.short_title, duplicated_events.first)
       else
         flash[:notice] = "#{duplicated_events.length} copies of '#{@event.title}' created successfully."
-        redirect_to admin_conference_program_events_path(@conference.short_title)
       end
+      redirect_to admin_conference_program_events_path(@conference.short_title)
     rescue StandardError => e
       flash[:alert] = "Could not duplicate event: #{e.message}"
       redirect_to admin_conference_program_event_path(@conference.short_title, @event)

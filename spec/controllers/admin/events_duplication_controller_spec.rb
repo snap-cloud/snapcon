@@ -46,13 +46,13 @@ describe Admin::EventsController, type: :controller do
         end.to change(Event, :count).by(1)
       end
 
-      it 'redirects to the new event page' do
+      it 'redirects to the events index' do
         post :duplicate, params: {
           conference_id: conference.short_title,
           id: original_event.id,
           count: 1
         }
-        expect(response).to redirect_to(admin_conference_program_event_path(conference.short_title, Event.last))
+        expect(response).to redirect_to(admin_conference_program_events_path(conference.short_title))
       end
 
       it 'sets a success flash message' do
