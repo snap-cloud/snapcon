@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe 'Event Duplication Feature', :js do
-  let(:conference) { create(:full_conference, short_title: 'osem2023') }
+  let(:conference) { create(:full_conference, short_title: 'snapcon2026') }
   let(:program) { conference.program }
   let(:user) { create(:admin) }
   let(:event_type) { create(:event_type, program: program) }
@@ -126,7 +126,7 @@ describe 'Event Duplication Feature', :js do
       
       visit admin_conference_program_event_path(conference.short_title, Event.find(duplicate_id))
       accept_confirm do
-        click_link('Delete')
+        find("a[href='#{admin_conference_program_event_path(conference.short_title, duplicate_id)}'][data-method='delete']").click
       end
       
       expect(Event.exists?(duplicate_id)).to be false
@@ -139,7 +139,7 @@ describe 'Event Duplication Feature', :js do
       
       visit edit_admin_conference_program_event_path(conference.short_title, duplicate)
       fill_in('event_subtitle', with: new_subtitle)
-      click_button('Update Event')
+      click_button('Update Proposal')
       
       duplicate.reload
       expect(duplicate.subtitle).to eq new_subtitle
