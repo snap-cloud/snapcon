@@ -176,12 +176,12 @@ describe 'Event Duplication Feature', :js do
           sleep 0.1
         end
       end
+      @duplicates = Event.where(title: original_event.title).where.not(id: original_event.id).order(:created_at)
     end
 
     it 'deleting a duplicate does not affect others' do
-      duplicates = Event.where(title: original_event.title).where.not(id: original_event.id).order(:created_at)
-      dup_id = duplicates.first.id
-      dup_title = duplicates.first.title
+      dup_id = @duplicates.first.id
+      dup_title = @duplicates.first.title
 
       visit admin_conference_program_event_path(conference.short_title, Event.find(dup_id))
       accept_confirm do
@@ -215,12 +215,12 @@ describe 'Event Duplication Feature', :js do
       expect do
         3.times do |i|
           visit admin_conference_program_event_path(conference.short_title, original_event)
+          current_count = Event.where(title: original_event.title).count          
           click_button('Duplicate')
           fill_in('count', with: 2)
           click_button('Create Copies')
           
-          # Wait for duplicates to be queryable (database transaction visibility)
-          current_count = Event.where(title: original_event.title).count
+          # Wait for duplicates to be queryable (database transaction visibility)          
           Timeout.timeout(5) do
             loop do
               new_count = Event.where(title: original_event.title).count

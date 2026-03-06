@@ -9,9 +9,9 @@ describe Admin::EventsController do
   # an Event with ID 1, an Event with ID 2, and a commercial with ID 1, for event with ID 2
   # (the numbers could be different as long as there is this matching of IDs).
   # We implemented or own where method to solve this and those ids are for testing this case.
-  let!(:event_without_commercial) { create(:event, program: conference.program) }
-  let!(:event_with_commercial) { create(:event, program: conference.program) }
-  let!(:event_commercial) { create(:event_commercial, commercialable: event_with_commercial, url: 'https://www.youtube.com/watch?v=M9bq_alk-sw') }
+  let!(:event_without_commercial) { create(:event, id: 1, program: conference.program) }
+  let!(:event_with_commercial) { create(:event, id: 2, program: conference.program) }
+  let!(:event_commercial) { create(:event_commercial, id: 1, commercialable: event_with_commercial, url: 'https://www.youtube.com/watch?v=M9bq_alk-sw') }
 
   with_versioning do
     describe 'GET #show' do
@@ -70,13 +70,13 @@ describe Admin::EventsController do
         end.to change(Event, :count).by(1)
       end
 
-      it 'redirects to the new event page' do
+      it 'redirects to the events page' do
         post :duplicate, params: {
           conference_id: dup_conference.short_title,
           id:            original_event.id,
           count:         1
         }
-        expect(response).to redirect_to(admin_conference_program_event_path(dup_conference.short_title, Event.last))
+        expect(response).to redirect_to(admin_conference_program_event_path(dup_conference.short_title))
       end
 
       it 'sets a success flash message' do
@@ -110,7 +110,7 @@ describe Admin::EventsController do
         end.to change(Event, :count).by(3)
       end
 
-      it 'redirects to the events index when creating multiple' do
+      it 'redirects to the events page' do
         post :duplicate, params: {
           conference_id: dup_conference.short_title,
           id:            original_event.id,
@@ -299,7 +299,6 @@ describe Admin::EventsController do
       end
 
       it 'can duplicate a duplicate' do
-        # Evaluate first_duplicate before the expect block to avoid counting its creation
         dup_id = first_duplicate.id
         expect do
           post :duplicate, params: {
@@ -378,7 +377,6 @@ describe Admin::EventsController do
       end
 
       it 'updating original does not affect duplicates' do
-        # Create duplicates first to capture original title
         dups = duplicates
         original_title = original_event.title
         new_title = 'Updated Original Title'
