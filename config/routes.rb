@@ -119,6 +119,7 @@ Osem::Application.routes.draw do
             patch :unconfirm
             patch :restart
             get :vote
+            post :duplicate
           end
         end
         resources :reports, only: :index

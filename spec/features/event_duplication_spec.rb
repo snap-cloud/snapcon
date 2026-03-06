@@ -162,7 +162,7 @@ describe EventDuplicator do
   end
 end
 
-require 'spec_helper'
+########## Middle of test suite
 
 describe 'Scheduling a duplicated event' do
   let(:conference) do

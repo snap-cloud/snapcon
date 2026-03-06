@@ -182,6 +182,16 @@ module Admin
       end
     end
 
+    def duplicate
+      duplicator = EventDuplicator.new(@event)
+      new_event = duplicator.duplicate
+      flash[:notice] = "Event '#{new_event.title}' duplicated successfully."
+      redirect_to admin_conference_program_event_path(@conference.short_title, new_event)
+    rescue StandardError => e
+      flash[:alert] = "Could not duplicate event: #{e.message}"
+      redirect_to admin_conference_program_event_path(@conference.short_title, @event)
+    end
+
     def destroy
       @event = Event.find(params[:id])
       if @event.destroy
