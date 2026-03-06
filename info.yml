@@ -1,5 +1,5 @@
 project:
-  name: 'Snap!Con' # Your project name, e.g. Cue-to-cue
+  name: 'snapcon' # Your project name, e.g. Cue-to-cue
   owner: 'CS169L-26' # Do not change
   teamId: '04' # Your team number, e.g. 02
   identities:
