@@ -201,6 +201,9 @@ describe 'Event Duplication Feature', :js do
       fill_in('event_subtitle', with: new_subtitle)
       click_button('Update Proposal')
       
+      # Wait for the update to complete and page to redirect
+      expect(page).to have_content(original_event.title)
+      
       duplicate.reload
       expect(duplicate.subtitle).to eq new_subtitle
       
