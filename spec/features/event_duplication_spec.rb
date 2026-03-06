@@ -14,7 +14,7 @@ describe 'Event Duplication Feature', :js do
   let(:venue) { conference.venue || create(:venue, conference: conference) }
   let(:room) { create(:room, venue: venue) }
 
-  let(:original_event) do
+  let!(:original_event) do
     event = create(:event,
                    program: program,
                    title: 'Test Event for Duplication',
@@ -96,6 +96,7 @@ describe 'Event Duplication Feature', :js do
     end
 
     it 'shows the duplicate in the events list' do
+      original_event
       original_count = program.events.count
       
       visit admin_conference_program_event_path(conference.short_title, original_event)
@@ -124,8 +125,9 @@ describe 'Event Duplication Feature', :js do
       duplicate_title = @duplicates.first.title
       
       visit admin_conference_program_event_path(conference.short_title, Event.find(duplicate_id))
-      click_link('Delete')
-      page.accept_alert
+      accept_confirm do
+        click_link('Delete')
+      end
       
       expect(Event.exists?(duplicate_id)).to be false
       expect(Event.where(title: duplicate_title).count).to eq 3 # original + 2 remaining duplicates
@@ -137,7 +139,7 @@ describe 'Event Duplication Feature', :js do
       
       visit edit_admin_conference_program_event_path(conference.short_title, duplicate)
       fill_in('event_subtitle', with: new_subtitle)
-      click_button('Save Event')
+      click_button('Update Event')
       
       duplicate.reload
       expect(duplicate.subtitle).to eq new_subtitle

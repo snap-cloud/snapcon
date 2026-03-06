@@ -44,6 +44,7 @@ class EventDuplicator
       progress:                 @event.progress,
       public:                   @event.public,
       is_highlight:             @event.is_highlight,
+      superevent:               @event.superevent,
       
       # Don't copy: start_time, room_id, parent_id (reset to nil)
       start_time:               nil,

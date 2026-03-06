@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 describe Admin::EventsController, type: :controller do
-  let(:conference) { create(:conference, short_title: 'osem2023') }
+  let(:conference) { create(:conference, short_title: 'snapcon2026') }
   let(:program) { conference.program }
   let(:user) { create(:admin) }
   let(:event_type) { create(:event_type, program: program) }
@@ -13,7 +13,7 @@ describe Admin::EventsController, type: :controller do
   let(:speaker) { create(:user) }
   let(:volunteer) { create(:user) }
 
-  let(:original_event) do
+  let!(:original_event) do
     event = create(:event,
                    program: program,
                    title: 'Original Event',
@@ -154,7 +154,7 @@ describe Admin::EventsController, type: :controller do
         expect(flash[:notice]).to include('100 copies')
       end
 
-      it 'defaults to 1 if count is missing' do
+      it 'shows error if count is missing' do
         expect do
           post :duplicate, params: {
             conference_id: conference.short_title,
@@ -202,6 +202,10 @@ describe Admin::EventsController, type: :controller do
 
       it 'copies public status' do
         expect(@duplicate.public).to eq original_event.public
+      end
+
+      it 'copies superevent status' do
+        expect(@duplicate.superevent).to eq original_event.superevent
       end
 
       it 'sets new event state' do
@@ -344,13 +348,14 @@ describe Admin::EventsController, type: :controller do
       end
 
       it 'updating original does not affect duplicates' do
+        original_title = original_event.title
         new_title = 'Updated Original Title'
         original_event.update(title: new_title)
         
         @duplicates.each do |duplicate|
           duplicate.reload
           expect(duplicate.title).not_to eq new_title
-          expect(duplicate.title).to eq original_event.title.sub(new_title, original_event.title)
+          expect(duplicate.title).to eq original_title
         end
       end
 
