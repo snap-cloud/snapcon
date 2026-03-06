@@ -53,6 +53,15 @@ describe 'Event Duplication Feature', :js do
       click_button('Create Copies')
       
       expect(page).to have_content('duplicated successfully')
+      
+      # Wait for duplicate to be queryable (database transaction visibility)
+      Timeout.timeout(5) do
+        loop do
+          count = Event.where(title: original_event.title).count
+          break if count >= 2
+          sleep 0.1
+        end
+      end
       expect(Event.where(title: original_event.title).count).to eq 2
     end
 
@@ -64,6 +73,15 @@ describe 'Event Duplication Feature', :js do
       click_button('Create Copies')
       
       expect(page).to have_content('5 copies')
+      
+      # Wait for duplicates to be queryable (database transaction visibility)
+      Timeout.timeout(5) do
+        loop do
+          count = Event.where(title: original_event.title).count
+          break if count >= 6
+          sleep 0.1
+        end
+      end
       expect(Event.where(title: original_event.title).count).to eq 6
     end
 
@@ -71,6 +89,15 @@ describe 'Event Duplication Feature', :js do
       visit admin_conference_program_event_path(conference.short_title, original_event)
       click_button('Duplicate')
       click_button('Create Copies')
+      
+      # Wait for duplicate to be queryable (database transaction visibility)
+      Timeout.timeout(5) do
+        loop do
+          duplicates = Event.where(title: original_event.title).where.not(id: original_event.id)
+          break if duplicates.count >= 1
+          sleep 0.1
+        end
+      end
       
       duplicates = Event.where(title: original_event.title).where.not(id: original_event.id)
       duplicates.each do |dup|
@@ -111,6 +138,15 @@ describe 'Event Duplication Feature', :js do
       click_button('Duplicate')
       click_button('Create Copies')
       
+      # Wait for duplicate to be queryable (database transaction visibility)
+      Timeout.timeout(5) do
+        loop do
+          count = program.events.count
+          break if count > original_count
+          sleep 0.1
+        end
+      end
+      
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content(original_event.title)
       # Due to caching and datatable rendering, check the count increased
@@ -124,6 +160,16 @@ describe 'Event Duplication Feature', :js do
       click_button('Duplicate')
       fill_in('count', with: 3)
       click_button('Create Copies')
+      
+      # Wait for duplicates to be queryable (database transaction visibility)
+      # We expect 1 original + 3 copies = 4 total events
+      Timeout.timeout(5) do
+        loop do
+          count = Event.where(title: original_event.title).count
+          break if count >= 4
+          sleep 0.1
+        end
+      end
       
       @duplicates = Event.where(title: original_event.title).where.not(id: original_event.id).order(:created_at)
     end
@@ -188,11 +234,22 @@ describe 'Event Duplication Feature', :js do
     end
 
     it 'maintains data integrity with many duplicates' do
-      5.times do
+      5.times do |iteration|
         visit admin_conference_program_event_path(conference.short_title, original_event)
         click_button('Duplicate')
         fill_in('count', with: 2)
         click_button('Create Copies')
+        
+        # Wait for duplicates to be queryable (database transaction visibility)
+        # This ensures the POST request completes before visiting the page again
+        expected_count = 1 + 2 * (iteration + 1)
+        Timeout.timeout(5) do
+          loop do
+            actual_count = Event.where(title: original_event.title).count
+            break if actual_count >= expected_count
+            sleep 0.1
+          end
+        end
       end
       
       all_events = Event.where(title: original_event.title)
