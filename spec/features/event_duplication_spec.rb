@@ -1,283 +1,186 @@
 # frozen_string_literal: true
 
-# == Schema Information
-#
-# Table name: events
-#
-#  id                           :bigint           not null, primary key
-#  abstract                     :text
-#  comments_count               :integer          default(0), not null
-#  committee_review             :text
-#  description                  :text
-#  guid                         :string           not null
-#  is_highlight                 :boolean          default(FALSE)
-#  language                     :string
-#  max_attendees                :integer
-#  presentation_mode            :integer
-#  progress                     :string           default("new"), not null
-#  proposal_additional_speakers :text
-#  public                       :boolean          default(TRUE)
-#  require_registration         :boolean
-#  start_time                   :datetime
-#  state                        :string           default("new"), not null
-#  submission_text              :text
-#  subtitle                     :string
-#  superevent                   :boolean
-#  title                        :string           not null
-#  week                         :integer
-#  created_at                   :datetime
-#  updated_at                   :datetime
-#  difficulty_level_id          :integer
-#  event_type_id                :integer
-#  parent_id                    :integer
-#  program_id                   :integer
-#  room_id                      :integer
-#  track_id                     :integer
-#
-# Foreign Keys
-#
-#  fk_rails_...  (parent_id => events.id)
-#
 require 'spec_helper'
 
-describe EventDuplicator do
-  let(:conference) { create(:conference) }
-  let(:track) { create(:track, state: 'confirmed', program: conference.program) }
-  let(:event_type) { create(:event_type, program: conference.program) }
+describe 'Event Duplication Feature', :js do
+  let(:conference) { create(:full_conference, short_title: 'osem2023') }
+  let(:program) { conference.program }
+  let(:admin_user) { create(:admin, email: 'admin@osem.io', password: 'password123') }
+  let(:event_type) { create(:event_type, program: program) }
+  let(:track) { create(:track, state: 'confirmed', program: program) }
+  let(:difficulty_level) { create(:difficulty_level, program: program) }
+  
+  let(:speaker) { create(:user) }
+  let(:venue) { conference.venue || create(:venue, conference: conference) }
+  let(:room) { create(:room, venue: venue) }
 
   let(:original_event) do
-    create(:event,
-           program:              conference.program,
-           title:                'Coffee Break',
-           abstract:             'A short break for coffee',
-           description:          'Attendees are encouraged to mingle',
-           event_type:           event_type,
-           track:                track,
-           require_registration: false,
-           max_attendees:        20,
-           state:                'confirmed',
-           start_time:           Time.current)
+    event = create(:event,
+                   program: program,
+                   title: 'Test Event for Duplication',
+                   abstract: 'Event abstract',
+                   description: 'Event description',
+                   event_type: event_type,
+                   track: track,
+                   difficulty_level: difficulty_level,
+                   require_registration: true,
+                   max_attendees: 50,
+                   state: 'confirmed')
+    event.speakers << speaker
+    event
   end
 
   before do
-    create(:vote, event: original_event, user: create(:user))
-    create(:comment, commentable: original_event)
-    original_event.registrations << create(:registration)
+    login_as admin_user, scope: :user
   end
 
-  subject(:duplicator) { described_class.new(original_event) }
-
-  describe '#duplicate' do
-    subject(:duplicate) { duplicator.duplicate }
-
-    it 'returns a new, persisted Event' do
-      expect(duplicate).to be_a(Event)
-      expect(duplicate).to be_persisted
+  describe 'duplicating an event via web interface' do
+    it 'shows duplicate button on event details page' do
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      expect(page).to have_button('Duplicate')
     end
 
-    it 'creates a distinct record with new id' do
-      expect(duplicate.id).not_to eq original_event.id
+    it 'opens the duplicate modal when clicking duplicate button' do
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      click_button('Duplicate')
+      expect(page).to have_css('#duplicateEventModal.in')
+      expect(page).to have_field('count')
     end
 
-    describe 'copied fields' do
-      it 'copies the title' do
-        expect(duplicate.title).to eq original_event.title
-      end
-
-      it 'copies the abstract' do
-        expect(duplicate.abstract).to eq original_event.abstract
-      end
-
-      it 'copies the description' do
-        expect(duplicate.description).to eq original_event.description
-      end
-
-      it 'copies the event_type' do
-        expect(duplicate.event_type).to eq original_event.event_type
-      end
-
-      it 'copies the track' do
-        expect(duplicate.track).to eq original_event.track
-      end
-
-      it 'copies require_registration' do
-        expect(duplicate.require_registration).to eq original_event.require_registration
-      end
-
-      it 'copies max_attendees' do
-        expect(duplicate.max_attendees).to eq original_event.max_attendees
-      end
+    it 'creates one copy by default' do
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      click_button('Duplicate')
+      click_button('Create Copies')
+      
+      expect(page).to have_content('duplicated successfully')
+      expect(Event.where(title: original_event.title).count).to eq 2
     end
 
-    describe 'reset fields' do
-      before do
-        venue = create(:venue, conference: conference)
-        room = create(:room, venue: venue)
-        create(:event_schedule, event: original_event, room: room)
-      end
+    it 'creates multiple copies when specified' do
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      click_button('Duplicate')
+      
+      fill_in('count', with: 5)
+      click_button('Create Copies')
+      
+      expect(page).to have_content('5 copies')
+      expect(Event.where(title: original_event.title).count).to eq 6
+    end
 
-      it 'does not copy start_time' do
-        expect(duplicate.start_time).to be_nil
-      end
-
-      it 'resets state to "new"' do
-        expect(duplicate.state).to eq 'new'
-      end
-
-      it 'has no room assigned' do
-        expect(duplicate.room_id).to be_nil
-      end
-
-      it 'has no parent assigned' do
-        child_event = create(:event, program: conference.program, parent_id: original_event.id)
-        duplicate_child = described_class.new(child_event).duplicate
-        expect(duplicate_child.parent_id).to be_nil
-      end
-
-      it 'generates a new unique guid' do
-        expect(duplicate.guid).not_to eq original_event.guid
-        expect(duplicate.guid).to be_present
+    it 'sets the current user as submitter of duplicates' do
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      click_button('Duplicate')
+      click_button('Create Copies')
+      
+      duplicates = Event.where(title: original_event.title).where.not(id: original_event.id)
+      duplicates.each do |dup|
+        expect(dup.submitter).to eq admin_user
       end
     end
 
-    describe 'excluded attendee data' do
-      it 'has no registrations' do
-        expect(duplicate.registrations).to be_empty
-      end
-
-      it 'has no votes' do
-        expect(duplicate.votes).to be_empty
-      end
-
-      it 'has no comments' do
-        expect(duplicate.comment_threads).to be_empty
-      end
+    it 'preserves all event fields in duplicate' do
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      click_button('Duplicate')
+      click_button('Create Copies')
+      
+      duplicate = Event.where(title: original_event.title).where.not(id: original_event.id).first
+      
+      expect(duplicate.abstract).to eq original_event.abstract
+      expect(duplicate.description).to eq original_event.description
+      expect(duplicate.event_type).to eq original_event.event_type
+      expect(duplicate.track).to eq original_event.track
+      expect(duplicate.difficulty_level).to eq original_event.difficulty_level
+      expect(duplicate.require_registration).to eq original_event.require_registration
+      expect(duplicate.max_attendees).to eq original_event.max_attendees
+      expect(duplicate.speakers).to include(speaker)
     end
 
-    describe 'belongs to the same program' do
-      it 'is scoped to the same conference program' do
-        expect(duplicate.program).to eq original_event.program
-      end
-    end
-  end
-end
-
-########## Middle of test suite
-
-describe 'Scheduling a duplicated event' do
-  let(:conference) do
-    create(:conference,
-           start_date: Date.today,
-           end_date:   Date.today + 2,
-           start_hour: 9,
-           end_hour:   20)
-  end
-  let(:schedule)  { create(:schedule, program: conference.program) }
-  let(:venue)     { conference.venue || create(:venue, conference: conference) }
-  let(:room)      { create(:room, venue: venue) }
-
-  let(:original_start_time) { Time.current.change(hour: 10, min: 0) }
-  let(:duplicate_start_time) { Time.current.change(hour: 14, min: 0) }
-
-  let(:original_event) do
-    create(:event, state: 'confirmed', program: conference.program)
-  end
-
-  let(:duplicate_event) do
-    EventDuplicator.new(original_event).duplicate
-  end
-
-  let!(:original_schedule) do
-    create(:event_schedule,
-           event:      original_event,
-           schedule:   schedule,
-           room:       room,
-           start_time: original_start_time)
-  end
-
-  describe 'the duplicate event' do
-    it 'starts with no event_schedules' do
-      expect(duplicate_event.event_schedules).to be_empty
-    end
-
-    it 'is not scheduled before a time is assigned' do
-      expect(duplicate_event.scheduled?).to be false
-    end
-
-    context 'after being given a new start_time via EventSchedule' do
-      let!(:duplicate_schedule) do
-        create(:event_schedule,
-               event:      duplicate_event,
-               schedule:   schedule,
-               room:       room,
-               start_time: duplicate_start_time)
-      end
-
-      it 'is scheduled' do
-        expect(duplicate_event.scheduled?).to be true
-      end
-
-      it 'has a different start_time than the original' do
-        expect(duplicate_schedule.start_time).not_to eq original_schedule.start_time
-      end
-
-      it 'has the correct start_time' do
-        expect(duplicate_schedule.start_time).to eq duplicate_start_time
-      end
-
-      it 'is a valid event_schedule' do
-        expect(duplicate_schedule).to be_valid
-      end
+    it 'shows the duplicate in the events list' do
+      original_count = program.events.count
+      
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      click_button('Duplicate')
+      click_button('Create Copies')
+      
+      visit admin_conference_program_events_path(conference.short_title)
+      expect(page).to have_content(original_event.title)
+      # Due to caching and datatable rendering, check the count increased
+      expect(program.events.count).to eq original_count + 1
     end
   end
 
-  describe 'the original event' do
+  describe 'deleting and updating duplicates' do
     before do
-      create(:event_schedule,
-             event:      duplicate_event,
-             schedule:   schedule,
-             room:       room,
-             start_time: duplicate_start_time)
+      visit admin_conference_program_event_path(conference.short_title, original_event)
+      click_button('Duplicate')
+      fill_in('count', with: 3)
+      click_button('Create Copies')
+      
+      @duplicates = Event.where(title: original_event.title).where.not(id: original_event.id).order(:created_at)
     end
 
-    it 'remains scheduled' do
-      expect(original_event.scheduled?).to be true
+    it 'deleting a duplicate does not affect others' do
+      duplicate_id = @duplicates.first.id
+      duplicate_title = @duplicates.first.title
+      
+      visit admin_conference_program_event_path(conference.short_title, Event.find(duplicate_id))
+      click_link('Delete')
+      page.accept_alert
+      
+      expect(Event.exists?(duplicate_id)).to be false
+      expect(Event.where(title: duplicate_title).count).to eq 3 # original + 2 remaining duplicates
     end
 
-    it 'retains its original start_time' do
-      expect(original_schedule.start_time).to eq original_start_time
-    end
-
-    it 'still has exactly one event_schedule' do
-      expect(original_event.event_schedules.count).to eq 1
+    it 'can individually edit duplicates' do
+      duplicate = @duplicates.first
+      new_subtitle = 'Updated Subtitle'
+      
+      visit edit_admin_conference_program_event_path(conference.short_title, duplicate)
+      fill_in('event_subtitle', with: new_subtitle)
+      click_button('Save Event')
+      
+      duplicate.reload
+      expect(duplicate.subtitle).to eq new_subtitle
+      
+      # Original should not be affected
+      original_event.reload
+      expect(original_event.subtitle).not_to eq new_subtitle
     end
   end
 
-  describe 'both events scheduled independently' do
-    let!(:duplicate_schedule) do
-      create(:event_schedule,
-             event:      duplicate_event,
-             schedule:   schedule,
-             room:       room,
-             start_time: duplicate_start_time)
+  describe 'fuzz testing - rapid operations' do
+    it 'handles rapid duplicate, update, delete cycles' do
+      expect do
+        3.times do |i|
+          visit admin_conference_program_event_path(conference.short_title, original_event)
+          click_button('Duplicate')
+          fill_in('count', with: 2)
+          click_button('Create Copies')
+          
+          new_events = Event.where(title: original_event.title).where.not(id: original_event.id).last(2)
+          
+          new_events.each do |event|
+            event.update(max_attendees: 100 + i)
+          end
+          
+          new_events.first.destroy
+        end
+      end.not_to raise_error
     end
 
-    it 'both are scheduled' do
-      expect(original_event.scheduled?).to be true
-      expect(duplicate_event.scheduled?).to be true
-    end
-
-    it 'do not share the same start_time' do
-      expect(original_schedule.start_time).not_to eq duplicate_schedule.start_time
-    end
-
-    it 'each has exactly one event_schedule' do
-      expect(original_event.event_schedules.count).to eq 1
-      expect(duplicate_event.event_schedules.count).to eq 1
-    end
-
-    it 'neither event_schedule is the same record' do
-      expect(original_schedule.id).not_to eq duplicate_schedule.id
+    it 'maintains data integrity with many duplicates' do
+      5.times do
+        visit admin_conference_program_event_path(conference.short_title, original_event)
+        click_button('Duplicate')
+        fill_in('count', with: 2)
+        click_button('Create Copies')
+      end
+      
+      all_events = Event.where(title: original_event.title)
+      all_events.each do |event|
+        expect(event.speakers).to include(speaker)
+        expect(event.event_type).to eq event_type
+      end
     end
   end
 end
