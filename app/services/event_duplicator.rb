@@ -8,8 +8,10 @@ class EventDuplicator
 
   def duplicate(count = 1)
     duplicated_events = []
-    count.times do
-      duplicated_events << create_duplicate
+    @event.class.transaction do
+      count.times do
+        duplicated_events << create_duplicate
+      end
     end
     duplicated_events
   end
