@@ -182,6 +182,30 @@ module Admin
       end
     end
 
+    def duplicate
+      count = params[:count].to_i # Invalid input will be treated as 0, which will be caught by validation below
+
+      # Validate count
+      unless count.between?(1, 100)
+        flash[:alert] = 'Invalid number of duplicates. Please enter a number between 1 and 100.'
+        redirect_to admin_conference_program_event_path(@conference.short_title, @event)
+        return
+      end
+
+      duplicator = EventDuplicator.new(@event, current_user)
+      duplicated_events = duplicator.duplicate(count)
+
+      flash[:notice] = if duplicated_events.length == 1
+                         "Event '#{duplicated_events.first.title}' duplicated successfully."
+                       else
+                         "#{duplicated_events.length} copies of '#{@event.title}' created successfully."
+                       end
+      redirect_to admin_conference_program_events_path(@conference.short_title)
+    rescue StandardError => e
+      flash[:alert] = "Could not duplicate event"
+      redirect_to admin_conference_program_event_path(@conference.short_title, @event)
+    end
+
     def destroy
       @event = Event.find(params[:id])
       if @event.destroy
