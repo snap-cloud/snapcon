@@ -1,3 +1,11 @@
+- if resource.errors.any?
+  .alert.alert-danger
+    %h4
+      = pluralize(resource.errors.count, 'error')
+      prohibited this account from being saved:
+    %ul
+      - resource.errors.full_messages.each do |message|
+        %li= message
 - unless @user.persisted?
   .form-group
     = f.label :username
