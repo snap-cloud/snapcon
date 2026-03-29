@@ -16,12 +16,14 @@ describe Organization do
   let(:organization) { create(:organization) }
 
   describe 'validation' do
-    xit 'is not valid without a name' do
+    it 'is not valid without a name' do
       expect(subject).to validate_presence_of(:name)
     end
   end
 
   describe 'associations' do
-    xit { is_expected.to have_many(:conferences).dependent(:destroy) }
+    it 'has many conferences with dependent destroy' do
+      expect(subject).to have_many(:conferences).dependent(:destroy)
+    end
   end
 end

@@ -13,14 +13,17 @@
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  conference_id      :integer          not null
+#  stripe_session_id  :string
 #  user_id            :integer          not null
+#
+# Indexes
+#
+#  index_payments_on_stripe_session_id  (stripe_session_id) UNIQUE
 #
 class Payment < ApplicationRecord
   has_many :ticket_purchases
   belongs_to :user
   belongs_to :conference
-
-  attr_accessor :stripe_customer_email, :stripe_customer_token
 
   validates :status, presence: true
   validates :user_id, presence: true
@@ -41,21 +44,82 @@ class Payment < ApplicationRecord
     "Tickets for #{conference.title} #{user.name} #{user.email}"
   end
 
-  def purchase
-    gateway_response = Stripe::Charge.create source:        stripe_customer_token,
-                                             receipt_email: stripe_customer_email,
-                                             description:   stripe_description,
-                                             amount:        amount_to_pay,
-                                             currency:      currency
+  def unpaid_ticket_purchases
+    user.ticket_purchases.unpaid.by_conference(conference)
+  end
 
-    self.amount = gateway_response[:amount]
-    self.last4 = gateway_response[:source][:last4]
-    self.authorization_code = gateway_response[:id]
-    self.status = 'success'
-    true
+  def create_checkout_session(success_url:, cancel_url:)
+    line_items = build_line_items
+    return nil if line_items.empty?
+
+    session = Stripe::Checkout::Session.create(
+      payment_method_types: ['card'],
+      mode:                 'payment',
+      customer_email:       user.email,
+      line_items:           line_items,
+      success_url:          success_url,
+      cancel_url:           cancel_url,
+      metadata:             {
+        payment_id:    id,
+        conference_id: conference_id,
+        user_id:       user_id
+      }
+    )
+
+    update(stripe_session_id: session.id)
+    session
+  rescue Stripe::StripeError => e
+    self.status = 'failure'
+    save
+    errors.add(:base, e.message)
+    nil
+  end
+
+  def complete_checkout
+    session = Stripe::Checkout::Session.retrieve(
+      id:     stripe_session_id,
+      expand: ['payment_intent.latest_charge']
+    )
+
+    if session.payment_status == 'paid'
+      charge = session.payment_intent&.latest_charge
+
+      self.amount = session.amount_total
+      self.last4 = charge&.payment_method_details&.card&.last4
+      self.authorization_code = session.payment_intent&.id
+      self.status = 'success'
+      save
+    else
+      self.status = 'failure'
+      save
+      false
+    end
   rescue Stripe::StripeError => e
     errors.add(:base, e.message)
     self.status = 'failure'
+    save
     false
+  end
+
+  private
+
+  def build_line_items
+    unpaid_ticket_purchases.includes(:ticket).map do |tp|
+      unit_amount = CurrencyConversion.convert_currency(
+        conference, tp.ticket.price, tp.ticket.price_currency, currency
+      ).fractional
+
+      {
+        price_data: {
+          currency:     currency.downcase,
+          product_data: {
+            name:        tp.title,
+            description: tp.description.presence || "#{conference.title} - #{tp.title}"
+          },
+          unit_amount:  unit_amount
+        },
+        quantity:   tp.quantity
+      }
+    end
   end
 end

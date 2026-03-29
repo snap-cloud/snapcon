@@ -672,6 +672,8 @@ GEM
     turbolinks-source (5.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2025.3)
+      tzinfo (>= 1.0.0)
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
     unicode-display_width (2.5.0)
@@ -707,7 +709,7 @@ GEM
     zeitwerk (2.6.13)
 
 PLATFORMS
-  arm64-darwin-24
+  arm64-darwin-25
   x64-mingw-ucrt
   x86_64-linux
 
@@ -830,7 +832,7 @@ DEPENDENCIES
   whenever
 
 RUBY VERSION
-   ruby 3.3.10p183
+   ruby 3.3.8p144
 
 BUNDLED WITH
    2.5.6

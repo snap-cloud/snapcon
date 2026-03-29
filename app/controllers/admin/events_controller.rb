@@ -201,8 +201,8 @@ module Admin
                          "#{duplicated_events.length} copies of '#{@event.title}' created successfully."
                        end
       redirect_to admin_conference_program_events_path(@conference.short_title)
-    rescue StandardError => e
-      flash[:alert] = "Could not duplicate event"
+    rescue StandardError
+      flash[:alert] = 'Could not duplicate event'
       redirect_to admin_conference_program_event_path(@conference.short_title, @event)
     end
 
