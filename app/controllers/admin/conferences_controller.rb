@@ -67,19 +67,62 @@ module Admin
     end
 
     def new
-      @conference = Conference.new
+      if params[:duplicate_from].present?
+        source = Conference.find_by(short_title: params[:duplicate_from])
+        if source && can?(:read, source)
+          @conference = Conference.new(
+            description: source.description,
+            timezone: source.timezone,
+            start_hour: source.start_hour,
+            end_hour: source.end_hour,
+            color: source.color,
+            custom_css: source.custom_css,
+            ticket_layout: source.ticket_layout,
+            registration_limit: source.registration_limit,
+            booth_limit: source.booth_limit,
+            organization_id: source.organization_id
+          )
+          @duplicate_from_source = source.short_title
+        else
+          @conference = Conference.new
+        end
+      else
+        @conference = Conference.new
+      end
     end
 
     def create
       @conference = Conference.new(conference_params)
 
+      if params[:duplicate_from].present?
+        source = Conference.find_by(short_title: params[:duplicate_from])
+        if source && can?(:read, source)
+          @conference.assign_attributes(
+            description: source.description,
+            custom_css: source.custom_css,
+            ticket_layout: source.ticket_layout,
+            registration_limit: source.registration_limit,
+            booth_limit: source.booth_limit,
+            color: source.color,
+            start_hour: source.start_hour,
+            end_hour: source.end_hour
+          )
+        end
+      end
+
       if @conference.save
         # user that creates the conference becomes organizer of that conference
         current_user.add_role :organizer, @conference
 
+        if params[:duplicate_from].present?
+          source = Conference.find_by(short_title: params[:duplicate_from])
+          @conference.copy_associations_from(source) if source && can?(:read, source)
+        end
+
         redirect_to admin_conference_path(id: @conference.short_title),
                     notice: 'Conference was successfully created.'
       else
+        @duplicate_from_source = params[:duplicate_from]
         flash.now[:error] = 'Could not create conference. ' + @conference.errors.full_messages.to_sentence
         render action: 'new'
       end
