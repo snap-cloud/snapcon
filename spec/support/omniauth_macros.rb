@@ -12,8 +12,7 @@ module OmniauthMacros
   ENV['OSEM_SUSE_SECRET'] = 'test secret suse'
   ENV['OSEM_GITHUB_KEY'] = 'test key github'
   ENV['OSEM_GITHUB_SECRET'] = 'test secret github'
-  ENV['OSEM_DISCOURSE_KEY'] = 'test key discourse'
-  ENV['OSEM_DISCOURSE_SECRET'] = 'test secret discourse'
+  ENV['OSEM_SNAP_SSO_SECRET'] = 'test secret snap sso'
 
   def mock_auth_new_user
     OmniAuth.config.mock_auth[:google] =

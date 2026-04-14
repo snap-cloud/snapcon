@@ -14,10 +14,9 @@ Devise.setup do |config|
                   name:  'google',
                   scope: %w[email profile]
 
-  # TODO-SNAPCON: This ought to be configurable. Use OSEM_DISCOURSE_KEY?
   config.omniauth :discourse,
-                  sso_url:    'https://forum.snap.berkeley.edu/session/sso_provider',
-                  sso_secret: ENV.fetch('OSEM_DISCOURSE_SECRET', nil)
+                  sso_url:    ENV.fetch('OSEM_SNAP_SSO_URL', 'https://snap.berkeley.edu/api/v1/discourse-sso'),
+                  sso_secret: ENV.fetch('OSEM_SNAP_SSO_SECRET', ENV.fetch('OSEM_DISCOURSE_SECRET', nil))
 
   config.omniauth :facebook,
                   ENV.fetch('OSEM_FACEBOOK_KEY', Rails.application.secrets.facebook_key),
