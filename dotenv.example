@@ -67,6 +67,12 @@
 # OSEM_GITHUB_KEY=1234
 # OSEM_GITHUB_SECRET=5678
 
+# Snap!Cloud SSO (Discourse SSO protocol)
+# The shared secret must match the DISCOURSE_SSO_SECRET configured in Snap!Cloud
+# OSEM_SNAP_SSO_SECRET=your_shared_secret
+# Optionally override the SSO endpoint URL (defaults to https://snap.berkeley.edu/api/v1/discourse-sso)
+# OSEM_SNAP_SSO_URL=https://snap.berkeley.edu/api/v1/discourse-sso
+
 # OMNIAUTH Developer KEY/Secret for SUSE/openSUSE
 # OSEM_SUSE_KEY=1234
 # OSEM_SUSE_SECRET=5678

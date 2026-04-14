@@ -14,6 +14,12 @@ module UsersHelper
 
     providers = []
     Devise.omniauth_providers.each do |provider|
+      # Discourse SSO (Snap!Cloud) only requires a secret, not a key
+      if provider == :discourse
+        providers << provider if ENV.fetch('OSEM_SNAP_SSO_SECRET', ENV.fetch('OSEM_DISCOURSE_SECRET', nil)).present?
+        next
+      end
+
       provider_key = "#{provider}_key"
       provider_secret = "#{provider}_secret"
       unless Rails.application.secrets.send(provider_key).blank? || Rails.application.secrets.send(provider_secret).blank?

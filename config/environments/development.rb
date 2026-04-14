@@ -131,6 +131,18 @@ Rails.application.configure do
         secret: 'github_mock_secret'
       }
     )
+
+  OmniAuth.config.mock_auth[:discourse] =
+    OmniAuth::AuthHash.new(
+      provider:    'discourse',
+      uid:         'discourse-test-uid-1',
+      info:        {
+        name:     'snap user',
+        email:    'user-snap@example.com',
+        username: 'user_snap'
+      }
+    )
+
   config.after_initialize do
     Devise.setup do |devise_config|
       # Enable ichain test mode
