@@ -16,7 +16,7 @@ Devise.setup do |config|
 
   config.omniauth :discourse,
                   sso_url:    ENV.fetch('OSEM_SNAP_SSO_URL', 'https://snap.berkeley.edu/api/v1/discourse-sso'),
-                  sso_secret: ENV.fetch('OSEM_SNAP_SSO_SECRET', ENV.fetch('OSEM_DISCOURSE_SECRET', nil))
+                  sso_secret: ENV.fetch('OSEM_DISCOURSE_SECRET', nil)
 
   config.omniauth :facebook,
                   ENV.fetch('OSEM_FACEBOOK_KEY', Rails.application.secrets.facebook_key),
