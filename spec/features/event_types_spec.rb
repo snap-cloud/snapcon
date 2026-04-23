@@ -7,7 +7,7 @@ describe EventType do
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'event types' do
-    it 'adds and updates event type', feature: true do
+    it 'adds and updates event type', :feature do
       sign_in organizer
       visit admin_conference_program_event_types_path(
         conference_id: conference.short_title

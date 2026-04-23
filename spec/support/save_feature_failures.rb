@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Lint/Debugger
 RSpec.configure do |config|
   config.after(:each, type: :feature) do
     example_filename = RSpec.current_example.full_description
@@ -17,3 +18,4 @@ RSpec.configure do |config|
     end
   end
 end
+# rubocop:enable Lint/Debugger

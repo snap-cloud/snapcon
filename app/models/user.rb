@@ -82,6 +82,7 @@ class User < ApplicationRecord
   # A user may have an uploaded avatar or use gravatar.
   # The uploaded picture takes precedence.
   include Gravtastic
+
   gravtastic size: 32
 
   mount_uploader :picture, PictureUploader, mount_on: :picture

@@ -15,7 +15,7 @@ describe Ticket do
       sign_out
     end
 
-    it 'add a valid ticket', feature: true do
+    it 'add a valid ticket', :feature do
       visit admin_conference_tickets_path(conference.short_title)
       click_link 'Add Ticket'
 
@@ -29,7 +29,7 @@ describe Ticket do
       expect(Ticket.count).to eq(2)
     end
 
-    it 'add a invalid ticket', feature: true do
+    it 'add a invalid ticket', :feature do
       visit admin_conference_tickets_path(conference.short_title)
       click_link 'Add Ticket'
 
@@ -42,7 +42,7 @@ describe Ticket do
       expect(Ticket.count).to eq(1)
     end
 
-    it 'add a hidden ticket', feature: true do
+    it 'add a hidden ticket', :feature do
       visit admin_conference_tickets_path(conference.short_title)
       click_link 'Add Ticket'
 
@@ -61,7 +61,7 @@ describe Ticket do
     context 'Ticket already created' do
       let!(:ticket) { create(:ticket, title: 'Business Ticket', price: 100, conference_id: conference.id) }
 
-      it 'edit valid ticket', feature: true do
+      it 'edit valid ticket', :feature do
         visit admin_conference_tickets_path(conference.short_title)
         click_link('Edit', href: edit_admin_conference_ticket_path(conference.short_title, ticket.id))
 
@@ -83,7 +83,7 @@ describe Ticket do
         expect(Ticket.count).to eq(2)
       end
 
-      it 'edit invalid ticket', feature: true do
+      it 'edit invalid ticket', :feature do
         visit admin_conference_tickets_path(conference.short_title)
         click_link('Edit', href: edit_admin_conference_ticket_path(conference.short_title, ticket.id))
 
@@ -101,7 +101,7 @@ describe Ticket do
         expect(Ticket.count).to eq(2)
       end
 
-      it 'delete ticket', feature: true, js: true do
+      it 'delete ticket', :feature, :js do
         visit admin_conference_tickets_path(conference.short_title)
         click_link('Delete', href: admin_conference_ticket_path(conference.short_title, ticket.id))
         page.accept_alert

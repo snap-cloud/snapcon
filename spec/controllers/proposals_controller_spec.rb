@@ -56,31 +56,31 @@ describe ProposalsController do
         end
 
         context 'creates proposal successfully' do
-          before(:each, run: true) do
+          before(:each, :run) do
             @new_user = attributes_for(:user)
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title,
                                     user:          @new_user }
           end
 
-          it 'assigns event variable', run: true do
+          it 'assigns event variable', :run do
             expect(assigns(:event)).not_to be_nil
           end
 
-          it 'assigns program to event', run: true do
+          it 'assigns program to event', :run do
             expect(assigns(:event).program).to eq conference.program
           end
 
-          it 'assigns submitter and speaker to event', run: true do
+          it 'assigns submitter and speaker to event', :run do
             expect(assigns(:event).submitter.username).to eq @new_user[:username]
             expect(assigns(:event).speakers.first.username).to eq @new_user[:username]
           end
 
-          it 'redirects to proposal index path', run: true do
+          it 'redirects to proposal index path', :run do
             expect(response).to redirect_to conference_program_proposals_path conference.short_title
           end
 
-          it 'shows success message in flash notice', run: true do
+          it 'shows success message in flash notice', :run do
             expect(flash[:notice]).to match('Proposal was successfully submitted.')
           end
 
@@ -94,18 +94,18 @@ describe ProposalsController do
         end
 
         context 'proposal save fails' do
-          before(:each, run: true) do
+          before(:each, :run) do
             allow_any_instance_of(Event).to receive(:save).and_return(false)
             post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                     conference_id: conference.short_title,
                                     user:          attributes_for(:user) }
           end
 
-          it 'renders new template', run: true do
+          it 'renders new template', :run do
             expect(response).to render_template('new')
           end
 
-          it 'shows error in flash message', run: true do
+          it 'shows error in flash message', :run do
             expect(flash[:error]).to match("Could not submit proposal: #{event.errors.full_messages.join(', ')}")
           end
 
@@ -241,29 +241,29 @@ describe ProposalsController do
       end
 
       context 'creates proposal successfully' do
-        before(:each, run: true) do
+        before(:each, :run) do
           post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                   conference_id: conference.short_title }
         end
 
-        it 'assigns event variable', run: true do
+        it 'assigns event variable', :run do
           expect(assigns(:event)).not_to be_nil
         end
 
-        it 'assigns program to event', run: true do
+        it 'assigns program to event', :run do
           expect(assigns(:event).program).to eq conference.program
         end
 
-        it 'assigns submitter and speaker to event', run: true do
+        it 'assigns submitter and speaker to event', :run do
           expect(assigns(:event).submitter).to eq event.submitter
           expect(assigns(:event).speakers.first).to eq event.submitter
         end
 
-        it 'redirects to proposal index path', run: true do
+        it 'redirects to proposal index path', :run do
           expect(response).to redirect_to conference_program_proposals_path conference.short_title
         end
 
-        it 'shows success message in flash notice', run: true do
+        it 'shows success message in flash notice', :run do
           expect(flash[:notice]).to match('Proposal was successfully submitted.')
         end
 
@@ -276,17 +276,17 @@ describe ProposalsController do
       end
 
       context 'proposal save fails' do
-        before(:each, run: true) do
+        before(:each, :run) do
           allow_any_instance_of(Event).to receive(:save).and_return(false)
           post :create, params: { event:         attributes_for(:event, event_type_id: event_type.id),
                                   conference_id: conference.short_title }
         end
 
-        it 'renders new template', run: true do
+        it 'renders new template', :run do
           expect(response).to render_template('new')
         end
 
-        it 'shows error in flash message', run: true do
+        it 'shows error in flash message', :run do
           expect(flash[:error]).to match("Could not submit proposal: #{event.errors.full_messages.join(', ')}")
         end
 
@@ -346,7 +346,7 @@ describe ProposalsController do
           expect(response).to render_template('edit')
         end
 
-        it 'shows error in flash message', run: true do
+        it 'shows error in flash message', :run do
           expect(flash[:error]).to match("Could not update proposal: #{event.errors.full_messages.join(', ')}")
         end
       end

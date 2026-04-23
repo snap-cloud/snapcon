@@ -7,7 +7,7 @@ describe SponsorshipLevel do
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'sponsorship_levels' do
-    it 'adds a sponsorship level', feature: true, js: true do
+    it 'adds a sponsorship level', :feature, :js do
       sign_in organizer
       visit admin_conference_sponsorship_levels_path(
         conference_id: conference.short_title
@@ -30,7 +30,7 @@ describe SponsorshipLevel do
       end
     end
 
-    it 'updates a sponsorship level', feature: true, js: true do
+    it 'updates a sponsorship level', :feature, :js do
       level = create(:sponsorship_level, conference_id: conference.id)
       sign_in organizer
       visit edit_admin_conference_sponsorship_level_path(

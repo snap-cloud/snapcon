@@ -17,7 +17,7 @@ describe Commercial do
     sign_in participant
   end
 
-  it 'adds a valid commercial of an event', feature: true, js: true do
+  it 'adds a valid commercial of an event', :feature, :js do
     visit edit_conference_program_proposal_path(conference.short_title, event.id)
     click_link 'Materials'
     fill_in 'commercial_url', with: 'https://www.youtube.com/watch?v=M9bq_alk-sw'
@@ -30,7 +30,7 @@ describe Commercial do
     expect(flash).to eq('Materials were successfully created.')
   end
 
-  it 'updates a commercial of an event', feature: true, js: true do
+  it 'updates a commercial of an event', :feature, :js do
     commercial = create(:commercial,
                         commercialable_id:   event.id,
                         commercialable_type: 'Event')
@@ -50,7 +50,7 @@ describe Commercial do
     expect(commercial.url).to eq('https://www.youtube.com/watch?v=M9bq_alk-sw')
   end
 
-  it 'deletes a commercial of an event', feature: true, js: true do
+  it 'deletes a commercial of an event', :feature, :js do
     create(:commercial,
            commercialable_id:   event.id,
            commercialable_type: 'Event')

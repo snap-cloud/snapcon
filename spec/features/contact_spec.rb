@@ -29,7 +29,7 @@ describe Contact do
       sign_in organizer
     end
 
-    context 'editing', feature: true do
+    context 'editing', :feature do
       it_behaves_like 'contact field', 'email', 'example@example.com'
       it_behaves_like 'contact field', 'sponsor_email', 'sponsor@example.com'
       it_behaves_like 'contact field', 'social_tag', 'example'

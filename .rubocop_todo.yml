@@ -234,7 +234,7 @@ RSpec/BeEmpty:
 # Offense count: 12
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnabledMethods.
-RSpec/Capybara/FeatureMethods:
+RSpec/Dialect:
   Exclude:
     - 'spec/features/proposals_spec.rb'
     - 'spec/features/user_spec.rb'
@@ -282,7 +282,7 @@ RSpec/ExpectChange:
 # Offense count: 9
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, SpecSuffixOnly.
 # Include: **/*_spec*rb*, **/spec/**/*
-RSpec/FilePath:
+RSpec/SpecFilePathFormat:
   Exclude:
     - 'spec/controllers/conference_registration_controller_spec.rb'
     - 'spec/controllers/physical_ticket_controller_spec.rb'

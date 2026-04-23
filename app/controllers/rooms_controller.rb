@@ -2,6 +2,7 @@
 
 class RoomsController < ApplicationController
   include ConferenceHelper
+
   before_action :authenticate_user!
   protect_from_forgery with: :null_session
   load_resource :conference, find_by: :short_title

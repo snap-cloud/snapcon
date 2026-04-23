@@ -6,7 +6,7 @@ describe Lodging do
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, resource: conference) }
 
-  it 'Add a lodging', feature: true, js: true do
+  it 'Add a lodging', :feature, :js do
     path = "#{Rails.root}/app/assets/images/rails.png"
 
     sign_in organizer
@@ -28,7 +28,7 @@ describe Lodging do
     expect(Lodging.count).to eq(1)
   end
 
-  it 'Update a lodging', feature: true, js: true do
+  it 'Update a lodging', :feature, :js do
     path = "#{Rails.root}/app/assets/images/rails.png"
 
     lodging = create(:lodging, conference: conference)
@@ -59,7 +59,7 @@ describe Lodging do
     expect(Lodging.count).to eq(1)
   end
 
-  it 'Delete a lodging', feature: true, js: true do
+  it 'Delete a lodging', :feature, :js do
     lodging = create(:lodging, conference: conference)
 
     sign_in organizer

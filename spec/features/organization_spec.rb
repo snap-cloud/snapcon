@@ -9,7 +9,7 @@ describe Organization do
   let(:admin_user) { create(:admin) }
 
   shared_examples 'successfully updates an organization' do
-    it 'updates a exsisting organization', feature: true, js: true do
+    it 'updates a exsisting organization', :feature, :js do
       visit edit_admin_organization_path(organization)
       fill_in 'organization_name', with: 'changed name'
 
@@ -27,7 +27,7 @@ describe Organization do
       sign_in admin_user
     end
 
-    it 'creates a new organization', feature: true, js: true do
+    it 'creates a new organization', :feature, :js do
       visit new_admin_organization_path
       fill_in 'organization_name', with: 'Organization name'
 
@@ -45,7 +45,7 @@ describe Organization do
       sign_in organization_admin
     end
 
-    it "can't create new organization", feature: true, js: true do
+    it "can't create new organization", :feature, :js do
       visit new_admin_organization_path
       page.find('#flash')
       expect(flash).to eq('You are not authorized to access this page.')

@@ -8,7 +8,7 @@ describe Room do
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'rooms' do
-    it 'adds a room', feature: true, js: true do
+    it 'adds a room', :feature, :js do
       sign_in organizer
       visit admin_conference_venue_rooms_path(
         conference_id: conference.short_title
@@ -32,7 +32,7 @@ describe Room do
       end
     end
 
-    it 'updates a room', feature: true, js: true do
+    it 'updates a room', :feature, :js do
       room = create(:room, venue: venue)
       sign_in organizer
       visit edit_admin_conference_venue_room_path(

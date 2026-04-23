@@ -2,6 +2,7 @@
 
 class ProposalsController < ApplicationController
   include ConferenceHelper
+
   before_action :authenticate_user!, except: %i[show new create]
   load_resource :conference, find_by: :short_title
   load_resource :program, through: :conference, singleton: true

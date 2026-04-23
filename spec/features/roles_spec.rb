@@ -16,7 +16,7 @@ describe Role do
       visit admin_conference_roles_path(conference.short_title)
     end
 
-    it "role #{role_name}", feature: true, js: true do
+    it "role #{role_name}", :feature, :js do
       click_link('Edit', href: edit_admin_conference_role_path(conference.short_title, role_name))
       fill_in 'role_description', with: 'changed description'
       click_button 'Update Role'
@@ -55,7 +55,7 @@ describe Role do
       visit admin_conference_roles_path(conference.short_title)
     end
 
-    it "adds role #{role_name}", feature: true, js: true do
+    it "adds role #{role_name}", :feature, :js do
       click_link('Users', href: admin_conference_role_path(conference.short_title, role_name))
 
       fill_in 'user_email', with: user_with_no_role.email
@@ -65,7 +65,7 @@ describe Role do
       expect(user_with_no_role.has_cached_role?(role.name, conference)).to be true
     end
 
-    it "removes role #{role_name}", feature: true, js: true do
+    it "removes role #{role_name}", :feature, :js do
       click_link('Users', href: admin_conference_role_path(conference.short_title, role_name))
 
       bootstrap_switch = find('tr', text: user_with_role.name).find('.bootstrap-switch-container')
@@ -91,13 +91,13 @@ describe Role do
       visit admin_conference_roles_path(conference.short_title)
     end
 
-    it "add role #{role_name}", feature: true, js: true do
+    it "add role #{role_name}", :feature, :js do
       click_link('Users', href: admin_conference_role_path(conference.short_title, role_name))
 
       expect(page.has_field?('user_email')).to be false
     end
 
-    it "remove role #{role_name}", feature: true, js: true do
+    it "remove role #{role_name}", :feature, :js do
       click_link('Users', href: admin_conference_role_path(conference.short_title, role_name))
 
       expect(first('td').has_css?('.bootstrap-switch-container')).to be false

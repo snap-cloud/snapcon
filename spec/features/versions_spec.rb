@@ -13,7 +13,7 @@ describe 'Version' do
     sign_in organizer
   end
 
-  it 'display changes in contact', feature: true, versioning: true, js: true do
+  it 'display changes in contact', :feature, :versioning, :js do
     visit edit_admin_conference_contact_path(conference.short_title)
     fill_in 'contact_email', with: 'example@example.com'
     fill_in 'contact_sponsor_email', with: 'sponsor@example.com'
@@ -25,7 +25,7 @@ describe 'Version' do
     expect(page).to have_text("#{organizer.name} updated social tag, email, googleplus and sponsor email of contact details in conference #{conference.short_title}")
   end
 
-  it 'display changes in program', feature: true, versioning: true, js: true do
+  it 'display changes in program', :feature, :versioning, :js do
     visit edit_admin_conference_program_path(conference.short_title)
     fill_in 'program_rating', with: '4'
     click_button 'Update Program'
@@ -34,7 +34,7 @@ describe 'Version' do
     expect(page).to have_text("#{organizer.name} updated rating of program in conference #{conference.short_title}")
   end
 
-  it 'display changes in cfp', feature: true, versioning: true, js: true do
+  it 'display changes in cfp', :feature, :versioning, :js do
     cfp.update(start_date: (Date.today + 1).strftime('%d/%m/%Y'),
                end_date:   (Date.today + 3).strftime('%d/%m/%Y'))
     cfp_id = cfp.id
@@ -46,7 +46,7 @@ describe 'Version' do
     expect(page).to have_text("Someone (probably via the console) deleted cfp for events with ID #{cfp_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in registration_period', feature: true, versioning: true, js: true do
+  it 'display changes in registration_period', :feature, :versioning, :js do
     registration_period = create(:registration_period, conference: conference)
     registration_period.update(start_date: (Date.today + 1).strftime('%d/%m/%Y'),
                                end_date:   (Date.today + 3).strftime('%d/%m/%Y'))
@@ -59,7 +59,7 @@ describe 'Version' do
     expect(page).to have_text("Someone (probably via the console) deleted registration period with ID #{registration_period_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in conference', feature: true, versioning: true, js: true do
+  it 'display changes in conference', :feature, :versioning, :js do
     new_conference = create(:conference, title: 'Test Conference')
     organizer.add_role :organizer, new_conference
     new_conference.update(title: 'New Con', short_title: 'NewCon')
@@ -72,7 +72,7 @@ describe 'Version' do
     expect(page).to have_text('Someone (probably via the console) updated title and short title of conference NewCon')
   end
 
-  it 'display changes in event_type', feature: true, versioning: true, js: true do
+  it 'display changes in event_type', :feature, :versioning, :js do
     event_type = create(:event_type, program: conference.program, name: 'Discussion')
     event_type.update(length: 90, maximum_abstract_length: 10_000)
     event_type_id = event_type.id
@@ -84,7 +84,7 @@ describe 'Version' do
     expect(page).to have_text("Someone (probably via the console) deleted event type Discussion with ID #{event_type_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in lodging', feature: true, versioning: true, js: true do
+  it 'display changes in lodging', :feature, :versioning, :js do
     lodging = create(:lodging, conference: conference, name: 'Hotel XYZ')
     lodging.update(description: 'Nice view,close to venue', website_link: 'http://www.example.com')
     lodging_id = lodging.id
@@ -96,7 +96,7 @@ describe 'Version' do
     expect(page).to have_text("Someone (probably via the console) deleted lodging Hotel XYZ with ID #{lodging_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in conference role', feature: true, versioning: true, js: true do
+  it 'display changes in conference role', :feature, :versioning, :js do
     visit edit_admin_conference_role_path(conference.short_title, 'cfp')
     fill_in 'role_description', with: 'For the members of the call for papers team'
     click_button 'Update Role'
@@ -105,7 +105,7 @@ describe 'Version' do
     expect(page).to have_text("#{organizer.name} updated description of role cfp in conference #{conference.short_title}")
   end
 
-  it 'display changes in room', feature: true, versioning: true, js: true do
+  it 'display changes in room', :feature, :versioning, :js do
     venue = create(:venue, conference: conference)
     room = create(:room, venue: venue, name: 'Auditorium')
     room.update_attribute(:size, 120)
@@ -118,7 +118,7 @@ describe 'Version' do
     expect(page).to have_text("Someone (probably via the console) deleted room Auditorium with ID #{room_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in sponsor', feature: true, versioning: true, js: true do
+  it 'display changes in sponsor', :feature, :versioning, :js do
     conference.sponsorship_levels << create_list(:sponsorship_level, 2, conference: conference)
     sponsor = create(:sponsor, conference: conference, name: 'SUSE',
 sponsorship_level: conference.sponsorship_levels.first)
@@ -133,7 +133,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted sponsor SUSE with ID #{sponsor_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in sponsorship_level', feature: true, versioning: true, js: true do
+  it 'display changes in sponsorship_level', :feature, :versioning, :js do
     sponsorship_level = create(:sponsorship_level, conference: conference)
     sponsorship_level.update_attribute(:title, 'Gold')
     sponsorship_level_id = sponsorship_level.id
@@ -145,7 +145,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted sponsorship level Gold with ID #{sponsorship_level_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in ticket', feature: true, versioning: true, js: true do
+  it 'display changes in ticket', :feature, :versioning, :js do
     ticket = create(:ticket, conference: conference, title: 'Gold')
     ticket.update(price: 50, description: 'Premium Ticket')
     ticket_id = ticket.id
@@ -157,7 +157,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted ticket Gold with ID #{ticket_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in track', feature: true, versioning: true, js: true do
+  it 'display changes in track', :feature, :versioning, :js do
     track = create(:track, program: conference.program, name: 'Distribution')
     track.update_attribute(:description, 'Events about Linux distributions')
     track_id = track.id
@@ -169,7 +169,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted track Distribution with ID #{track_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in venue', feature: true, versioning: true, js: true do
+  it 'display changes in venue', :feature, :versioning, :js do
     venue = create(:venue, conference: conference, name: 'Example University')
     venue.update(website: 'www.example.com new', description: 'Just another beautiful venue')
     venue_id = venue.id
@@ -181,7 +181,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted venue Example University with ID #{venue_id} in conference #{conference.short_title}")
   end
 
-  xit 'display changes in event', feature: true, versioning: true, js: true do
+  xit 'display changes in event', :feature, :versioning, :js do
     visit new_conference_program_proposal_path(conference_id: conference.short_title)
     fill_in 'event_title', with: 'ABC'
     fill_in 'event_abstract', with: 'Lorem ipsum abstract'
@@ -223,7 +223,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("#{organizer.name} canceled event ABC in conference #{conference.short_title}")
   end
 
-  it 'display changes in difficulty levels', feature: true, versioning: true, js: true do
+  it 'display changes in difficulty levels', :feature, :versioning, :js do
     difficulty_level = create(:difficulty_level, program: conference.program, title: 'Expert')
     difficulty_level.update_attribute(:description, 'Only for Experts')
     difficulty_level_id = difficulty_level.id
@@ -235,7 +235,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted difficulty level Expert with ID #{difficulty_level_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in splashpages', feature: true, versioning: true, js: true do
+  it 'display changes in splashpages', :feature, :versioning, :js do
     visit admin_conference_splashpage_path(conference.short_title)
     click_link 'Create Splashpage'
     click_button 'Save'
@@ -262,7 +262,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("#{organizer.name} deleted splashpage with ID #{splashpage_id} in conference #{conference.short_title}")
   end
 
-  it 'displays users subscribe/unsubscribe to conferences', feature: true, versioning: true, js: true do
+  it 'displays users subscribe/unsubscribe to conferences', :feature, :versioning, :js do
     visit root_path
     click_link 'Subscribe'
     click_link 'Unsubscribe'
@@ -276,7 +276,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) unsubscribed #{organizer.name} from conference #{conference.short_title}")
   end
 
-  it 'display changes in conference commercials', feature: true, versioning: true, js: true do
+  it 'display changes in conference commercials', :feature, :versioning, :js do
     conference_commercial = create(:conference_commercial, commercialable: conference)
     conference_commercial.update_attribute(:url, 'https://www.youtube.com/watch?v=VNkDJk5_9eU')
     conference_commercial.destroy
@@ -287,7 +287,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted commercial in conference #{conference.short_title}")
   end
 
-  it 'display changes in event commercials', feature: true, versioning: true, js: true do
+  it 'display changes in event commercials', :feature, :versioning, :js do
     event_commercial
     event_commercial.update_attribute(:url, 'https://www.youtube.com/watch?v=VNkDJk5_9eU')
     event_commercial.destroy
@@ -298,7 +298,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) deleted commercial in event #{event_with_commercial.title} in conference #{conference.short_title}")
   end
 
-  it 'display changes in event commercials in event history', feature: true, versioning: true, js: true do
+  it 'display changes in event commercials in event history', :feature, :versioning, :js do
     event_without_commercial = create(:event, program: conference.program)
     event_commercial
 
@@ -311,7 +311,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_no_text('Someone (probably via the console) created new commercial')
   end
 
-  it 'display changes in organization', feature: true, versioning: true, js: true do
+  it 'display changes in organization', :feature, :versioning, :js do
     admin = create(:admin)
     sign_in admin
 
@@ -323,7 +323,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text('created new organization New org')
   end
 
-  context 'organization role', feature: true, versioning: true, js: true do
+  context 'organization role', :feature, :versioning, :js do
     let!(:organization_admin) { create(:organization_admin, organization: conference.organization) }
     let!(:user) { create(:user) }
 
@@ -346,7 +346,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     end
   end
 
-  it 'display changes in users_role for conference role', feature: true, versioning: true, js: true do
+  it 'display changes in users_role for conference role', :feature, :versioning, :js do
     user = create(:user)
     role = Role.find_by(name: 'cfp', resource_id: conference.id, resource_type: 'Conference')
     user.add_role :cfp, conference
@@ -358,7 +358,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("removed role cfp with ID #{user_role.id} from user #{user.name} in conference #{conference.short_title}")
   end
 
-  it 'display changes in email settings', feature: true, versioning: true, js: true do
+  it 'display changes in email settings', :feature, :versioning, :js do
     conference.email_settings.update(registration_subject: 'xxxxx', registration_body: 'yyyyy',
                                      accepted_subject: 'zzzzz')
 
@@ -366,7 +366,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) updated registration body, registration subject and accepted subject of email settings in conference #{conference.short_title}")
   end
 
-  it 'display changes in conference registrations', feature: true, versioning: true, js: true do
+  it 'display changes in conference registrations', :feature, :versioning, :js do
     Registration.create(user: organizer, conference: conference)
     Registration.last.destroy
 
@@ -375,7 +375,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) unregistered #{organizer.name} from conference #{conference.short_title}")
   end
 
-  it 'display changes in event registration', feature: true, versioning: true, js: true do
+  it 'display changes in event registration', :feature, :versioning, :js do
     create(:event, program: conference.program, title: 'My first event')
     registration = Registration.create(user: organizer, conference: conference)
     event = create(:event, program: conference.program, title: 'My second event')
@@ -391,7 +391,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) unregistered #{organizer.name} from event #{event.title} in conference #{conference.short_title}")
   end
 
-  it 'display changes in comment', feature: true, versioning: true, js: true do
+  it 'display changes in comment', :feature, :versioning, :js do
     create(:event, program: conference.program, title: 'My first event')
     event = create(:event, program: conference.program, title: 'My second event')
     visit admin_conference_program_event_path(conference_id: conference.short_title, id: event.id)
@@ -408,7 +408,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) re-added #{organizer.name}'s comment on event #{event.title} in conference #{conference.short_title}")
   end
 
-  it 'display changes in vote', feature: true, versioning: true, js: true do
+  it 'display changes in vote', :feature, :versioning, :js do
     conference.program.rating = 1
     create(:event, program: conference.program, title: 'My first event')
     event = create(:event, program: conference.program, title: 'My second event')
@@ -422,7 +422,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone (probably via the console) re-added #{organizer.name}'s vote on event #{event.title} in conference #{conference.short_title}")
   end
 
-  it 'display password reset requests', feature: true, versioning: true, js: true do
+  it 'display password reset requests', :feature, :versioning, :js do
     user = create(:user)
     user.send_reset_password_instructions
 
@@ -430,14 +430,14 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("Someone requested password reset of user #{user.name}")
   end
 
-  it 'display user signups', feature: true, versioning: true, js: true do
+  it 'display user signups', :feature, :versioning, :js do
     create(:user, name: 'testname')
 
     visit admin_revision_history_path
     expect(page).to have_text('testname signed up')
   end
 
-  it 'display updates to user', feature: true, versioning: true, js: true do
+  it 'display updates to user', :feature, :versioning, :js do
     user = create(:user)
     user.update(nickname: 'testnick', affiliation: 'openSUSE')
 

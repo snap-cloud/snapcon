@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Registration, feature: true, js: true do
+describe Registration, :feature, :js do
   let!(:ticket) { create(:ticket) }
   let!(:free_ticket) { create(:ticket, price_cents: 0) }
   let!(:first_registration_ticket) { create(:registration_ticket, price_cents: 0) }
@@ -70,7 +70,7 @@ describe Registration, feature: true, js: true do
         end
       end
 
-      it 'purchases ticket but payment fails', feature: true, js: true do
+      it 'purchases ticket but payment fails', :feature, :js do
         visit root_path
         click_link 'Register'
 
@@ -205,13 +205,13 @@ describe Registration, feature: true, js: true do
         click_button 'Register'
       end
 
-      it 'selects a ticket in EUR', feature: true, js: true do
+      it 'selects a ticket in EUR', :feature, :js do
         select 'EUR', from: 'currency_selector'
         fill_in "tickets__#{third_registration_ticket.id}", with: '1'
         expect(page).to have_content('17.80')
       end
 
-      it 'switches between EUR and GBP', feature: true, js: true do
+      it 'switches between EUR and GBP', :feature, :js do
         select 'EUR', from: 'currency_selector'
         fill_in "tickets__#{third_registration_ticket.id}", with: '1'
         expect(page).to have_content('17.80')
@@ -219,7 +219,7 @@ describe Registration, feature: true, js: true do
         expect(page).to have_content('7.50')
       end
 
-      it 'sees the correct currency symbol after changing the currency in tickets', feature: true, js: true do
+      it 'sees the correct currency symbol after changing the currency in tickets', :feature, :js do
         select 'EUR', from: 'currency_selector'
         expect(page).to have_content('€')
         select 'GBP', from: 'currency_selector'

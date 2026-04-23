@@ -8,7 +8,7 @@ describe Splashpage do
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:participant) { create(:user, biography: '', is_admin: false) }
 
-  it 'create a valid splashpage', js: true do
+  it 'create a valid splashpage', :js do
     sign_in organizer
     visit admin_conference_splashpage_path(conference.short_title)
 
@@ -23,7 +23,7 @@ describe Splashpage do
   context 'splashpage already created' do
     let!(:splashpage) { create(:splashpage, conference: conference, public: false) }
 
-    it 'update a valid splashpage', js: true do
+    it 'update a valid splashpage', :js do
       sign_in organizer
       visit admin_conference_splashpage_path(conference.short_title)
 
@@ -39,7 +39,7 @@ describe Splashpage do
       expect(page.has_checked_field?('Make splash page public?')).to be true
     end
 
-    it 'delete the splashpage', js: true do
+    it 'delete the splashpage', :js do
       sign_in organizer
       visit admin_conference_splashpage_path(conference.short_title)
       click_link 'Delete'
@@ -71,7 +71,7 @@ describe Splashpage do
     context 'multiple organizations' do
       let!(:additional_organization) { create(:organization) }
 
-      it 'has organization logo', feature: true, js: true do
+      it 'has organization logo', :feature, :js do
         sign_in participant
         visit conference_path(conference.short_title)
 
@@ -80,7 +80,7 @@ describe Splashpage do
     end
   end
 
-  context 'happening now section', feature: true, js: true do
+  context 'happening now section', :feature, :js do
     let!(:conference2) do
       create(:full_conference, start_date: 1.day.ago, end_date: 7.days.from_now, start_hour: 0, end_hour: 24)
     end
@@ -188,13 +188,13 @@ start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
     let!(:reg_ticket) { create(:ticket, registration_ticket: true, conference: conference) }
     let!(:free_ticket) { create(:ticket, price_cents: 0) }
 
-    it 'user signed in with no tickets', feature: true do
+    it 'user signed in with no tickets', :feature do
       sign_in participant
       visit conference_path(conference.short_title)
       expect(page).to have_content 'You have not booked any tickets for this conference yet.'
     end
 
-    it 'user signed in with 1 free ticket', feature: true do
+    it 'user signed in with 1 free ticket', :feature do
       sign_in participant
       create(:ticket_purchase, conference: conference, user: participant, ticket: free_ticket, quantity: 1)
       visit conference_path(conference.short_title)
@@ -202,14 +202,14 @@ start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
     end
 
     # TODO-SNAPCON: This should check for reg tickets, not just any ticket.
-    it 'user signed in with 1 paid ticket', feature: true do
+    it 'user signed in with 1 paid ticket', :feature do
       sign_in participant
       create(:ticket_purchase, conference: conference, user: participant, ticket: reg_ticket, quantity: 1)
       visit conference_path(conference.short_title)
       expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end
 
-    it 'user signed in with multiple ticket', feature: true do
+    it 'user signed in with multiple ticket', :feature do
       sign_in participant
       create(:ticket_purchase, conference: conference, user: participant, ticket: reg_ticket, quantity: 1)
       create(:ticket_purchase, conference: conference, user: participant, ticket: free_ticket, quantity: 1)
@@ -217,7 +217,7 @@ start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
       expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end
 
-    it 'user not signed in', feature: true do
+    it 'user not signed in', :feature do
       visit conference_path(conference.short_title)
       expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end

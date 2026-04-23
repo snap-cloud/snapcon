@@ -234,12 +234,12 @@ describe 'User' do
       it { is_expected.not_to be_able_to(:manage, event_unconfirmed) }
 
       # TODO-SNAPCON: Debug why this fail after Rails 7 upgrade.
-      xit "fails after Rails 7 upgrade" do
-        is_expected.to be_able_to(:create, user_event_with_cfp.commercials.new)
+      xit 'fails after Rails 7 upgrade' do
+        expect(subject).to be_able_to(:create, user_event_with_cfp.commercials.new)
       end
 
-      xit "fails after Rails 7 upgrade" do
-        is_expected.to be_able_to(:manage, user_commercial)
+      xit 'fails after Rails 7 upgrade' do
+        expect(subject).to be_able_to(:manage, user_commercial)
       end
 
       it { is_expected.not_to be_able_to(:manage, commercial_event_unconfirmed) }

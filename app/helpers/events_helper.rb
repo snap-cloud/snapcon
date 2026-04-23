@@ -44,7 +44,7 @@ module EventsHelper
   end
 
   def canceled_replacement_event_label(event, event_schedule, *label_classes)
-    if event.state == 'canceled' || event.state == 'withdrawn'
+    if ['canceled', 'withdrawn'].include?(event.state)
       content_tag :span, 'CANCELED', class: (%w[label label-danger] + label_classes)
     elsif event_schedule.present? && event_schedule.replacement?(@withdrawn_event_schedules)
       content_tag :span, 'REPLACEMENT', class: (%w[label label-info] + label_classes)
@@ -287,7 +287,7 @@ module EventsHelper
     options_for_select(users.map { |u| ["#{u[1]} (#{u[2]} #{u[3]})", u[0]] }, users.map(&:first))
   end
 
-  def committee_only_actions(user, conference, roles: %i[organizer cfp], &block)
+  def committee_only_actions(user, conference, roles: %i[organizer cfp], &)
     return unless user
 
     role_map = roles.map { |role| { name: role, resource: conference } }
@@ -295,7 +295,7 @@ module EventsHelper
 
     content_tag(:div, class: 'panel panel-info') do
       concat content_tag(:div, 'Conference Organizers', class: 'panel-heading')
-      concat content_tag(:div, capture(&block), class: 'panel-body')
+      concat content_tag(:div, capture(&), class: 'panel-body')
     end
   end
 

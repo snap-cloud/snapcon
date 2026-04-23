@@ -7,7 +7,7 @@ describe Conference do
   let!(:organization) { create(:organization) }
 
   shared_examples 'add and update conference' do
-    it 'adds a new conference', feature: true, js: true do
+    it 'adds a new conference', :feature, :js do
       expected_count = Conference.count + 1
       sign_in user
 
@@ -38,7 +38,7 @@ describe Conference do
       expect(user.has_cached_role?(:organizer, Conference.last)).to be(true)
     end
 
-    it 'update conference', feature: true, js: true do
+    it 'update conference', :feature, :js do
       conference = create(:conference)
       organizer = create(:organizer, resource: conference)
 
@@ -75,7 +75,7 @@ describe Conference do
   describe 'admin' do
     let!(:conference) { create(:conference) }
 
-    it 'has organization name in menu bar for conference views', feature: true, js: true do
+    it 'has organization name in menu bar for conference views', :feature, :js do
       sign_in user
       visit admin_conference_path(conference.short_title)
 

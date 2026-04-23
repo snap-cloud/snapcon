@@ -16,7 +16,7 @@ describe RegistrationPeriod do
       click_link 'New Registration Period'
     end
 
-    it 'requires start date and end date', feature: true do
+    it 'requires start date and end date', :feature do
       visit admin_conference_registration_period_path(conference_id: conference)
       click_link 'New Registration Period'
 
@@ -32,7 +32,7 @@ describe RegistrationPeriod do
         create(:registration_ticket, conference: conference)
       end
 
-      it 'creates registration period', feature: true, js: true do
+      it 'creates registration period', :feature, :js do
         page
           .execute_script("$('#registration-period-start-datepicker').val('" +
                                "#{start_date.strftime('%d/%m/%Y')}')")
@@ -55,7 +55,7 @@ describe RegistrationPeriod do
     end
 
     context 'without tickets' do
-      it 'creates registration period', feature: true, js: true do
+      it 'creates registration period', :feature, :js do
         page
           .execute_script("$('#registration-period-start-datepicker').val('" +
                                "#{start_date.strftime('%d/%m/%Y')}')")

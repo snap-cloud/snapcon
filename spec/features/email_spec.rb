@@ -7,8 +7,7 @@ describe EmailSettings do
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'email settings' do
-    it 'updates email settings',
-       feature: true, js: true do
+    it 'updates email settings', :feature, :js do
       expected_count = EmailSettings.count
 
       sign_in organizer

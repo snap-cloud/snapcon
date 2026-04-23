@@ -381,7 +381,7 @@ class Event < ApplicationRecord
   end
 
   def serializable_hash(options = {})
-    super(options).merge('rendered_abstract' => markdown(abstract))
+    super.merge('rendered_abstract' => markdown(abstract))
   end
 
   private

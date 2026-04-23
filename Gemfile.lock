@@ -201,8 +201,6 @@ GEM
       railties (>= 5.0, < 8)
       rexml (~> 3.0)
       webrick (~> 1.7)
-    cucumber-rails-training-wheels (1.0.0)
-      cucumber-rails (>= 1.1.1)
     cucumber-tag-expressions (4.1.0)
     cucumber-wire (6.2.1)
       cucumber-core (~> 10.1, >= 10.1.0)
@@ -576,6 +574,9 @@ GEM
     rubocop-capybara (2.22.1)
       lint_roller (~> 1.1)
       rubocop (~> 1.72, >= 1.72.1)
+    rubocop-factory_bot (2.28.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
     rubocop-performance (1.26.1)
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
@@ -589,6 +590,10 @@ GEM
     rubocop-rspec (3.9.0)
       lint_roller (~> 1.1)
       rubocop (~> 1.81)
+    rubocop-rspec_rails (2.32.0)
+      lint_roller (~> 1.1)
+      rubocop (~> 1.72, >= 1.72.1)
+      rubocop-rspec (~> 3.5)
     ruby-oembed (0.17.0)
     ruby-openid (2.9.2)
     ruby-progressbar (1.13.0)
@@ -738,7 +743,6 @@ DEPENDENCIES
   cocoon
   countable-rails
   cucumber-rails
-  cucumber-rails-training-wheels
   daemons
   dalli
   database_cleaner
@@ -804,9 +808,11 @@ DEPENDENCIES
   rspec-rails
   rubocop
   rubocop-capybara
+  rubocop-factory_bot
   rubocop-performance
   rubocop-rails
   rubocop-rspec
+  rubocop-rspec_rails
   ruby-oembed
   sass-rails (>= 4.0.2)
   selectize-rails

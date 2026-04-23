@@ -233,7 +233,6 @@ group :test do
   # as test framework
   gem 'capybara'
   gem 'cucumber-rails', require: false
-  gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
   gem 'database_cleaner'
   gem 'geckodriver-helper'
   gem 'rspec-rails'
@@ -267,15 +266,17 @@ group :development, :test, :linters do
 
   # for static code analisys
   gem 'rubocop', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rails', require: false
   gem 'rubocop-capybara', require: false
+  gem 'rubocop-factory_bot', require: false
   gem 'rubocop-performance', require: false
-  gem 'haml_lint'
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rspec_rails', require: false
 
   gem 'faraday-retry', require: false
   # TODO-SNAPCON: figure out which haml-lint OR haml_lint is good.
   gem 'haml-lint', require: false
+  gem 'haml_lint'
 
   # Easily run linters
   gem 'pronto', require: false

@@ -8,7 +8,7 @@ describe Track do
   let(:user) { create(:user) }
 
   shared_examples 'admin tracks' do
-    it 'adds a track', feature: true, js: true do
+    it 'adds a track', :feature, :js do
       sign_in organizer
 
       expected = expect do
@@ -28,7 +28,7 @@ describe Track do
       end
     end
 
-    it 'deletes a track', feature: true, js: true do
+    it 'deletes a track', :feature, :js do
       track = create(:track, program_id: conference.program.id)
       sign_in organizer
 
@@ -44,7 +44,7 @@ describe Track do
       expect(Track.count).to eq(0)
     end
 
-    it 'updates a track', feature: true, js: true do
+    it 'updates a track', :feature, :js do
       create(:track, program_id: conference.program.id)
       sign_in organizer
 
@@ -70,7 +70,7 @@ describe Track do
   end
 
   shared_examples 'non admin tracks' do
-    it 'adds a track', feature: true, js: true do
+    it 'adds a track', :feature, :js do
       sign_in user
 
       expected = expect do
@@ -93,7 +93,7 @@ describe Track do
       end
     end
 
-    it 'withdraws a track', feature: true, js: true do
+    it 'withdraws a track', :feature, :js do
       track = create(:track, :self_organized, program_id: conference.program.id, submitter: user)
       sign_in user
 
@@ -114,7 +114,7 @@ describe Track do
       end
     end
 
-    it 'updates a track', feature: true, js: true do
+    it 'updates a track', :feature, :js do
       create(:track, :self_organized, program_id: conference.program.id, submitter: user)
       sign_in user
 

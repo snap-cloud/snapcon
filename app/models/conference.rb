@@ -39,6 +39,7 @@
 # rubocop:disable Metrics/ClassLength
 class Conference < ApplicationRecord
   include RevisionCount
+
   require 'uri'
   serialize :events_per_week, Hash
   # Needed to call 'Conference.with_role' in /models/ability.rb

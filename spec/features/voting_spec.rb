@@ -48,7 +48,7 @@ feature 'Voting' do
     conference.program.update_attribute :rating, 5
   end
 
-  scenario 'multiple users casting votes', feature: true, js: true do
+  scenario 'multiple users casting votes', :feature, :js do
     sign_in voter1
     cast_vote 3, before: 0, after: 3
     sign_out

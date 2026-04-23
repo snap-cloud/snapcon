@@ -49,16 +49,16 @@ describe Admin::SponsorshipLevelsController do
 
     describe 'POST #create' do
       context 'saves successfuly' do
-        before(:each, run: true) do
+        before(:each, :run) do
           post :create, params: { sponsorship_level: attributes_for(:sponsorship_level),
                                   conference_id:     conference.short_title }
         end
 
-        it 'redirects to admin sponsorship_level index path', run: true do
+        it 'redirects to admin sponsorship_level index path', :run do
           expect(response).to redirect_to admin_conference_sponsorship_levels_path(conference_id: conference.short_title)
         end
 
-        it 'shows success message in flash notice', run: true do
+        it 'shows success message in flash notice', :run do
           expect(flash[:notice]).to match('Sponsorship level successfully created.')
         end
 
@@ -138,15 +138,15 @@ describe Admin::SponsorshipLevelsController do
 
     describe 'DELETE #destroy' do
       context 'deletes successfully' do
-        before(:each, run: true) do
+        before(:each, :run) do
           delete :destroy, params: { conference_id: conference.short_title, id: sponsorship_level.id }
         end
 
-        it 'redirects to admin sponsorship_level index path', run: true do
+        it 'redirects to admin sponsorship_level index path', :run do
           expect(response).to redirect_to admin_conference_sponsorship_levels_path(conference_id: conference.short_title)
         end
 
-        it 'shows success message in flash notice', run: true do
+        it 'shows success message in flash notice', :run do
           expect(flash[:notice]).to match('Sponsorship level successfully deleted.')
         end
 

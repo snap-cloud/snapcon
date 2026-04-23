@@ -27,7 +27,7 @@ describe Event do
       sign_in organizer
     end
 
-    scenario 'can preview a proposal if it is public', feature: true, js: true do
+    scenario 'can preview a proposal if it is public', :feature, :js do
       visit admin_conference_program_event_path(conference.short_title, @event)
       expect(page).to have_selector(:link_or_button, 'Preview')
       click_link 'Preview'
@@ -35,7 +35,7 @@ describe Event do
                                         ignore_query: true)
     end
 
-    scenario 'cannot preview a proposal if it is not public', feature: true, js: true do
+    scenario 'cannot preview a proposal if it is not public', :feature, :js do
       event = create(:event, program: conference.program, title: 'Example Proposal')
       event.public = false
       event.save!
@@ -43,7 +43,7 @@ describe Event do
       expect(page).not_to have_selector(:link_or_button, 'Preview')
     end
 
-    scenario 'adds a proposal', feature: true, js: true do
+    scenario 'adds a proposal', :feature, :js do
       visit admin_conference_program_events_path(conference.short_title)
       click_on 'Add Event'
       fill_in 'Title', with: 'Organizer-Created Proposal'
@@ -52,7 +52,7 @@ describe Event do
       expect(flash).to eq('Event was successfully submitted.')
     end
 
-    scenario 'rejects a proposal', feature: true, js: true do
+    scenario 'rejects a proposal', :feature, :js do
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
 
@@ -63,7 +63,7 @@ describe Event do
       expect(@event.state).to eq('rejected')
     end
 
-    it 'accepts a proposal', feature: true, js: true do
+    it 'accepts a proposal', :feature, :js do
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
 
@@ -75,7 +75,7 @@ describe Event do
       expect(@event.state).to eq('unconfirmed')
     end
 
-    scenario 'restarts review of a proposal', feature: true, js: true do
+    scenario 'restarts review of a proposal', :feature, :js do
       @event.reject!(@options)
       visit admin_conference_program_events_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
@@ -93,7 +93,7 @@ describe Event do
       @event.accept!(@options)
     end
 
-    scenario 'not signed_in user submits proposal', feature: true, js: true do
+    scenario 'not signed_in user submits proposal', :feature, :js do
       expected_count_event = Event.count + 1
       expected_count_user = User.count + 1
 
@@ -136,7 +136,7 @@ describe Event do
       expect(page).to have_content 'Proposal Information'
     end
 
-    scenario 'update a proposal', js: true do
+    scenario 'update a proposal', :js do
       conference = create(:conference)
       create(:track, program:     conference.program,
                      name:        'Example Track',
@@ -161,7 +161,7 @@ describe Event do
       expect(page).to have_content 'Proposal was successfully updated.'
     end
 
-    it 'signed_in user submits a valid proposal', feature: true, js: true do
+    it 'signed_in user submits a valid proposal', :feature, :js do
       sign_in participant_without_bio
       expected_count = Event.count + 1
 
@@ -193,7 +193,7 @@ describe Event do
       expect(Event.count).to eq(expected_count)
     end
 
-    it 'confirms a proposal', feature: true, js: true do
+    it 'confirms a proposal', :feature, :js do
       sign_in participant
       visit conference_program_proposals_path(conference.short_title)
       expect(page).to have_content 'Example Proposal'
@@ -206,7 +206,7 @@ describe Event do
       expect(@event.state).to eq('confirmed')
     end
 
-    it 'withdraw a proposal', feature: true, js: true do
+    it 'withdraw a proposal', :feature, :js do
       sign_in participant
       @event.confirm!
       visit conference_program_proposals_path(conference.short_title)
@@ -219,7 +219,7 @@ describe Event do
       expect(@event.state).to eq('withdrawn')
     end
 
-    it 'can reset to text template', feature: true, js: true do
+    it 'can reset to text template', :feature, :js do
       event_type = conference.program.event_types[-1]
       event_type.description = 'Example event description'
       event_type.submission_template = '## Fill Me In!'
@@ -252,18 +252,18 @@ start_time: conference.start_hour + 1.hour)
       @registration = conference.register_user(participant)
     end
 
-    xit 'for a scheduled event, can add an event to google calendar if signed in', feature: true do
+    xit 'for a scheduled event, can add an event to google calendar if signed in', :feature do
       sign_in participant
       visit conference_program_proposal_path(conference.short_title, @scheduled_event1.id)
       expect(page).to have_content('Google Calendar')
     end
 
-    xit 'for a scheduled event, cannot add an event to google calendar if not signed on', feature: true do
+    xit 'for a scheduled event, cannot add an event to google calendar if not signed on', :feature do
       visit conference_program_proposal_path(conference.short_title, @scheduled_event1.id)
       expect(page).not_to have_content('Google Calendar')
     end
 
-    context 'for events where you join the room via a link', feature: true do
+    context 'for events where you join the room via a link', :feature do
       before do
         sign_in participant
       end

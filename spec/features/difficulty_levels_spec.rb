@@ -7,7 +7,7 @@ describe DifficultyLevel do
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'difficulty levels' do
-    it 'adds difficulty level', feature: true, js: true do
+    it 'adds difficulty level', :feature, :js do
       sign_in organizer
       visit admin_conference_program_difficulty_levels_path(
         conference_id: conference.short_title
@@ -31,7 +31,7 @@ describe DifficultyLevel do
       end
     end
 
-    it 'updates difficulty level', feature: true, js: true do
+    it 'updates difficulty level', :feature, :js do
       conference.program.difficulty_levels << create(:difficulty_level)
       sign_in organizer
       visit admin_conference_program_difficulty_levels_path(

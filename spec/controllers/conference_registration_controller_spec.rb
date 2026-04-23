@@ -378,15 +378,15 @@ max_attendees: 5, state: 'confirmed')
       end
 
       context 'deletes successfully' do
-        before(:each, run: true) do
+        before(:each, :run) do
           delete :destroy, params: { conference_id: conference.short_title }
         end
 
-        it 'redirects to root path', run: true do
+        it 'redirects to root path', :run do
           expect(response).to redirect_to root_path
         end
 
-        it 'shows success message in flash notice', run: true do
+        it 'shows success message in flash notice', :run do
           expect(flash[:notice]).to match("You are not registered for #{conference.title} anymore!")
         end
 
