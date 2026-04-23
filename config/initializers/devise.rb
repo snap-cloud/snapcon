@@ -14,9 +14,10 @@ Devise.setup do |config|
                   name:  'google',
                   scope: %w[email profile]
 
-  # TODO-SNAPCON: This ought to be configurable. Use OSEM_DISCOURSE_KEY?
+  # Since the display of login buttons is based on _KEY and _SECRET being present, set
+  # OSEM_DISCOURSE_KEY to the SSON endpoint to use used.
   config.omniauth :discourse,
-                  sso_url:    'https://forum.snap.berkeley.edu/session/sso_provider',
+                  sso_url:    ENV.fetch('OSEM_DISCOURSE_KEY', nil),
                   sso_secret: ENV.fetch('OSEM_DISCOURSE_SECRET', nil)
 
   config.omniauth :facebook,
