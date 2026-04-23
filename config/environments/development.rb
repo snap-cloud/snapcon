@@ -134,9 +134,9 @@ Rails.application.configure do
 
   OmniAuth.config.mock_auth[:discourse] =
     OmniAuth::AuthHash.new(
-      provider:    'discourse',
-      uid:         'discourse-test-uid-1',
-      info:        {
+      provider: 'discourse',
+      uid:      'discourse-test-uid-1',
+      info:     {
         name:     'snap user',
         email:    'user-snap@example.com',
         username: 'user_snap'
