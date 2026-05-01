@@ -2,7 +2,7 @@
 
 class PaymentsController < ApplicationController
   before_action :authenticate_user!
-  load_and_authorize_resource
+  load_and_authorize_resource only: %i[index new]
   load_resource :conference, find_by: :short_title
   authorize_resource :conference_registrations, class: Registration
 
@@ -11,7 +11,6 @@ class PaymentsController < ApplicationController
   end
 
   def new
-    # TODO: use "base currency"
     session[:selected_currency] = params[:currency] if params[:currency].present?
     selected_currency = session[:selected_currency] || @conference.tickets.first.price_currency
     from_currency = @conference.tickets.first.price_currency
@@ -27,15 +26,51 @@ class PaymentsController < ApplicationController
   end
 
   def create
-    @payment = Payment.new payment_params
     session[:selected_currency] = params[:currency] if params[:currency].present?
     selected_currency = session[:selected_currency] || @conference.tickets.first.price_currency
-    from_currency = @conference.tickets.first.price_currency
 
-    if @payment.purchase && @payment.save
-      update_purchased_ticket_purchases
+    @payment = Payment.new(
+      user:       current_user,
+      conference: @conference,
+      currency:   selected_currency
+    )
+    authorize! :create, @payment
 
-      has_registration_ticket = params[:has_registration_ticket]
+    unless @payment.save
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: @payment.errors.full_messages.to_sentence
+      return
+    end
+
+    session[:has_registration_ticket] = params[:has_registration_ticket]
+
+    checkout_session = @payment.create_checkout_session(
+      success_url: success_conference_payments_url(@conference.short_title) + '?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url:  cancel_conference_payments_url(@conference.short_title)
+    )
+
+    if checkout_session
+      redirect_to checkout_session.url, allow_other_host: true
+    else
+      @payment.destroy
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: @payment.errors.full_messages.to_sentence.presence || 'Could not create checkout session. Please try again.'
+    end
+  end
+
+  def success
+    @payment = Payment.find_by(stripe_session_id: params[:session_id])
+
+    if @payment.nil?
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: 'Payment not found. Please try again.'
+      return
+    end
+
+    if @payment.complete_checkout
+      update_purchased_ticket_purchases(@payment)
+
+      has_registration_ticket = session.delete(:has_registration_ticket)
       if has_registration_ticket == 'true'
         registration = @conference.register_user(current_user)
         if registration
@@ -50,26 +85,21 @@ class PaymentsController < ApplicationController
                     notice: 'Thanks! Your ticket is booked successfully.'
       end
     else
-      # TODO-SNAPCON: This case is not tested at all
-      @total_amount_to_pay = CurrencyConversion.convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
-      @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
-      flash.now[:error] = @payment.errors.full_messages.to_sentence + ' Please try again with correct credentials.'
-      render :new
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: 'Payment could not be completed. Please try again.'
     end
+  end
+
+  def cancel
+    redirect_to new_conference_payment_path(@conference.short_title),
+                notice: 'Payment was cancelled. You can try again when ready.'
   end
 
   private
 
-  def payment_params
-    params.permit(:stripe_customer_email, :stripe_customer_token)
-          .merge(stripe_customer_email: params[:stripeEmail],
-                 stripe_customer_token: params[:stripeToken],
-                 user: current_user, conference: @conference, currency: session[:selected_currency])
-  end
-
-  def update_purchased_ticket_purchases
+  def update_purchased_ticket_purchases(payment)
     current_user.ticket_purchases.by_conference(@conference).unpaid.each do |ticket_purchase|
-      ticket_purchase.pay(@payment)
+      ticket_purchase.pay(payment)
     end
   end
 end

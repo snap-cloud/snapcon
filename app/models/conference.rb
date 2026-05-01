@@ -841,6 +841,88 @@ class Conference < ApplicationRecord
     end_date < Time.current
   end
 
+  ##
+  # Copies associations from another conference (for duplication).
+  # Includes: registration_period, email_settings, venue+rooms, tickets,
+  # event_types, tracks, difficulty_levels, sponsorship_levels, sponsors.
+  # Excludes: events, registrations, and other user/attendee data.
+  #
+  def copy_associations_from(source)
+    return unless source && source != self
+
+    # Registration period (clamp to new conference dates)
+    if source.registration_period.present?
+      rp = source.registration_period
+      start_d = [rp.start_date, start_date].max
+      end_d = [rp.end_date, end_date].min
+      start_d = end_d = start_date if start_d > end_d
+      create_registration_period!(start_date: start_d, end_date: end_d)
+    end
+
+    # Email settings (conference already has one from create_email_settings)
+    if source.email_settings.present? && email_settings.present?
+      attrs = source.email_settings.attributes.except('id', 'conference_id', 'created_at', 'updated_at')
+      email_settings.update!(attrs)
+    end
+
+    # Venue and rooms (map old room id -> new room for tracks later)
+    room_id_map = {}
+    if source.venue.present?
+      new_venue = create_venue!(
+        source.venue.attributes.slice('name', 'street', 'city', 'country', 'description', 'postalcode', 'website', 'latitude', 'longitude')
+      )
+      source.venue.rooms.order(:id).each_with_index do |old_room, _idx|
+        new_room = new_venue.rooms.create!(
+          old_room.attributes.slice('name', 'size', 'order').merge(guid: SecureRandom.urlsafe_base64)
+        )
+        room_id_map[old_room.id] = new_room.id
+      end
+    end
+
+    # Tickets (conference already has one free ticket from create_free_ticket; skip source's free to avoid duplicate)
+    source.tickets.each do |t|
+      next if t.title == 'Free Access' && t.price_cents.zero?
+
+      tickets.create!(
+        t.attributes.slice('title', 'description', 'price_cents', 'price_currency', 'registration_ticket', 'visible', 'email_subject', 'email_body')
+      )
+    end
+
+    # Event types and difficulty levels (program exists from after_create)
+    source.program&.event_types&.each do |et|
+      program.event_types.create!(
+        et.attributes.slice('title', 'length', 'color', 'description', 'minimum_abstract_length', 'maximum_abstract_length', 'submission_template', 'enable_public_submission')
+      )
+    end
+    source.program&.difficulty_levels&.each do |dl|
+      program.difficulty_levels.create!(
+        dl.attributes.slice('title', 'description', 'color')
+      )
+    end
+
+    # Tracks (assign new room by same index, or nil if no room)
+    source.program&.tracks&.each do |t|
+      old_room_id = t.room_id
+      new_room_id = old_room_id ? room_id_map[old_room_id] : nil
+      program.tracks.create!(
+        t.attributes.slice('name', 'short_name', 'description', 'color', 'state', 'relevance', 'start_date', 'end_date', 'cfp_active').merge(
+          guid: SecureRandom.urlsafe_base64,
+          room_id: new_room_id
+        )
+      )
+    end
+
+    # Sponsorship levels and sponsors
+    source.sponsorship_levels.each do |sl|
+      new_sl = sponsorship_levels.create!(sl.attributes.slice('title', 'position'))
+      sl.sponsors.each do |sp|
+        new_sl.sponsors.create!(
+          sp.attributes.slice('name', 'description', 'website_url')
+        )
+      end
+    end
+  end
+
   private
 
   # Returns a different html colour for every i and consecutive colors are

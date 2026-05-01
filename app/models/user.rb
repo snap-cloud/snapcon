@@ -102,7 +102,20 @@ class User < ApplicationRecord
 
   # add scope
   scope :comment_notifiable, lambda { |conference|
-                               joins(:roles).where('roles.name IN (?)', %i[organizer cfp]).where('roles.resource_type = ? AND roles.resource_id = ?', 'Conference', conference.id)
+                               joins(users_roles: :role)
+                                 .where(roles: { resource_type: 'Conference',
+                                                 resource_id: conference.id,
+                                                 name: %i[organizer cfp] })
+                                 .where(
+                                   Role.arel_table[:name]
+                                       .eq('cfp')
+                                       .or(
+                                         Role.arel_table[:name]
+                                             .eq('organizer')
+                                             .and(UsersRole.arel_table[:email_notifications].eq(true))
+                                       )
+                                 )
+                                 .distinct
                              }
 
   # scopes for user distributions

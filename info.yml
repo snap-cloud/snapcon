@@ -1,27 +1,24 @@
 project:
-  name: 'snapcon' # Your project name, e.g. Cue-to-cue
-  owner: 'CS169L-26' # Do not change
-  teamId: '04' # Your team number, e.g. 02
-  identities:
-    heroku: 'https://sp26-04-snapcon.herokuapp.com' # Your Heroku app URL
+  name: 'Snapcon'
+  owner: 'CS169L-Sp26'
+  teamId: 'CS169L-Sp26'
+  identities: {}
+  notifications:
+    email: 'ethanstone@berkeley.edu,bcsikes@berkeley.edu,zhouyijun@berkeley.edu,xinweili@berkeley.edu'
   members:
-    member1: # Add all project members
-      name: 'Ethan' # Member 1 name
-      surname: 'Stone' # Member 1 last name
-      githubUsername: 'Ethan-Stone1' # Member 1 GitHub username
-      herokuEmail: 'ethanstone@berkeley.edu' # Member 1 Heroku username
-    member2:
-      name: 'Benjamin'
-      surname: 'Sikes'
-      githubUsername: 'sikesbc'
-      herokuEmail: 'bcsikes@berkeley.edu'
-    member3:
-      name: 'Yijun'
-      surname: 'Zhou'
-      githubUsername: 'zhouyijun111'
-      herokuEmail: 'zhouyijun@berkeley.edu'
-    member4:
+    member1:
       name: 'Xinwei'
       surname: 'Li'
       githubUsername: 'li-xinwei'
-      herokuEmail: 'xinweili@berkeley.edu'
+    member2:
+      name: 'Yijun'
+      surname: 'Zhou'
+      githubUsername: 'zhouyijun111'
+    member3:
+      name: 'Ethan'
+      surname: 'Stone'
+      githubUsername: 'Ethan-Stone1'
+    member4:
+      name: 'Benjamin'
+      surname: 'Sikes'
+      githubUsername: 'sikesbc'
