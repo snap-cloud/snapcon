@@ -67,3 +67,23 @@
 
     #proposal-commercials.tab-pane
       = render partial: 'shared/media_items', locals: { commercials: @event.commercials }
+
+#duplicateEventModal.modal.fade{tabindex: '-1', role: 'dialog', 'aria-labelledby' => 'duplicateEventModalLabel'}
+  .modal-dialog{role: 'document'}
+    .modal-content
+      .modal-header
+        %button.close{'data-dismiss' => 'modal', 'aria-label' => 'Close'}
+          %span{'aria-hidden' => 'true'}
+            &times;
+        %h4#duplicateEventModalLabel.modal-title
+          Duplicate Event
+      = form_with url: duplicate_admin_conference_program_event_path(@conference.short_title, @event), method: :post, local: true do |f|
+        .modal-body
+          .form-group
+            %label{for: 'duplicate_count'} Number of copies to create:
+            %input#duplicate_count.form-control{type: 'number', name: 'count', value: '1', min: '1', max: '100', required: true}
+            %small.form-text.text-muted
+              You can create up to 100 copies at once. The new events will be created with you as the submitter.
+        .modal-footer
+          %button.btn.btn-secondary{'data-dismiss' => 'modal'} Cancel
+          %button.btn.btn-primary{type: 'submit'} Create Copies
