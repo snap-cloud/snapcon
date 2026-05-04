@@ -88,7 +88,7 @@ gem 'cocoon'
 # as the JavaScript library
 # TODO: Consolidate with the rails-assets below or move to webpack...
 gem 'jquery-rails'
-gem 'jquery-ui-rails', '~> 7.0.0'
+gem 'jquery-ui-rails', '~> 8.0.0'
 
 # for languages validation
 gem 'iso-639'
