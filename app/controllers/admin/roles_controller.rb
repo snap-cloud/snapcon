@@ -6,7 +6,7 @@ module Admin
     before_action :set_selection
     authorize_resource :role, except: :index
     # Show flash message with ajax calls
-    after_action :prepare_unobtrusive_flash, only: :toggle_user
+    after_action :prepare_unobtrusive_flash, only: %i[toggle_user toggle_comment_notifications]
 
     def index
       @roles = Role.where(resource: @conference)
@@ -21,7 +21,11 @@ module Admin
              else
                toggle_user_admin_conference_role_path(@conference.short_title, @role.name)
              end
-      @users = @role.users
+      @users_roles = UsersRole.where(role: @role).includes(:user)
+      @comment_notifications_url =
+        if @track.nil?
+          toggle_comment_notifications_admin_conference_role_path(@conference.short_title, @role.name)
+        end
     end
 
     def edit
@@ -100,6 +104,30 @@ module Admin
       respond_to do |format|
         format.js
         format.html { redirect_to url }
+      end
+    end
+
+    def toggle_comment_notifications
+      user = User.find_by(email: user_params[:email])
+      state = user_params[:state]
+
+      redirect_url = admin_conference_role_path(@conference.short_title, @role.name)
+      unless user
+        redirect_to redirect_url, error: 'Could not find user. Please provide a valid email!' and return
+      end
+
+      users_role = UsersRole.find_by(user: user, role: @role)
+      unless users_role
+        redirect_to redirect_url, error: 'Could not find organizer setting for this user.' and return
+      end
+
+      # Be tolerant to different representations coming from the client (e.g. "true", "1", true).
+      email_notifications = ActiveModel::Type::Boolean.new.cast(state)
+      users_role.update!(email_notifications: email_notifications)
+
+      respond_to do |format|
+        format.js
+        format.html { redirect_to redirect_url, notice: 'Successfully updated notification setting.' }
       end
     end
 

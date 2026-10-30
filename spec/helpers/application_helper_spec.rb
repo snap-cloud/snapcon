@@ -156,6 +156,26 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
     end
   end
 
+  describe '#visible_conference_links' do
+    before do
+      conference # force creation
+      allow_any_instance_of(ApplicationHelper).to receive(:can?).and_return(true)
+    end
+
+    it 'returns conferences sorted by start date descending' do
+      confs = visible_conference_links
+      expect(confs).to eq confs.sort_by(&:start_date).reverse
+    end
+
+    it 'does not group by organization' do
+      expect(visible_conference_links).to be_an(Array)
+    end
+
+    it 'includes visible conferences' do
+      expect(visible_conference_links).to include(conference)
+    end
+  end
+
   describe '#event_type_sentence' do
     before do
       create(:event_type, title: 'Keynote', program: conference.program, enable_public_submission: false)

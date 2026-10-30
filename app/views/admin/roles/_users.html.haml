@@ -1,6 +1,6 @@
 .page-header
-  %h3 Users (#{users.length})
-- if users.present?
+  %h3 Users (#{users_roles.length})
+- if users_roles.present?
   %table.datatable#users
     %thead
       - if ( can? :toggle_user, @role )
@@ -8,15 +8,24 @@
       %th ID
       %th Name
       %th Email
+      - if @role.name == 'organizer' && can?(:toggle_user, @role)
+        %th Email notifications
     %tbody
-      - users.each do |user|
+      - users_roles.each do |users_role|
+        - user = users_role.user
         %tr
           - if ( can? :toggle_user, @role )
             %td.text-right
               = hidden_field_tag "role[user_ids][]", nil
-              = check_box_tag @conference.short_title, @role.id, (@role.user_ids.include? user.id), url: "#{@url}?user[email]=#{user.email}&user[state]=", method: :post, class: 'switch-checkbox'
+              = check_box_tag @conference.short_title, @role.id, true, url: "#{@url}?user[email]=#{user.email}&user[state]=", method: :post, class: 'switch-checkbox'
           %td= user.id
           %td= user.name
           %td= user.email
+          - if @role.name == 'organizer' && can?(:toggle_user, @role)
+            %td
+              = check_box_tag 'email_notifications', users_role.id, users_role.email_notifications,
+                url: "#{@comment_notifications_url}?user[email]=#{user.email}&user[state]=",
+                method: :post,
+                class: 'switch-checkbox'
 - else
   %h5 No users found!

@@ -115,6 +115,46 @@ module Admin
       @superevents = @program.events.where(superevent: true)
     end
 
+    def preview_tentative_accept
+      email_settings = @conference.email_settings
+      @tentative_subject = email_settings.tentative_accepted_subject.presence
+      default_body = email_settings.tentative_accepted_body.presence
+      @missing_committee_review = @event.committee_review.blank?
+      @tentative_body = EmailTemplateParser.parse_template(default_body, email_settings.get_values(@conference, @event.submitter, @event)) unless @missing_committee_review
+      render :tentative_accept
+    end
+
+    def tentative_accept
+      email_settings = @conference.email_settings
+
+      if @event.committee_review.blank?
+        flash.now[:alert] = 'Committee feedback is required before sending a tentative acceptance email.'
+        @tentative_subject = email_settings.tentative_accepted_subject.presence
+        email_settings.tentative_accepted_body.presence
+        @missing_committee_review = true
+        render :tentative_accept and return
+      end
+
+      @tentative_subject = email_settings.tentative_accepted_subject.presence
+      default_body = email_settings.tentative_accepted_body.presence
+      @missing_committee_review = false
+      @tentative_body = EmailTemplateParser.parse_template(default_body, email_settings.get_values(@conference, @event.submitter, @event))
+      send_mail = email_settings.send_on_tentative_accepted
+
+      begin
+        @event.tentatively_accept(send_mail: send_mail, subject: @tentative_subject, body: @tentative_body)
+        @event.save!
+        flash[:notice] = 'Event tentatively accepted!'
+        redirect_to admin_conference_program_events_path(conference_id: @conference.short_title) and return
+      rescue ActiveRecord::RecordInvalid => e
+        flash.now[:error] = "Could not save tentative acceptance: #{e.record.errors.full_messages.join(', ')}"
+        render :tentative_accept
+      rescue Transitions::InvalidTransition => e
+        flash.now[:error] = "Update state failed. #{e.message}"
+        render :tentative_accept
+      end
+    end
+
     def accept
       send_mail = @event.program.conference.email_settings.send_on_accepted
       subject = @event.program.conference.email_settings.accepted_subject.blank?

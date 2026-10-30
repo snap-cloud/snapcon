@@ -1,0 +1,28 @@
+%h2 Tentative Acceptance
+- if @event.program.conference.email_settings.send_on_tentative_accepted
+  .alert.alert-success
+    Email sending is enabled for tentative acceptance.
+  - if @missing_committee_review
+    .alert.alert-warning
+      Committee feedback is required before sending a tentative acceptance email.
+      %br
+      Please add committee feedback on the event before continuing.
+  - else
+    .panel.panel-default
+      .panel-heading
+        %h3 Email preview
+      .panel-body
+        .form-group
+          %label Email subject
+          %p.form-control-static= @tentative_subject
+        .form-group
+          %label Email body
+          = simple_format(@tentative_body)
+- else
+  .alert.alert-warning
+    Email sending is currently disabled for tentative acceptance.
+
+= form_with url: tentative_accept_admin_conference_program_event_path(@conference.short_title, @event), method: :patch, local: true do |f|
+  .form-group
+    = f.submit 'Tentatively Accept', class: 'btn btn-primary', disabled: @missing_committee_review
+    = link_to 'Cancel', admin_conference_program_event_path(@conference.short_title, @event), class: 'btn btn-default'

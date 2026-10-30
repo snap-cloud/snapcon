@@ -180,6 +180,15 @@ module FormatHelper
     truncate(sanitize(markdown.render(text), remove_elements: %w[a]), length: truncate)
   end
 
+  def markdown_with_variables(text, conference, escape_html = true)
+    return '' if text.nil?
+
+    parser = EmailTemplateParser.new(conference)
+    values = parser.retrieve_values
+    text = EmailTemplateParser.parse_template(text, values)
+    markdown(text, escape_html)
+  end
+
   def markdown(text, escape_html = true)
     return '' if text.nil?
 

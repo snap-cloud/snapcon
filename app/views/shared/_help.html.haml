@@ -1,12 +1,13 @@
 .template-help{ id: id }
   Valid attributes:
   %table.table
-    %tr
-      %td {email}
-      %td The user's email address
-    %tr
-      %td {name}
-      %td The user's full name
+    - if local_assigns.fetch(:show_user_variables, true)
+      %tr
+        %td {email}
+        %td The user's email address
+      %tr
+        %td {name}
+        %td The user's full name
     %tr
       %td {conference}
       %td The full conference title

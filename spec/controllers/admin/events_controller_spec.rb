@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 describe Admin::EventsController do
+  render_views
   with_versioning do
     describe 'GET #show' do
       let(:conference) { create(:conference) }
@@ -406,6 +407,202 @@ describe Admin::EventsController do
 
         second_dup.reload
         expect(second_dup.max_attendees).to eq original_event.max_attendees
+      end
+    end
+  end
+
+  describe 'GET #preview_tentative_accept' do
+    let(:conference) { create(:conference) }
+    let(:organizer) { create(:organizer, resource: conference) }
+    let(:event) { create(:event, program: conference.program) }
+    let(:email_settings) { conference.email_settings }
+
+    before do
+      sign_in(organizer)
+    end
+
+    context 'when email sending is disabled' do
+      before do
+        email_settings.update(send_on_tentative_accepted: false)
+        get :preview_tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+        sleep 0.1 # Sleep to ensure any asynchronous operations have completed
+      end
+
+      it 'shows warning about email setup' do
+        expect(response.body).to include('Email sending is currently disabled for tentative acceptance')
+      end
+
+      it 'does not show email preview' do
+        expect(response.body).not_to include('Email preview')
+      end
+    end
+
+    context 'when email sending is enabled' do
+      before do
+        email_settings.update(send_on_tentative_accepted: true)
+      end
+
+      context 'without committee feedback' do
+        before do
+          event.update(committee_review: nil)
+          get :preview_tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+          sleep 0.1 # Sleep to ensure any asynchronous operations have completed
+        end
+
+        it 'shows committee feedback warning' do
+          expect(response.body).to include('Committee feedback is required before sending a tentative acceptance email')
+        end
+
+        it 'disables the submit button' do
+          expect(response.body).to include('disabled')
+        end
+
+        it 'does not show email preview' do
+          expect(response.body).not_to include('Email preview')
+        end
+      end
+
+      context 'with committee feedback' do
+        before do
+          event.update(committee_review: 'Please update the abstract')
+          email_settings.update(
+            tentative_accepted_subject: 'Tentative Acceptance',
+            tentative_accepted_body:    'Your proposal has been tentatively accepted'
+          )
+          get :preview_tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+          sleep 0.1 # Sleep to ensure any asynchronous operations have completed
+        end
+
+        it 'shows email preview' do
+          expect(response.body).to include('Email preview')
+        end
+
+        it 'shows the correct subject' do
+          expect(response.body).to include('Tentative Acceptance')
+        end
+
+        it 'shows the correct body' do
+          expect(response.body).to include('Your proposal has been tentatively accepted')
+        end
+
+        it 'enables the submit button' do
+          expect(response.body).not_to include('disabled')
+        end
+      end
+    end
+  end
+
+  describe 'PATCH #tentative_accept' do
+    let(:conference) { create(:conference) }
+    let(:organizer) { create(:organizer, resource: conference) }
+    let(:event) { create(:event, program: conference.program) }
+    let(:email_settings) { conference.email_settings }
+
+    before do
+      sign_in(organizer)
+      email_settings.update(send_on_tentative_accepted: true)
+    end
+
+    context 'without committee feedback' do
+      before do
+        event.update(committee_review: nil)
+        patch :tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+      end
+
+      it 'shows error message' do
+        expect(flash[:alert]).to eq('Committee feedback is required before sending a tentative acceptance email.')
+      end
+
+      it 'does not change event state' do
+        event.reload
+        expect(event.state).to eq('new')
+      end
+
+      it 'renders the tentative_accept template' do
+        expect(response).to render_template(:tentative_accept)
+      end
+    end
+
+    context 'with committee feedback' do
+      before do
+        event.update(committee_review: 'Please update the abstract')
+        email_settings.update(
+          tentative_accepted_subject: 'Tentative Acceptance',
+          tentative_accepted_body:    'Your proposal has been tentatively accepted'
+        )
+      end
+
+      it 'changes event state to tentatively_accepted' do
+        expect do
+          patch :tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+          event.reload
+        end.to change(event, :state).from('new').to('tentatively_accepted')
+      end
+
+      it 'shows success message' do
+        patch :tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+        expect(flash[:notice]).to eq('Event tentatively accepted!')
+      end
+
+      it 'redirects to events index' do
+        patch :tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+        expect(response).to redirect_to(admin_conference_program_events_path(conference.short_title))
+      end
+
+      context 'when email sending is disabled' do
+        before do
+          email_settings.update(send_on_tentative_accepted: false)
+        end
+
+        it 'does not send an email' do
+          expect do
+            patch :tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+            sleep 0.1 # Sleep to ensure asynchronous operations have completed
+          end.not_to change(ActionMailer::Base.deliveries, :count)
+        end
+      end
+    end
+
+    context 'with invalid transition' do
+      before do
+        event.update(state: 'confirmed', committee_review: 'Some feedback')
+        patch :tentative_accept, params: { conference_id: conference.short_title, id: event.id }
+      end
+
+      it 'shows error message' do
+        expect(flash[:error]).to include('Update state failed')
+      end
+    end
+  end
+
+  describe 'committee feedback management' do
+    let(:conference) { create(:conference) }
+    let(:organizer) { create(:organizer, resource: conference) }
+    let(:event) { create(:event, program: conference.program, committee_review: 'Initial feedback') }
+
+    before do
+      sign_in(organizer)
+    end
+
+    context 'when updating committee feedback' do
+      it 'allows adding committee feedback' do
+        patch :update, params: {
+          conference_id: conference.short_title,
+          id:            event.id,
+          event:         { committee_review: 'Updated feedback' }
+        }
+        event.reload
+        expect(event.committee_review).to eq('Updated feedback')
+      end
+
+      it 'allows clearing committee feedback' do
+        patch :update, params: {
+          conference_id: conference.short_title,
+          id:            event.id,
+          event:         { committee_review: '' }
+        }
+        event.reload
+        expect(event.committee_review).to be_blank
       end
     end
   end

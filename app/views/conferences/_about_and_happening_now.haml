@@ -9,8 +9,8 @@
 = content_for :about do
   #about
     -if @user_registered && conference.registered_attendees_message.present?
-      = markdown(conference.registered_attendees_message, false)
-    = markdown(conference.description, false)
+      = markdown_with_variables(conference.registered_attendees_message, conference, false)
+    = markdown_with_variables(conference.description, conference, false)
 
 %section#about-and-happening-now
   .container

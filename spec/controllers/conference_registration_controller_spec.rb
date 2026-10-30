@@ -307,16 +307,47 @@ max_attendees: 5, state: 'confirmed')
     describe 'GET #edit' do
       before do
         @registration = create(:registration, conference: conference, user: user)
-        get :edit, params: { conference_id: conference.short_title }
       end
 
-      it 'assigns conference and registration variable' do
-        expect(assigns(:conference)).to eq conference
-        expect(assigns(:registration)).to eq @registration
+      context 'basic request' do
+        before do
+          get :edit, params: { conference_id: conference.short_title }
+        end
+
+        it 'assigns conference and registration variable' do
+          expect(assigns(:conference)).to eq conference
+          expect(assigns(:registration)).to eq @registration
+        end
+
+        it 'renders the edit template' do
+          expect(response).to render_template('edit')
+        end
       end
 
-      it 'renders the edit template' do
-        expect(response).to render_template('edit')
+      context 'code of conduct visibility' do
+        render_views
+
+        context 'conference has no code of conduct' do
+          before do
+            conference.organization.update(code_of_conduct: nil)
+            get :edit, params: { conference_id: conference.short_title }
+          end
+
+          it 'does not render the code of conduct modal' do
+            expect(response.body).not_to include('modal-code-of-conduct')
+          end
+        end
+
+        context 'conference has a code of conduct' do
+          before do
+            conference.organization.update(code_of_conduct: 'Be nice to each other.')
+            get :edit, params: { conference_id: conference.short_title }
+          end
+
+          it 'renders the code of conduct modal' do
+            expect(response.body).to include('modal-code-of-conduct')
+          end
+        end
       end
     end
 

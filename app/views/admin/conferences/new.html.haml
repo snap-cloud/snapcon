@@ -1,4 +1,10 @@
+- if @duplicate_from_source
+  .row
+    .col-md-8
+      .alert.alert-info
+        Duplicating from an existing conference. Please set Title, Short title, and Dates for the new conference.
 .row
   .col-md-8
     = form_for(@conference, url: admin_conferences_path) do |f|
+      = hidden_field_tag :duplicate_from, @duplicate_from_source if @duplicate_from_source
       = render partial: 'form_fields', locals: { f: f }

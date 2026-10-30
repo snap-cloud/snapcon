@@ -108,6 +108,10 @@
 # RECAPTCHA_SITE_KEY=1234
 # RECAPTCHA_SECRET_KEY=5678
 
+# Prevent new local password sign-ups (force SSO via Google/Snap!)
+# Set to any value to enable
+# PREVENT_NEW_LOCAL_PASSWORDS=true
+
 # The Conference#short_title to redirect the root URL to
 # OSEM_ROOT_CONFERENCE=osc18
 

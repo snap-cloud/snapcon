@@ -163,7 +163,7 @@ class AdminAbility
       ['Conference', 'Track'].include?(role.resource_type)
     end
 
-    can [:edit, :update, :toggle_user], Role do |role|
+    can [:edit, :update, :toggle_user, :toggle_comment_notifications], Role do |role|
       (role.resource_type == 'Conference' && (conf_ids.include? role.resource_id)) ||
         (role.resource_type == 'Track' && (track_ids.include? role.resource_id))
     end

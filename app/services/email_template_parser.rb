@@ -1,14 +1,12 @@
 class EmailTemplateParser
-  def initialize(conference, user)
+  def initialize(conference, user = nil)
     @conference = conference
     @user = user
   end
 
-  # rubocop:disable Metrics/AbcSize, Metrics/ParameterLists
+  # rubocop:disable Metrics/ParameterLists
   def retrieve_values(event = nil, booth = nil, quantity = nil, ticket = nil)
     h = {
-      'email'                  => @user.email,
-      'name'                   => @user.name,
       'conference'             => @conference.title,
       'conference_start_date'  => @conference.start_date,
       'conference_end_date'    => @conference.end_date,
@@ -23,6 +21,10 @@ class EmailTemplateParser
         @conference.short_title, host: Rails.application.routes.default_url_options[:host]
       )
     }
+    if @user
+      h['email'] = @user.email
+      h['name']  = @user.name
+    end
     if @conference.program.cfp
       h['cfp_start_date'] = @conference.program.cfp.start_date
       h['cfp_end_date'] = @conference.program.cfp.end_date
@@ -72,5 +74,5 @@ class EmailTemplateParser
     end
     text
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/ParameterLists
+  # rubocop:enable Metrics/ParameterLists
 end

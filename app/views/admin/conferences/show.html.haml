@@ -1,6 +1,7 @@
 %h1
   %span.fa-solid.fa-gauge-high
   Dashboard for #{@conference.title}
+  = link_to 'Duplicate', new_admin_conference_path(duplicate_from: @conference.short_title), class: 'btn btn-primary btn-sm', style: 'margin-left: 12px;'
 %hr
 .row
   .col-sm-3.col-xs-6

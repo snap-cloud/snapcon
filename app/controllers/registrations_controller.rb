@@ -2,6 +2,7 @@
 
 class RegistrationsController < Devise::RegistrationsController
   prepend_before_action :check_captcha, only: [:create]
+  before_action :prevent_local_signup, only: [:create]
 
   protected
 
@@ -37,5 +38,12 @@ class RegistrationsController < Devise::RegistrationsController
       resource.validate # Look for any other validation errors besides Recaptcha
       respond_with_navigational(resource) { render :new }
     end
+  end
+
+  def prevent_local_signup
+    return unless Feature.active?(:prevent_local_signups)
+
+    redirect_to new_user_registration_path,
+                alert: 'Local sign-ups are disabled. Please use Google or Snap! to create an account.'
   end
 end
