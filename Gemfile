@@ -214,8 +214,8 @@ gem 'lograge'
 
 # Gems moved from Ruby stdlib to bundled/default gems in Ruby 3.4+
 gem 'base64'
-gem 'mutex_m'
 gem 'csv'
+gem 'mutex_m'
 
 group :development do
   # to open mails
