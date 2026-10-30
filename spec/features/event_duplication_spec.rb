@@ -43,7 +43,7 @@ describe 'Event Duplication Feature', :js do
     it 'opens the duplicate modal when clicking duplicate button' do
       visit admin_conference_program_event_path(conference.short_title, original_event)
       click_button('Duplicate')
-      expect(page).to have_css('#duplicateEventModal.in')
+      expect(page).to have_css('#duplicate-event-modal.in')
       expect(page).to have_field('count')
     end
 
