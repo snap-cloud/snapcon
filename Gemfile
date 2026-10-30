@@ -214,8 +214,11 @@ gem 'lograge'
 
 # Gems moved from Ruby stdlib to bundled/default gems in Ruby 3.4+
 gem 'base64'
-gem 'mutex_m'
 gem 'csv'
+gem 'mutex_m'
+# ActiveSupport 7.0 needs Logger loaded before concurrent-ruby 1.3.5+ stops requiring it
+# (breaks tools like haml-lint that skip config/boot.rb). Remove after upgrading Rails.
+gem 'concurrent-ruby', '< 1.3.5'
 
 group :development do
   # to open mails
