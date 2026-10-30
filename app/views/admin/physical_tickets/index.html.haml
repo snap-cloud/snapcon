@@ -12,6 +12,9 @@
     .col-md-4
       = render 'donut_chart', title: 'Tickets turnover',
         combined_data: @tickets_turnover_distribution
+    .col-md-4
+      = render 'donut_chart', title: 'Gross ticket sales by currency',
+        combined_data: @ticket_sales_by_currency_distribution
   %br
   - if @physical_tickets.any?
     .row

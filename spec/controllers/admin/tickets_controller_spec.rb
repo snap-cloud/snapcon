@@ -50,19 +50,19 @@ describe Admin::TicketsController do
 
     describe 'POST #create' do
       context 'saves successfuly' do
-        before(:each, run: true) do
+        before(:each, :run) do
           post :create, params: { conference_id: conference, ticket: attributes_for(:ticket) }
         end
 
         let!(:ticket_count) { conference.tickets.count }
 
-        it 'redirects to index path', run: true do
+        it 'redirects to index path', :run do
           expect(response).to redirect_to(
             admin_conference_tickets_path(conference_id: conference)
           )
         end
 
-        it 'shows success message in flash notice', run: true do
+        it 'shows success message in flash notice', :run do
           expect(flash[:notice]).to match('Ticket successfully created.')
         end
 
@@ -149,19 +149,19 @@ describe Admin::TicketsController do
 
     describe 'DELETE #destroy' do
       context 'deletes successfully' do
-        before(:each, run: true) do
+        before(:each, :run) do
           delete :destroy, params: { conference_id: conference, id: ticket }
         end
 
         let!(:ticket_count) { conference.tickets.count }
 
-        it 'redirects to index path', run: true do
+        it 'redirects to index path', :run do
           expect(response).to redirect_to(
             admin_conference_tickets_path(conference_id: conference)
           )
         end
 
-        it 'shows success message in flash notice', run: true do
+        it 'shows success message in flash notice', :run do
           expect(flash[:notice]).to match('Ticket successfully deleted.')
         end
 

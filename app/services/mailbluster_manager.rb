@@ -1,5 +1,6 @@
 class MailblusterManager
   include HTTParty
+
   base_uri 'https://api.mailbluster.com/api/leads/'
   @auth_headers = {
     headers: {

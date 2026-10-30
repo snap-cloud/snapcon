@@ -5,6 +5,7 @@ DEFAULT_LOGO = Rails.configuration.conference[:default_logo_filename]
 # TODO-SNAPCON: Refactor this module. Move chunks to a dates_help, some events_helper
 module ApplicationHelper
   include Pagy::Frontend
+
   # Returns a string build from the start and end date of the given conference.
   #
   # If the conference is only one day long

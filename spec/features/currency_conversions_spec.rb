@@ -21,14 +21,14 @@ describe CurrencyConversion do
         conference.tickets.destroy_all
       end
 
-      it 'show error message when adding new currency conversion', feature: true, js: true do
+      it 'show error message when adding new currency conversion', :feature, :js do
         visit admin_conference_currency_conversions_path(conference.short_title)
         click_link 'Add Currency Conversion'
         page.find('#flash')
         expect(flash).to eq('No tickets available for this conference. Cannot create or edit currency conversions.')
       end
 
-      it 'show error message when editing a currency conversion', feature: true, js: true do
+      it 'show error message when editing a currency conversion', :feature, :js do
         visit admin_conference_currency_conversions_path(conference.short_title)
         within('table tbody tr:nth-of-type(1) td:nth-of-type(4)') do
           click_link 'Edit'
@@ -37,7 +37,7 @@ describe CurrencyConversion do
         expect(flash).to eq('No tickets available for this conference. Cannot create or edit currency conversions.')
       end
 
-      it 'does not show error message when deleting a currency conversion', feature: true, js: true do
+      it 'does not show error message when deleting a currency conversion', :feature, :js do
         visit admin_conference_currency_conversions_path(conference.short_title)
         page.accept_alert do
           within('table tbody tr:nth-of-type(1) td:nth-of-type(4)') do
@@ -53,7 +53,7 @@ describe CurrencyConversion do
     end
 
     context 'for a conference with tickets' do
-      it 'add a currency conversion', feature: true, js: true do
+      it 'add a currency conversion', :feature, :js do
         visit admin_conference_currency_conversions_path(conference.short_title)
         click_link 'Add Currency Conversion'
         select 'EUR', from: 'currency_conversion_to_currency'
@@ -69,7 +69,7 @@ describe CurrencyConversion do
         end
       end
 
-      it 'edit a currency conversion', feature: true, js: true do
+      it 'edit a currency conversion', :feature, :js do
         conference.currency_conversions << create(:currency_conversion)
         visit admin_conference_currency_conversions_path(conference.short_title)
         within('table tbody tr:nth-of-type(1) td:nth-of-type(4)') do
@@ -88,7 +88,7 @@ describe CurrencyConversion do
         end
       end
 
-      it 'Deletes Currency Conversion', feature: true, js: true do
+      it 'Deletes Currency Conversion', :feature, :js do
         conference.currency_conversions << create(:currency_conversion)
         visit admin_conference_currency_conversions_path(conference.short_title)
         # Remove currency conversion

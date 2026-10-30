@@ -23,5 +23,5 @@
  *= require selectize.bootstrap3
  *= require conferences
 
- *= require fullcalendar-scheduler/main.css
+  *= require fullcalendar-scheduler/main.css
 */

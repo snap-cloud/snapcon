@@ -11,9 +11,10 @@ Devise.setup do |config|
   config.omniauth :facebook, ENV.fetch('OSEM_FACEBOOK_KEY', nil), ENV.fetch('OSEM_FACEBOOK_SECRET', nil)
   config.omniauth :github, ENV.fetch('OSEM_GITHUB_KEY', nil), ENV.fetch('OSEM_GITHUB_SECRET', nil)
 
-  # TODO-SNAPCON: This ought to be configurable. Use OSEM_DISCOURSE_KEY?
+  # Since the display of login buttons is based on _KEY and _SECRET being present, set
+  # OSEM_DISCOURSE_KEY to the SSO endpoint to use (e.g. https://snap.berkeley.edu/api/v1/discourse-sso).
   config.omniauth :discourse,
-                  sso_url:    'https://forum.snap.berkeley.edu/session/sso_provider',
+                  sso_url:    ENV.fetch('OSEM_DISCOURSE_KEY', nil),
                   sso_secret: ENV.fetch('OSEM_DISCOURSE_SECRET', nil)
 
   # ==> Mailer Configuration

@@ -6,7 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby file: '.tool-versions'
+ruby '~> 3.4'
 
 # as web framework
 if next?
@@ -37,6 +37,8 @@ gem 'cloudinary'
 
 # for internationalizing
 gem 'rails-i18n'
+# Windows: timezone data (required on Windows for tzinfo)
+gem 'tzinfo-data', platforms: %i[windows jruby]
 
 # as authentification framework
 gem 'devise'
@@ -207,8 +209,10 @@ gem 'pagy', '<4.0'
 # to tame logs
 gem 'lograge'
 
-# TODO: where is this used? Needed to be added for Ruby >= 3.4
+# Gems moved from Ruby stdlib to bundled/default gems in Ruby 3.4+
 gem 'base64'
+gem 'csv'
+gem 'mutex_m'
 
 group :development do
   # to open mails
@@ -227,7 +231,6 @@ group :test do
   # as test framework
   gem 'capybara'
   gem 'cucumber-rails', require: false
-  gem 'cucumber-rails-training-wheels' # basic imperative step defs like "Then I should see..."
   gem 'database_cleaner'
   gem 'rspec-rails'
   # for measuring test coverage
@@ -256,15 +259,15 @@ end
 group :development, :test, :linters do
   # for static code analisys
   gem 'rubocop', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rspec_rails', require: false
-  gem 'rubocop-factory_bot', require: false
   gem 'rubocop-capybara', require: false
+  gem 'rubocop-factory_bot', require: false
   gem 'rubocop-performance', require: false
-  gem 'haml_lint'
-  # TODO-SNAPCON: Why is this in the current group?
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rspec_rails', require: false
+
   gem 'faraday-retry', require: false
+  gem 'haml_lint', require: false
 
   # Easily run linters
   gem 'pronto', require: false

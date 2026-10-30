@@ -22,7 +22,7 @@
   = render partial: 'shared/help', locals: { id: 'accepted_help', show_event_variables: true, show_ticket_variables: true}
   .form-group
     = f.label :price
-    = f.number_field :price, class: 'form-control'
+    = f.number_field :price, class: 'form-control', value: f.object.price.to_f, step: 0.01, min: 0
   - if Ticket.where(conference: @conference).empty?
     .form-group
       = f.label :price_currency, 'Currency'

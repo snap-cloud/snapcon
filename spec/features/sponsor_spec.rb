@@ -7,7 +7,7 @@ describe Sponsor do
   let!(:organizer) { create(:organizer, resource: conference) }
 
   shared_examples 'sponsors' do
-    it 'adds and updates sponsors', feature: true, js: true do
+    it 'adds and updates sponsors', :feature, :js do
       path = "#{Rails.root}/app/assets/images/rails.png"
 
       conference.sponsorship_levels << create(:sponsorship_level, conference: conference)

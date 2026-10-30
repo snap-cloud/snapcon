@@ -7,7 +7,7 @@ feature User do
   let!(:user) { create(:user) }
 
   shared_examples 'admin ability' do
-    scenario 'edits a user', feature: true, js: true do
+    scenario 'edits a user', :feature, :js do
       visit admin_users_path
       wait_for_ajax
       within "tr#user_#{user.id}" do

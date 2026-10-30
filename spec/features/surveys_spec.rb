@@ -12,7 +12,7 @@ describe Survey do
       sign_in organizer
     end
 
-    it 'create a survey', feature: true, js: true do
+    it 'create a survey', :feature, :js do
       visit admin_conference_path(conference)
       click_link 'Surveys'
       click_link 'New'
@@ -34,7 +34,7 @@ describe Survey do
       sign_in attendee
     end
 
-    it 'respond to a survey during registration', feature: true, js: true do
+    it 'respond to a survey during registration', :feature, :js do
       create(:registration_period, conference: conference)
       create(:registration, conference: conference, user: attendee)
       survey = create(:survey, surveyable: conference, target: :during_registration)

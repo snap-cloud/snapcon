@@ -91,6 +91,36 @@ describe SchedulesController do
         expect(response.body).to include('code')
       end
     end
+
+    context 'with favourites parameter' do
+      let(:user) { create(:user) }
+      let!(:scheduled_event3) do
+        create(:event, program: program, state: 'confirmed')
+      end
+      let!(:event_schedule3) do
+        create(:event_schedule, event: scheduled_event3, schedule: selected_schedule,
+       start_time: Time.now.in_time_zone(conference2.timezone).strftime('%a, %d %b %Y %H:%M:%S'))
+      end
+
+      before do
+        sign_in user
+        scheduled_event1.favourite_users << user
+      end
+
+      it 'shows only favourited events when favourites=true' do
+        get :happening_now, params: { conference_id: conference2.short_title, favourites: 'true' }
+        events = assigns(:events_schedules).map(&:event)
+        expect(events).to include(scheduled_event1)
+        expect(events).not_to include(scheduled_event3)
+      end
+
+      it 'shows all happening events when favourites is not set' do
+        get :happening_now, params: { conference_id: conference2.short_title }
+        events = assigns(:events_schedules).map(&:event)
+        expect(events).to include(scheduled_event1)
+        expect(events).to include(scheduled_event3)
+      end
+    end
   end
 
   describe 'GET #vertical_schedule' do
@@ -103,6 +133,18 @@ describe SchedulesController do
 
       it 'returns a redirect response' do
         expect(response).to have_http_status(:found)
+      end
+    end
+
+    context 'preserves favourites parameter' do
+      it 'includes favourites=true in redirect when set' do
+        get :vertical_schedule, params: { conference_id: conference.short_title, favourites: 'true' }
+        expect(response).to redirect_to(conference_schedule_path(conference, favourites: true))
+      end
+
+      it 'does not include favourites in redirect when not set' do
+        get :vertical_schedule, params: { conference_id: conference.short_title }
+        expect(response).to redirect_to(conference_schedule_path(conference))
       end
     end
   end

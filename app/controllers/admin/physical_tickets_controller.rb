@@ -11,6 +11,7 @@ module Admin
       @physical_tickets = @conference.physical_tickets
       @tickets_sold_distribution = @conference.tickets_sold_distribution
       @tickets_turnover_distribution = @conference.tickets_turnover_distribution
+      @ticket_sales_by_currency_distribution = @conference.ticket_sales_by_currency_distribution
     end
   end
 end

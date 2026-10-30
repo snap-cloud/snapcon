@@ -8,7 +8,7 @@ on:
 jobs:
   linters:
     continue-on-error: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # rugged (libgit2) fails to build on ubuntu-26.04
     env:
       PRONTO_PULL_REQUEST_ID: "${{ github.event.pull_request.number }}"
       PRONTO_GITHUB_ACCESS_TOKEN: "${{ github.token }}"
@@ -24,7 +24,7 @@ jobs:
       - run: bundle exec haml-lint app/views
   spec:
     continue-on-error: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # rugged (libgit2) fails to build on ubuntu-26.04
     name: spec
     env:
       OSEM_DB_HOST: localhost
@@ -84,6 +84,13 @@ jobs:
       #     $CCTR sum-coverage coverage/codeclimate.*.json
       #     $CCTR upload-coverage --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
       #     $CCTR after-build --id "6d21ff1a59b134f3741779d50325f7bd5183cbe6b205051573d955705148960f"
+      - name: Upload coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/coverage.xml
+          flags: ${{ matrix.suite }}
 
     services:
       postgres:

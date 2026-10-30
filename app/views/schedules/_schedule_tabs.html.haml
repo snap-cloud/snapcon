@@ -3,7 +3,7 @@
     %li.program{ class: ('active' if active == 'program'), role: 'presentation' }
       = link_to('All events', events_conference_schedule_path(@conference.short_title, favourites: @favourites))
     %li.program{ class: ('active' if active == 'now'), role: 'presentation' }
-      = link_to('Happening Now', happening_now_conference_schedule_path(@conference.short_title))
+      = link_to('Happening Now', happening_now_conference_schedule_path(@conference.short_title, favourites: @favourites))
     %li.schedule{ class: ('active' if active == 'vertical_schedule'), role: 'presentation' }
       = link_to('Schedule', vertical_schedule_conference_schedule_path(@conference.short_title, favourites: @favourites))
     .pull-right

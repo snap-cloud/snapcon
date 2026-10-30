@@ -12,7 +12,7 @@ describe Program do
       sign_in organizer
     end
 
-    it 'changes rating', feature: true, js: true do
+    it 'changes rating', :feature, :js do
       visit admin_conference_program_path(conference.short_title)
 
       click_link 'Edit'
