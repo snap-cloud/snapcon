@@ -6,8 +6,7 @@ end
 
 source 'https://rubygems.org'
 
-ruby '> 3.3.8'
-# ruby file: '.tool-versions'
+ruby '~> 3.4'
 
 # as web framework
 if next?
@@ -213,8 +212,10 @@ gem 'pagy', '<4.0'
 # to tame logs
 gem 'lograge'
 
-# TODO: where is this used? Needed to be added for Ruby >= 3.4
+# Gems moved from Ruby stdlib to bundled/default gems in Ruby 3.4+
 gem 'base64'
+gem 'mutex_m'
+gem 'csv'
 
 group :development do
   # to open mails
@@ -286,7 +287,7 @@ end
 
 group :development, :test do
   # as development/test database
-  gem 'sqlite3'
+  gem 'sqlite3', '~> 1.4' # Rails 7.0 requires sqlite3 1.x
   # to test new rails version
   gem 'next_rails'
 end
