@@ -14,8 +14,10 @@ Devise.setup do |config|
                   name:  'google',
                   scope: %w[email profile]
 
+  # Since the display of login buttons is based on _KEY and _SECRET being present, set
+  # OSEM_DISCOURSE_KEY to the SSO endpoint to use (e.g. https://snap.berkeley.edu/api/v1/discourse-sso).
   config.omniauth :discourse,
-                  sso_url:    ENV.fetch('OSEM_SNAP_SSO_URL', 'https://snap.berkeley.edu/api/v1/discourse-sso'),
+                  sso_url:    ENV.fetch('OSEM_DISCOURSE_KEY', nil),
                   sso_secret: ENV.fetch('OSEM_DISCOURSE_SECRET', nil)
 
   config.omniauth :facebook,
