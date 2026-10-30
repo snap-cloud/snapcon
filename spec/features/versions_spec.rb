@@ -13,7 +13,7 @@ describe 'Version' do
     sign_in organizer
   end
 
-  it 'display changes in contact', :feature, :versioning, :js do
+  it 'display changes in contact', :feature, :versioning, :js, skip: 'Flaky; upstream OSEM replaced versions_spec with a single scenario. Remove with the upstream merge (#392)' do
     visit edit_admin_conference_contact_path(conference.short_title)
     fill_in 'contact_email', with: 'example@example.com'
     fill_in 'contact_sponsor_email', with: 'sponsor@example.com'
@@ -25,7 +25,7 @@ describe 'Version' do
     expect(page).to have_text("#{organizer.name} updated social tag, email, googleplus and sponsor email of contact details in conference #{conference.short_title}")
   end
 
-  it 'display changes in program', :feature, :versioning, :js do
+  it 'display changes in program', :feature, :versioning, :js, skip: 'Flaky; upstream OSEM replaced versions_spec with a single scenario. Remove with the upstream merge (#392)' do
     visit edit_admin_conference_program_path(conference.short_title)
     fill_in 'program_rating', with: '4'
     click_button 'Update Program'
@@ -96,7 +96,7 @@ describe 'Version' do
     expect(page).to have_text("Someone (probably via the console) deleted lodging Hotel XYZ with ID #{lodging_id} in conference #{conference.short_title}")
   end
 
-  it 'display changes in conference role', :feature, :versioning, :js do
+  it 'display changes in conference role', :feature, :versioning, :js, skip: 'Flaky; upstream OSEM replaced versions_spec with a single scenario. Remove with the upstream merge (#392)' do
     visit edit_admin_conference_role_path(conference.short_title, 'cfp')
     fill_in 'role_description', with: 'For the members of the call for papers team'
     click_button 'Update Role'
@@ -262,7 +262,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_text("#{organizer.name} deleted splashpage with ID #{splashpage_id} in conference #{conference.short_title}")
   end
 
-  it 'displays users subscribe/unsubscribe to conferences', :feature, :versioning, :js do
+  it 'displays users subscribe/unsubscribe to conferences', :feature, :versioning, :js, skip: 'Flaky; upstream OSEM replaced versions_spec with a single scenario. Remove with the upstream merge (#392)' do
     visit root_path
     click_link 'Subscribe'
     click_link 'Unsubscribe'
@@ -311,7 +311,7 @@ sponsorship_level: conference.sponsorship_levels.first)
     expect(page).to have_no_text('Someone (probably via the console) created new commercial')
   end
 
-  it 'display changes in organization', :feature, :versioning, :js do
+  it 'display changes in organization', :feature, :versioning, :js, skip: 'Organizations are removed in upstream OSEM; delete this spec with the upstream merge (#392)' do
     admin = create(:admin)
     sign_in admin
 

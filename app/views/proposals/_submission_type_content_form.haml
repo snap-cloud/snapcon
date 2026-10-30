@@ -81,7 +81,7 @@
         });
         $('#event_event_type_id').trigger('change');
 
-        $("#event_abstract").on('change', function() {
+        $("#event_abstract").on('input change', function() {
             var $selected = $("#event_event_type_id option:selected")
             var max = $selected.data("max-words");
             word_count(this, 'abstract-count', max);
