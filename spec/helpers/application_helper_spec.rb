@@ -68,7 +68,7 @@ start_time: conference.start_date + conference.start_hour.hours, room: create(:r
     describe 'navigation image link' do
       it 'defaults to OSEM' do
         ENV.delete('OSEM_NAME')
-        expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: 'OSEM')
+        expect(nav_root_link_for(nil)).to include image_tag('snapcon_logo.png', alt: 'OSEM homepage')
       end
     end
   end

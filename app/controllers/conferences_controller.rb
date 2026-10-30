@@ -55,17 +55,17 @@ class ConferencesController < ApplicationController
           :room
         ).order('tracks.name')
       end
-      if splashpage.include_booths
+      if @splashpage.include_booths
         @booths = @conference.confirmed_booths.order(:title)
       end
     end
-    if splashpage.include_registrations || splashpage.include_tickets
+    if @splashpage.include_registrations || @splashpage.include_tickets
       @tickets = @conference.tickets.visible.order(:price_cents) # SNAPCON
     end
-    if splashpage.include_lodgings
+    if @splashpage.include_lodgings
       @lodgings = @conference.lodgings.order(:name)
     end
-    if splashpage.include_sponsors
+    if @splashpage.include_sponsors
       @sponsorship_levels = @conference.sponsorship_levels.eager_load(
         :sponsors
       ).order('sponsorship_levels.position ASC', 'sponsors.name')
