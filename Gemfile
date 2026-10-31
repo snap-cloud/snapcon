@@ -26,7 +26,7 @@ gem 'responders', '~> 3.0'
 gem 'pg'
 
 # for tracking data changes
-gem 'paper_trail', '< 13'
+gem 'paper_trail', '~> 16.0'
 
 # for upload management
 gem 'carrierwave', '< 3'
