@@ -59,7 +59,7 @@
         - prev_time = start_time
         %h3= start_time.strftime('%H:%M %p %Z')
       .col-12
-        - cache [@program, event_schedule, event, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+        - cache [@program, event_schedule, event, event_card_viewer_cache_key(@conference), event_schedule.happening_now?, '#scheduled#full#panel'] do
           .event-item{ data: { time: event_schedule.start_time.iso8601 }, id: dom_id(event) }
             = render 'event', event: event, event_schedule: event_schedule
 
@@ -74,7 +74,7 @@
       - @unscheduled_events.each do |event|
         .col-xs-12.col-md-12
           .unscheduled-event
-            - cache [@program, event, current_user, '#unscheduled#full#panel'] do
+            - cache [@program, event, event_card_viewer_cache_key(@conference), '#unscheduled#full#panel'] do
               = render 'event', event: event, event_schedule: nil
   %button.btn.btn-primary#current-event-btn{ type: "button" }
     Jump to Current Event
