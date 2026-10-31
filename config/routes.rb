@@ -2,6 +2,9 @@
 Osem::Application.routes.draw do
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
+  # Stripe Checkout events (see StripeWebhooksController)
+  post '/stripe/webhook', to: 'stripe_webhooks#create', as: :stripe_webhook
+
   constraints DomainConstraint do
     get '/', to: 'conferences#show'
   end
