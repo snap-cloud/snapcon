@@ -60,5 +60,12 @@ describe FormatHelper, type: :helper do
       result = markdown_with_variables(text, conference, false)
       expect(result).to include(conference.venue.name)
     end
+
+    it 'escapes HTML in variable values' do
+      conference.venue = create(:venue, name: "O'Hara R&D <Lab>")
+      result = markdown_with_variables('Join us at {venue}.', conference, false)
+      expect(result).not_to include('<Lab>')
+      expect(Nokogiri::HTML.fragment(result).text).to include("O'Hara R&D <Lab>")
+    end
   end
 end
