@@ -190,8 +190,24 @@ hint: options[:hint]
     link_to("https://inyourtime.zone/t?#{time.to_i}", target: '_blank', rel: 'noopener', &)
   end
 
+  # Conferences listed in the "All Events" nav menu, newest first.
+  # This renders on every page, so avoid loading every conference + splashpage
+  # and running a CanCan check on each one where we can answer in SQL:
+  # - admins can :manage, :all, so they see every conference.
+  # - guests and users without roles can only :show conferences whose
+  #   splashpage is public (Ability#not_signed_in).
+  # - users with roles (organizers, cfp, info desk, ...) get extra per-conference
+  #   rules, some of them blocks, so we keep the per-record can? check for them.
   def visible_conference_links
-    @visible_conference_links ||=
-      Conference.all.select(:id, :title, :short_title, :start_date).includes(:splashpage).select { |conf| can?(:show, conf) }.sort_by(&:start_date).reverse
+    @visible_conference_links ||= begin
+      conferences = Conference.select(:id, :title, :short_title, :start_date).reorder(start_date: :desc, id: :desc)
+      if current_user&.is_admin?
+        conferences.to_a
+      elsif current_user.nil? || current_user.roles.none?
+        conferences.where(id: Splashpage.where(public: true).select(:conference_id)).to_a
+      else
+        conferences.includes(:splashpage).select { |conf| can?(:show, conf) }
+      end
+    end
   end
 end
