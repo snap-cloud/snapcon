@@ -77,10 +77,11 @@
 # OSEM_SUSE_KEY=1234
 # OSEM_SUSE_SECRET=5678
 
-# STRIPE Publishable/Secret keys
-# -> https://github.com/openSUSE/osem/wiki/Stripe
-# STRIPE_PUBLISHABLE_KEY=1234
-# STRIPE_SECRET_KEY=5678
+# Stripe Checkout (see docs/stripe.md)
+# Secret API key (sk_test_... locally, sk_live_... in production)
+# STRIPE_SECRET_KEY=sk_test_1234
+# Signing secret for the /stripe/webhook endpoint (whsec_...)
+# STRIPE_WEBHOOK_SECRET=whsec_1234
 
 # MATOMO/PIWIK CONFIGURATION
 # OSEM_PIWIK_ID=12345
