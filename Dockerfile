@@ -8,8 +8,8 @@ RUN usermod -u $CONTAINER_USERID osem
 # changes and all the subsequent stages (a.k.a. the bundle install call below)
 # have to be rebuild. Otherwise, after the first build of this image,
 # docker would use it's cache for this and the following stages.
-ADD Gemfile /osem/Gemfile
-ADD Gemfile.lock /osem/Gemfile.lock
+COPY Gemfile /osem/Gemfile
+COPY Gemfile.lock /osem/Gemfile.lock
 RUN chown -R osem /osem
 
 WORKDIR /osem
