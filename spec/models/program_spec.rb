@@ -95,6 +95,16 @@ describe Program do
     end
   end
 
+  describe '#fullcalendar_events_json' do
+    it 'is the FullCalendar JSON for the selected schedules' do
+      create(:event_scheduled, program: program)
+      create(:event_scheduled, program: program)
+
+      expected = FullCalendarFormatter.event_schedules_to_resources(program.selected_event_schedules)
+      expect(program.fullcalendar_events_json).to eq(expected)
+    end
+  end
+
   describe '#show_voting?' do
     context 'blind voting is disabled' do
       before do

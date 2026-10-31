@@ -27,6 +27,29 @@ describe SchedulesController do
       end
     end
 
+    context 'html' do
+      let(:program) { conference.program }
+      let!(:favourite) { create(:event_scheduled, program: program) }
+      let!(:other) { create(:event_scheduled, program: program) }
+      let(:user) { create(:user) }
+
+      def calendar_event_guids
+        JSON.parse(assigns(:event_schedules)).pluck('id')
+      end
+
+      it 'renders every scheduled event' do
+        get :show, params: { conference_id: conference.short_title }
+        expect(calendar_event_guids).to contain_exactly(favourite.guid, other.guid)
+      end
+
+      it "renders only the user's planned events with favourites=true" do
+        favourite.favourite_users << user
+        sign_in user
+        get :show, params: { conference_id: conference.short_title, favourites: 'true' }
+        expect(calendar_event_guids).to contain_exactly(favourite.guid)
+      end
+    end
+
     context 'as a conference participant' do
       context 'who visits the schedule page' do
         before do
@@ -37,6 +60,27 @@ describe SchedulesController do
           expect(response).to have_http_status(:ok)
         end
       end
+    end
+  end
+
+  describe 'GET #events' do
+    let(:program) { conference.program }
+    let!(:scheduled) { create(:event_scheduled, program: program) }
+    let!(:unscheduled) { create(:event, program: program, state: 'confirmed') }
+    let(:user) { create(:user) }
+
+    it 'lists scheduled and unscheduled events separately' do
+      get :events, params: { conference_id: conference.short_title }
+      expect(assigns(:events_schedules).map(&:event)).to contain_exactly(scheduled)
+      expect(assigns(:unscheduled_events)).to contain_exactly(unscheduled)
+    end
+
+    it "shows only the user's planned events with favourites=true" do
+      unscheduled.favourite_users << user
+      sign_in user
+      get :events, params: { conference_id: conference.short_title, favourites: 'true' }
+      expect(assigns(:events_schedules)).to be_empty
+      expect(assigns(:unscheduled_events)).to contain_exactly(unscheduled)
     end
   end
 

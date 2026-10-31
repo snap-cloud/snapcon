@@ -11,20 +11,13 @@ class SchedulesController < ApplicationController
   before_action :load_withdrawn_event_schedules, only: %i[show events]
 
   def show
-    event_schedules = @program.event_schedule_for_fullcalendar
-
-    unless event_schedules
-      redirect_to events_conference_schedule_path(@conference.short_title, favourites: @favourites.presence)
-      return
-    end
-
     respond_to do |format|
       format.xml do
-        @events_xml = event_schedules.map(&:event).group_by { |event| event.time.to_date } if event_schedules
+        @events_xml = @program.event_schedule_for_fullcalendar.map(&:event).group_by { |event| event.time.to_date }
       end
       format.ics do
         cal = Icalendar::Calendar.new
-        cal = icalendar_proposals(cal, event_schedules.map(&:event), @conference)
+        cal = icalendar_proposals(cal, @program.event_schedule_for_fullcalendar.map(&:event), @conference)
         cal.publish
         render inline: cal.to_ical
       end
@@ -35,12 +28,15 @@ class SchedulesController < ApplicationController
         current_day = @conference.current_conference_day
         @day = current_day.presence || dates.first
 
-        if current_user && @favourites
-          event_schedules = event_schedules.select { |e| e.event.planned_for_user?(current_user) }
-        end
-
         @rooms = FullCalendarFormatter.rooms_to_resources(@conference.rooms) if @conference.rooms
-        @event_schedules = FullCalendarFormatter.event_schedules_to_resources(event_schedules)
+        @event_schedules = if current_user && @favourites
+                             planned_ids = current_user.planned_event_ids
+                             FullCalendarFormatter.event_schedules_to_resources(
+                               @program.event_schedule_for_fullcalendar.select { |es| planned_ids.include?(es.event_id) }
+                             )
+                           else
+                             @program.fullcalendar_events_json
+                           end
         @now = Time.now.in_time_zone(@conference.timezone).strftime('%FT%T%:z')
       end
     end
@@ -50,11 +46,11 @@ class SchedulesController < ApplicationController
     @dates = @conference.start_date..@conference.end_date
     @events_schedules = @program.event_schedule_program_view || []
 
-    @unscheduled_events = if @program.selected_schedule
-                            @program.events.confirmed - @events_schedules.map(&:event)
-                          else
-                            @program.events.confirmed
-                          end
+    @unscheduled_events = @program.events.confirmed
+    if @program.selected_schedule
+      @unscheduled_events = @unscheduled_events.where.not(id: @events_schedules.map(&:event_id))
+    end
+    @unscheduled_events = @unscheduled_events.to_a
     event_type = params[:event_type]
     if event_type && event_type != 'All Events'
       @events_schedules.select! { |event_schedule| event_schedule.event.event_type.title == event_type }
@@ -64,8 +60,9 @@ class SchedulesController < ApplicationController
     favourited_events(event_ids)
 
     if current_user && @favourites
-      @events_schedules.keep_if { |es| es.event.planned_for_user?(current_user) }
-      @unscheduled_events.keep_if { |e| e.planned_for_user?(current_user) }
+      planned_ids = current_user.planned_event_ids
+      @events_schedules.keep_if { |es| planned_ids.include?(es.event_id) }
+      @unscheduled_events.keep_if { |e| planned_ids.include?(e.id) }
     end
 
     day = @conference.current_conference_day

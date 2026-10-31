@@ -197,6 +197,17 @@ class User < ApplicationRecord
   ##
   # Checks if the user attended the event
   # This is used for events that require registration
+  ##
+  # IDs of the events on the user's personal schedule: events they favourited,
+  # speak at or volunteer for. Same rule as Event#planned_for_user?, in two
+  # queries instead of three per event.
+  # === Returns
+  # * +Set+ of event ids
+  def planned_event_ids
+    EventUser.where(user_id: id, event_role: %w[speaker volunteer]).pluck(:event_id).to_set
+             .merge(favourite_event_ids)
+  end
+
   # The user must have registered to attend the event
   # Gets an event
   # === Returns
