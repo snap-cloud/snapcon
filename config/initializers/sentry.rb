@@ -1,14 +1,16 @@
 Sentry.init do |config|
   config.dsn = ENV.fetch('OSEM_SENTRY_DSN', nil)
-  config.breadcrumbs_logger = [:active_support_logger]
+  # :active_support_logger records a breadcrumb (with its payload) for every
+  # SQL query and render, which adds up on pages with hundreds of queries.
+  config.breadcrumbs_logger = %i[sentry_logger http_logger]
 
   config.backtrace_cleanup_callback = lambda do |backtrace|
     Rails.backtrace_cleaner.clean(backtrace)
   end
 
-  # To activate performance monitoring, set one of these options.
-  # We recommend adjusting the value in production:
-  config.traces_sample_rate = ENV.fetch('OSEM_SENTRY_TRACES_SAMPLE_RATE', '0.5').to_f
+  # Performance tracing builds a span for every query in a sampled request.
+  # Keep the default low on our 512 MB dyno; raise it with the env var.
+  config.traces_sample_rate = ENV.fetch('OSEM_SENTRY_TRACES_SAMPLE_RATE', '0.05').to_f
   # or
   # config.traces_sampler = lambda do |context|
   #  true
