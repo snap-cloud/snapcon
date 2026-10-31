@@ -154,6 +154,69 @@ describe Admin::VersionsController do
           expect(assigns(:versions).include?(@version_info_desk)).to be true
         end
       end
+
+      context 'with pagination' do
+        render_views
+
+        let(:conference_versions) { PaperTrail::Version.where(conference_id: conference.id).order(id: :desc) }
+
+        before do
+          sign_in admin
+          3.times { |i| conference.update!(description: "Description #{i}") }
+        end
+
+        it 'renders every row of a full default-size page' do
+          get :index, params: { conference_id: conference.short_title }
+
+          expect(response).to have_http_status(:ok)
+          expect(assigns(:versions).size).to eq [conference_versions.count, 50].min
+          expect(response.body).to include("id='versionstable'")
+        end
+
+        context 'with a small page size' do
+          before { stub_const('Admin::VersionsController::VERSIONS_PER_PAGE', 2) }
+
+          it 'shows the newest versions of the conference first' do
+            get :index, params: { conference_id: conference.short_title }
+
+            expect(assigns(:versions).map(&:id)).to eq conference_versions.limit(2).ids
+            expect(assigns(:pagy).count).to eq conference_versions.count
+          end
+
+          it 'shows older versions on the next page' do
+            get :index, params: { conference_id: conference.short_title, page: 2 }
+
+            expect(assigns(:versions).map(&:id)).to eq conference_versions.offset(2).limit(2).ids
+          end
+
+          it 'keeps the conference filter in the page links' do
+            get :index, params: { conference_id: conference.short_title }
+
+            expect(response.body).to include('pagy-bootstrap-nav')
+            expect(response.body).to include(
+              "href=\"#{admin_conference_revision_history_path(conference.short_title)}?page=2\""
+            )
+          end
+
+          it 'paginates the history of all conferences' do
+            other_conference = create(:conference)
+            other_conference.update!(description: 'Other description')
+
+            get :index
+
+            expect(assigns(:versions).size).to eq 2
+            expect(assigns(:versions).map(&:id)).to eq PaperTrail::Version.order(id: :desc).limit(2).ids
+            expect(assigns(:pagy).count).to eq PaperTrail::Version.count
+            expect(response.body).to include("href=\"#{admin_revision_history_path}?page=2\"")
+          end
+
+          it 'redirects an out-of-range page to the first page, keeping the conference' do
+            get :index, params: { conference_id: conference.short_title, page: 999 }
+
+            expect(response).to redirect_to(admin_conference_revision_history_path(conference.short_title))
+          end
+        end
+      end
     end
   end
 end

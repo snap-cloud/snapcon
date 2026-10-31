@@ -5,6 +5,13 @@ module Admin
     load_resource :conference, find_by: :short_title, only: :index
     load_and_authorize_resource class: PaperTrail::Version
 
+    VERSIONS_PER_PAGE = 50
+
+    # Out-of-range or malformed ?page= values: go back to the first page.
+    rescue_from Pagy::VariableError do
+      redirect_to request.query_parameters.except('page').merge(only_path: true)
+    end
+
     def index
       @conferences_with_role = if current_user.is_admin?
                                  Conference.pluck(:short_title)
@@ -16,9 +23,11 @@ module Admin
 
       @conferences_with_role.uniq!
 
-      return if @conference.blank?
+      @versions = PaperTrail::Version.where(conference_id: @conference.id).accessible_by(current_ability) if @conference.present?
 
-      @versions = PaperTrail::Version.where(conference_id: @conference.id).accessible_by(current_ability)
+      # Each row deserializes YAML and runs several lookups, so never render
+      # the full history in one request.
+      @pagy, @versions = pagy(@versions.reorder(id: :desc), items: VERSIONS_PER_PAGE)
     end
 
     def revert_attribute

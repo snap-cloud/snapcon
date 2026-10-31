@@ -2,7 +2,7 @@
   object = current_or_last_object_state(version.item_type, version.item_id)
 
   unless version.item_type == 'Role' || version.item_type == 'UsersRole'
-    conference = Conference.find_by(id: version.conference_id)
+    conference = cached_find_by_id(Conference, version.conference_id)
     conference_short_title = conference.try(:short_title) || current_or_last_object_state('Conference', version.conference_id).try(:short_title) || ' '
   end
 
@@ -11,7 +11,7 @@
   - role = current_or_last_object_state('Role', object.role_id)
   - role_name = role.try(:name) || PaperTrail::Version.where(item_type: 'Role', item_id: object.role_id).last.changeset[:name].second
   role
-  - conference = Conference.find_by(id: version.conference_id)
+  - conference = cached_find_by_id(Conference, version.conference_id)
   - conference_short_title = conference.try(:short_title) || current_or_last_object_state('Conference', version.conference_id).try(:short_title) || ' '
   = link_if_alive version, role.try(:name), admin_conference_role_path(conference_short_title,role.try(:name) || ' '), conference
 
@@ -121,7 +121,7 @@
 - when 'Role'
   role
   - role_name = object.try(:name) || PaperTrail::Version.where(item_type: 'Role', item_id: version.item_id).last.changeset[:name].second
-  - conference = Conference.find_by(id: version.conference_id)
+  - conference = cached_find_by_id(Conference, version.conference_id)
   - conference_short_title = conference.try(:short_title) || current_or_last_object_state('Conference', version.conference_id).try(:short_title) || ' '
   = link_if_alive version, role_name,
           admin_conference_role_path(conference_short_title, role_name), conference
