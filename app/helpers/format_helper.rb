@@ -184,7 +184,8 @@ module FormatHelper
     return '' if text.nil?
 
     parser = EmailTemplateParser.new(conference)
-    values = parser.retrieve_values
+    # Escape values so names like "R&D <Lab>" show as text, not markup.
+    values = parser.retrieve_values.transform_values { |v| v.is_a?(String) ? ERB::Util.html_escape(v) : v }
     text = EmailTemplateParser.parse_template(text, values)
     markdown(text, escape_html)
   end
