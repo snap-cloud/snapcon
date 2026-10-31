@@ -20,8 +20,8 @@ feature Conference do
       select('(GMT+01:00) Berlin', from: 'conference[timezone]')
 
       today = Time.zone.today - 1
-      fill_in 'conference_start_date', with: today.strftime('%Y/%m/%d')
-      fill_in 'conference_end_date', with: (today + 7).strftime('%Y/%m/%d')
+      page.execute_script("$('#conference-start-datepicker').val('#{today.strftime('%d/%m/%Y')}')")
+      page.execute_script("$('#conference-end-datepicker').val('#{(today + 7).strftime('%d/%m/%Y')}')")
       click_button 'Create Conference'
 
       within('#flash') { expect(page).to have_text('Conference was successfully created.') }
@@ -43,8 +43,8 @@ feature Conference do
       fill_in 'conference_short_title', with: 'NewCon'
 
       day = Time.zone.today + 10
-      fill_in 'conference_start_date', with: day.strftime('%Y/%m/%d')
-      fill_in 'conference_end_date', with: (day + 7).strftime('%Y/%m/%d')
+      page.execute_script("$('#conference-start-datepicker').val('#{day.strftime('%d/%m/%Y')}')")
+      page.execute_script("$('#conference-end-datepicker').val('#{(day + 7).strftime('%d/%m/%Y')}')")
       page.accept_alert do
         click_button 'Update Conference'
       end
