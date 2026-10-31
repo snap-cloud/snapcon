@@ -110,7 +110,7 @@ class ConferencesController < ApplicationController
           end
         end
         calendar.publish
-        render inline: calendar.to_ical
+        render plain: calendar.to_ical, content_type: Mime[:ics]
       end
     end
   end
