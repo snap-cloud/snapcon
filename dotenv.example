@@ -71,10 +71,11 @@
 # OSEM_SUSE_KEY=1234
 # OSEM_SUSE_SECRET=5678
 
-# STRIPE Publishable/Secret keys
-# -> https://github.com/openSUSE/osem/wiki/Stripe
-# STRIPE_PUBLISHABLE_KEY=1234
-# STRIPE_SECRET_KEY=5678
+# Stripe Checkout (see docs/stripe.md)
+# Secret API key (sk_test_... locally, sk_live_... in production)
+# STRIPE_SECRET_KEY=sk_test_1234
+# Signing secret for the /stripe/webhook endpoint (whsec_...)
+# STRIPE_WEBHOOK_SECRET=whsec_1234
 
 # MATOMO/PIWIK CONFIGURATION
 # OSEM_PIWIK_ID=12345
@@ -101,6 +102,10 @@
 # ReCAPTCHA keys
 # RECAPTCHA_SITE_KEY=1234
 # RECAPTCHA_SECRET_KEY=5678
+
+# Prevent new local password sign-ups (force SSO via Google/Snap!)
+# Set to any value to enable
+# PREVENT_NEW_LOCAL_PASSWORDS=true
 
 # The Conference#short_title to redirect the root URL to
 # OSEM_ROOT_CONFERENCE=osc18

@@ -6,8 +6,17 @@
           %h3.panel-title
             Sign Up
         .panel-body
-          = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
-            = render partial: 'form_fields', locals: { f: f }
-
-          = render partial: 'devise/shared/openid'
+          - if Feature.active?(:prevent_local_signups)
+            %p.text-center
+              Create your account using one of the following services:
+            = render partial: 'devise/shared/sso_buttons'
+            %hr
+            %p.text-muted.text-center
+              %small
+                Already have a local account?
+                = link_to 'Sign in here', new_user_session_path
+          - else
+            = form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f|
+              = render partial: 'form_fields', locals: { f: f }
+            = render partial: 'devise/shared/openid'
           = render partial: 'devise/shared/help'

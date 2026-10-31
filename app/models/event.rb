@@ -110,6 +110,7 @@ class Event < ApplicationRecord
 
   scope :confirmed, -> { where(state: 'confirmed') }
   scope :unconfirmed, -> { where(state: 'unconfirmed') }
+  scope :tentatively_accepted, -> { where(state: 'tentatively_accepted') }
   scope :canceled, -> { where(state: 'canceled') }
   scope :withdrawn, -> { where(state: 'withdrawn') }
   scope :highlighted, -> { where(is_highlight: true) }
@@ -120,6 +121,7 @@ class Event < ApplicationRecord
     state :new
     state :withdrawn
     state :unconfirmed
+    state :tentatively_accepted
     state :confirmed
     state :canceled
     state :rejected
@@ -131,7 +133,10 @@ class Event < ApplicationRecord
       transitions to: :withdrawn, from: %i[new unconfirmed confirmed]
     end
     event :accept do
-      transitions to: :unconfirmed, from: [:new], on_transition: :process_acceptance
+      transitions to: :unconfirmed, from: %i[new tentatively_accepted], on_transition: :process_acceptance
+    end
+    event :tentatively_accept do
+      transitions to: :tentatively_accepted, from: [:new], on_transition: :process_tentative_acceptance
     end
     event :confirm do
       transitions to: :confirmed, from: :unconfirmed, on_transition: :process_confirmation
@@ -140,17 +145,18 @@ class Event < ApplicationRecord
       transitions to: :canceled, from: %i[unconfirmed confirmed]
     end
     event :reject do
-      transitions to: :rejected, from: [:new], on_transition: :process_rejection
+      transitions to: :rejected, from: %i[new tentatively_accepted], on_transition: :process_rejection
     end
   end
 
   COLORS = {
-    new:         '#0000FF', # blue
-    withdrawn:   '#FF8000', # orange
-    unconfirmed: '#FFFF00', # yellow
-    confirmed:   '#00FF00', # green
-    canceled:    '#848484', # grey
-    rejected:    '#FF0000'  # red
+    new:                  '#0000FF', # blue
+    withdrawn:            '#FF8000', # orange
+    unconfirmed:          '#FFFF00', # yellow
+    tentatively_accepted: '#FFA500', # amber
+    confirmed:            '#00FF00', # green
+    canceled:             '#848484', # grey
+    rejected:             '#FF0000'  # red
   }.freeze
 
   ##
@@ -242,6 +248,15 @@ class Event < ApplicationRecord
        program.conference.email_settings.accepted_subject &&
        options[:send_mail].present?
       Mailbot.acceptance_mail(self).deliver_later
+    end
+  end
+
+  def process_tentative_acceptance(options)
+    if program.conference.email_settings.send_on_tentative_accepted &&
+       program.conference.email_settings.tentative_accepted_body &&
+       program.conference.email_settings.tentative_accepted_subject &&
+       options[:send_mail].present?
+      Mailbot.tentative_acceptance_mail(self, subject: options[:subject], body: options[:body]).deliver_later
     end
   end
 

@@ -107,11 +107,8 @@ describe Event do
       fill_in 'event_title', with: 'Example Proposal'
 
       select('Talk', from: 'event[event_type_id]')
-      expect(page).to have_css(
-        '#event_type_1-help',
-        visible: :hidden,
-        text:    EventType.find(1).description
-      )
+      talk = conference.program.event_types.find_by!(title: 'Talk')
+      expect(page).to have_css("#event_type_#{talk.id}-help", text: talk.description)
       select('Example Event Type', from: 'event[event_type_id]')
       expect(page).to have_selector '.event_event_type_id', text: 'This event type is an example.'
       fill_in 'event_abstract', with: 'Lorem ipsum abstract'

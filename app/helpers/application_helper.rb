@@ -191,10 +191,7 @@ hint: options[:hint]
   end
 
   def visible_conference_links
-    # @visible_conference_links ||=
-    #   Conference.all.select(:id, :organization_id, :title, :short_title, :start_date).includes(:splashpage, :organization).select { |conf| can?(:show, conf) }.group_by(&:organization)
     @visible_conference_links ||=
-      Conference.all.select(:id, :title, :short_title, :start_date).includes(:splashpage).select { |conf| can?(:show, conf) }.group_by { |conf| conf.title.split(' ').first }
-
+      Conference.all.select(:id, :title, :short_title, :start_date).includes(:splashpage).select { |conf| can?(:show, conf) }.sort_by(&:start_date).reverse
   end
 end

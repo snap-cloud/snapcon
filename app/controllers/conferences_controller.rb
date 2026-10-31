@@ -13,8 +13,6 @@ class ConferencesController < ApplicationController
     render :new_install if @antiquated.empty? && @current.empty? && User.empty?
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity
-  # rubocop:disable Metrics/PerceivedComplexity
   def show
     # load conference with header content
     @conference = Conference.unscoped.eager_load(
@@ -75,8 +73,6 @@ class ConferencesController < ApplicationController
       @organizers = User.with_role(:organizer, @conference)
     end
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
-  # rubocop:enable Metrics/PerceivedComplexity
 
   def calendar
     respond_to do |format|

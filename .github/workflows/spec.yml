@@ -29,7 +29,7 @@ jobs:
     env:
       OSEM_DB_HOST: localhost
       OSEM_DB_PASSWORD: mysecretpassword
-      OSEM_DB_USERNAME: postgres
+      OSEM_DB_USER: postgres
       OSEM_DB_NAME: osem_test
       RAILS_ENV: test
       CCTR: ./cc-test-reporter

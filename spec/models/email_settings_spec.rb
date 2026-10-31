@@ -36,9 +36,12 @@
 #  send_on_registration                          :boolean          default(FALSE)
 #  send_on_rejected                              :boolean          default(FALSE)
 #  send_on_submitted_proposal                    :boolean          default(FALSE)
+#  send_on_tentative_accepted                    :boolean          default(FALSE)
 #  send_on_venue_updated                         :boolean          default(FALSE)
 #  submitted_proposal_body                       :text
 #  submitted_proposal_subject                    :string
+#  tentative_accepted_body                       :text
+#  tentative_accepted_subject                    :string
 #  venue_updated_body                            :text
 #  venue_updated_subject                         :string
 #  created_at                                    :datetime

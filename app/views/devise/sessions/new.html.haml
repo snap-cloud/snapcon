@@ -6,7 +6,20 @@
           %h3.panel-title
             Sign In
         .panel-body
-          = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
-            = render partial: 'form_fields', locals: { f: f }
-          = render partial: 'devise/shared/openid'
+          - if Feature.active?(:prevent_local_signups)
+            = render partial: 'devise/shared/sso_buttons'
+            .row
+              .col-md-4
+                %hr
+              .col-md-4
+                %h4.text-center
+                  or sign in with password
+              .col-md-4
+                %hr
+            = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+              = render partial: 'form_fields', locals: { f: f }
+          - else
+            = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+              = render partial: 'form_fields', locals: { f: f }
+            = render partial: 'devise/shared/openid'
           = render partial: 'devise/shared/help'

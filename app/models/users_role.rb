@@ -4,9 +4,10 @@
 #
 # Table name: users_roles
 #
-#  id      :bigint           not null, primary key
-#  role_id :integer
-#  user_id :integer
+#  id                  :bigint           not null, primary key
+#  email_notifications :boolean          default(TRUE), not null
+#  role_id             :integer
+#  user_id             :integer
 #
 # Indexes
 #

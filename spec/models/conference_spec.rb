@@ -78,12 +78,13 @@ describe Conference do
       result = {
         DateTime.now.end_of_week =>
                                     {
-                                      confirmed:   0,
-                                      unconfirmed: 0,
-                                      new:         0,
-                                      withdrawn:   0,
-                                      canceled:    0,
-                                      rejected:    0
+                                      confirmed:            0,
+                                      unconfirmed:          0,
+                                      new:                  0,
+                                      withdrawn:            0,
+                                      canceled:             0,
+                                      rejected:             0,
+                                      tentatively_accepted: 0
                                     }
       }
 
@@ -135,12 +136,13 @@ describe Conference do
       result = {
         DateTime.now.end_of_week =>
                                     {
-                                      confirmed:   1,
-                                      unconfirmed: 1,
-                                      new:         1,
-                                      withdrawn:   1,
-                                      canceled:    1,
-                                      rejected:    1
+                                      confirmed:            1,
+                                      unconfirmed:          1,
+                                      new:                  1,
+                                      withdrawn:            1,
+                                      canceled:             1,
+                                      rejected:             1,
+                                      tentatively_accepted: 0
                                     }
       }
 
@@ -208,12 +210,13 @@ describe Conference do
                                               },
         DateTime.now.end_of_week           =>
                                               {
-                                                confirmed:   1,
-                                                unconfirmed: 1,
-                                                new:         1,
-                                                withdrawn:   0,
-                                                canceled:    0,
-                                                rejected:    0
+                                                confirmed:            1,
+                                                unconfirmed:          1,
+                                                new:                  1,
+                                                withdrawn:            0,
+                                                canceled:             0,
+                                                rejected:             0,
+                                                tentatively_accepted: 0
                                               }
       }
 
@@ -832,7 +835,7 @@ describe Conference do
       canceled.accept!(@options)
       canceled.cancel!
 
-      @result = { 'New' => 1, 'Withdrawn' => 1, 'Unconfirmed' => 1, 'Confirmed' => 1, 'Canceled' => 1, 'Rejected' => 1 }
+      @result = { 'New' => 1, 'Withdrawn' => 1, 'Unconfirmed' => 1, 'Tentatively_accepted' => 0, 'Confirmed' => 1, 'Canceled' => 1, 'Rejected' => 1 }
     end
 
     it '#event_distribution does calculate correct values with events' do
@@ -847,7 +850,7 @@ describe Conference do
     it 'event_distribution does calculate correct values with just a new event' do
       conference = create(:conference)
       create(:event, program: conference.program)
-      result = { 'New' => 1, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
+      result = { 'New' => 1, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Tentatively_accepted' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
       expect(conference.event_distribution).to eq(result)
     end
 
@@ -855,7 +858,7 @@ describe Conference do
       conference = create(:conference)
       event = create(:event, program: conference.program)
       event.withdraw!
-      result = { 'New' => 0, 'Withdrawn' => 1, 'Unconfirmed' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
+      result = { 'New' => 0, 'Withdrawn' => 1, 'Unconfirmed' => 0, 'Tentatively_accepted' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
       expect(conference.event_distribution).to eq(result)
     end
 
@@ -863,7 +866,7 @@ describe Conference do
       conference = create(:conference)
       event = create(:event, program: conference.program)
       event.accept!(@options)
-      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 1, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
+      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 1, 'Tentatively_accepted' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
       expect(conference.event_distribution).to eq(result)
     end
 
@@ -871,7 +874,7 @@ describe Conference do
       conference = create(:conference)
       event = create(:event, program: conference.program)
       event.reject!(@options)
-      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 1 }
+      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Tentatively_accepted' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 1 }
       expect(conference.event_distribution).to eq(result)
     end
 
@@ -881,7 +884,7 @@ describe Conference do
       event = create(:event, program: conference.program)
       event.accept!(@options)
       event.confirm!
-      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Confirmed' => 1, 'Canceled' => 0, 'Rejected' => 0 }
+      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Tentatively_accepted' => 0, 'Confirmed' => 1, 'Canceled' => 0, 'Rejected' => 0 }
       expect(conference.event_distribution).to eq(result)
     end
 
@@ -890,7 +893,7 @@ describe Conference do
       event = create(:event, program: conference.program)
       event.accept!(@options)
       event.cancel!
-      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Confirmed' => 0, 'Canceled' => 1, 'Rejected' => 0 }
+      result = { 'New' => 0, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Tentatively_accepted' => 0, 'Confirmed' => 0, 'Canceled' => 1, 'Rejected' => 0 }
       expect(conference.event_distribution).to eq(result)
     end
 
@@ -906,14 +909,14 @@ describe Conference do
     it 'self#event_distribution does calculate correct values with just a new event' do
       @conference.program.events.clear
       create(:event, program: @conference.program)
-      result = { 'New' => 1, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
+      result = { 'New' => 1, 'Withdrawn' => 0, 'Unconfirmed' => 0, 'Tentatively_accepted' => 0, 'Confirmed' => 0, 'Canceled' => 0, 'Rejected' => 0 }
       expect(Conference.event_distribution).to eq(result)
     end
 
     it 'self#event_distribution does calculate correct values
                       with just a new events from different conferences' do
       create(:event, program: @conference.program)
-      result = { 'New' => 2, 'Withdrawn' => 1, 'Unconfirmed' => 1, 'Confirmed' => 1, 'Canceled' => 1, 'Rejected' => 1 }
+      result = { 'New' => 2, 'Withdrawn' => 1, 'Unconfirmed' => 1, 'Tentatively_accepted' => 0, 'Confirmed' => 1, 'Canceled' => 1, 'Rejected' => 1 }
       expect(Conference.event_distribution).to eq(result)
     end
   end
