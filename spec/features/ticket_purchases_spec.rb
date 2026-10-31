@@ -36,6 +36,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{ticket.id}", with: '2'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -55,6 +57,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{free_ticket.id}", with: '5'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -74,6 +78,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{first_registration_ticket.id}", with: '1'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -94,6 +100,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{third_registration_ticket.id}", with: '1'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -113,6 +121,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{first_registration_ticket.id}", with: '5'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -129,6 +139,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{first_registration_ticket.id}", with: '1'
         fill_in "tickets__#{second_registration_ticket.id}", with: '1'
@@ -195,6 +207,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{ticket.id}", with: '2'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
