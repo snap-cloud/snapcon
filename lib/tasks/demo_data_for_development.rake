@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
+require_relative '../demo_factories'
+
 namespace :data do
   desc 'Create demo data for our local development'
-  include FactoryBot::Syntax::Methods
-
   task surveys: :environment do
+    DemoFactories.load!
+    include FactoryBot::Syntax::Methods
+
     conference = create(:full_conference, start_date: Date.current, end_date: Date.current + 1.day)
     survey_after_conference_active = create(:survey, surveyable: conference, target: :after_conference,
 title: 'Survey about the conference', start_date: conference.start_date - 1.day, end_date: conference.end_date + 5.days, description: 'Survey about the conference. You can already see it.')
@@ -28,6 +31,9 @@ title: 'Survey about the conference', start_date: conference.start_date - 1.day,
   end
 
   task test: :environment do
+    DemoFactories.load!
+    include FactoryBot::Syntax::Methods
+
     def generate_program(conference)
       program = conference.program
       user1 = create(:user)

@@ -177,11 +177,14 @@ gem 'feature'
 # For countable.js
 gem 'countable-rails'
 
-# Both are not in a group as we use it also for rake data:demo
-# for fake data
-gem 'faker'
-# for seeds
-gem 'factory_bot_rails'
+# Fake data and factories, for specs and the data:demo rake tasks.
+# The :demo group keeps them installed in production (Heroku skips only
+# development and test) without requiring them at boot, which saves ~75 MB
+# per process. lib/demo_factories.rb loads them when a demo task runs.
+group :development, :test, :demo do
+  gem 'factory_bot_rails'
+  gem 'faker'
+end
 
 # for integrating Stripe payment gateway
 gem 'stripe'
@@ -191,9 +194,6 @@ gem 'sprockets-rails'
 
 # for multiple speakers select on proposal/event forms
 gem 'selectize-rails'
-
-# n+1 query logging
-gem 'bullet'
 
 # Pin to solve https://github.com/mperham/connection_pool/issues/212
 gem 'connection_pool', '< 3'
@@ -282,6 +282,8 @@ group :development, :test, :linters do
 end
 
 group :development, :test do
+  # n+1 query logging
+  gem 'bullet'
   # as capybara driver
   gem 'webdrivers'
   gem 'geckodriver-helper'
