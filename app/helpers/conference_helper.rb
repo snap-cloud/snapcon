@@ -67,42 +67,25 @@ module ConferenceHelper
   end
 
   def get_happening_now_events_schedules(conference)
-    events_schedules = filter_events_schedules(conference, :happening_now?)
-    events_schedules ||= []
-    events_schedules
+    HappeningNowQuery.new(conference).happening_now
   end
 
   def get_happening_next_events_schedules(conference)
-    events_schedules = filter_events_schedules(conference, :happening_later?)
-
-    return [] if events_schedules.empty?
-
-    # events_schedules have been sorted by start_time in selected_event_schedules
-    happening_next_time = events_schedules[0].start_time
-    events_schedules.select { |s| s.start_time == happening_next_time }
+    HappeningNowQuery.new(conference).happening_next
   end
 
   def load_happening_now
-    events_schedules_list = get_happening_now_events_schedules(@conference)
+    query = HappeningNowQuery.new(@conference)
+    events_schedules = query.happening_now
     @is_happening_next = false
-    if events_schedules_list.empty?
-      events_schedules_list = get_happening_next_events_schedules(@conference)
+    unless events_schedules.exists?
+      events_schedules = query.happening_next
       @is_happening_next = true
     end
     @events_schedules_limit = Rails.configuration.conference[:events_per_page]
-    @events_schedules_length = events_schedules_list.length
-    @pagy, @events_schedules = pagy_array(events_schedules_list,
-                                          items:      @events_schedules_limit,
-                                          link_extra: 'data-remote="true"')
-  end
-
-  private
-
-  # TODO: Move this to using the cached method on program/schedule
-  def filter_events_schedules(conference, filter)
-    conference.program.selected_event_schedules(
-      includes: [:event, :room, { event:
-                                         %i[event_type speakers speaker_event_users track program] }]
-    ).select(&filter)
+    @pagy, @events_schedules = pagy(events_schedules,
+                                    items:      @events_schedules_limit,
+                                    link_extra: 'data-remote="true"')
+    @events_schedules_length = @pagy.count
   end
 end

@@ -74,7 +74,7 @@ class SchedulesController < ApplicationController
 
   def happening_now
     # TODO: Adapt to include happening next.
-    @events_schedules = get_happening_now_events_schedules(@conference)
+    @events_schedules = get_happening_now_events_schedules(@conference).to_a
     @current_time = Time.now.in_time_zone(@conference.timezone)
 
     event_ids = @events_schedules.map { |es| es.event.id }

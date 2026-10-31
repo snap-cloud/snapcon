@@ -27,6 +27,26 @@ describe ConferencesController do
       end
     end
 
+    context 'happening now' do
+      render_views
+
+      it 'does not query events when happening now is turned off' do
+        conference.splashpage.update!(include_program: true, include_happening_now: false)
+        expect(HappeningNowQuery).not_to receive(:new)
+
+        get :show, params: { id: conference.short_title }
+        expect(response.body).not_to include("id='happening-now'")
+      end
+
+      it 'queries events once when happening now is turned on' do
+        conference.splashpage.update!(include_program: true, include_happening_now: true)
+        expect(HappeningNowQuery).to receive(:new).once.and_call_original
+
+        get :show, params: { id: conference.short_title }
+        expect(response.body).to include("id='happening-now'")
+      end
+    end
+
     context 'accessing conference via custom domain' do
       before do
         conference.update_attribute(:custom_domain, 'lvh.me')
