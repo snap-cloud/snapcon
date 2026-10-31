@@ -104,8 +104,7 @@ module EventsHelper
   end
 
   # TODO-SNAPCON: Move to admin helper
-  # rubocop:disable Metrics/MethodLength
-  def state_dropdown(event, conference_id, email_settings)
+  def state_dropdown(event, conference_id, email_settings) # rubocop:disable Metrics/MethodLength
     selection = event.state.humanize
     options = []
     if event.transition_possible? :accept
@@ -166,7 +165,6 @@ module EventsHelper
     end
     active_dropdown(selection, options)
   end
-  # rubocop:enable Metrics/MethodLength
 
   # TODO-SNAPCON: Move to admin helper
   def event_switch_checkbox(event, attribute, conference_id)

@@ -1,3 +1,4 @@
+/* eslint quotes: ["error", "single", { "avoidEscape": true }] */
 function checkboxSwitch(selector){
   $(selector).bootstrapSwitch();
 
