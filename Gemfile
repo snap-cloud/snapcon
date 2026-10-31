@@ -40,7 +40,7 @@ gem 'rails-i18n'
 # Windows: timezone data (required on Windows for tzinfo)
 gem 'tzinfo-data', platforms: %i[windows jruby]
 
-# as authentification framework
+# as authentication framework
 gem 'devise'
 gem 'devise_ichain_authenticatable'
 
@@ -102,6 +102,9 @@ gem 'chartkick'
 
 # for displaying maps
 gem 'leaflet-rails'
+
+# for exporting CSV files
+gem 'csv'
 
 # for user avatars
 gem 'gravtastic'
@@ -191,6 +194,9 @@ gem 'selectize-rails'
 
 # n+1 query logging
 gem 'bullet'
+
+# Pin to solve https://github.com/mperham/connection_pool/issues/212
+gem 'connection_pool', '< 3'
 
 # memcached binary connector
 gem 'dalli', require: false

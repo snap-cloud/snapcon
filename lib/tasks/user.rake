@@ -13,7 +13,7 @@ namespace :user do
     puts "User with email #{args.email} is now an admin!" if user.update_columns(is_admin: true)
   end
 
-  desc 'Set email_public attrubute true for all users'
+  desc 'Set email_public attribute true for all users'
   task set_email_public: :environment do
     User.update_all email_public: true
   end
