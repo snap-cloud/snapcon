@@ -12,8 +12,12 @@ describe ConferenceRegistrationsController, type: :controller do
   shared_examples 'access #new action' do |user, ichain, path, message|
     before do
       sign_in send(user) if user
-      stub_const('ENV', ENV.to_hash.merge('OSEM_ICHAIN_ENABLED' => ichain))
+      ENV['OSEM_ICHAIN_ENABLED'] = ichain
       get :new, params: { conference_id: conference.short_title }
+    end
+
+    after :each do
+      ENV['OSEM_ICHAIN_ENABLED'] = nil
     end
 
     it 'redirects' do
@@ -28,8 +32,12 @@ describe ConferenceRegistrationsController, type: :controller do
   shared_examples 'can access #new action' do |user, ichain|
     before do
       sign_in send(user) if user
-      stub_const('ENV', ENV.to_hash.merge('OSEM_ICHAIN_ENABLED' => ichain))
+      ENV['OSEM_ICHAIN_ENABLED'] = ichain
       get :new, params: { conference_id: conference.short_title }
+    end
+
+    after :each do
+      ENV['OSEM_ICHAIN_ENABLED'] = nil
     end
 
     it 'user variable exists' do
@@ -329,23 +337,23 @@ max_attendees: 5, state: 'confirmed')
 
         context 'conference has no code of conduct' do
           before do
-            conference.organization.update(code_of_conduct: nil)
+            conference.update(code_of_conduct: nil)
             get :edit, params: { conference_id: conference.short_title }
           end
 
-          it 'does not render the code of conduct modal' do
-            expect(response.body).not_to include('modal-code-of-conduct')
+          it 'does not render the code of conduct' do
+            expect(response.body).not_to include('Code of Conduct for')
           end
         end
 
         context 'conference has a code of conduct' do
           before do
-            conference.organization.update(code_of_conduct: 'Be nice to each other.')
+            conference.update(code_of_conduct: 'Be nice to each other.')
             get :edit, params: { conference_id: conference.short_title }
           end
 
-          it 'renders the code of conduct modal' do
-            expect(response.body).to include('modal-code-of-conduct')
+          it 'renders the code of conduct' do
+            expect(response.body).to include('Code of Conduct for')
           end
         end
       end

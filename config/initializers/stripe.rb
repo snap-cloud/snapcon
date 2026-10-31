@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Stripe.api_key = ENV.fetch('STRIPE_SECRET_KEY') { Rails.application.secrets.stripe_secret_key }
+Stripe.api_key = ENV.fetch('STRIPE_SECRET_KEY', nil)
 
 # Pin the API version instead of using the Stripe account's default.
 # Payment#complete_checkout expands `payment_intent.latest_charge`, which only

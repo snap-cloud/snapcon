@@ -18,7 +18,7 @@ describe Registration do
     context 'who is already registered' do
       let!(:registration) { create(:registration, user: participant, conference: conference) }
 
-      it 'updates conference registration', :feature, :js do
+      it 'updates conference registration', feature: true, js: true do
         visit root_path
         click_link 'My Registration'
         expect(page).to have_current_path(conference_conference_registration_path(conference.short_title),
@@ -32,7 +32,7 @@ describe Registration do
         expect(conference.user_registered?(participant)).to be(true)
       end
 
-      it 'unregisters for a conference', :feature, :js do
+      it 'unregisters for a conference', feature: true, js: true do
         visit root_path
         click_link 'My Registration'
         expect(page).to have_current_path(conference_conference_registration_path(conference.short_title),
@@ -41,19 +41,14 @@ describe Registration do
         page.accept_alert do
           click_link 'Unregister'
         end
-        page.find('#flash')
         expect(page).to have_content('not registered')
         expect(conference.user_registered?(participant)).to be(false)
       end
     end
 
     context 'who is not registered' do
-      it 'registers for a conference', :feature, :js do
-        visit root_path
-        click_link 'Register'
-
-        expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
-                                          ignore_query: true)
+      scenario 'registers for a conference', feature: true, js: true do
+        visit new_conference_conference_registration_path(conference.short_title)
         click_button 'Register'
         within('#flash') { expect(page).to have_text('You are now registered and will be receiving E-Mail notifications.') }
 

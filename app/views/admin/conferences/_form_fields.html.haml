@@ -1,9 +1,5 @@
 %h4 Basic Information
 %hr
-- if f.object.new_record?
-  .form-group
-    = f.label :organization, "Organization"
-    = f.select :organization_id, Organization.accessible_by(current_ability, :update).pluck(:name, :id)
 .form-group
   = f.label :title
   %abbr{title: 'This field is required'} *
@@ -38,8 +34,15 @@
     - if f.object.picture?
       = image_tag f.object.picture.thumb.url
     = f.file_field :picture
-    %span.help-block
+    .help-block
       This will be shown in the navigation bar and emails.
+  .form-group
+    = f.label :code_of_conduct, "Code of Conduct"
+    = f.text_area :code_of_conduct, rows: 10, data: { provide: 'markdown' }, class: 'form-control'
+    .help-block
+      Rules governing behavior and dispute resolution...
+      = markdown_hint
+- unless f.object.new_record? # We are showing more fields on the edit form
   .form-group
     = f.label :custom_css, "Custom CSS"
     = f.text_area :custom_css, rows: 10, class: 'form-control', html: { style: 'font-family: monospace' }

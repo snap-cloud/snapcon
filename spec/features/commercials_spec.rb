@@ -26,7 +26,7 @@ describe Commercial do
     page.execute_script("$('#commercial_submit_action').prop('disabled', false)")
 
     click_button 'Create Materials'
-    page.find('#flash')
+    page.find_by_id('flash')
     expect(flash).to eq('Materials were successfully created.')
   end
 
@@ -43,7 +43,7 @@ describe Commercial do
       click_button 'Update Materials'
     end
 
-    page.find('#flash')
+    page.find_by_id('flash')
     expect(flash).to eq('Materials were successfully updated.')
     expect(event.commercials.count).to eq(1)
     commercial.reload
@@ -59,7 +59,7 @@ describe Commercial do
     page.accept_alert do
       click_link 'Delete'
     end
-    page.find('#flash')
+    page.find_by_id('flash')
     expect(flash).to eq('Materials were successfully destroyed.')
     expect(event.commercials.count).to eq(0)
   end

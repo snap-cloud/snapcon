@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
 
   add_flash_types :error
+  helper_method :sign_in_path
   protect_from_forgery with: :exception, prepend: true
   before_action :store_location
   before_action :set_sentry_user
@@ -73,5 +74,13 @@ class ApplicationController < ActionController::Base
     return unless current_user
 
     Sentry.set_user(email: current_user.email, id: current_user.id, username: current_user.username)
+  end
+
+  def sign_in_path
+    if ENV.fetch('OSEM_ICHAIN_ENABLED', nil) == 'true'
+      User.ichain_login_url
+    else
+      new_user_session_path
+    end
   end
 end

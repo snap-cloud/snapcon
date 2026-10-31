@@ -47,7 +47,7 @@ describe Survey do
       click_link survey.title
       choose 'Yes'
       click_button 'Submit'
-      expect(flash).to eq('Successfully responded to survey.')
+      within('#flash') { expect(page).to have_text('Successfully responded to survey.') }
 
       visit conference_conference_registration_path(conference)
       expect(find(:link, survey.title).sibling('.fa-solid')[:title]).to eq('Thank you for filling out the survey')

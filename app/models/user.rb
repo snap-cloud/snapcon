@@ -124,7 +124,7 @@ class User < ApplicationRecord
     where('last_sign_in_at > ?', Date.today - 3.months).where(is_disabled: false)
   }
   scope :unconfirmed, -> { where('confirmed_at IS NULL') }
-  scope :dead, -> { where('last_sign_in_at < ?', Date.today - 1.year) }
+  scope :dead, -> { where(last_sign_in_at: ...(Date.today - 1.year)) }
 
   # Include default devise modules. Others available are:
   # :token_authenticatable, :confirmable,
@@ -186,6 +186,7 @@ class User < ApplicationRecord
             presence:   true
 
   validate :biography_limit
+  validates :affiliation, length: { maximum: 150 }
 
   DISTRIBUTION_COLORS = {
     'Active'      => 'green',
@@ -359,8 +360,7 @@ class User < ApplicationRecord
   end
 
   def registered
-    registrations = self.registrations
-    if registrations.count == 0
+    if registrations.none?
       'None'
     else
       registrations.map { |r| r.conference.title }.join ', '
@@ -369,7 +369,7 @@ class User < ApplicationRecord
 
   def attended
     registrations_attended = registrations.where(attended: true)
-    if registrations_attended.count == 0
+    if registrations_attended.none?
       'None'
     else
       registrations_attended.map { |r| r.conference.title }.join ', '
@@ -407,7 +407,7 @@ class User < ApplicationRecord
   end
 
   def self.empty?
-    User.count == 1 && User.first.email == 'deleted@localhost.osem'
+    User.one? && User.first.email == 'deleted@localhost.osem'
   end
 
   def dropdwon_display

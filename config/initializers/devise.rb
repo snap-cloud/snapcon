@@ -7,26 +7,15 @@ Devise.setup do |config|
   # Pass each provider to User model in :omniauth_providers (for open_id providers use their name)
 
   config.omniauth :open_id, name: 'suse', identifier: 'http://www.opensuse.org/openid/user'
-
-  config.omniauth :google_oauth2,
-                  ENV.fetch('OSEM_GOOGLE_KEY', Rails.application.secrets.google_key),
-                  ENV.fetch('OSEM_GOOGLE_SECRET', Rails.application.secrets.google_secret),
-                  name:  'google',
-                  scope: %w[email profile]
+  config.omniauth :google_oauth2, ENV.fetch('OSEM_GOOGLE_KEY', nil), ENV.fetch('OSEM_GOOGLE_SECRET', nil), name: 'google', scope: 'email'
+  config.omniauth :facebook, ENV.fetch('OSEM_FACEBOOK_KEY', nil), ENV.fetch('OSEM_FACEBOOK_SECRET', nil)
+  config.omniauth :github, ENV.fetch('OSEM_GITHUB_KEY', nil), ENV.fetch('OSEM_GITHUB_SECRET', nil)
 
   # Since the display of login buttons is based on _KEY and _SECRET being present, set
   # OSEM_DISCOURSE_KEY to the SSO endpoint to use (e.g. https://snap.berkeley.edu/api/v1/discourse-sso).
   config.omniauth :discourse,
                   sso_url:    ENV.fetch('OSEM_DISCOURSE_KEY', nil),
                   sso_secret: ENV.fetch('OSEM_DISCOURSE_SECRET', nil)
-
-  config.omniauth :facebook,
-                  ENV.fetch('OSEM_FACEBOOK_KEY', Rails.application.secrets.facebook_key),
-                  ENV.fetch('OSEM_FACEBOOK_SECRET', Rails.application.secrets.facebook_secret)
-
-  config.omniauth :github,
-                  ENV.fetch('OSEM_GITHUB_KEY', Rails.application.secrets.github_key),
-                  ENV.fetch('OSEM_GITHUB_SECRET', Rails.application.secrets.github_secret)
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,

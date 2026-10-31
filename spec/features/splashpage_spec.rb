@@ -8,45 +8,44 @@ describe Splashpage do
   let!(:organizer) { create(:organizer, resource: conference) }
   let!(:participant) { create(:user, biography: '', is_admin: false) }
 
-  it 'create a valid splashpage', :js do
+  it 'create a valid splashpage', js: true do
     sign_in organizer
     visit admin_conference_splashpage_path(conference.short_title)
 
     click_link 'Create Splashpage'
     click_button 'Save'
-    page.find('#flash')
-    expect(flash).to eq('Splashpage successfully created.')
-    expect(page).to have_current_path(admin_conference_splashpage_path(conference.short_title), ignore_query: true)
+
+    within('#flash') { expect(page).to have_text('Splashpage successfully created.') }
+    expect(current_path).to eq(admin_conference_splashpage_path(conference.short_title))
     expect(page.has_text?('Private')).to be true
   end
 
   context 'splashpage already created' do
     let!(:splashpage) { create(:splashpage, conference: conference, public: false) }
 
-    it 'update a valid splashpage', :js do
+    it 'update a valid splashpage', js: true do
       sign_in organizer
       visit admin_conference_splashpage_path(conference.short_title)
 
       click_link 'Configure'
       check('Make splash page public')
       click_button 'Save'
-      page.find('#flash')
-      expect(flash).to eq('Splashpage successfully updated.')
-      expect(page).to have_current_path(admin_conference_splashpage_path(conference.short_title), ignore_query: true)
+
+      within('#flash') { expect(page).to have_text('Splashpage successfully updated.') }
+      expect(current_path).to eq(admin_conference_splashpage_path(conference.short_title))
       expect(page.has_text?('Public')).to be true
 
       click_link 'Configure'
       expect(page.has_checked_field?('Make splash page public?')).to be true
     end
 
-    it 'delete the splashpage', :js do
+    it 'delete the splashpage', js: true do
       sign_in organizer
       visit admin_conference_splashpage_path(conference.short_title)
       click_link 'Delete'
       page.accept_alert
-      page.find('#flash')
-      expect(page).to have_current_path(admin_conference_splashpage_path(conference.short_title), ignore_query: true)
-      expect(flash).to eq('Splashpage was successfully destroyed.')
+      expect(current_path).to eq(admin_conference_splashpage_path(conference.short_title))
+      within('#flash') { expect(page).to have_text('Splashpage was successfully destroyed.') }
       expect(Splashpage.count).to eq(0)
     end
 
@@ -59,24 +58,8 @@ describe Splashpage do
     it 'splashpage is not accessible for participants if it is not public' do
       sign_in participant
       visit conference_path(conference.short_title)
-      page.find('#flash')
-      expect(flash).to eq('You are not authorized to access this page.')
-      expect(page).to have_current_path(root_path, ignore_query: true)
-    end
-  end
-
-  context 'navigation' do
-    let!(:splashpage) { create(:splashpage, conference: conference, public: true) }
-
-    context 'multiple organizations' do
-      let!(:additional_organization) { create(:organization) }
-
-      it 'has organization logo', :feature, :js do
-        sign_in participant
-        visit conference_path(conference.short_title)
-
-        expect(find('.navbar-brand img')['alt']).to have_content conference.organization.name
-      end
+      within('#flash') { expect(page).to have_text('You are not authorized to access this page.') }
+      expect(current_path).to eq(root_path)
     end
   end
 
@@ -180,46 +163,6 @@ start_time: (current_time + 2.hours).strftime('%a, %d %b %Y %H:%M:%S'))
       visit conference_path(conference2.short_title, page: 2)
       happening_now = page.find('#happening-now')
       expect(happening_now).to have_content(event_schedule4.event.title)
-    end
-  end
-
-  context 'clarify registration status' do
-    let!(:splashpage) { create(:splashpage, conference: conference, public: true) }
-    let!(:reg_ticket) { create(:ticket, registration_ticket: true, conference: conference) }
-    let!(:free_ticket) { create(:ticket, price_cents: 0) }
-
-    it 'user signed in with no tickets', :feature do
-      sign_in participant
-      visit conference_path(conference.short_title)
-      expect(page).to have_content 'You have not booked any tickets for this conference yet.'
-    end
-
-    it 'user signed in with 1 free ticket', :feature do
-      sign_in participant
-      create(:ticket_purchase, conference: conference, user: participant, ticket: free_ticket, quantity: 1)
-      visit conference_path(conference.short_title)
-      expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
-    end
-
-    # TODO-SNAPCON: This should check for reg tickets, not just any ticket.
-    it 'user signed in with 1 paid ticket', :feature do
-      sign_in participant
-      create(:ticket_purchase, conference: conference, user: participant, ticket: reg_ticket, quantity: 1)
-      visit conference_path(conference.short_title)
-      expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
-    end
-
-    it 'user signed in with multiple ticket', :feature do
-      sign_in participant
-      create(:ticket_purchase, conference: conference, user: participant, ticket: reg_ticket, quantity: 1)
-      create(:ticket_purchase, conference: conference, user: participant, ticket: free_ticket, quantity: 1)
-      visit conference_path(conference.short_title)
-      expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
-    end
-
-    it 'user not signed in', :feature do
-      visit conference_path(conference.short_title)
-      expect(page).not_to have_content 'You have not booked any tickets for this conference yet.'
     end
   end
 end

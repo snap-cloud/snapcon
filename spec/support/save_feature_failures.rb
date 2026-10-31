@@ -8,6 +8,7 @@ RSpec.configure do |config|
     example_filename = File.expand_path(example_filename, Capybara.save_path)
     example_screenshotname = "#{example_filename}.png"
     example_filename += '.html'
+    # rubocop:disable Lint/Debugger
     if RSpec.current_example.exception.present?
       save_page(example_filename)
       save_screenshot(example_screenshotname)
@@ -16,6 +17,7 @@ RSpec.configure do |config|
       FileUtils.rm_rf(example_filename)
       FileUtils.rm_rf(example_screenshotname)
     end
+    # rubocop:enable Lint/Debugger
   end
 end
 # rubocop:enable Lint/Debugger

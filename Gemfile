@@ -10,9 +10,9 @@ ruby '~> 3.4'
 
 # as web framework
 if next?
-  gem 'rails', '~> 7'
+  gem 'rails', '~> 8.0'
 else
-  gem 'rails', '~> 7.0'
+  gem 'rails', '~> 7.2'
 end
 
 # Use Puma as the app server
@@ -22,7 +22,7 @@ gem 'puma'
 # http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#responders
 gem 'responders', '~> 3.0'
 
-# as supported databases
+# as database
 gem 'pg'
 
 # for tracking data changes
@@ -88,13 +88,10 @@ gem 'cocoon'
 # as the JavaScript library
 # TODO: Consolidate with the rails-assets below or move to webpack...
 gem 'jquery-rails'
-gem 'jquery-ui-rails', '~> 7.0.0'
+gem 'jquery-ui-rails'
 
 # for languages validation
 gem 'iso-639'
-
-# as date picker
-gem 'bootstrap3-datetimepicker-rails', '~> 4.17.47'
 
 # data tables
 gem 'ajax-datatables-rails'
@@ -216,9 +213,6 @@ gem 'lograge'
 gem 'base64'
 gem 'csv'
 gem 'mutex_m'
-# ActiveSupport 7.0 needs Logger loaded before concurrent-ruby 1.3.5+ stops requiring it
-# (breaks tools like haml-lint that skip config/boot.rb). Remove after upgrading Rails.
-gem 'concurrent-ruby', '< 1.3.5'
 
 group :development do
   # to open mails
@@ -238,9 +232,7 @@ group :test do
   gem 'capybara'
   gem 'cucumber-rails', require: false
   gem 'database_cleaner'
-  gem 'geckodriver-helper'
   gem 'rspec-rails'
-  gem 'webdrivers'
   # for measuring test coverage
   gem 'simplecov'
   gem 'simplecov-cobertura'
@@ -265,9 +257,6 @@ group :test do
 end
 
 group :development, :test, :linters do
-  # as debugger
-  gem 'byebug'
-
   # for static code analisys
   gem 'rubocop', require: false
   gem 'rubocop-capybara', require: false
@@ -278,9 +267,7 @@ group :development, :test, :linters do
   gem 'rubocop-rspec_rails', require: false
 
   gem 'faraday-retry', require: false
-  # TODO-SNAPCON: figure out which haml-lint OR haml_lint is good.
-  gem 'haml-lint', require: false
-  gem 'haml_lint'
+  gem 'haml_lint', require: false
 
   # Easily run linters
   gem 'pronto', require: false
@@ -289,8 +276,11 @@ group :development, :test, :linters do
 end
 
 group :development, :test do
-  # as development/test database
-  gem 'sqlite3', '~> 1.4' # Rails 7.0 requires sqlite3 1.x
+  # as capybara driver
+  gem 'webdrivers'
+  gem 'geckodriver-helper'
+  # as debugger
+  gem 'byebug'
   # to test new rails version
   gem 'next_rails'
 end

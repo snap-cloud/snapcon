@@ -44,9 +44,9 @@ class Event < ApplicationRecord
   include ActionView::Helpers::SanitizeHelper
   include ActiveRecord::Transitions
   include RevisionCount
-  include FormatHelper
+  include FormatHelper # SNAPCON (verify if still needed)
 
-  has_paper_trail on: %i[create update], ignore: %i[updated_at guid week], meta: { conference_id: :conference_id }
+  has_paper_trail on: [:create, :update], ignore: [:updated_at, :guid, :week], meta: { conference_id: :conference_id }
 
   acts_as_commentable
 

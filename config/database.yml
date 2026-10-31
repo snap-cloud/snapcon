@@ -1,34 +1,20 @@
-<%
-  encoding = 'unicode'
-  if ENV.fetch('OSEM_DB_ADAPTER', nil) == 'mysql2'
-    encoding = 'utf8'
-  end
-%>
-
-
 default: &default
-  adapter: <%= ENV.fetch('OSEM_DB_ADAPTER', 'postgresql') %>
-  encoding: <%= encoding %>
-  host: <%= ENV.fetch('OSEM_DB_HOST', 'database') %>
+  adapter: 'postgresql'
+  encoding: 'unicode'
+  host: <%= ENV.fetch('OSEM_DB_HOST', 'localhost') %>
   port: <%= ENV.fetch('OSEM_DB_PORT', '5432') %>
   username: <%= ENV.fetch('OSEM_DB_USER', ENV.fetch('USER', 'postgres')) %>
   password: <%= ENV.fetch('OSEM_DB_PASSWORD', 'mysecretpassword') %>
   database: <%= ENV.fetch('OSEM_DB_NAME', 'postgres') %>
-  pool: 30
-  timeout: 60000
+  pool: 5
+  timeout: 5000
 
 development:
   <<: *default
-  host: localhost
-  # username: <%= ENV['OSEM_DB_USER'] || 'postgres' %>
   database: osem_development
 
-# Warning: The database defined as "test" will be erased and
-# re-generated when you run "rake".
-# Do not set this db to the same as development or production.
 test:
   <<: *default
-  host: localhost
   database: osem_test
 
 production:

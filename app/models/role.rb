@@ -24,7 +24,7 @@ class Role < ApplicationRecord
 
   has_paper_trail on:   %i[create update],
                   only: %i[name description],
-                  meta: { conference_id: :conference_id, organization_id: :organization_id }
+                  meta: { conference_id: :conference_id }
 
   before_destroy :cancel
   scopify
@@ -35,10 +35,6 @@ class Role < ApplicationRecord
 
   def conference_id
     resource_type == 'Conference' ? resource_id : nil
-  end
-
-  def organization_id
-    resource_type == 'Organization' ? resource_id : nil
   end
 
   private

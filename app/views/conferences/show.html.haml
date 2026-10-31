@@ -40,7 +40,7 @@
 #splash
   -# - cache [@conference, @splashpage, @conference.program, current_user, '#splash#main'] do
   - if @conference.code_of_conduct.present?
-    = render 'code_of_conduct', organization: @conference.organization
+    = render 'code_of_conduct'
 
   -# header
   = render 'header', conference: @conference, venue: @conference.venue, splashpage: @splashpage, cached: true

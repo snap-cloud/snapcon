@@ -30,30 +30,27 @@
 #  use_vpositions               :boolean          default(FALSE)
 #  created_at                   :datetime
 #  updated_at                   :datetime
-#  organization_id              :integer
 #
 # Indexes
 #
-#  index_conferences_on_organization_id  (organization_id)
 #
 # rubocop:disable Metrics/ClassLength
 class Conference < ApplicationRecord
   include RevisionCount
 
   require 'uri'
-  serialize :events_per_week, Hash
+
+  serialize :events_per_week, type: Hash
+
   # Needed to call 'Conference.with_role' in /models/ability.rb
   # Dependent destroy will fail as roles#destroy will be cancelled,hence delete_all
   resourcify :roles, dependent: :delete_all
 
-  default_scope { order('conferences.start_date DESC') }
-  scope :upcoming, -> { where('conferences.end_date >= ?', Date.current) }
-  scope :past, -> { where('conferences.end_date < ?', Date.current) }
+  default_scope { order(start_date: :desc) }
+  scope :upcoming, (-> { where(end_date: Date.current..) })
+  scope :past, (-> { where(end_date: ...Date.current) })
 
-  belongs_to :organization
-  delegate :code_of_conduct, to: :organization
-
-  has_paper_trail ignore: %i[updated_at guid revision events_per_week], meta: { conference_id: :id }
+  has_paper_trail ignore: %i(updated_at guid revision events_per_week), meta: { conference_id: :id }
 
   has_and_belongs_to_many :questions
 
@@ -82,7 +79,7 @@ class Conference < ApplicationRecord
   has_many :participants, through: :registrations, source: :user
   has_many :vdays, dependent: :destroy
   has_many :vpositions, dependent: :destroy
-  has_many :sponsorship_levels, -> { order('position ASC') }, dependent: :destroy
+  has_many :sponsorship_levels, -> { order(:position) }, dependent: :destroy
   has_many :sponsors, dependent: :destroy
   has_many :commercials, as: :commercialable, dependent: :destroy
   has_many :subscriptions, dependent: :destroy
@@ -124,7 +121,6 @@ class Conference < ApplicationRecord
             :start_hour,
             :end_hour,
             :ticket_layout,
-            :organization,
             :timezone, presence: true
 
   validates :short_title, uniqueness: true
@@ -141,7 +137,7 @@ class Conference < ApplicationRecord
   after_create :create_free_ticket
   after_update :delete_event_schedules
 
-  enum ticket_layout: { portrait: 0, landscape: 1 }
+  enum :ticket_layout, [:portrait, :landscape]
 
   ##
   # Checks if the user is registered to the conference
@@ -151,8 +147,8 @@ class Conference < ApplicationRecord
   # ====Returns
   # * +false+ -> If the user is registered
   # * +true+ - If the user isn't registered
-  def user_registered?(user)
-    user.present? && registrations.where(user_id: user.id).present?
+  def user_registered? user
+    user.present? && registrations.where(user_id: user.id).any?
   end
 
   ##
@@ -175,7 +171,7 @@ class Conference < ApplicationRecord
     registration.user = user
     if registration.save
       MailblusterEditLeadJob.perform_later(
-        user.id, add_tags: ["#{organization.name}-#{short_title}"]
+        user.id, add_tags: ["#{short_title}"]
       )
       return registration
     end
@@ -228,7 +224,7 @@ class Conference < ApplicationRecord
   def get_submissions_per_week
     result = []
 
-    if program&.cfp && program&.events
+    if program&.cfp && program.events
       submissions = program.events.select(:week).group(:week).order(:week).count
       start_week = program.cfp.start_week
       weeks = program.cfp.weeks
@@ -244,7 +240,7 @@ class Conference < ApplicationRecord
   # ====Returns
   #  * +Array+ -> e.g. 'Submitted' => [0, 3, 3, 5]  -> first week 0 events, second week 3 events.
   def get_submissions_data
-    return [] unless program&.cfp && program&.events
+    return [] unless program&.cfp && program.events
 
     start_week = program.cfp.start_week
     get_events_per_week_by_state.collect do |state, values|
@@ -268,10 +264,7 @@ class Conference < ApplicationRecord
   # ====Returns
   #  * +Array+ -> e.g. [0, 3, 3, 5] -> first week 0, second week 3 registrations
   def get_registrations_per_week
-    return [] unless registrations &&
-                     registration_period &&
-                     registration_period.start_date &&
-                     registration_period.end_date
+    return [] unless registrations && registration_period&.start_date && registration_period.end_date
 
     reg = registrations.group(:week).order(:week).count
     start_week = get_registration_start_week
@@ -337,7 +330,7 @@ class Conference < ApplicationRecord
     result = 0
     weeks = 0
     if registration_period&.start_date &&
-       registration_period&.end_date
+        registration_period.end_date
       weeks = Date.new(registration_period.start_date.year, 12, 31)
                   .strftime('%W').to_i
 
@@ -425,7 +418,7 @@ class Conference < ApplicationRecord
   # * +hash+ -> user: submissions
   def self.get_top_submitter(limit = 5)
     submitter = EventUser.select(:user_id).where('event_role = ?', 'submitter').limit(limit).group(:user_id)
-    counter = submitter.order('count_all desc').count(:all)
+    counter = submitter.order(count_all: :desc).count(:all)
     calculate_user_submission_hash(submitter, counter)
   end
 
@@ -436,9 +429,9 @@ class Conference < ApplicationRecord
   # * +hash+ -> user: submissions
   def get_top_submitter(limit = 5)
     submitter = EventUser.joins(:event).select(:user_id)
-                         .where('event_role = ? and program_id = ?', 'submitter', Conference.find(id).program.id)
-                         .limit(limit).group(:user_id)
-    counter = submitter.order('count_all desc').count(:all)
+        .where('event_role = ? and program_id = ?', 'submitter', Conference.find(id).program.id)
+        .limit(limit).group(:user_id)
+    counter = submitter.order(count_all: :desc).count(:all)
     Conference.calculate_user_submission_hash(submitter, counter)
   end
 
@@ -683,12 +676,12 @@ class Conference < ApplicationRecord
   # * +ActiveRecord+
   def self.get_active_conferences_for_dashboard
     result = Conference.where('start_date > ?', Time.now)
-                       .select('id, short_title, color, start_date, organization_id')
+        .select('id, short_title, color, start_date')
 
     if result.empty?
       result = Conference
-               .select('id, short_title, color, start_date, organization_id').limit(2)
-               .order(start_date: :desc)
+          .select('id, short_title, color, start_date').limit(2)
+          .order(start_date: :desc)
     end
     result
   end
@@ -699,7 +692,7 @@ class Conference < ApplicationRecord
   # ====Returns
   # * +ActiveRecord+
   def self.get_conferences_without_active_for_dashboard(active_conferences)
-    result = Conference.select('id, short_title, color, start_date, organization_id').order(start_date: :desc)
+    result = Conference.select('id, short_title, color, start_date').order(start_date: :desc)
     result - active_conferences
   end
 
@@ -1016,10 +1009,12 @@ class Conference < ApplicationRecord
     events_per_week.each do |week, values|
       week = Date.parse(week) unless week.respond_to?(:strftime)
       values.each do |state, value|
-        next unless %i[confirmed unconfirmed].include?(state)
-
-        result[state.to_s.capitalize] = {} unless result[state.to_s.capitalize]
-        result[state.to_s.capitalize][week.strftime('%W').to_i] = value
+        if %i(confirmed unconfirmed).include?(state)
+          unless result[state.to_s.capitalize]
+            result[state.to_s.capitalize] = {}
+          end
+          result[state.to_s.capitalize][week.strftime('%W').to_i] = value
+        end
       end
     end
 
@@ -1110,7 +1105,7 @@ class Conference < ApplicationRecord
   # * +True+ -> One difficulty level or more
   # * +False+ -> No diffculty level
   def difficulty_levels_set?
-    program.difficulty_levels.count > 0
+    program.difficulty_levels.any?
   end
 
   ##
@@ -1120,7 +1115,7 @@ class Conference < ApplicationRecord
   # * +True+ -> One difficulty level or more
   # * +False+ -> No diffculty level
   def event_types_set?
-    program.event_types.count > 0
+    program.event_types.any?
   end
 
   ##
@@ -1130,7 +1125,7 @@ class Conference < ApplicationRecord
   # * +True+ -> One track or more
   # * +False+ -> No track
   def tracks_set?
-    program.tracks.count > 0
+    program.tracks.any?
   end
 
   ##
@@ -1140,7 +1135,7 @@ class Conference < ApplicationRecord
   # * +True+ -> One room or more
   # * +False+ -> No room
   def rooms_set?
-    venue.present? && venue.rooms.count > 0
+    venue.present? && venue.rooms.any?
   end
 
   # Checks if the conference has a venue object.
