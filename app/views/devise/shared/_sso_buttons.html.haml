@@ -1,0 +1,16 @@
+- sso_providers = omniauth_configured.select { |p| [:google, :discourse].include?(p) }
+- unless sso_providers.empty?
+  .sso-buttons
+    - if sso_providers.include?(:google)
+      = button_to user_google_omniauth_authorize_path, class: 'btn btn-default btn-lg btn-block sso-btn' do
+        %i.fa-brands.fa-google
+        Sign in with Google
+    - if sso_providers.include?(:discourse)
+      = button_to user_discourse_omniauth_authorize_path, class: 'btn btn-default btn-lg btn-block sso-btn' do
+        %span
+          Sign in with Snap
+          %em> !
+      %p.text-muted.text-center
+        %small
+          If you are not currently logged into Snap! or the Snap! Forums, you will need to log in
+          twice when using your Snap! account.

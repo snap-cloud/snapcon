@@ -104,7 +104,7 @@ module EventsHelper
   end
 
   # TODO-SNAPCON: Move to admin helper
-  def state_dropdown(event, conference_id, email_settings)
+  def state_dropdown(event, conference_id, email_settings) # rubocop:disable Metrics/MethodLength
     selection = event.state.humanize
     options = []
     if event.transition_possible? :accept
@@ -122,6 +122,12 @@ module EventsHelper
           )
         ]
       end
+    end
+    if event.transition_possible? :tentatively_accept
+      options << [
+        'Tentatively Accept',
+        preview_tentative_accept_admin_conference_program_event_path(conference_id, event), :get
+      ]
     end
     if event.transition_possible? :reject
       options << [
@@ -318,9 +324,10 @@ module EventsHelper
     #
     # Selection is the string to show by default, which is clicked to expose the
     # dropdown options.
-    # Options is a list of 2-item lists; for each entry:
+    # Options is a list of lists; for each entry:
     # * [0] is the text of the option,
-    # * [1] is the link url for the options
+    # * [1] is the link url for the option,
+    # * [2] is the optional HTTP method symbol (defaults to :patch)
     content_tag('div', class: 'dropdown') do
       content_tag(
         'a',
@@ -333,7 +340,8 @@ module EventsHelper
       end +
         content_tag('ul', class: 'dropdown-menu') do
           options.collect do |option|
-            content_tag('li', link_to(option[0], option[1], method: :patch))
+            method = option[2] || :patch
+            content_tag('li', link_to(option[0], option[1], method: method))
           end.join.html_safe
         end
     end

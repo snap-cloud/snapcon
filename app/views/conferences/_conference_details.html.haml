@@ -20,7 +20,7 @@
               %span>= conference.country_name
           - unless conference.description.blank?
             %p
-              = markdown(truncate(conference.description, length: 1000, separator: "\n", escape: false), escape_html=false)
+              = markdown_with_variables(truncate(conference.description, length: 1000, separator: "\n", escape: false), conference, escape_html=false)
         .col-md-2
           .btn-group-vertical
             - if !@conference || @conference != conference

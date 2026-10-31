@@ -13,17 +13,18 @@ describe Survey do
     end
 
     it 'create a survey', :feature, :js do
-      visit admin_conference_path(conference)
-      click_link 'Surveys'
+      # The admin sidebar is collapsed at the headless browser's window size,
+      # so go straight to the surveys page.
+      visit admin_conference_surveys_path(conference.short_title)
       click_link 'New'
       fill_in 'Title', with: 'Example Survey'
       click_button 'Create Survey'
-      expect(flash).to eq('Successfully created survey')
+      within('#flash') { expect(page).to have_text('Successfully created survey') }
 
       fill_in :survey_question_title, with: 'Example question'
       select 'boolean', from: 'Type of Question:', visible: false # Hidden by bootstrap-select
       click_button 'Create Survey question'
-      expect(flash).to eq('Successfully created Survey Question.')
+      within('#flash') { expect(page).to have_text('Successfully created Survey Question.') }
     end
   end
 

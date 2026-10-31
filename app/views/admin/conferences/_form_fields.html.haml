@@ -23,10 +23,12 @@
     = f.label :description
     = f.text_area :description, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
     .help-block= markdown_hint('Splash page content')
+    = render partial: 'shared/help', locals: { id: 'description_help', show_event_variables: false, show_ticket_variables: false, show_user_variables: false }
   .form-group
     = f.label :registered_attendees_message, 'Message for Registered Attendees'
     = f.text_area :registered_attendees_message, rows: 5, data: { provide: 'markdown' }, class: 'form-control'
     .help-block= markdown_hint('Splash page content')
+    = render partial: 'shared/help', locals: { id: 'registered_attendees_help', show_event_variables: false, show_ticket_variables: false, show_user_variables: false }
   .form-group
     = f.color_field :color, size: 6, class: 'form-control'
     %span.help-block

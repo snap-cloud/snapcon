@@ -55,6 +55,7 @@ describe Registration do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        within('#flash') { expect(page).to have_text('You are now registered and will be receiving E-Mail notifications.') }
 
         expect(conference.user_registered?(participant)).to be(true)
       end

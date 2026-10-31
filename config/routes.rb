@@ -2,6 +2,9 @@
 Osem::Application.routes.draw do
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development?
 
+  # Stripe Checkout events (see StripeWebhooksController)
+  post '/stripe/webhook', to: 'stripe_webhooks#create', as: :stripe_webhook
+
   constraints DomainConstraint do
     get '/', to: 'conferences#show'
   end
@@ -113,6 +116,8 @@ Osem::Application.routes.draw do
             get :registrations
             post :comment
             patch :accept
+            get :preview_tentative_accept
+            patch :tentative_accept
             patch :confirm
             patch :cancel
             patch :reject
@@ -140,6 +145,7 @@ Osem::Application.routes.draw do
       resources :roles, except: %i[new create] do
         member do
           post :toggle_user
+          post :toggle_comment_notifications
         end
       end
 
@@ -209,7 +215,12 @@ Osem::Application.routes.draw do
     resource :conference_registration, path: 'register'
     resources :tickets, only: [:index]
     resources :ticket_purchases, only: %i[create destroy index]
-    resources :payments, only: %i[index new create]
+    resources :payments, only: %i[index new create] do
+      collection do
+        get :success
+        get :cancel
+      end
+    end
     resources :physical_tickets, only: %i[index show]
     resource :subscriptions, only: %i[create destroy]
     resource :schedule, only: [:show] do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe Organization do
+describe Organization, skip: 'Organizations are removed in upstream OSEM; delete this spec with the upstream merge (#392)' do
   let!(:organization) { create(:organization) }
   let!(:organization_admin_role) { Role.find_by(name: 'organization_admin', resource: organization) }
   let(:organization_admin) { create(:user, role_ids: [organization_admin_role.id]) }

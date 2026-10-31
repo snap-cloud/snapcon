@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 class PaymentsController < ApplicationController
+  STRIPE_CHECKOUT_HOST = 'checkout.stripe.com'
+
   before_action :authenticate_user!
-  load_and_authorize_resource
+  load_and_authorize_resource only: %i[index new]
   load_resource :conference, find_by: :short_title
   authorize_resource :conference_registrations, class: Registration
 
@@ -11,7 +13,6 @@ class PaymentsController < ApplicationController
   end
 
   def new
-    # TODO: use "base currency"
     session[:selected_currency] = params[:currency] if params[:currency].present?
     selected_currency = session[:selected_currency] || @conference.tickets.first.price_currency
     from_currency = @conference.tickets.first.price_currency
@@ -27,49 +28,91 @@ class PaymentsController < ApplicationController
   end
 
   def create
-    @payment = Payment.new payment_params
     session[:selected_currency] = params[:currency] if params[:currency].present?
     selected_currency = session[:selected_currency] || @conference.tickets.first.price_currency
-    from_currency = @conference.tickets.first.price_currency
 
-    if @payment.purchase && @payment.save
-      update_purchased_ticket_purchases
+    @payment = Payment.new(
+      user:       current_user,
+      conference: @conference,
+      currency:   selected_currency
+    )
+    authorize! :create, @payment
 
-      has_registration_ticket = params[:has_registration_ticket]
-      if has_registration_ticket == 'true'
-        registration = @conference.register_user(current_user)
-        if registration
-          redirect_to conference_physical_tickets_path,
-                      notice: "Thanks! Your ticket is booked successfully and you have been registered for #{@conference.title}."
-          return
-        end
-        redirect_to new_conference_conference_registration_path(@conference.short_title),
-                    notice: 'Thanks! Your ticket is booked successfully. Please register for the conference.'
-      else
-        redirect_to conference_physical_tickets_path,
-                    notice: 'Thanks! Your ticket is booked successfully.'
-      end
-    else
-      # TODO-SNAPCON: This case is not tested at all
-      @total_amount_to_pay = CurrencyConversion.convert_currency(@conference, Ticket.total_price(@conference, current_user, paid: false), from_currency, selected_currency)
-      @unpaid_ticket_purchases = current_user.ticket_purchases.unpaid.by_conference(@conference)
-      flash.now[:error] = @payment.errors.full_messages.to_sentence + ' Please try again with correct credentials.'
-      render :new
+    unless @payment.save
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: @payment.errors.full_messages.to_sentence
+      return
     end
+
+    session[:has_registration_ticket] = params[:has_registration_ticket]
+
+    checkout_session = @payment.create_checkout_session(
+      success_url: success_conference_payments_url(@conference.short_title) + '?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url:  cancel_conference_payments_url(@conference.short_title)
+    )
+
+    checkout_url = stripe_checkout_url(checkout_session)
+    if checkout_url
+      redirect_to checkout_url, allow_other_host: true
+    else
+      @payment.destroy
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: @payment.errors.full_messages.to_sentence.presence || 'Could not create checkout session. Please try again.'
+    end
+  end
+
+  def success
+    # Only the user who started this checkout can complete it.
+    @payment = current_user.payments.find_by(conference: @conference, stripe_session_id: params[:session_id])
+
+    if @payment.nil?
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: 'Payment not found. Please try again.'
+      return
+    end
+
+    case @payment.fulfill_checkout
+    when :fulfilled, :already_fulfilled
+      redirect_after_payment
+    when :mismatch
+      redirect_to conference_tickets_path(@conference.short_title),
+                  error: 'We received your payment, but your order changed during checkout, so we could not ' \
+                         'confirm your tickets. Please contact the organizers and we will sort it out.'
+    else
+      redirect_to new_conference_payment_path(@conference.short_title),
+                  error: 'Payment could not be completed. Please try again.'
+    end
+  end
+
+  def cancel
+    redirect_to new_conference_payment_path(@conference.short_title),
+                notice: 'Payment was cancelled. You can try again when ready.'
   end
 
   private
 
-  def payment_params
-    params.permit(:stripe_customer_email, :stripe_customer_token)
-          .merge(stripe_customer_email: params[:stripeEmail],
-                 stripe_customer_token: params[:stripeToken],
-                 user: current_user, conference: @conference, currency: session[:selected_currency])
+  # Only send users off-site to Stripe's hosted checkout page.
+  def stripe_checkout_url(checkout_session)
+    return if checkout_session.blank?
+
+    uri = URI.parse(checkout_session.url.to_s)
+    uri.to_s if uri.is_a?(URI::HTTPS) && uri.host == STRIPE_CHECKOUT_HOST
+  rescue URI::InvalidURIError
+    nil
   end
 
-  def update_purchased_ticket_purchases
-    current_user.ticket_purchases.by_conference(@conference).unpaid.each do |ticket_purchase|
-      ticket_purchase.pay(@payment)
+  def redirect_after_payment
+    if session.delete(:has_registration_ticket) == 'true'
+      if @conference.register_user(current_user)
+        redirect_to conference_physical_tickets_path,
+                    notice: "Thanks! Your ticket is booked successfully and you have been registered for #{@conference.title}."
+      else
+        redirect_to new_conference_conference_registration_path(@conference.short_title),
+                    notice: 'Thanks! Your ticket is booked successfully. Please register for the conference.'
+      end
+    else
+      redirect_to conference_physical_tickets_path,
+                  notice: 'Thanks! Your ticket is booked successfully.'
     end
   end
 end

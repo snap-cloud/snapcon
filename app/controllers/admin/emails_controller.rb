@@ -28,11 +28,11 @@ module Admin
 
     def email_params
       params.require(:email_settings).permit(:send_on_registration,
-                                             :send_on_accepted, :send_on_rejected, :send_on_confirmed_without_registration,
+                                             :send_on_accepted, :send_on_tentative_accepted, :send_on_rejected, :send_on_confirmed_without_registration,
                                              :send_on_submitted_proposal,
                                              :submitted_proposal_subject, :submitted_proposal_body,
-                                             :registration_subject, :accepted_subject, :rejected_subject, :confirmed_without_registration_subject,
-                                             :registration_body, :accepted_body, :rejected_body, :confirmed_without_registration_body,
+                                             :registration_subject, :accepted_subject, :tentative_accepted_subject, :rejected_subject, :confirmed_without_registration_subject,
+                                             :registration_body, :accepted_body, :tentative_accepted_body, :rejected_body, :confirmed_without_registration_body,
                                              :send_on_conference_dates_updated, :conference_dates_updated_subject, :conference_dates_updated_body,
                                              :send_on_conference_registration_dates_updated, :conference_registration_dates_updated_subject, :conference_registration_dates_updated_body,
                                              :send_on_venue_updated, :venue_updated_subject, :venue_updated_body,

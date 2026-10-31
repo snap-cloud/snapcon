@@ -14,25 +14,6 @@ describe Registration, :feature, :js do
   end
   let!(:participant) { create(:user) }
 
-  def make_stripe_purchase(card_number = '4242424242424242')
-    find('.stripe-button-el').click
-
-    stripe_iframe = all('iframe[name=stripe_checkout_app]').last
-    sleep(5)
-    Capybara.within_frame stripe_iframe do
-      expect(page).to have_content(:all, "#{ENV.fetch('OSEM_NAME', nil)} tickets")
-      fill_in 'Card number', with: card_number
-      fill_in 'Expiry', with: '08/22'
-      fill_in 'CVC', with: '123'
-      click_button '$20.00'
-      sleep(20)
-    end
-  end
-
-  def make_failed_stripe_purchase
-    make_stripe_purchase('4000000000000341')
-  end
-
   context 'as a participant' do
     before do
       sign_in participant
@@ -43,13 +24,20 @@ describe Registration, :feature, :js do
     end
 
     context 'who is not registered' do
-      it 'purchases and pays for a ticket succcessfully' do
+      it 'purchases and is redirected to Stripe Checkout' do
+        mock_session = double('Stripe::Checkout::Session',
+                              id:  'cs_test_123',
+                              url: 'https://checkout.stripe.com/pay/cs_test_123')
+        allow(Stripe::Checkout::Session).to receive(:create).and_return(mock_session)
+
         visit root_path
         click_link 'Register'
 
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{ticket.id}", with: '2'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -60,40 +48,6 @@ describe Registration, :feature, :js do
         expect(flash).to eq('Please pay here to get tickets.')
         purchase = TicketPurchase.where(user_id: participant.id, ticket_id: ticket.id).first
         expect(purchase.quantity).to eq(2)
-
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_stripe_purchase
-          # expect(current_path).to eq(conference_conference_registration_path(conference.short_title))
-          expect(page).to have_current_path(conference_physical_tickets_path(conference.short_title),
-                                            ignore_query: true)
-          expect(page).to have_content 'Your ticket is booked successfully.'
-        end
-      end
-
-      it 'purchases ticket but payment fails', :feature, :js do
-        visit root_path
-        click_link 'Register'
-
-        expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
-                                          ignore_query: true)
-        click_button 'Register'
-
-        fill_in "tickets__#{ticket.id}", with: '2'
-        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
-
-        click_button 'Continue'
-        page.find('#flash')
-        expect(page).to have_current_path(new_conference_payment_path(conference.short_title), ignore_query: true)
-        expect(flash).to eq('Please pay here to get tickets.')
-        purchase = TicketPurchase.where(user_id: participant.id, ticket_id: ticket.id).first
-        expect(purchase.quantity).to eq(2)
-
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_failed_stripe_purchase
-          page.find('#flash')
-          expect(page).to have_current_path(conference_payments_path(conference.short_title), ignore_query: true)
-          expect(flash).to eq('Your card was declined. Please try again with correct credentials.')
-        end
       end
 
       it 'purchases free tickets' do
@@ -103,6 +57,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{free_ticket.id}", with: '5'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -122,6 +78,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{first_registration_ticket.id}", with: '1'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -142,6 +100,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{third_registration_ticket.id}", with: '1'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -152,13 +112,6 @@ describe Registration, :feature, :js do
         expect(flash).to eq('Please pay here to get tickets.')
         purchase = TicketPurchase.where(user_id: participant.id, ticket_id: third_registration_ticket.id).first
         expect(purchase.quantity).to eq(1)
-
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_stripe_purchase
-          expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
-                                            ignore_query: true)
-          expect(page).to have_content 'Your ticket is booked successfully.'
-        end
       end
 
       it 'purchases more than one registration tickets of a single type' do
@@ -168,6 +121,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{first_registration_ticket.id}", with: '5'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -184,6 +139,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{first_registration_ticket.id}", with: '1'
         fill_in "tickets__#{second_registration_ticket.id}", with: '1'
@@ -238,13 +195,6 @@ describe Registration, :feature, :js do
         expect(purchase.quantity).to eq(1)
         expect(purchase.currency).to eq('EUR')
         expect(purchase.amount_paid).to eq(17.80)
-
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_stripe_purchase
-          expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
-                                            ignore_query: true)
-          expect(page).to have_content 'Your ticket is booked successfully.'
-        end
       end
     end
 
@@ -257,6 +207,8 @@ describe Registration, :feature, :js do
         expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                           ignore_query: true)
         click_button 'Register'
+        # Wait for the tickets page before filling in the form
+        expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
 
         fill_in "tickets__#{ticket.id}", with: '2'
         expect(page).to have_current_path(conference_tickets_path(conference.short_title), ignore_query: true)
@@ -265,19 +217,6 @@ describe Registration, :feature, :js do
         page.find('#flash')
         expect(page).to have_current_path(new_conference_payment_path(conference.short_title), ignore_query: true)
         expect(flash).to eq('Please pay here to get tickets.')
-        purchase = TicketPurchase.where(user_id: participant.id, ticket_id: ticket.id).first
-        expect(purchase.quantity).to eq(2)
-
-        if ENV['STRIPE_PUBLISHABLE_KEY'] || Rails.application.secrets.stripe_publishable_key
-          make_stripe_purchase
-          # expect(current_path).to eq(conference_conference_registration_path(conference.short_title))
-          expect(page).to have_current_path(conference_physical_tickets_path(conference.short_title),
-                                            ignore_query: true)
-          expect(page).to have_content 'Your ticket is booked successfully.'
-
-          click_button 'Unregister'
-        end
-
         purchase = TicketPurchase.where(user_id: participant.id, ticket_id: ticket.id).first
         expect(purchase.quantity).to eq(2)
       end

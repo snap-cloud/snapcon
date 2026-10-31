@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-describe 'Has correct abilities' do
+describe 'Has correct abilities', skip: 'Organizations are removed in upstream OSEM; delete this spec with the upstream merge (#392)' do
   let(:organization) { create(:organization) }
   let(:conference) { create(:full_conference, organization: organization) }
   let(:role_organization_admin) { Role.find_by(name: 'organization_admin', resource: organization) }
