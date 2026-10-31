@@ -52,7 +52,7 @@ module EventsHelper
   end
 
   def rating_tooltip(event, max_rating)
-    "#{event.average_rating}/#{max_rating}, #{pluralize(event.voters.length, 'vote')}"
+    "#{event.average_rating}/#{max_rating}, #{pluralize(event.votes.size, 'vote')}"
   end
 
   # TODO-SNAPCON: Move to admin helper

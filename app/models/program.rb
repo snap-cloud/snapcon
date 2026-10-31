@@ -75,7 +75,7 @@ class Program < ApplicationRecord
     end
 
     def unregistered(conference)
-      self - registered(conference)
+      where.not(id: registered(conference).select(:id))
     end
   end
 
