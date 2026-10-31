@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class PaymentsController < ApplicationController
+  STRIPE_CHECKOUT_HOST = 'checkout.stripe.com'
+
   before_action :authenticate_user!
   load_and_authorize_resource only: %i[index new]
   load_resource :conference, find_by: :short_title
@@ -49,8 +51,9 @@ class PaymentsController < ApplicationController
       cancel_url:  cancel_conference_payments_url(@conference.short_title)
     )
 
-    if checkout_session
-      redirect_to checkout_session.url, allow_other_host: true
+    checkout_url = stripe_checkout_url(checkout_session)
+    if checkout_url
+      redirect_to checkout_url, allow_other_host: true
     else
       @payment.destroy
       redirect_to new_conference_payment_path(@conference.short_title),
@@ -87,6 +90,16 @@ class PaymentsController < ApplicationController
   end
 
   private
+
+  # Only send users off-site to Stripe's hosted checkout page.
+  def stripe_checkout_url(checkout_session)
+    return if checkout_session.blank?
+
+    uri = URI.parse(checkout_session.url.to_s)
+    uri.to_s if uri.is_a?(URI::HTTPS) && uri.host == STRIPE_CHECKOUT_HOST
+  rescue URI::InvalidURIError
+    nil
+  end
 
   def redirect_after_payment
     if session.delete(:has_registration_ticket) == 'true'

@@ -9,6 +9,34 @@ describe PaymentsController do
 
   before { sign_in user }
 
+  describe 'POST #create' do
+    let!(:purchase) { create(:ticket_purchase, ticket: ticket, user: user, conference: conference, quantity: 1) }
+
+    before do
+      allow(Stripe::Checkout::Session).to receive(:create)
+        .and_return(Stripe::Checkout::Session.construct_from(id: 'cs_test_new', url: checkout_url))
+    end
+
+    context 'when Stripe returns its hosted checkout page' do
+      let(:checkout_url) { 'https://checkout.stripe.com/c/pay/cs_test_new' }
+
+      it 'redirects to Stripe' do
+        post :create, params: { conference_id: conference.short_title }
+        expect(response).to redirect_to checkout_url
+      end
+    end
+
+    context 'when the checkout URL is not on Stripe' do
+      let(:checkout_url) { 'https://evil.example.com/pay' }
+
+      it 'does not redirect off-site' do
+        post :create, params: { conference_id: conference.short_title }
+        expect(response).to redirect_to new_conference_payment_path(conference.short_title)
+        expect(flash[:error]).to be_present
+      end
+    end
+  end
+
   describe 'GET #success' do
     context 'when the checkout session belongs to another user' do
       let!(:other_payment) do
