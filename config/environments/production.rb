@@ -146,9 +146,4 @@ Rails.application.configure do
   config.mailbot = {
     bcc_address: ENV.fetch('OSEM_MESSAGE_BCC_ADDRESS', nil)
   }
-
-  config.after_initialize do
-    Bullet.enable = false
-    Bullet.sentry = false
-  end
 end
