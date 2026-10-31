@@ -66,10 +66,4 @@ class TicketPurchasesController < ApplicationController
     redirect_to admin_conference_ticket_path(@conference, @ticket_purchase.ticket.id),
                 notice: "Ticket for user #{@ticket_purchase.user.name} successfully removed."
   end
-
-  private
-
-  def ticket_purchase_params
-    params.require(:ticket_purchase).permit(:ticket_id, :user_id, :conference_id, :quantity)
-  end
 end

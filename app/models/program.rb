@@ -162,7 +162,7 @@ class Program < ApplicationRecord
   end
 
   ##
-  # Checcks if the program has rating enabled
+  # Checks if the program has rating enabled
   #
   # ====Returns
   # * +false+ -> If rating is not enabled
