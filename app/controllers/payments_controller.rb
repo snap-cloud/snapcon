@@ -68,23 +68,13 @@ class PaymentsController < ApplicationController
       return
     end
 
-    if @payment.complete_checkout
-      update_purchased_ticket_purchases(@payment)
-
-      has_registration_ticket = session.delete(:has_registration_ticket)
-      if has_registration_ticket == 'true'
-        registration = @conference.register_user(current_user)
-        if registration
-          redirect_to conference_physical_tickets_path,
-                      notice: "Thanks! Your ticket is booked successfully and you have been registered for #{@conference.title}."
-          return
-        end
-        redirect_to new_conference_conference_registration_path(@conference.short_title),
-                    notice: 'Thanks! Your ticket is booked successfully. Please register for the conference.'
-      else
-        redirect_to conference_physical_tickets_path,
-                    notice: 'Thanks! Your ticket is booked successfully.'
-      end
+    case @payment.fulfill_checkout
+    when :fulfilled, :already_fulfilled
+      redirect_after_payment
+    when :mismatch
+      redirect_to conference_tickets_path(@conference.short_title),
+                  error: 'We received your payment, but your order changed during checkout, so we could not ' \
+                         'confirm your tickets. Please contact the organizers and we will sort it out.'
     else
       redirect_to new_conference_payment_path(@conference.short_title),
                   error: 'Payment could not be completed. Please try again.'
@@ -98,9 +88,18 @@ class PaymentsController < ApplicationController
 
   private
 
-  def update_purchased_ticket_purchases(payment)
-    current_user.ticket_purchases.by_conference(@conference).unpaid.each do |ticket_purchase|
-      ticket_purchase.pay(payment)
+  def redirect_after_payment
+    if session.delete(:has_registration_ticket) == 'true'
+      if @conference.register_user(current_user)
+        redirect_to conference_physical_tickets_path,
+                    notice: "Thanks! Your ticket is booked successfully and you have been registered for #{@conference.title}."
+      else
+        redirect_to new_conference_conference_registration_path(@conference.short_title),
+                    notice: 'Thanks! Your ticket is booked successfully. Please register for the conference.'
+      end
+    else
+      redirect_to conference_physical_tickets_path,
+                  notice: 'Thanks! Your ticket is booked successfully.'
     end
   end
 end
