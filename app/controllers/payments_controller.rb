@@ -59,7 +59,8 @@ class PaymentsController < ApplicationController
   end
 
   def success
-    @payment = Payment.find_by(stripe_session_id: params[:session_id])
+    # Only the user who started this checkout can complete it.
+    @payment = current_user.payments.find_by(conference: @conference, stripe_session_id: params[:session_id])
 
     if @payment.nil?
       redirect_to new_conference_payment_path(@conference.short_title),
