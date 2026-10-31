@@ -32,15 +32,26 @@ module ConferenceHelper
     conference.color.presence || Rails.configuration.conference[:default_color]
   end
 
+  # Everything icalendar_proposals reads from each proposal. Preloading these
+  # avoids several queries per event.
+  ICALENDAR_PROPOSAL_PRELOADS = [
+    :event_type, :difficulty_level, :program,
+    { track: %i[room submitter], event_schedules: :room }
+  ].freeze
+
   # adds events to icalendar for proposals in a conference
   def icalendar_proposals(calendar, proposals, conference)
-    proposals.each do |proposal|
-      # some 2021 events have nil time or event_type
-      next if proposal.time.nil? || proposal.event_type.nil?
+    ActiveRecord::Associations::Preloader.new(records: proposals, associations: ICALENDAR_PROPOSAL_PRELOADS).call
 
+    proposals.each do |proposal|
+      time = icalendar_proposal_time(proposal)
+      # some 2021 events have nil time or event_type
+      next if time.nil? || proposal.event_type.nil?
+
+      room = icalendar_proposal_room(proposal)
       calendar.event do |e|
-        e.dtstart = proposal.time
-        e.dtend = proposal.time + (proposal.event_type.length * 60)
+        e.dtstart = time
+        e.dtend = time + (proposal.event_type.length * 60)
         e.duration = "PT#{proposal.event_type.length}M"
         e.created = proposal.created_at
         e.last_modified = proposal.updated_at
@@ -52,18 +63,38 @@ module ConferenceHelper
         if v
           e.geo = v.latitude, v.longitude if v.latitude && v.longitude
           location = ''
-          location += "#{proposal.room.name} - " if proposal.room&.name
+          location += "#{room.name} - " if room&.name
           location += " - #{v.street}, " if v.street
           location += "#{v.postalcode} #{v.city}, " if v.postalcode && v.city
           location += "#{v.country_name}, " if v.country_name
           e.location = location
         end
         e.categories = conference.title
-        e.categories << "Difficulty: #{proposal.difficulty_level.title}" if proposal.difficulty_level.present?
-        e.categories << "Track: #{proposal.track.name}" if proposal.track.present?
+        e.append_categories "Difficulty: #{proposal.difficulty_level.title}" if proposal.difficulty_level.present?
+        e.append_categories "Track: #{proposal.track.name}" if proposal.track.present?
       end
     end
     calendar
+  end
+
+  # The next three mirror Event#time and Event#room, but read the preloaded
+  # event_schedules instead of running a query per event.
+  def icalendar_event_schedule(proposal, schedule_id)
+    proposal.event_schedules.find { |event_schedule| event_schedule.schedule_id == schedule_id }
+  end
+
+  def icalendar_proposal_time(proposal)
+    track = proposal.track
+    schedule_id = track.try(:self_organized?) ? track.selected_schedule_id : proposal.program.selected_schedule_id
+    icalendar_event_schedule(proposal, schedule_id).try(:start_time)
+  end
+
+  def icalendar_proposal_room(proposal)
+    if proposal.track.try(:self_organized?)
+      proposal.track.room
+    else
+      icalendar_event_schedule(proposal, proposal.program.try(:selected_schedule_id)).try(:room)
+    end
   end
 
   def get_happening_now_events_schedules(conference)

@@ -23,10 +23,19 @@ class SchedulesController < ApplicationController
         @events_xml = event_schedules.map(&:event).group_by { |event| event.time.to_date } if event_schedules
       end
       format.ics do
-        cal = Icalendar::Calendar.new
-        cal = icalendar_proposals(cal, event_schedules.map(&:event), @conference)
-        cal.publish
-        render inline: cal.to_ical
+        # Not user-specific. The program is touched whenever its events, event
+        # schedules, schedules, tracks or rooms change.
+        cache_key = ['schedules/show.ics', @program.cache_key_with_version,
+                     @program.selected_schedule&.cache_key_with_version,
+                     @conference.cache_key_with_version, @conference.venue&.cache_key_with_version,
+                     request.base_url]
+        ics = Rails.cache.fetch(cache_key, expires_in: 12.hours) do
+          cal = Icalendar::Calendar.new
+          cal = icalendar_proposals(cal, event_schedules.map(&:event), @conference)
+          cal.publish
+          cal.to_ical
+        end
+        render plain: ics, content_type: Mime[:ics]
       end
 
       format.html do
