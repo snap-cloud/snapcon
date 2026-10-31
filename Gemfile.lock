@@ -228,10 +228,10 @@ GEM
     delayed_job_active_record (4.1.11)
       activerecord (>= 3.0, < 9.0)
       delayed_job (>= 3.0, < 5)
-    devise (4.9.4)
+    devise (5.0.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
-      railties (>= 4.1.0)
+      railties (>= 7.0)
       responders
       warden (~> 1.2.3)
     devise_ichain_authenticatable (0.3.2)
@@ -453,13 +453,12 @@ GEM
     omniauth-rails_csrf_protection (1.0.0)
       actionpack (>= 4.2)
       omniauth (~> 2.0)
-    open4 (1.3.4)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
     pagy (3.11.0)
-    paper_trail (12.3.0)
-      activerecord (>= 5.2)
-      request_store (~> 1.1)
+    paper_trail (16.0.0)
+      activerecord (>= 6.1)
+      request_store (~> 1.4)
     parallel (1.27.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
@@ -508,7 +507,7 @@ GEM
       pronto (~> 0.11.0)
       rubocop (>= 0.63.1, < 2.0)
     public_suffix (7.0.5)
-    puma (6.6.1)
+    puma (8.0.2)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.8)
@@ -847,7 +846,7 @@ DEPENDENCIES
   omniauth-openid
   omniauth-rails_csrf_protection
   pagy (< 4.0)
-  paper_trail (< 13)
+  paper_trail (~> 16.0)
   pdf-inspector
   pg
   prawn-qrcode
