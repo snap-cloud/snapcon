@@ -418,6 +418,29 @@ describe User do
     end
   end
 
+  describe '#planned_event_ids' do
+    let(:user) { create(:user) }
+    let(:program) { create(:conference).program }
+    let(:favourite) { create(:event, program: program) }
+    let(:speaking) { create(:event, program: program) }
+    let(:volunteering) { create(:event, program: program) }
+    let(:submitted) { create(:event, program: program) }
+
+    before do
+      favourite.favourite_users << user
+      create(:event_user, event: speaking, user: user, event_role: 'speaker')
+      create(:event_user, event: volunteering, user: user, event_role: 'volunteer')
+      create(:event_user, event: submitted, user: user, event_role: 'submitter')
+    end
+
+    it 'matches Event#planned_for_user?' do
+      events = [favourite, speaking, volunteering, submitted, create(:event, program: program)]
+
+      expect(user.planned_event_ids).to eq(events.map(&:reload).select { |e| e.planned_for_user?(user) }.to_set(&:id))
+      expect(user.planned_event_ids).to eq(Set[favourite.id, speaking.id, volunteering.id])
+    end
+  end
+
   describe 'rolify' do
     it 'returns the correct role' do
       expect(user_admin.is_admin).to be(true)

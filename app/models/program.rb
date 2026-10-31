@@ -236,6 +236,17 @@ class Program < ApplicationRecord
     end
   end
 
+  # FullCalendar JSON for the public schedule page. Caches the JSON string
+  # rather than the event schedule records, so a cache hit doesn't rebuild the
+  # whole object graph.
+  def fullcalendar_events_json
+    Rails.cache.fetch("#{cache_key_for_schedule}/fullcalendar-json") do
+      FullCalendarFormatter.event_schedules_to_resources(
+        selected_event_schedules(includes: [:event, :room, { event: %i[event_type track program parent_event] }])
+      )
+    end
+  end
+
   def event_schedule_program_view
     Rails.cache.fetch("#{cache_key_for_schedule}}/program") do
       selected_event_schedules(includes: [:event, :room,

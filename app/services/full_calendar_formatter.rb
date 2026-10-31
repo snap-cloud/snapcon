@@ -7,7 +7,11 @@ class FullCalendarFormatter
     return '[]' if event_schedules.empty?
 
     conference = event_schedules.first.schedule.program.conference
-    event_schedules.map { |event_schedule| event_schedule_to_resource(conference, event_schedule) }.to_json
+    # Breaks span every room; look the rooms up once, not once per break.
+    all_room_guids = nil
+    event_schedules.map do |event_schedule|
+      event_schedule_to_resource(conference, event_schedule) { all_room_guids ||= conference.venue.rooms.pluck(:guid) }
+    end.to_json
   end
 
   class << self
@@ -28,7 +32,7 @@ class FullCalendarFormatter
       event_type_color = event.event_type.color
       url = Rails.application.routes.url_helpers.conference_program_proposal_path(conference.short_title, event.id)
       background_event = event.event_type.title.match(/Break/i)
-      rooms = background_event ? conference.venue.rooms.pluck(:guid) : [event_schedule.room.guid]
+      rooms = background_event ? yield : [event_schedule.room.guid]
 
       {
         id:              event.guid,
