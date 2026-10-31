@@ -19,12 +19,12 @@ describe Survey do
       click_link 'New'
       fill_in 'Title', with: 'Example Survey'
       click_button 'Create Survey'
-      expect(flash).to eq('Successfully created survey')
+      within('#flash') { expect(page).to have_text('Successfully created survey') }
 
       fill_in :survey_question_title, with: 'Example question'
       select 'boolean', from: 'Type of Question:', visible: false # Hidden by bootstrap-select
       click_button 'Create Survey question'
-      expect(flash).to eq('Successfully created Survey Question.')
+      within('#flash') { expect(page).to have_text('Successfully created Survey Question.') }
     end
   end
 
