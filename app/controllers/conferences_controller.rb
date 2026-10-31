@@ -77,40 +77,8 @@ class ConferencesController < ApplicationController
   def calendar
     respond_to do |format|
       format.ics do
-        calendar = Icalendar::Calendar.new
-        Conference.all.each do |conf|
-          if params[:full]
-            event_schedules = conf.program.selected_event_schedules(
-              includes: [{ event: %i[event_type speakers submitter] }]
-            )
-            calendar = icalendar_proposals(calendar, event_schedules.map(&:event), conf)
-          else
-            calendar.event do |e|
-              e.dtstart = conf.start_date
-              e.dtstart.ical_params = { 'VALUE'=>'DATE' }
-              e.dtend = conf.end_date
-              e.dtend.ical_params = { 'VALUE'=>'DATE' }
-              e.duration = "P#{(conf.end_date - conf.start_date + 1).floor}D"
-              e.created = conf.created_at
-              e.last_modified = conf.updated_at
-              e.summary = conf.title
-              e.description = conf.description
-              e.uid = conf.guid
-              e.url = conference_url(conf.short_title)
-              v = conf.venue
-              if v
-                e.geo = v.latitude, v.longitude if v.latitude && v.longitude
-                location = ''
-                location += "#{v.street}, " if v.street
-                location += "#{v.postalcode} #{v.city}, " if v.postalcode && v.city
-                location += v.country_name if v.country_name
-                e.location = location if location
-              end
-            end
-          end
-        end
-        calendar.publish
-        render inline: calendar.to_ical
+        ics = Rails.cache.fetch(calendar_cache_key, expires_in: 12.hours) { calendar_ics }
+        render plain: ics, content_type: Mime[:ics]
       end
     end
   end
@@ -118,6 +86,54 @@ class ConferencesController < ApplicationController
   def code_of_conduct; end
 
   private
+
+  # The feed is the same for everyone who can see it, so it is cached until a
+  # conference, program or venue changes. Events, event schedules, schedules,
+  # tracks, event types, difficulty levels and rooms all touch their program,
+  # so programs.updated_at covers them. COUNT catches deletions.
+  def calendar_cache_key
+    versions = [Conference, Program, Venue].map do |model|
+      count, max_updated_at = model.unscoped.pick(Arel.sql('COUNT(*)'), Arel.sql('MAX(updated_at)'))
+      "#{model.table_name}-#{count}-#{max_updated_at&.utc&.to_fs(:usec)}"
+    end
+    ['conferences/calendar.ics', params[:full] ? 'full' : 'short', request.base_url, *versions]
+  end
+
+  def calendar_ics
+    calendar = Icalendar::Calendar.new
+    Conference.includes(:venue, program: :selected_schedule).each do |conf|
+      if params[:full]
+        # room is needed to sort the schedules; the helper preloads the rest.
+        event_schedules = conf.program.selected_event_schedules(includes: %i[event room])
+        calendar = icalendar_proposals(calendar, event_schedules.map(&:event), conf)
+      else
+        calendar.event do |e|
+          e.dtstart = conf.start_date
+          e.dtstart.ical_params = { 'VALUE'=>'DATE' }
+          e.dtend = conf.end_date
+          e.dtend.ical_params = { 'VALUE'=>'DATE' }
+          e.duration = "P#{(conf.end_date - conf.start_date + 1).floor}D"
+          e.created = conf.created_at
+          e.last_modified = conf.updated_at
+          e.summary = conf.title
+          e.description = conf.description
+          e.uid = conf.guid
+          e.url = conference_url(conf.short_title)
+          v = conf.venue
+          if v
+            e.geo = v.latitude, v.longitude if v.latitude && v.longitude
+            location = ''
+            location += "#{v.street}, " if v.street
+            location += "#{v.postalcode} #{v.city}, " if v.postalcode && v.city
+            location += v.country_name if v.country_name
+            e.location = location if location
+          end
+        end
+      end
+    end
+    calendar.publish
+    calendar.to_ical
+  end
 
   def conference_finder_conditions
     if params[:id]
