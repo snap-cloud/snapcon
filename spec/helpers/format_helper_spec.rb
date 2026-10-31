@@ -55,7 +55,7 @@ describe FormatHelper, type: :helper do
     end
 
     it 'includes venue when conference has one' do
-      conference.venue = create(:venue)
+      conference.venue = create(:venue, name: 'Main Hall')
       text = 'Join us at {venue}.'
       result = markdown_with_variables(text, conference, false)
       expect(result).to include(conference.venue.name)
