@@ -286,9 +286,8 @@ end
 group :development, :test do
   # n+1 query logging
   gem 'bullet'
-  # as capybara driver
-  gem 'webdrivers'
-  gem 'geckodriver-helper'
+  # as capybara driver; Selenium Manager downloads matching browsers and drivers
+  gem 'selenium-webdriver'
   # as debugger
   gem 'byebug'
   # to test new rails version
