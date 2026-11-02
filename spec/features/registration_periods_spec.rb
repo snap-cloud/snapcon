@@ -6,8 +6,8 @@ describe RegistrationPeriod do
   # It is necessary to use bang version of let to build roles before user
   let!(:conference) { create(:conference) }
   let!(:organizer) { create(:organizer, email: 'admin@example.com', resource: conference) }
-  let(:start_date) { Date.today }
-  let(:end_date) { Date.today + 5 }
+  let(:start_date) { Time.zone.today }
+  let(:end_date) { Time.zone.today + 5 }
 
   context 'as organizer' do
     before do
