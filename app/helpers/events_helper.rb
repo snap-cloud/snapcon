@@ -3,6 +3,29 @@
 # TODO: Split this module into smaller modules
 # rubocop:disable Metrics/ModuleLength
 module EventsHelper
+  # Cache key for the parts of a public event card that depend on the viewer,
+  # used instead of current_user so viewers who see the same card share it:
+  # - times are shown in the signed-in user's time zone (else the conference's)
+  # - join_event_link differs for guests, admins/organizers, registered
+  #   attendees and other signed-in users
+  # Favourite stars are set by JavaScript, so they aren't part of the card.
+  def event_card_viewer_cache_key(conference)
+    @event_card_viewer_cache_key ||= {}
+    @event_card_viewer_cache_key[conference.id] ||=
+      if current_user.nil?
+        'guest'
+      else
+        access = if current_user.is_admin || current_user.roles.exists?(id: conference.roles)
+                   'admin'
+                 elsif conference.user_registered?(current_user)
+                   'registered'
+                 else
+                   'user'
+                 end
+        "#{access}-#{current_user.timezone.presence || 'conference-tz'}"
+      end
+  end
+
   ##
   # Includes functions related to events
   ##
