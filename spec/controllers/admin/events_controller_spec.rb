@@ -29,6 +29,50 @@ describe Admin::EventsController do
     end
   end
 
+  describe 'GET #index' do
+    let(:conference) { create(:conference) }
+    let!(:organizer) { create(:organizer, resource: conference) }
+    let!(:scheduled_event) { create(:event_scheduled, program: conference.program) }
+    let!(:voted_event) { create(:event, program: conference.program, state: 'confirmed') }
+    let!(:other_event) { create(:event, program: conference.program) }
+
+    before do
+      conference.program.update!(rating: 5, blind_voting: false)
+      create(:vote, event: voted_event, rating: 2)
+      create(:vote, event: voted_event, rating: 4)
+      sign_in(organizer)
+    end
+
+    it 'renders every event with its rating, speakers and submitter' do
+      get :index, params: { conference_id: conference.short_title }
+
+      expect(response).to have_http_status(:ok)
+      expect(assigns(:events)).to contain_exactly(scheduled_event, voted_event, other_event)
+      [scheduled_event, voted_event, other_event].each do |event|
+        expect(response.body).to include("id='event-#{event.id}'")
+        expect(response.body).to include(event.submitter.name)
+      end
+      expect(response.body).to include('3/5, 2 votes')
+    end
+
+    it 'preloads only the associations the rows use' do
+      get :index, params: { conference_id: conference.short_title }
+
+      preloaded = assigns(:events).includes_values
+      expect(preloaded).to include(:submitter, :speakers, :volunteers, :event_type, :track, :difficulty_level, :votes)
+      expect(preloaded).not_to include(:voters)
+    end
+
+    it 'assigns the scheduled event distribution' do
+      get :index, params: { conference_id: conference.short_title }
+
+      expect(assigns(:scheduled_event_distribution)).to eq(
+        'Scheduled'   => { 'value' => 1, 'color' => 'green' },
+        'Unscheduled' => { 'value' => 1, 'color' => 'red' }
+      )
+    end
+  end
+
   describe '#duplicate' do
     let(:dup_conference) { create(:conference, short_title: 'snapcon2026') }
     let(:program) { dup_conference.program }

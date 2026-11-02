@@ -797,6 +797,29 @@ describe Conference do
       expect(conference.scheduled_event_distribution).to eq(result)
     end
 
+    it 'ignores unconfirmed events and counts events only in a non-selected schedule as unscheduled' do
+      confirmed_scheduled_event
+      other_schedule = create(:schedule, program: conference.program)
+      create(:event_schedule, event: confirmed_unscheduled_event, schedule: other_schedule)
+      create(:event, program: conference.program, state: 'new')
+      create(:event_scheduled, program: conference.program).update_column(:state, 'unconfirmed')
+
+      result = {}
+      result['Scheduled'] = { 'value' => 1, 'color' => 'green' }
+      result['Unscheduled'] = { 'value' => 1, 'color' => 'red' }
+      expect(conference.reload.scheduled_event_distribution).to eq(result)
+    end
+
+    it 'counts all confirmed events as unscheduled when there is no selected schedule' do
+      confirmed_unscheduled_event
+      create(:event, program: conference.program, state: 'confirmed')
+
+      result = {}
+      result['Scheduled'] = { 'value' => 0, 'color' => 'green' }
+      result['Unscheduled'] = { 'value' => 2, 'color' => 'red' }
+      expect(conference.scheduled_event_distribution).to eq(result)
+    end
+
     it '#scheduled_event_distribution does calculate correct values with no events' do
       result = {}
       result['Scheduled'] = { 'value' => 0, 'color' => 'green' }
@@ -1495,6 +1518,32 @@ describe Conference do
         it '#registration_limit_exceeded? is true' do
           expect(subject.registration_limit_exceeded?).to be true
         end
+      end
+    end
+
+    context 'with confirmed speakers' do
+      let(:conference) { create(:conference, registration_limit: 2) }
+      let!(:event) { create(:event, program: conference.program, state: 'confirmed') }
+      let(:speaker) { event.speakers.first }
+
+      before { create(:registration, conference: conference) }
+
+      it 'counts confirmed speakers who have not registered yet' do
+        expect(conference.program.speakers.confirmed.unregistered(conference).to_a).to eq [speaker]
+        expect(conference.registration_limit_exceeded?).to be true
+      end
+
+      it 'does not count speakers who already registered' do
+        create(:registration, conference: conference, user: speaker)
+        expect(conference.program.speakers.confirmed.unregistered(conference)).to be_empty
+        # 2 registrations already reach the limit; the speaker is not counted a second time
+        conference.update!(registration_limit: 3)
+        expect(conference.registration_limit_exceeded?).to be false
+      end
+
+      it 'ignores speakers of unconfirmed events' do
+        event.update_column(:state, 'new')
+        expect(conference.registration_limit_exceeded?).to be false
       end
     end
   end

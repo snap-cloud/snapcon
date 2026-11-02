@@ -27,6 +27,18 @@ describe SchedulesController do
       end
     end
 
+    context 'ICS' do
+      it 'outputs event text as written' do
+        create(:event_scheduled, program: conference.program, title: 'Talk <%= 6 * 7 %>')
+
+        get :show, params: { conference_id: conference.short_title, format: :ics }
+
+        expect(response.media_type).to eq('text/calendar')
+        expect(response.body).to include('Talk <%= 6 * 7 %>')
+        expect(response.body).not_to include('Talk 42')
+      end
+    end
+
     context 'as a conference participant' do
       context 'who visits the schedule page' do
         before do

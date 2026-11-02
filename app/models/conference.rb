@@ -464,10 +464,11 @@ class Conference < ApplicationRecord
   # ====Returns
   # * +hash+ -> hash
   def scheduled_event_distribution
-    confirmed_scheduled_events = program.events.confirmed.scheduled(program.selected_schedule.try(:id))
-    confirmed_unscheduled_events = program.events.confirmed - confirmed_scheduled_events
+    confirmed_events = program.events.confirmed
+    confirmed_scheduled_events = confirmed_events.scheduled(program.selected_schedule.try(:id))
+    unscheduled_count = confirmed_events.where.not(id: confirmed_scheduled_events.select(:id)).count
     scheduled_value = { 'value' => confirmed_scheduled_events.count, 'color' => 'green' }
-    unscheduled_value = { 'value' => confirmed_unscheduled_events.count, 'color' => 'red' }
+    unscheduled_value = { 'value' => unscheduled_count, 'color' => 'red' }
     { 'Scheduled' => scheduled_value, 'Unscheduled' => unscheduled_value }
   end
 
