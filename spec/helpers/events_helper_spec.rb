@@ -14,6 +14,42 @@ describe EventsHelper, type: :helper do
     allow(event).to receive(:average_rating) { my_vote }
   end
 
+  describe '#event_card_viewer_cache_key' do
+    def key_for(user)
+      allow(helper).to receive(:current_user).and_return(user)
+      helper.instance_variable_set(:@event_card_viewer_cache_key, nil)
+      helper.event_card_viewer_cache_key(conference)
+    end
+
+    it 'is the same for all guests' do
+      expect(key_for(nil)).to eq('guest')
+    end
+
+    it 'is shared by signed-in users with the same time zone and access' do
+      first = key_for(create(:user, timezone: 'Berlin'))
+      second = key_for(create(:user, timezone: 'Berlin'))
+
+      expect(first).to eq(second)
+    end
+
+    it 'differs by time zone' do
+      expect(key_for(create(:user, timezone: 'Berlin'))).not_to eq(key_for(create(:user, timezone: 'Tokyo')))
+    end
+
+    it 'separates admins, organizers, registered attendees and other users' do
+      registered = create(:user, timezone: 'Berlin')
+      create(:registration, conference: conference, user: registered)
+      keys = [
+        key_for(create(:admin, timezone: 'Berlin')),
+        key_for(create(:organizer, resource: conference, timezone: 'Berlin')),
+        key_for(registered),
+        key_for(create(:user, timezone: 'Berlin'))
+      ]
+
+      expect(keys).to eq(%w[admin-Berlin admin-Berlin registered-Berlin user-Berlin])
+    end
+  end
+
   describe '#registered_text' do
     describe 'returns correct string' do
       it 'when there are no registrations' do

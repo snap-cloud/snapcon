@@ -19,7 +19,7 @@ class SchedulesController < ApplicationController
         cal = Icalendar::Calendar.new
         cal = icalendar_proposals(cal, @program.event_schedule_for_fullcalendar.map(&:event), @conference)
         cal.publish
-        render inline: cal.to_ical
+        render plain: cal.to_ical, content_type: Mime[:ics]
       end
 
       format.html do
@@ -71,7 +71,7 @@ class SchedulesController < ApplicationController
 
   def happening_now
     # TODO: Adapt to include happening next.
-    @events_schedules = get_happening_now_events_schedules(@conference)
+    @events_schedules = get_happening_now_events_schedules(@conference).to_a
     @current_time = Time.now.in_time_zone(@conference.timezone)
 
     event_ids = @events_schedules.map { |es| es.event.id }

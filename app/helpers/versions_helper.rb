@@ -11,7 +11,7 @@ module VersionsHelper
   def link_to_conference(conference_id)
     return 'deleted conference' if conference_id.nil?
 
-    conference = Conference.find_by(id: conference_id)
+    conference = cached_find_by_id(Conference, conference_id)
     if conference
       link_to conference.short_title,
               edit_admin_conference_path(conference.short_title)
@@ -24,7 +24,7 @@ module VersionsHelper
   def link_to_user(user_id)
     return 'Someone (probably via the console)' unless user_id
 
-    user = User.find_by(id: user_id)
+    user = cached_find_by_id(User, user_id)
     if user
       link_to user.name, admin_user_path(id: user_id)
     else
@@ -37,20 +37,26 @@ module VersionsHelper
   # Returns nil if model_name is invalid
   # Returns object in its current state if its alive
   # Otherwise Returns object state just before deletion
+  #
+  # Results are memoized for the rest of the request: the revision history
+  # page asks for the same users, conferences and events on many rows.
   def current_or_last_object_state(model_name, id)
     return nil unless id.present? && model_name.present?
 
-    begin
-      object = model_name.constantize.find_by(id: id)
-    rescue NameError
-      return nil
-    end
+    key = [:state, model_name.to_s, id.to_s]
+    return versions_lookup_cache[key] if versions_lookup_cache.key?(key)
 
-    if object.nil?
-      object_last_version = PaperTrail::Version.where(item_type: model_name, item_id: id).last
-      object = object_last_version.reify if object_last_version
-    end
-    object
+    versions_lookup_cache[key] = find_current_or_last_object_state(model_name, id)
+  end
+
+  # Memoized Model.find_by(id:) for the current request.
+  def cached_find_by_id(model, id)
+    return nil if id.blank?
+
+    key = [:live, model.name, id.to_s]
+    return versions_lookup_cache[key] if versions_lookup_cache.key?(key)
+
+    versions_lookup_cache[key] = model.find_by(id: id)
   end
 
   def subscription_change_description(version)
@@ -171,5 +177,25 @@ module VersionsHelper
 
   def users_role_change_description(version)
     version.event == 'create' ? 'added' : 'removed'
+  end
+
+  private
+
+  def versions_lookup_cache
+    @versions_lookup_cache ||= {}
+  end
+
+  def find_current_or_last_object_state(model_name, id)
+    begin
+      object = model_name.constantize.find_by(id: id)
+    rescue NameError
+      return nil
+    end
+
+    if object.nil?
+      object_last_version = PaperTrail::Version.where(item_type: model_name, item_id: id).last
+      object = object_last_version.reify if object_last_version
+    end
+    object
   end
 end

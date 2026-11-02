@@ -69,5 +69,5 @@
         .col-12
           / TODO-SNAPCON: REDUCE THE QUERIES
           - subevent_schedule = subevent.event_schedules.find_by(schedule_id: program.selected_schedule_id)
-          - cache [program, subevent_schedule, subevent, current_user, event_schedule.happening_now?, '#scheduled#full#panel'] do
+          - cache [program, subevent_schedule, subevent, event_card_viewer_cache_key(event.conference), event_schedule.happening_now?, '#scheduled#full#panel'] do
             = render 'schedules/event_mini', event: subevent, event_schedule: subevent_schedule
