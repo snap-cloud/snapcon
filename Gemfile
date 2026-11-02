@@ -37,8 +37,10 @@ gem 'cloudinary'
 
 # for internationalizing
 gem 'rails-i18n'
-# Windows: timezone data (required on Windows for tzinfo)
-gem 'tzinfo-data', platforms: %i[windows jruby]
+# Bundled time zone data, so lookups don't depend on the OS. heroku-24
+# (Ubuntu 24.04) drops legacy aliases such as Pacific/Midway, which Rails
+# maps "Midway Island" to.
+gem 'tzinfo-data'
 
 # as authentication framework
 gem 'devise'
