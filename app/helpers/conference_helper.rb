@@ -59,8 +59,8 @@ module ConferenceHelper
           e.location = location
         end
         e.categories = conference.title
-        e.categories << "Difficulty: #{proposal.difficulty_level.title}" if proposal.difficulty_level.present?
-        e.categories << "Track: #{proposal.track.name}" if proposal.track.present?
+        e.append_categories "Difficulty: #{proposal.difficulty_level.title}" if proposal.difficulty_level.present?
+        e.append_categories "Track: #{proposal.track.name}" if proposal.track.present?
       end
     end
     calendar
