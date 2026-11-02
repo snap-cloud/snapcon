@@ -194,9 +194,11 @@ describe Event do
       expect(page).to have_content 'Example Proposal'
       expect(@event.state).to eq('unconfirmed')
       click_link "confirm_proposal_#{@event.id}"
-      expect(page).to have_content 'The proposal was confirmed. Please register to attend the conference.'
+      # Wait for the redirect to finish before reading the page; checking the
+      # text mid-navigation can fail with a stale node error in Chrome.
       expect(page).to have_current_path(new_conference_conference_registration_path(conference.short_title),
                                         ignore_query: true)
+      within('#flash') { expect(page).to have_text('The proposal was confirmed. Please register to attend the conference.') }
       @event.reload
       expect(@event.state).to eq('confirmed')
     end
