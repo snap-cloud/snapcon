@@ -52,6 +52,7 @@ class HappeningNowQuery
       .includes(*INCLUDES)
       .order(:start_time)
       .order(Room.arel_table[:order].asc)
+      .order(:id) # stable order for sessions in the same slot, so pages don't overlap
   end
 
   def base

@@ -56,6 +56,12 @@ describe HappeningNowQuery do
       expect(query.happening_now.to_a).to eq([earlier, later])
     end
 
+    it 'orders sessions in the same slot and room order by creation' do
+      sessions = Array.new(4) { schedule_at([12, 0]) }
+
+      expect(query.happening_now.to_a).to eq(sessions)
+    end
+
     it 'ignores schedules other than the selected one' do
       schedule_at([12, 0], schedule: create(:schedule, program: program))
 
