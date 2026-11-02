@@ -473,6 +473,9 @@ GEM
       ruby-rc4
       ttfunk
     pg (1.6.3)
+    pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-darwin)
+    pg (1.6.3-x86_64-linux)
     pp (0.6.4)
       prettyprint
     prawn (2.5.0)
@@ -732,6 +735,8 @@ GEM
     turbolinks-source (5.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2026.6)
+      tzinfo (>= 1.0.0)
     uglifier (4.2.0)
       execjs (>= 0.3.0, < 3)
     unicode-display_width (3.2.0)
