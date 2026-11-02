@@ -152,7 +152,7 @@ namespace :data do
     # --- Events ---
     # Helper: create an event with speaker and schedule in one shot.
     # The before_end_of_conference validation runs on :create and checks
-    # Date.today > conference.end_date. Conference end_date is 2026-10-16,
+    # Time.zone.today > conference.end_date. Conference end_date is 2026-10-16,
     # so any create before that date will pass.
     # The valid_track validation requires track.confirmed? -- ensured above.
     # Abstracts must be >= 100 words per the event type minimum_abstract_length.

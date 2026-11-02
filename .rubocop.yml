@@ -62,9 +62,8 @@ Rails:
   Exclude:
     - spec/**/*.rb
 
-# TODO: This would be good to enable at some point...specs need work.
 Rails/Date:
-  Enabled: false
+  Enabled: true
 
 Rails/FilePath:
   Enabled: false
