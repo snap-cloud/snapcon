@@ -281,11 +281,11 @@ module Admin
       @tracks = Track.accessible_by(current_ability).where(program: @program).confirmed
     end
 
+    # Preload only what the index rows and exports read. Votes are needed for
+    # the average rating; vote users / voters are not (counts use votes.size).
     def load_events_with_data
       @events = Event.where(program: Program.find_by(conference: Conference.find_by(short_title: params[:conference_id]))).includes(
-        :submitter, :submitter_event_user, :speakers, :speaker_event_users, :volunteers,
-        :volunteer_event_users, :program, :event_type, :track, :voters,
-        votes: [:user]
+        :submitter, :speakers, :volunteers, :program, :event_type, :track, :difficulty_level, :votes
       )
     end
   end
