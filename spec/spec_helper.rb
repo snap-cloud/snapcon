@@ -15,7 +15,7 @@ require File.expand_path('../config/environment', __dir__)
 
 require 'rspec/rails'
 require 'shoulda/matchers'
-require 'webdrivers'
+require 'selenium-webdriver'
 
 # To avoid confusion on missed migrations - use Rails 4 checker to ensure
 # all migrations applied
