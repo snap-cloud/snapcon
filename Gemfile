@@ -201,7 +201,7 @@ gem 'selectize-rails'
 gem 'connection_pool', '< 3'
 
 # memcached binary connector
-gem 'dalli', require: false
+gem 'dalli', '~> 3.2', require: false
 # Redis Cache
 gem 'redis'
 
