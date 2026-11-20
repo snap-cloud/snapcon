@@ -12,7 +12,7 @@ ruby '~> 3.4'
 if next?
   gem 'rails', '~> 8.0'
 else
-  gem 'rails', '~> 7.2'
+  gem 'rails', '~> 7.2.4'
 end
 
 # Use Puma as the app server
