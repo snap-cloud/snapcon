@@ -132,7 +132,7 @@ program: @conference.program)
         end
 
         it 'when the track\'s end date is after the conference\'s end date' do
-          track = build(:track, start_date: Date.today, end_date: 3.days.from_now, program: @conference.program)
+          track = build(:track, start_date: Time.zone.today, end_date: 3.days.from_now, program: @conference.program)
           expect(track.valid?).to be false
           expect(track.errors[:end_date]).to eq ["can't be outside of the conference's dates (#{1.day.ago.to_date}-#{2.days.from_now.to_date})"]
         end
@@ -146,7 +146,7 @@ program: @conference.program)
 
       context 'is valid' do
         it 'when the track\'s start date is before its end date' do
-          track = build(:track, start_date: Date.today, end_date: Date.tomorrow, program: @conference.program)
+          track = build(:track, start_date: Time.zone.today, end_date: Date.tomorrow, program: @conference.program)
           expect(track.valid?).to be true
         end
       end
