@@ -101,8 +101,6 @@ GEM
     annotate (2.6.5)
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
-    archive-zip (0.12.0)
-      io-like (~> 0.3.0)
     ast (2.4.3)
     autoprefixer-rails (10.3.1.0)
       execjs (~> 2)
@@ -271,8 +269,6 @@ GEM
     ffi (1.15.3)
     font-awesome-sass (6.7.2)
       sassc (~> 2.0)
-    geckodriver-helper (0.24.0)
-      archive-zip (~> 0.7)
     gitlab (4.20.1)
       httparty (~> 0.20)
       terminal-table (>= 1.5.1)
@@ -320,7 +316,6 @@ GEM
       mini_magick (>= 4.9.5, < 5)
       ruby-vips (>= 2.0.17, < 3)
     io-console (0.8.1)
-    io-like (0.3.1)
     irb (1.15.2)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
@@ -662,9 +657,10 @@ GEM
       faraday (>= 0.17.3, < 3)
     securerandom (0.4.1)
     selectize-rails (0.12.6)
-    selenium-webdriver (4.10.0)
-      rexml (~> 3.2, >= 3.2.5)
-      rubyzip (>= 1.2.2, < 3.0)
+    selenium-webdriver (4.52.0)
+      base64 (~> 0.2)
+      logger (~> 1.4)
+      rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
     sentry-delayed_job (5.8.0)
       delayed_job (>= 4.0)
@@ -742,10 +738,6 @@ GEM
       activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
-    webdrivers (5.3.1)
-      nokogiri (~> 1.6)
-      rubyzip (>= 1.3.0)
-      selenium-webdriver (~> 4.0, < 4.11)
     webmock (3.14.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
@@ -803,7 +795,6 @@ DEPENDENCIES
   faraday-retry
   feature
   font-awesome-sass
-  geckodriver-helper
   gravtastic
   haml-rails
   haml_lint
@@ -864,6 +855,7 @@ DEPENDENCIES
   ruby-oembed
   sass-rails (>= 4.0.2)
   selectize-rails
+  selenium-webdriver
   sentry-delayed_job
   sentry-rails
   sentry-ruby
@@ -880,7 +872,6 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   unobtrusive_flash (>= 3)
   web-console
-  webdrivers
   webmock
   whenever
 
